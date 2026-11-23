@@ -1,0 +1,339 @@
+--- a/design-system/sd-components/sd-components.js
++++ b/design-system/sd-components/sd-components.js
+@@ -4109,6 +4109,11 @@
+   var SD_DT_ICON_DOWN = '<svg ' + SD_DT_SVG_ATTRS + ' stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+   var SD_DT_ICON_CLOCK = '<svg ' + SD_DT_SVG_ATTRS + ' stroke-width="2"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 14"></polyline></svg>';
+   var SD_DT_ICON_CHECK = '<svg ' + SD_DT_SVG_ATTRS + ' stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>';
++  /* Icon đuôi ô — catalog `#c-datetime-ico` (lịch + đồng hồ, kiểu MDI
++     "calendar-clock"), chép nguyên `path`. Cùng ngoại lệ Rule 4 với bốn glyph
++     trên: catalog dùng SVG riêng của component, Material Icons Outlined không
++     có glyph tương đương (bản trước kit dùng `today`). Rà soát 2026-10-12. */
++  var SD_DT_ICON_FIELD = '<svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M15,13H16.5V15.82L18.94,17.23L18.19,18.53L15,16.69V13M19,8H5V19H9.67C9.24,18.09 9,17.07 9,16A7,7 0 0,1 16,9C17.07,9 18.09,9.24 19,9.67V8M5,21C3.89,21 3,20.1 3,19V5C3,3.89 3.89,3 5,3H6V1H8V3H16V1H18V3H19A2,2 0 0,1 21,5V11.1C22.24,12.36 23,14.09 23,16A7,7 0 0,1 16,23C14.09,23 12.36,22.24 11.1,21H5M16,11.15A4.85,4.85 0 0,0 11.15,16C11.15,18.68 13.32,20.85 16,20.85A4.85,4.85 0 0,0 20.85,16C20.85,13.32 18.68,11.15 16,11.15Z"></path></svg>';
+ 
+   var SD_DT_TEXT = {
+     required: 'Vui lòng nhập thông tin',
+@@ -4169,7 +4174,7 @@
+   class SdDatetime extends HTMLElement {
+     static get observedAttributes() {
+       return ['label', 'placeholder', 'size', 'required', 'disabled', 'viewed', 'value',
+-              'helpertext', 'hideinlineerror', 'clearable', 'showseconds', 'min', 'max', 'autoid', 'name', 'inlineerror', 'inlineError', 'mindate', 'minDate', 'maxdate', 'maxDate'];
++              'hideinlineerror', 'showseconds', 'min', 'max', 'autoid', 'name', 'inlineerror', 'inlineError', 'mindate', 'minDate', 'maxdate', 'maxDate'];
+     }
+     constructor() {
+       super();
+@@ -4200,10 +4205,13 @@
+     get size() { return this._attr('size') || 'md'; }
+     get required() { return this.hasAttribute('required'); }
+     get disabled() { return this.hasAttribute('disabled'); }
+-    get viewed() { return this.hasAttribute('viewed'); }
+-    get clearable() { return this.hasAttribute('clearable'); }
++    /* [viewed] boolean — viewed="false" là KHÔNG xem (bản trước đọc hasAttribute). */
++    get viewed() { var v = this.getAttribute('viewed'); return v !== null && String(v) !== 'false'; }
++    /* Rà soát #c-datetime 2026-10-12 (Rule 18): catalog không có `clearable` và
++       `helperText`. Nút × LUÔN có ở ô có giá trị (ẩn khi disabled); `helperText`
++       bỏ. Khai trên markup cũ thì bị bỏ qua. */
++    get clearable() { return true; }
+     get showSeconds() { return this.hasAttribute('showSeconds') || this.hasAttribute('showseconds'); }
+-    get helperText() { return this._attr('helperText') || ''; }
+     get hideInlineError() { return this.hasAttribute('hideInlineError') || this.hasAttribute('hideinlineerror'); }
+     get autoId() { var raw = this._attr('autoId'); return raw ? 'forms-datetime-' + raw : ''; }
+     get name() { return this._attr('name') || ''; }
+@@ -4255,7 +4263,7 @@
+       sdSyncFieldHostClass(this, this.label, this.viewed);
+       var label = this.label, placeholder = this.placeholder, size = this.size,
+           required = this.required, disabled = this.disabled, clearable = this.clearable,
+-          helperText = this.helperText, hideInlineError = this.hideInlineError,
++          hideInlineError = this.hideInlineError,
+           showSeconds = this.showSeconds,
+           canonical = this.model,
+           d = canonical ? sdDtFromCanonical(canonical) : null,
+@@ -4279,7 +4287,7 @@
+       var errorClass = showError ? (hideIE ? ' sd-error sd-hide-inline-error' : ' sd-error') : '';
+       var reqHtml = required ? '<span class="sd-required">*</span>' : '';
+       var labelHtml = label ? '<label class="sd-label">' + esc(label) + reqHtml + '</label>' : '';
+-      var showClear = clearable && !!canonical && !required && !disabled;
++      var showClear = clearable && !!canonical && !disabled;
+       var showErrorIcon = showError && hideInlineError;
+       var showErrorText = showError && !hideInlineError;
+ 
+@@ -4297,16 +4305,18 @@
+           (showErrorIcon
+             ? '<span class="material-icons-outlined sd-date-error-icon" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</span>'
+             : '') +
++          /* catalog: `<button class="sd-clear-btn sd-hover">` (hiện khi rê chuột /
++             focus) + `<span class="cursor-pointer sd-suffix-icon">` chứa SVG
++             lịch-đồng-hồ riêng của component. Bản trước kit: nút xoá luôn hiện
++             (`sd-date-clear-btn`, phải khai clearable) + nút icon `today`. */
+           (showClear
+-            ? '<button type="button" class="sd-date-clear-btn" title="' + escAttr(SD_DT_TEXT.clear) + '" aria-label="' + escAttr(SD_DT_TEXT.clear) + '">' +
+-              '<span class="material-icons-outlined">close</span></button>'
++            ? '<button type="button" class="sd-clear-btn sd-hover" title="' + escAttr(SD_DT_TEXT.clear) + '" aria-label="' + escAttr(SD_DT_TEXT.clear) + '">' +
++              '<span class="material-icons-outlined" aria-hidden="true">close</span></button>'
+             : '') +
+-          '<button type="button" class="sd-date-suffix-btn"' + (disabled ? ' disabled' : '') +
+-            ' aria-label="' + escAttr(SD_DT_TEXT.openPicker) + '">' +
+-            '<span class="material-icons-outlined">today</span></button>' +
++          '<span class="cursor-pointer sd-suffix-icon" role="button"' + (disabled ? ' aria-disabled="true"' : ' tabindex="0"') +
++            ' aria-label="' + escAttr(SD_DT_TEXT.openPicker) + '">' + SD_DT_ICON_FIELD + '</span>' +
+         '</div>' +
+-        (showErrorText ? '<div class="sd-error-text">' + esc(errorMsg) + '</div>'
+-          : (helperText ? '<div class="sd-helper-text">' + esc(helperText) + '</div>' : '')) +
++        (showErrorText ? '<div class="sd-error-text">' + esc(errorMsg) + '</div>' : '') +
+         this._popupHtml();
+ 
+       this._bind();
+@@ -4381,13 +4391,19 @@
+           self.dispatchEvent(new CustomEvent('sd-focus', { bubbles: true }));
+         });
+       }
+-      var suffixBtn = this.querySelector('.sd-date-suffix-btn');
+-      if (suffixBtn) suffixBtn.addEventListener('click', function (e) {
++      var suffixBtn = this.querySelector('.sd-suffix-icon');
++      var toggle = function (e) {
+         e.stopPropagation();
+         if (self.disabled) return;
+         if (self._popupOpenState()) self._closePopup(); else self._openPopup();
+-      });
+-      var clearBtn = this.querySelector('.sd-date-clear-btn');
++      };
++      if (suffixBtn) {
++        suffixBtn.addEventListener('click', toggle);
++        suffixBtn.addEventListener('keydown', function (e) {
++          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); }
++        });
++      }
++      var clearBtn = this.querySelector('.sd-clear-btn');
+       if (clearBtn) clearBtn.addEventListener('click', function (e) { self.clear(e); });
+ 
+       var prev = this.querySelector('.sd-dt-prev');
+@@ -4473,7 +4489,7 @@
+ 
+     clear(e) {
+       if (e && e.stopPropagation) e.stopPropagation();
+-      if (this.disabled || this.required || !this.model) return;
++      if (this.disabled || !this.model) return;
+       this._invalidFormat = false;
+       this._touched = true;
+       this._commit(null);
+--- a/design-system/core/styles/sd-tokens.css
++++ b/design-system/core/styles/sd-tokens.css
+@@ -2145,13 +2145,17 @@
+ /* sd-input dùng cùng hàng suffix (catalog #c-input: × ở 248, có hậu tố thì × 220 +
+    icon 248 — khe 8px). Rà soát #c-input 2026-10-12. */
+ sd-input .sd-form-field > .sd-input + *,
+-sd-input-number .sd-form-field > .sd-input + * { margin-left: 12px; }
++sd-input-number .sd-form-field > .sd-input + *,
++sd-datetime .sd-form-field > .sd-input + * { margin-left: 12px; }
+ sd-input .sd-form-field > .sd-input ~ * + *,
+-sd-input-number .sd-form-field > .sd-input ~ * + * { margin-left: 8px; }
++sd-input-number .sd-form-field > .sd-input ~ * + *,
++sd-datetime .sd-form-field > .sd-input ~ * + * { margin-left: 8px; }
+ sd-input .sd-form-field:not(.sd-sm):not(.sd-lg) > .sd-input ~ *:last-child,
+-sd-input-number .sd-form-field:not(.sd-sm):not(.sd-lg) > .sd-input ~ *:last-child { margin-right: -4px; }
++sd-input-number .sd-form-field:not(.sd-sm):not(.sd-lg) > .sd-input ~ *:last-child,
++sd-datetime .sd-form-field:not(.sd-sm):not(.sd-lg) > .sd-input ~ *:last-child { margin-right: -4px; }
+ sd-input .sd-form-field .sd-date-error-icon,
+-sd-input-number .sd-form-field .sd-date-error-icon {
++sd-input-number .sd-form-field .sd-date-error-icon,
++sd-datetime .sd-form-field .sd-date-error-icon {
+   font-size: 20px; width: 20px; height: 20px; line-height: 20px;
+ }
+ /* Rê chuột vào ô đang lỗi (chưa focus) thì icon lỗi sẫm lại — Material
+@@ -2159,10 +2163,22 @@
+    .mat-mdc-form-field-icon-suffix { color: #BA200E }` (đo ở #c-input và
+    #c-input-number). Rà soát 2026-10-12. */
+ sd-input .sd-form-field.sd-error:not(:focus-within):not(.sd-disabled):hover .sd-date-error-icon,
+-sd-input-number .sd-form-field.sd-error:not(:focus-within):not(.sd-disabled):hover .sd-date-error-icon { color: var(--sd-error-dark); }
++sd-input-number .sd-form-field.sd-error:not(:focus-within):not(.sd-disabled):hover .sd-date-error-icon,
++sd-datetime .sd-form-field.sd-error:not(:focus-within):not(.sd-disabled):hover .sd-date-error-icon { color: var(--sd-error-dark); }
+ /* Giá trị khi disabled — catalog `--sd-black400`, bản trước .87 */
+ sd-input .sd-form-field.sd-disabled .sd-input,
+-sd-input-number .sd-form-field.sd-disabled .sd-input { color: var(--sd-black400); -webkit-text-fill-color: var(--sd-black400); }
++sd-input-number .sd-form-field.sd-disabled .sd-input,
++sd-datetime .sd-form-field.sd-disabled .sd-input { color: var(--sd-black400); -webkit-text-fill-color: var(--sd-black400); }
++/* Icon đuôi của sd-datetime — catalog `span.cursor-pointer.sd-suffix-icon` 20×20,
++   #757575 (cả khi disabled), SVG lịch-đồng-hồ lấp đầy ô. Rà soát #c-datetime 2026-10-12. */
++sd-datetime .sd-suffix-icon {
++  display: block; flex: 0 0 auto;
++  width: 20px; height: 20px;
++  color: var(--sd-black400);
++  cursor: pointer;
++}
++sd-datetime .sd-suffix-icon svg { display: block; width: 20px; height: 20px; }
++sd-datetime .sd-suffix-icon:focus-visible { outline: 2px solid var(--sd-primary); outline-offset: 2px; border-radius: 2px; }
+ /* Hậu tố của sd-input — catalog `mat-icon.sd-suffix-icon` 20px #757575 */
+ sd-input .sd-suffix-icon {
+   flex: 0 0 auto;
+@@ -9091,7 +9107,12 @@
+ sd-datetime .sd-datetime-picker{display:flex;flex-direction:column;width:320px}
+ sd-datetime .picker-calendar{padding:4px 8px 0}
+ /* Thay cho `.picker-calendar .mat-calendar*` của catalog — xem điểm 2 ở trên. */
+-sd-datetime .picker-calendar .form-field-datepicker-header{padding:4px 4px 0}
++/* Thanh tiêu đề lịch: catalog `.picker-calendar .mat-calendar-header{padding:4px 4px 0}`
++   bọc `.mat-calendar-controls{margin:5% calc(4.7142857143% - 16px)}` — % tính trên
++   bề ngang nội dung 304 − 8 = 296px. Kit gộp hai lớp làm một nên cộng sẵn 4px
++   đệm vào lề: trên 18.8 · hai bên 1.95 · dưới 14.8. Bản trước chỉ có đệm 4px, thiếu
++   phần lề % → mọi thứ bên dưới thanh tiêu đề cao hơn catalog 33.6px. (2026-10-12) */
++sd-datetime .picker-calendar .form-field-datepicker-header{padding:0;margin:calc(4px + 296px * .05) calc(4px + 296px * .047142857 - 16px) calc(296px * .05)}
+ /* Hàng thứ không cần đệm dưới nữa: ô thứ đã có `padding-bottom:8px` và đường kẻ
+    `.form-field-datepicker-divider` riêng — đúng cấu trúc thead của catalog
+    (rà soát 2026-10-12). */
+@@ -9108,7 +9129,8 @@
+ sd-datetime .sd-time-spinner .unit .step svg{width:14px;height:14px;display:block}
+ sd-datetime .sd-time-spinner .unit .step:hover{background:var(--sd-primary-light);color:var(--sd-primary)}
+ sd-datetime .sd-time-spinner .unit .step:active{transform:scale(.92)}
+-sd-datetime .sd-time-spinner .unit .value{width:44px;height:36px;padding:0;text-align:center;font-size:20px;font-weight:600;line-height:1;color:var(--sd-black500);font-variant-numeric:tabular-nums;background:transparent;border:1.5px solid transparent;border-radius:6px;outline:none;cursor:text;transition:border-color .15s ease,background-color .15s ease}
++/* font-family: catalog `input` kế thừa Roboto; thiếu dòng này thì ô số rơi về Arial mặc định của <input> (rà soát 2026-10-12) */
++sd-datetime .sd-time-spinner .unit .value{width:44px;height:36px;padding:0;text-align:center;font-family:inherit;font-size:20px;font-weight:600;line-height:1;color:var(--sd-black500);font-variant-numeric:tabular-nums;background:transparent;border:1.5px solid transparent;border-radius:6px;outline:none;cursor:text;transition:border-color .15s ease,background-color .15s ease}
+ sd-datetime .sd-time-spinner .unit .value:hover:not(:focus){background:var(--sd-black100)}
+ sd-datetime .sd-time-spinner .unit .value:focus{border-color:var(--sd-primary);background:#fff}
+ sd-datetime .sd-time-spinner .unit .value:disabled{color:var(--sd-black400);cursor:not-allowed}
+--- a/design-system/preview/components/datetime.html
++++ b/design-system/preview/components/datetime.html
+@@ -36,6 +36,31 @@
+       <!-- ── Tab: Preview ──────────────────────────────────── -->
+       <div class="tab-panel" data-tab-panel="0">
+ 
++        <!-- ── Theo Core UI Catalog #c-datetime — rà soát 2026-10-12 ── -->
++        <sd-section title="Trạng thái" subtitle="ô nhập rỗng · có giá trị (nút xoá hiện khi rê chuột) · disabled">
++          <div class="d-flex flex-wrap gap-16">
++            <div style="width:280px"><sd-datetime label="Thời điểm chốt số liệu"></sd-datetime></div>
++            <div style="width:280px"><sd-datetime label="Thời điểm chốt số liệu" value="2026/10/15 14:30:00"></sd-datetime></div>
++            <div style="width:280px"><sd-datetime label="Thời điểm trình duyệt" disabled value="2026/10/07 09:15:00"></sd-datetime></div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Lỗi bắt buộc" subtitle="required + touched → core.form.datetime.required">
++          <div class="d-flex flex-wrap gap-16">
++            <div style="width:280px"><sd-datetime class="dt-cat-touch" label="Hạn phê duyệt" required></sd-datetime></div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Popup đang mở" subtitle="sd-datetime-picker: lịch + sd-time-spinner (HH:MM) + footer; ▲▼ đổi giờ/phút, Xác nhận ghi vào ô">
++          <div class="dt-cat-open-wrap" style="min-height:540px">
++            <div style="width:320px"><sd-datetime id="dtCatOpen" label="Thời điểm chốt số liệu" value="2026/10/15 14:30:00"></sd-datetime></div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Chế độ xem" subtitle="viewed: dd/MM/yyyy HH:mm">
++          <sd-datetime label="Thời điểm chốt số liệu" viewed value="2026/10/15 14:30:00"></sd-datetime>
++        </sd-section>
++
+         <!-- Normal -->
+         <sd-section title="Normal">
+           <div class="grid grid-cols-3 gap-6">
+@@ -44,7 +69,7 @@
+             <sd-datetime label="Hoàn thành" value="2026/04/12 09:15" viewed></sd-datetime>
+           </div>
+           <p class="text-sm text-secondary mt-3">
+-            Bấm icon lịch (bên phải ô) → popup <b>một panel dọc</b>: lịch ở trên, kẻ ngang,
++            Bấm icon lịch-đồng-hồ (bên phải ô) → popup <b>một panel dọc</b>: lịch ở trên, kẻ ngang,
+             rồi bộ đếm giờ <code>HH : MM</code> có nút ▲▼ (cộng/trừ 1, quay vòng; gõ thẳng vào ô
+             rồi Enter cũng được, quá biên thì tự kẹp lại). Chọn xong bấm <b>Xác nhận</b> mới ghi
+             vào ô — <b>Bỏ qua</b> đóng không lưu, <b>Bây giờ</b> lấy thời điểm hiện tại.
+@@ -79,12 +104,10 @@
+           </p>
+         </sd-section>
+ 
+-        <!-- Clearable / helperText / showSeconds -->
+-        <sd-section title="Clearable · helperText · showSeconds">
++        <!-- showSeconds -->
++        <sd-section title="showSeconds">
+           <div class="grid grid-cols-3 gap-6">
+-            <sd-datetime label="Có nút xoá" value="2026/09/22 14:30" clearable></sd-datetime>
+-            <sd-datetime label="Có ghi chú" helperText="Giờ theo múi giờ VN (GMT+7)"></sd-datetime>
+-            <sd-datetime label="Hiện giây" value="2026/09/22 14:30:45" showSeconds clearable></sd-datetime>
++            <sd-datetime label="Hiện giây" value="2026/09/22 14:30:45" showSeconds></sd-datetime>
+           </div>
+           <p class="text-sm text-secondary mt-3">
+             <code>showSeconds</code> thêm cột giây: hiển thị <code>dd/MM/yyyy HH:mm:ss</code>, model lưu tới giây.
+@@ -170,15 +193,15 @@
+                   <tr><td>label</td><td>string</td><td>-</td><td>Floating label</td></tr>
+                   <tr><td>placeholder</td><td>string</td><td>= label / dd/MM/yyyy HH:mm</td><td>Placeholder khi trống</td></tr>
+                   <tr><td>value</td><td>canonical <code>yyyy/MM/dd HH:mm[:ss]</code></td><td>-</td><td>Model — hiển thị lại <code>dd/MM/yyyy HH:mm[:ss]</code>. Bí danh: <code>model</code></td></tr>
+-                  <tr><td>min / minDate</td><td><code>yyyy/MM/dd[ HH:mm]</code> hoặc <code>"TODAY"</code></td><td>-</td><td>Ngày nhỏ nhất; ngày ngoài khoảng bị khoá trên lịch</td></tr>
+-                  <tr><td>max / maxDate</td><td><code>yyyy/MM/dd[ HH:mm]</code> hoặc <code>"TODAY"</code></td><td>-</td><td>Ngày lớn nhất</td></tr>
++                  <tr><td>min (bí danh cũ: minDate)</td><td><code>yyyy/MM/dd[ HH:mm]</code> hoặc <code>"TODAY"</code></td><td>-</td><td>Ngày nhỏ nhất; ngày ngoài khoảng bị khoá trên lịch</td></tr>
++                  <tr><td>max (bí danh cũ: maxDate)</td><td><code>yyyy/MM/dd[ HH:mm]</code> hoặc <code>"TODAY"</code></td><td>-</td><td>Ngày lớn nhất</td></tr>
+                   <tr><td>required</td><td>boolean</td><td>false</td><td>Hiện dấu * + báo lỗi khi trống lúc blur</td></tr>
+                   <tr><td>disabled</td><td>boolean</td><td>false</td><td>Vô hiệu hoá input + nút mở picker</td></tr>
+-                  <tr><td>viewed</td><td>boolean</td><td>false</td><td>Chế độ xem — text tĩnh, không tương tác</td></tr>
++                  <tr><td>viewed</td><td>boolean</td><td>false</td><td>Chế độ xem — text tĩnh, không tương tác. <code>viewed="false"</code> là không xem</td></tr>
+                   <tr><td>size</td><td><code>sm</code>, <code>md</code>, <code>lg</code></td><td>md</td><td>Chiều cao field</td></tr>
+                   <tr><td>showSeconds</td><td>boolean</td><td>false</td><td>Thêm cột giây; hiển thị & lưu tới <code>ss</code></td></tr>
+-                  <tr><td>clearable</td><td>boolean</td><td>false</td><td>Hiện nút xoá khi có giá trị (ẩn nếu required/disabled)</td></tr>
+-                  <tr><td>helperText</td><td>string</td><td>-</td><td>Dòng chú thích dưới field khi không có lỗi</td></tr>
++                  <tr><td>clearable · helperText</td><td>—</td><td>—</td><td><b>Không có trong catalog — đã gỡ 2026-10-12.</b> Nút × luôn có ở ô có giá trị (hiện khi rê chuột/focus, ẩn khi disabled). Khai trên markup cũ thì bị bỏ qua</td></tr>
++                  <tr><td>inlineError</td><td>string</td><td>-</td><td>Lỗi từ nghiệp vụ truyền vào — hiện ngay</td></tr>
+                   <tr><td>hideInlineError</td><td>boolean</td><td>false</td><td>Ẩn dòng lỗi chữ, thay bằng icon đỏ + tooltip</td></tr>
+                   <tr><td>autoId</td><td>string</td><td>-</td><td>Sinh <code>data-autoId="forms-datetime-{autoId}"</code></td></tr>
+                   <tr><td>name</td><td>string</td><td>-</td><td>Tên field (tương thích form)</td></tr>
+@@ -235,6 +258,11 @@
+ <script src="../../core/js/pattern-loader.js"></script>
+ <script src="../../core/js/shell.js"></script>
+ <script src="../shared-nav.js"></script>
++<script>
++  /* Mẫu catalog #c-datetime: ô lỗi ở trạng thái touched, ô popup mở sẵn */
++  document.querySelectorAll('.dt-cat-touch').forEach(function (el) { el._touched = true; el._render(); });
++  var dtOpen = document.getElementById('dtCatOpen'); if (dtOpen) dtOpen.open();
++</script>
+ 
+ <script>
+   // Wire the page's own page-tab-zone to tab panels
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -8,6 +8,34 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `#c-datetime`: `sd-datetime` khớp catalog — icon đuôi, nút xoá, thanh tiêu đề lịch; gỡ `clearable` / `helperText`
++
++Builder: *"Tiếp tục phần Datetime"*. Đo 6 ô mẫu của catalog (rỗng · có giá trị · disabled ·
++lỗi bắt buộc · popup đang mở · viewed) và 24 mốc trong popup (thanh tiêu đề, nhãn thứ,
++đường kẻ, ô ngày, bộ đếm giờ, footer) với kit cùng nội dung. Sau khi sửa, ô và popup trùng
++toạ độ từng mốc; ảnh chụp popup đặt cạnh nhau trùng khít. Còn lại: vùng 20px dưới khung
++(chờ Builder quyết), nút "Bỏ qua" thay "Hủy" (Rule 16), vòng "hôm nay" theo ngày thật.
++
++| | Catalog | Kit trước | Kit nay |
++|---|---|---|---|
++| Icon đuôi ô | `span.cursor-pointer.sd-suffix-icon` 20px #757575 — SVG lịch-đồng-hồ riêng của component (giữ màu khi disabled) | nút icon `today`, cách mép phải 16px, xám nhạt khi disabled | khớp — chép nguyên `path` (ngoại lệ Rule 4, cùng nhóm 4 glyph của popup) |
++| Nút × | `sd-clear-btn sd-hover`, luôn có ở ô có giá trị (API không có `clearable`) | phải khai `clearable`, luôn hiện, ẩn khi `required` | khớp |
++| Thanh tiêu đề lịch trong popup | `mat-calendar-header{padding:4px 4px 0}` + lề 5% của `.mat-calendar-controls` → nút ‹ › ở y 22.8 | chỉ có đệm 4px → nút ở y 6 | khớp — **mọi thứ bên dưới hết lệch 33.6px**, popup cao 481px như catalog |
++| Ô số giờ / phút | Roboto | rơi về Arial mặc định của `<input>` | khớp |
++| Giá trị khi disabled | `--sd-black400` | `.87` đen | khớp |
++| `viewed="false"` | không xem | vẫn thành xem tĩnh (đọc `hasAttribute`) | khớp |
++
++**Gỡ (Rule 18 — catalog không có, chỉ trang preview dùng):** `clearable`, `helperText`.
++Markup cũ có hai thuộc tính này vẫn chạy — bị bỏ qua. `minDate` / `maxDate` giữ làm bí
++danh tương thích ngược của `min` / `max` (ngoại lệ 3).
++
++Icon đuôi là `span` như catalog nhưng kit thêm `role="button"`, `tabindex="0"`,
++`aria-label="Mở lịch"` và mở bằng Enter / Space — bản trước là `<button>` nên bấm Tab tới
++được; giữ lại khả năng đó (Rule 9).
++
++Preview `datetime.html`: thêm 4 mục mẫu đúng catalog ở đầu trang (có popup mở sẵn), bỏ ví
++dụ `clearable` / `helperText`, cập nhật bảng thuộc tính. 97 trang, 0 lỗi JS.
++
+ ### Changed — `#c-input`: `sd-input` khớp catalog — nút xoá, helperText trong nhãn, hậu tố, `viewed="inline"`; gỡ 6 thuộc tính catalog không có
+ 
+ Builder: *"Tiếp tục phần Input"*. Đo 15 ô mẫu của catalog (mặc định · có giá trị · focus
+--- a/_memory/known-gaps.md
++++ b/_memory/known-gaps.md
+@@ -110,6 +110,17 @@
+ | Icon `cleaning_services` / `settings` / `expand_less` | `material-icons` (filled) | `material-icons-outlined` | Rule 4 của `AGENTS.md`. Cùng vị trí, cùng cỡ; riêng `settings` nhìn rỗng ruột hơn |
+ | Icon nút đầu trong header ("xoá bộ lọc") | `cleaning_services` (cây chổi) | **`restart_alt`** (mũi tên vòng), `aria-label="Đặt lại bộ lọc"` | **QUYẾT ĐỊNH CỦA BUILDER 2026-10-12** — *"đổi icon trên external filter thành icon reset"*. Lệch catalog CÓ CHỦ Ý, đừng sửa ngược. Cỡ 16px, vị trí, màu, kiểu nút giữ đúng catalog |
+ 
++## `sd-datetime` — rà soát `#c-datetime` 2026-10-12
++
++| Chỗ | Catalog | Kit | Vì sao |
++|---|---|---|---|
++| Nút huỷ trong popup | "Hủy" | "Bỏ qua" | Rule 16 |
++| Icon đuôi | `span` không vào được bằng Tab | `span[role=button][tabindex=0]` + Enter/Space | Rule 9 — bản trước kit là `<button>`; không đổi hình |
++| Lịch | `mat-calendar` dán sẵn DOM | lịch tự dựng `.form-field-datepicker-*` | Đã ghi từ trước; nay trùng toạ độ từng mốc |
++| Mở popup khi focus ô chữ | catalog chỉ chụp trạng thái đang mở, không nói cách mở | chỉ mở bằng icon đuôi (hoặc `open()`) | Không có căn cứ để đoán |
++| `autoId` · `name` | không có trong API catalog | có | `autoId` chung nhóm "chờ Builder quyết"; `name` là ngoại lệ 1 |
++| `sd-date` (anh em) | — | vẫn dùng `sd-date-clear-btn` + `sd-date-suffix-btn` cũ | Ngoài phạm vi đợt này — tới vòng `#c-date` thì đo và đổi |
++
+ ## `sd-input` — rà soát `#c-input` 2026-10-12
+ 
+ | Chỗ | Catalog | Kit | Vì sao |

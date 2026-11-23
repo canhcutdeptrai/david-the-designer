@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-form-builder — Preview</title>
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-area">
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-form-builder"
+         data-subtitle="Trình thiết kế form của bộ Form Generic — palette, canvas 12 cột, panel thuộc tính, Xem thử bằng sd-form-render"></div>
+    <div class="content-zone">
+
+      <sd-section title="Thiết kế — đang chọn “Số hợp đồng tín dụng”">
+        <p class="fs-12 text-black400 mb-8">Dựng theo template + class <code>SdFormBuilder</code> của thư viện: bấm (hoặc kéo) component ở palette để thêm · bấm item để chọn · thanh nổi Chỉ xem / Nhân bản / Ẩn / Xóa · nút <em>Ngắt dòng</em> ở mép phải mỗi dòng · kéo pill bên phải item để co dãn (bắt theo 12 cột) · kéo tay nắm bên trái dòng để đổi thứ tự · kéo item trong dòng / sang dòng khác (tổng ≤ 12 cột) · bấm thân group để thiết kế group · <em>Xem thử</em> render bằng <code>sd-form-render</code> + Gửi · modal Xem JSON / Cấu hình biến / Cấu hình xác thực / Thiết lập biểu thức FEEL.</p>
+        <div style="height: 760px">
+          <sd-form-builder id="fb1"></sd-form-builder>
+        </div>
+        <div class="d-flex mt-8" style="gap: 8px">
+          <sd-button id="fb-get" type="light" color="primary" size="sm" title="getForm() — in cấu hình hiện tại"></sd-button>
+        </div>
+        <pre class="ds-guide-code mt-8">&lt;sd-form-builder id="fb"&gt;&lt;/sd-form-builder&gt;
+&lt;script&gt;
+  fb.formGeneric = { components: [...], variables: [...], validations: [...] };   // ≙ [formGeneric]
+  fb.addEventListener('sd-form-generic-change', e =&gt; save(e.detail.formGeneric)); // ≙ (formGenericChange)
+  fb.getForm();  // { components, variables, validations } — bản sao sâu
+&lt;/script&gt;</pre>
+      </sd-section>
+
+      <sd-section title="Cấu hình dùng chung — SD_FORM_GENERIC_CONFIGURATION">
+        <p class="fs-12 text-black400 mb-8">Trang này khai <code>window.SD_FORM_GENERIC_CONFIGURATION.form</code> (≙ token <code>SD_FORM_GENERIC_CONFIGURATION</code>): <code>templates</code> → ô “Dữ liệu mẫu” trong panel thuộc tính · <code>selections</code> → “Dữ liệu API” của Select / Radio · <code>htmls</code> → “Dữ liệu mẫu” của HTML · <code>validation.functions</code> → “Phương thức sẵn có” trong Cấu hình xác thực. Không khai thì các ô đó không hiện — đúng thư viện.</p>
+      </sd-section>
+
+      <sd-section title="Event log">
+        <pre class="ds-guide-code" id="fb-event-log">Chưa có sự kiện nào.</pre>
+      </sd-section>
+
+    </div>
+  </div>
+</div>
+<script>
+  /* ≙ provider SD_FORM_GENERIC_CONFIGURATION */
+  window.SD_FORM_GENERIC_CONFIGURATION = {
+    form: {
+      templates: [
+        { value: 'tpl-cccd', display: 'Số CCCD người vay', component: { type: 'textfield', key: 'soCCCD', label: 'Số CCCD', validate: { required: true, maxlength: 12 } } }
+      ],
+      selections: [
+        { value: 'ngan-hang', display: 'Danh sách ngân hàng', values: function () {
+            return Promise.resolve([{ value: 'VCB', display: 'Vietcombank' }, { value: 'BIDV', display: 'BIDV' }, { value: 'TCB', display: 'Techcombank' }]);
+          } }
+      ],
+      htmls: [
+        { value: 'cam-ket', display: 'Cam kết vay vốn', variables: [{ key: 'tenKhachHang', label: 'Tên khách hàng', value: 'Công ty CP One Mount' }],
+          content: '<p>Tôi, <strong>${tenKhachHang}</strong>, cam kết các thông tin trên là chính xác.</p>' }
+      ],
+      validation: {
+        functions: [
+          { value: 'han-muc', display: 'Kiểm tra hạn mức còn lại', validate: function (a) { return (a.entity.soTien > 5000000000) ? 'Số tiền vượt hạn mức còn lại' : ''; } }
+        ]
+      }
+    }
+  };
+</script>
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+<script>
+  (function () {
+    var expr = function (field, value) {
+      return { key: 'k-' + field, type: 'combinator', combinator: '&&',
+               conditions: [{ key: 'c-' + field, type: 'condition', field: field, operator: 'EQUAL', value: value }] };
+    };
+    var fb = document.getElementById('fb1');
+    /* Cấu hình mẫu = đúng mục catalog #c-form-builder */
+    fb.formGeneric = {
+      components: [
+        { id: 'c1', type: 'textfield', key: 'soHopDong', label: 'Số hợp đồng tín dụng', defaultValue: 'HĐTD-', layout: { columns: '6' },
+          validate: { required: true, maxlength: 50, pattern: '^HĐTD-\\d{4}/\\d{4}$', patternErrorMessage: 'Sai định dạng số hợp đồng' },
+          disabled: false, properties: { disabledWhenExpression: expr('trangThaiHoSo', 'DA_PHE_DUYET') } },
+        { id: 'c2', type: 'select', key: 'nganHang', label: 'Ngân hàng cho vay', layout: { columns: '6' }, validate: { required: true },
+          values: [{ value: 'VCB', label: 'Vietcombank' }, { value: 'BIDV', label: 'BIDV' }, { value: 'TCB', label: 'Techcombank' }] },
+        { id: 'c3', type: 'number', key: 'soTien', label: 'Số tiền giải ngân (VND)', layout: { columns: '4' }, validate: { required: true } },
+        { id: 'c4', type: 'datetime', key: 'ngayGiaiNgan', label: 'Ngày giải ngân dự kiến', layout: { columns: '4' },
+          properties: { visibleWhenExpression: expr('phuongThuc', 'TRA_GOP') } },
+        { id: 'c5', type: 'radio', key: 'phuongThuc', label: 'Phương thức trả nợ', layout: { columns: '4' },
+          values: [{ value: 'TRA_GOP', label: 'Trả góp' }, { value: 'CUOI_KY', label: 'Cuối kỳ' }] },
+        { id: 'g1', type: 'group', label: 'Tài sản bảo đảm', layout: { columns: '12' },
+          properties: { icon: 'verified_user', color: 'primary', visibleWhenExpression: expr('coTaiSan', true) },
+          components: [
+            { id: 'g1a', type: 'textfield', key: 'loaiTaiSan', label: 'Loại tài sản', layout: { columns: '6' } },
+            { id: 'g1b', type: 'number', key: 'giaTriDinhGia', label: 'Giá trị định giá (VND)', layout: { columns: '6' } }
+          ] },
+        { id: 'b1', type: 'break', label: 'Break', layout: { columns: '12' } },
+        { id: 'c6', type: 'upload', key: 'hoSoDinhKem', label: 'Hồ sơ đính kèm', layout: { columns: '6' }, properties: { viewed: true } },
+        { id: 'c7', type: 'checkbox', key: 'xacNhan', label: 'Tôi xác nhận thông tin hồ sơ là chính xác', layout: { columns: '6' },
+          properties: { hidden: true } }
+      ],
+      variables: [{ id: 'v1', key: 'trangThaiHoSo', label: 'Trạng thái hồ sơ' }],
+      validations: [
+        { alert: 'warning', type: 'expression', message: 'Hồ sơ chưa có tài sản bảo đảm',
+          expression: { key: 'kv', type: 'combinator', combinator: '&&', conditions: [{ key: 'cv', type: 'condition', field: 'loaiTaiSan', operator: 'NULL' }] } }
+      ]
+    };
+    fb.select('c1');
+
+    var log = document.getElementById('fb-event-log'), lines = [];
+    function push(t) { lines.unshift(new Date().toLocaleTimeString('vi-VN') + '  ' + t); log.textContent = lines.slice(0, 12).join('\n'); }
+    fb.addEventListener('sd-form-generic-change', function (e) {
+      var f = e.detail.formGeneric;
+      push('sd-form-generic-change  ' + f.components.length + ' component · ' + f.variables.length + ' biến · ' + f.validations.length + ' xác thực');
+    });
+    document.getElementById('fb-get').addEventListener('click', function () {
+      push('getForm() → ' + JSON.stringify(fb.getForm()).slice(0, 160) + '…');
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+import { chromium } from 'playwright';
+const K='file:///home/claude/kit/prototype-kit-CATALOG-1012m/design-system/preview/components/';
+const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome'});
+const ctx=await b.newContext({viewport:{width:1440,height:900}}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+const W=ms=>p.waitForTimeout(ms); const R=[]; const ok=(c,m)=>R.push((c?'ok   ':'FAIL ')+m);
+const open=async (h)=>{await h.locator('.sd-suffix-icon').last().click(); await W(200);};
+// min/max
+await p.goto(K+'date.html'); await W(800);
+let h=p.locator('sd-date[min="2026/09/01"][max="2026/09/30"]').first(); await h.scrollIntoViewIfNeeded(); await open(h);
+let info=await p.evaluate(()=>{const pn=document.querySelector('.sd-date-pane');return {lab:pn.querySelector('.mat-calendar-period-button').textContent.trim(),dis:pn.querySelectorAll('.mat-calendar-body-disabled').length,cells:pn.querySelectorAll('.mat-calendar-body-cell').length,sel:pn.querySelector('.mat-calendar-body-selected')?.textContent.trim(),act:pn.querySelector('.mat-calendar-body-active')?.getAttribute('data-day')};});
+ok(info.dis===0 && info.sel==='22','min/max tháng 9: không ô khoá, chọn 22 '+JSON.stringify(info));
+await p.locator('.sd-date-pane .mat-calendar-next-button').click(); await W(100);
+info=await p.evaluate(()=>{const pn=document.querySelector('.sd-date-pane');return {lab:pn.querySelector('.mat-calendar-period-button').textContent.trim(),dis:pn.querySelectorAll('.mat-calendar-body-disabled').length,cells:pn.querySelectorAll('.mat-calendar-body-cell').length,aria:pn.querySelectorAll('[aria-disabled=true]').length};});
+ok(info.dis===info.cells && info.dis===31,'tháng 10 ngoài max: khoá cả 31 ô '+JSON.stringify(info));
+await p.locator('.sd-date-pane .mat-calendar-body-cell').nth(3).click({force:true}); await W(150);
+ok(!!(await p.$('.sd-date-pane')) && (await h.getAttribute('value'))==='2026/09/22','bấm ô khoá: không đổi, lịch vẫn mở');
+await p.locator('.sd-date-pane .mat-calendar-previous-button').click(); await p.locator('.sd-date-pane .mat-calendar-previous-button').click(); await W(100);
+ok((await p.locator('.sd-date-pane .mat-calendar-period-button').textContent()).includes('AUG'),'‹ hai lần → AUG');
+await p.keyboard.press('Escape'); await W(100);
+// range in-range classes
+await p.goto(K+'date-range.html'); await W(800); await p.keyboard.press('Escape'); await p.mouse.click(1430,890);
+h=p.locator('sd-date-range[min="2026/10/05"]').first(); await h.scrollIntoViewIfNeeded(); await open(h);
+info=await p.evaluate(()=>[...document.querySelectorAll('.sd-date-range-pane .mat-calendar-body-disabled')].map(x=>x.dataset.day).join(','));
+ok(info.split(',').length===4+11,'range min/max: khoá 1-4 và 21-31 → '+info);
+await p.locator('.sd-date-range-pane .mat-calendar-body-cell[data-day="6"]').click(); await W(80);
+ok(!!(await p.$('.sd-date-range-pane')),'range: chọn đầu → còn mở');
+await p.locator('.sd-date-range-pane .mat-calendar-body-cell[data-day="10"]').click(); await W(150);
+ok((await h.getAttribute('from'))==='2026/10/06' && (await h.getAttribute('to'))==='2026/10/10','range 6→10: '+await h.getAttribute('from')+' '+await h.getAttribute('to'));
+await open(h);
+info=await p.evaluate(()=>{const q=s=>[...document.querySelectorAll('.sd-date-range-pane '+s)].map(x=>x.dataset.day).join(',');return {s:q('.mat-calendar-body-range-start'),e:q('.mat-calendar-body-range-end'),in:q('.mat-calendar-body-in-range')};});
+ok(info.s==='6'&&info.e==='10'&&info.in==='6,7,8,9,10','range mở lại: start/end/in-range '+JSON.stringify(info));
+await p.mouse.click(1430,890); await W(150);
+ok(!(await p.$('.sd-date-range-pane')),'range: bấm ngoài → đóng');
+// datetime cancel
+await p.goto(K+'datetime.html'); await W(800); await p.keyboard.press('Escape'); await p.mouse.click(1430,890);
+h=p.locator('sd-datetime[value="2026/09/22 10:00"]').first(); await h.scrollIntoViewIfNeeded(); await open(h);
+await p.locator('.sd-datetime-pane .mat-calendar-body-cell[data-day="25"]').click(); await W(80);
+ok(!!(await p.$('.sd-datetime-pane')),'datetime: chọn ngày → chưa đóng (chờ Áp dụng)');
+const selNow=await p.evaluate(()=>document.querySelector('.sd-datetime-pane .mat-calendar-body-selected')?.textContent.trim());
+ok(selNow==='25','datetime: ô chọn tạm = 25 ('+selNow+')');
+await p.locator('.sd-datetime-pane .footer-actions > .btn-text').click(); await W(150);
+ok((await h.getAttribute('value')).startsWith('2026/09/22') && !(await p.$('.sd-datetime-pane')),'datetime: Bỏ qua → giữ '+await h.getAttribute('value'));
+// chip calendar toggle off
+await p.goto(K+'chip-calendar.html'); await W(800); await p.keyboard.press('Escape'); await p.mouse.click(1430,890);
+h=p.locator('sd-chip-calendar:not([disabled]):not([viewed])').first(); await h.scrollIntoViewIfNeeded();
+const v0=await h.getAttribute('value'); await h.locator('input').first().click(); await W(200);
+const nsel=await p.evaluate(()=>document.querySelectorAll('.sd-chip-calendar-pane .sd-chip-calendar-selected-date').length);
+ok(nsel===v0.split(',').length,'chip-cal: ô tô chọn = '+nsel);
+await p.locator('.sd-chip-calendar-pane .mat-calendar-body-cell[data-day="12"]').click(); await W(150);
+ok(!(await h.getAttribute('value')).includes('2026/10/12'),'chip-cal: bấm lại ngày đã chọn → bỏ: '+await h.getAttribute('value'));
+ok(!!(await p.$('.sd-chip-calendar-pane')),'chip-cal: vẫn mở sau khi bấm ngày');
+await p.mouse.click(1430,890); await W(150);
+ok(!(await p.$('.sd-chip-calendar-pane')),'chip-cal: bấm ngoài → đóng');
+console.log(R.join('\n')); console.log('errs',errs); await b.close();

@@ -1,0 +1,210 @@
+--- a/design-system/sd-components/sd-components.js
++++ b/design-system/sd-components/sd-components.js
+@@ -55,6 +55,60 @@
+     el.textContent = name;
+     return el;
+   }
++  /* ── Icon theo NGỮ CẢNH catalog (Builder 2026-10-13: "những phần icon theo
++     Catalog luôn nhé"). Catalog vẽ CÙNG một markup khác nhau tuỳ mục:
++       · `sd-button` không khai `fontSet`: mục `#c-button`, `#c-tree`,
++         `#c-import-excel`, `#c-upload-file`, `#c-section` → viền (outlined);
++         mục `#c-table`, `#c-modal`, `#c-side-drawer`, `#c-quick-action`,
++         `#c-form-generic` → ĐẶC (material-icons).
++       · dạng lớp của `<mat-icon>`: trong `#c-table` là `mat-icon … mat-ligature-font`
++         (không notranslate / mat-icon-no-color); trong `#c-form-generic` là dạng
++         rút gọn `mat-icon …` (không cả mat-ligature-font).
++     Kit dựng icon theo mục của chính component, rồi bộ quan sát dưới đây chỉnh lại
++     theo vật chứa — đúng hình catalog ở từng ngữ cảnh. Chỉ đổi lớp, không đổi
++     kích thước (hai bộ font cùng hộp). */
++  var SD_ICON_OUTLINED_CTX = 'sd-tree, sd-import-excel, sd-upload-file';
++  var SD_ICON_FILLED_CTX = 'sd-table, sd-form-render, sd-modal, sd-side-drawer, sd-quick-action';
++  var SD_BTN_ICON_CLS = ['c-icon-prefix', 'c-icon-suffix', 'c-action-indicator', 'sd-action-icon'];
++  function sdIconContextFix(icon) {
++    var cl = icon.classList;
++    if (!cl.contains('mat-icon')) return;
++    /* 1. Font của icon trong sd-button (khi trang không tự khai fontSet) */
++    var isBtnIcon = SD_BTN_ICON_CLS.some(function (c) { return cl.contains(c); });
++    if (isBtnIcon) {
++      var btnHost = icon.closest('sd-button');
++      if (btnHost && !btnHost.hasAttribute('fontset') && !btnHost.hasAttribute('fontSet')) {
++        var filled = !icon.closest(SD_ICON_OUTLINED_CTX) && !!icon.closest(SD_ICON_FILLED_CTX);
++        if (filled && cl.contains('material-icons-outlined')) {
++          cl.remove('material-icons-outlined'); cl.add('material-icons');
++        }
++      }
++    }
++    /* 2. Dạng lớp theo mục chứa */
++    var form = icon.closest('sd-table') ? 'lig' : (icon.closest('sd-form-render') ? 'short' : '');
++    if (!form) return;
++    cl.remove('notranslate');
++    cl.remove('mat-icon-no-color');
++    if (form === 'lig') cl.add('mat-ligature-font'); else cl.remove('mat-ligature-font');
++    if (icon.getAttribute('role') === 'img') icon.removeAttribute('role');
++    icon.removeAttribute('data-mat-icon-type');
++  }
++  function sdIconContextScan(root) {
++    if (!root || root.nodeType !== 1) return;
++    if (root.tagName === 'MAT-ICON') sdIconContextFix(root);
++    var list = root.getElementsByTagName('mat-icon');
++    for (var i = 0; i < list.length; i++) sdIconContextFix(list[i]);
++  }
++  if (typeof MutationObserver !== 'undefined' && !window.__sdIconCtxObs) {
++    window.__sdIconCtxObs = new MutationObserver(function (muts) {
++      for (var i = 0; i < muts.length; i++) {
++        var added = muts[i].addedNodes;
++        for (var j = 0; j < added.length; j++) sdIconContextScan(added[j]);
++      }
++    });
++    window.__sdIconCtxObs.observe(document.documentElement, { childList: true, subtree: true });
++    document.addEventListener('DOMContentLoaded', function () { sdIconContextScan(document.body); });
++  }
+   function escAttr(s) {
+     /* Ép về chuỗi trước: `sd-form-render` truyền cả số (`maxSize: 10`,
+        `item.id: 1`) vào đây và `(10 || '').replace` thì nổ — dẫm 2026-10-11. */
+@@ -7917,8 +7971,10 @@
+                   '<div class="c-overlay-text">+' + (images.length - maxOfImage) + '</div></div>';
+         }
+         html += '<div class="c-action">' +
+-                '<button type="button" class="c-zoom" aria-label="' + escAttr(sdUploadT('previewTitle')) + '">' +
+-                '<mat-icon role="img" class="mat-icon notranslate material-icons-outlined mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">zoom_in</mat-icon></button></div>';
++                /* catalog: `mat-icon.c-zoom` tự bấm được (không bọc nút). Kit thêm
++                   role/tabindex/aria-label để bấm Tab tới được (Rule 9). */
++                '<mat-icon class="mat-icon notranslate c-zoom material-icons-outlined mat-ligature-font mat-icon-no-color"' +
++                ' role="button" tabindex="0" aria-label="' + escAttr(sdUploadT('previewTitle')) + '" data-mat-icon-type="font" data-zoom="">zoom_in</mat-icon></div>';
+         if (!disabled) {
+           html += '<button type="button" class="c-btn-remove" aria-label="' + escAttr(sdUploadT('remove')) + '">' +
+                   '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">close</mat-icon></button>';
+@@ -7940,8 +7996,9 @@
+                   sdUploadFormatKb(document_.fileSize) + 'KB</span>';
+         }
+         if (!disabled) {
+-          html += '<button type="button" class="c-close" aria-label="' + escAttr(sdUploadT('remove')) + '">' +
+-                  '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">close</mat-icon></button>';
++          /* catalog: `mat-icon.c-close` là con trực tiếp của hàng tài liệu */
++          html += '<mat-icon class="mat-icon notranslate c-close material-icons mat-ligature-font mat-icon-no-color"' +
++                  ' role="button" tabindex="0" aria-label="' + escAttr(sdUploadT('remove')) + '" data-mat-icon-type="font">close</mat-icon>';
+         }
+         html += '</div>';
+       });
+@@ -8011,9 +8068,13 @@
+         });
+       });
+       this.querySelectorAll('.c-document-container .c-close').forEach(function (btn) {
+-        btn.addEventListener('click', function () {
++        function remove() {
+           var row = btn.closest('.c-document-container');
+           self.onRemove(self._documentAt(Number(row.getAttribute('data-doc-index'))));
++        }
++        btn.addEventListener('click', remove);
++        btn.addEventListener('keydown', function (e) {
++          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); remove(); }
+         });
+       });
+       this.querySelectorAll('.c-zoom, .c-overlay-count').forEach(function (btn) {
+--- a/design-system/core/styles/sd-tokens.css
++++ b/design-system/core/styles/sd-tokens.css
+@@ -7004,21 +7004,14 @@
+ }
+ 
+ /* Nút phóng to */
++/* catalog: luật đặt thẳng trên `mat-icon.c-zoom` (không có nút bọc) — 2026-10-13 */
+ sd-upload-file .c-zoom {
+   height: 18px;
+   width: 18px;
+   font-size: 18px;
+   cursor: pointer;
+   color: #fff;
+-  padding: 0;
+-  border: 0;
+-  background: transparent;
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+ }
+-sd-upload-file .c-zoom .material-icons-outlined ,
+-sd-upload-file .c-zoom .mat-icon { font-size: 18px; }
+ 
+ /* Spinner lúc đang tải — catalog: <mat-spinner> 18px (nét 2px, màu primary,
+    không vệt nền) là khối con trực tiếp của c-img-container, nằm sát mép trái
+@@ -7084,24 +7077,17 @@
+ }
+ sd-upload-file .c-document-container .c-file-name:hover { text-decoration: underline; }
+ /* Nút xoá trong hàng tài liệu: catalog để 16px bo TRÒN, không phải 32px bo 6px. */
++/* catalog: luật đặt thẳng trên `mat-icon.c-close` (không có nút bọc) — 2026-10-13 */
+ sd-upload-file .c-document-container .c-close {
+   margin-left: auto;
+   cursor: pointer;
+   border-radius: 50%;
+   flex-shrink: 0;
+-  padding: 0;
+-  border: 0;
+-  background: transparent;
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+   font-size: 16px;
+   width: 16px;
+   height: 16px;
+   color: var(--sd-black400);
+ }
+-sd-upload-file .c-document-container .c-close .material-icons-outlined ,
+-sd-upload-file .c-document-container .c-close .mat-icon { font-size: 16px; }
+ sd-upload-file .c-document-container .c-close:hover { background-color: var(--sd-black200); }
+ 
+ /* --- Drag & drop sắp xếp lại --- */
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -126,7 +126,7 @@
+ 2. **Không dùng màu ngoài token** — mọi màu phải từ CSS variables
+ 3. **Không dùng font ngoài** Roboto + JetBrains Mono + Material Icons Outlined. **Mono font (`font-family-mono`) chỉ dùng cho dữ liệu dạng code** (JSON, API response, log...) — **không dùng cho** ID, mã, số tiền, datetime, hay bất kỳ business data nào. **Không hardcode `style="font-family:..."` trên element** — dùng CSS class
+ 4. **Không dùng inline SVG cho icon** — luôn dùng `<span class="material-icons-outlined mi-{size}">name</span>` (KHÔNG dùng `material-icons` filled)
+-   - **Phạm vi:** Rule 4 áp cho icon AI tự viết trong HTML trang (prototype, pattern). **Icon bên trong component `sd-*` / `bpm-*` thì theo đúng catalog**: thẻ `<mat-icon>` với đủ lớp của catalog, đặc (`material-icons`) hay viền (`material-icons-outlined`) đúng như catalog vẽ — dựng qua `sdMatIconHtml()` / `sdMatIconEl()` trong `sd-components.js`. Builder chốt 2026-10-13: *"đổi một lượt cho cả kit → ok"* (trước đó từng chỗ: `bpm-kpi-card`, nút xoá chip, `sd-section`, `sd-tree`, `sd-stepper`). Đừng sửa ngược các icon đó về outlined.
++   - **Phạm vi:** Rule 4 áp cho icon AI tự viết trong HTML trang (prototype, pattern). **Icon bên trong component `sd-*` / `bpm-*` thì theo đúng catalog**: thẻ `<mat-icon>` với đủ lớp của catalog, đặc (`material-icons`) hay viền (`material-icons-outlined`) đúng như catalog vẽ — dựng qua `sdMatIconHtml()` / `sdMatIconEl()` trong `sd-components.js`. Builder chốt 2026-10-13: *"đổi một lượt cho cả kit → ok"* (trước đó từng chỗ: `bpm-kpi-card`, nút xoá chip, `sd-section`, `sd-tree`, `sd-stepper`). Đừng sửa ngược các icon đó về outlined. Icon của `sd-button` (khi không khai `fontSet`) còn đổi **theo vật chứa** như catalog — đặc trong `sd-table` / `sd-modal` / `sd-side-drawer` / `sd-quick-action` / `sd-form-render`, viền ở chỗ khác — do bộ quan sát `sdIconContextFix()` lo; Builder 2026-10-13: *"những phần icon theo Catalog luôn nhé"*.
+ 5. **Không thêm breadcrumb / topbar** — OMEU không dùng
+ 6. **Không dùng gradient, glassmorphism, decorative animations**
+ 7. **Không skip shell** — mọi trang phải có sidebar + page-header
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -8,6 +8,27 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — Icon theo NGỮ CẢNH catalog: `sd-button` trong bảng / modal / drawer / thanh thao tác, icon tự bấm của upload
++
++Builder: *„những phần icon theo Catalog luôn nhé“*. Hai chỗ còn khác ở lượt icon trước, nay theo catalog:
++
++- **Icon `sd-button` đổi theo vật chứa** (khi nút không khai `fontSet`) — catalog vẽ cùng markup
++  `<sd-button prefixIcon="…">` là **viền** trong `#c-button` / `#c-tree` / `#c-import-excel` /
++  `#c-upload-file` / `#c-section`, nhưng **đặc** trong `#c-table` / `#c-modal` / `#c-side-drawer` /
++  `#c-quick-action` / `#c-form-generic`. Kit thêm bộ quan sát DOM `sdIconContextFix()` (một
++  `MutationObserver` toàn trang): nút nằm trong nhóm thứ hai → `material-icons`; nằm trong
++  `sd-tree` / `sd-import-excel` / `sd-upload-file` → giữ viền (thanh thao tác của cây là viền như catalog,
++  của bảng là đặc). Cùng bộ quan sát chỉnh **dạng lớp** của `<mat-icon>` theo mục chứa: trong `sd-table`
++  là `mat-icon … mat-ligature-font`, trong `sd-form-render` là dạng rút gọn — đúng DOM của hai mục đó.
++- **Upload: `mat-icon.c-zoom` và `mat-icon.c-close` tự bấm được như catalog**, bỏ `<button>` bọc ngoài;
++  thêm `role="button"` `tabindex="0"` `aria-label` + Enter/Space để vẫn bấm Tab tới được (Rule 9).
++  CSS bỏ các khai báo chỉ dành cho nút (đệm, viền, nền, flex).
++
++Đo lại: 26 bộ so catalog **không đổi một số nào**; vị trí mọi icon trên 97 trang trùng trước/sau (riêng
++trang quick action đã dựng lại ở lượt trước); 41 icon section/tree/stepper vẫn trùng catalog. 0 lỗi JS.
++**Thấy được trên prototype:** nút có icon trong bảng, modal, side drawer và thanh thao tác hàng loạt nay
++icon đặc.
++
+ ### Verified — `#c-quick-action`: `sd-quick-action` đã khớp catalog — chỉ dựng lại trang preview
+ 
+ Builder: *„Tiếp tục phần Quick action“*. Đo 2 mẫu catalog (thông điệp + hành động · chỉ thông điệp)
+--- a/_memory/known-gaps.md
++++ b/_memory/known-gaps.md
+@@ -33,9 +33,9 @@
+ 
+ | Chỗ | Catalog | Kit | Vì sao |
+ |---|---|---|---|
+-| Icon nằm trong nút | nhiều chỗ `mat-icon` tự bấm được (`c-zoom`, `c-close` của upload, `today`…) | `mat-icon` nằm trong `<button>` (lớp vai trò ở nút) | Rule 9 — bấm Tab tới được. Lớp `c-zoom`/`c-close` để ở nút để CSS không áp hai lần |
+-| `sd-button` trong mục khác | `#c-button`: viền; `#c-table` / `#c-modal` / `#c-side-drawer` / `#c-quick-action` / `#c-form-generic`: ĐẶC với cùng markup | viền | **Catalog tự mâu thuẫn**; kit theo mục của chính component (`#c-button`) |
+-| Biến thể chữ của cùng một icon giữa các mục | `#c-table` dùng dạng `mat-ligature-font` cho ô lọc, `#c-select` dạng rút gọn | mỗi component theo mục của chính nó | Như trên |
++| ~~Icon nằm trong nút~~ **ĐÃ ĐỔI 2026-10-13** | `mat-icon.c-zoom` / `mat-icon.c-close` của upload tự bấm được | như catalog: `mat-icon` mang lớp, không bọc nút; thêm `role="button"` `tabindex="0"` `aria-label` (Rule 9, không đổi hình) | Builder: *"những phần icon theo Catalog luôn nhé"*. Các nút × của ô nhập vẫn là `button.sd-clear-btn` — đúng catalog |
++| ~~`sd-button` trong mục khác~~ **ĐÃ ĐỔI 2026-10-13** | `#c-button` / `#c-tree` / `#c-import-excel` / `#c-upload-file` / `#c-section`: viền; `#c-table` / `#c-modal` / `#c-side-drawer` / `#c-quick-action` / `#c-form-generic`: ĐẶC với cùng markup | **theo vật chứa, y như catalog** — bộ quan sát `sdIconContextFix()` đổi font khi nút không khai `fontSet` | Builder: *"icon theo Catalog luôn"*. Hệ quả: nút có icon trong bảng / modal / drawer / thanh thao tác của prototype nay icon đặc |
++| ~~Biến thể lớp của cùng một icon giữa các mục~~ **ĐÃ ĐỔI 2026-10-13** | trong `#c-table`: `mat-icon … mat-ligature-font`; trong `#c-form-generic`: rút gọn `mat-icon …` | theo vật chứa (cùng bộ quan sát) | Như trên |
+ | Icon chỉ kit có | lịch (‹ ›), cuộn tab, phân trang / sắp xếp bảng: catalog vẽ bằng SVG / CSS | glyph font | Rule 4 (không inline SVG) — đã ghi từ trước |
+ | Không có mẫu catalog | toast, hover-copy, toolbar editor (SVG của CKEditor), form-builder (`.msi`), data-state | giữ như cũ | Catalog không dựng icon ở các mục này |
+ | `fit_screen` | font đặc của catalog thiếu glyph — demo cũng vỡ | cùng font, cùng vỡ khi offline | Font Google trực tuyến có glyph này |

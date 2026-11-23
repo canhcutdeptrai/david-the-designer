@@ -1,0 +1,288 @@
+# KIT-HANDOFF 2026-10-15 — đưa kit cho người khác áp vào prototype của họ: migrate-prototype.mjs quét đệ quy thư mục, tự viết prototypes/_migrate-report.md (dòng ! từng trang + mã trang bám DOM bên trong component cũ), AGENTS Rule 21, README mục áp kit 4 bước
+# Builder: 'Tôi không muốn chỉ giải quyết trên file này, tôi muốn giờ làm sao để tôi đưa bộ kit này cho người khác thì họ cũng vẫn dùng được mà không gặp vấn đề'
+# 5 file — xem danh sách 'diff' bên dưới
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/KIT-HANDOFF-2026-10-15.patch (sau LEGACY-DOM-2026-10-15.patch)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/AGENTS.md b/AGENTS.md
+--- a/AGENTS.md	2026-10-14 18:11:34.835096715 +0000
++++ b/AGENTS.md	2026-10-15 01:36:45.253409276 +0000
+@@ -148,7 +148,7 @@
+     - Mọi utility sd-core đều `!important` (trừ `T*`, `grid-cols-*`, `col-*`). Hệ quả: phần tử có `d-flex` / `d-block` thì **không ẩn được** bằng `style.display = 'none'` hay `[hidden]` — muốn bật/tắt bằng JS thì dùng bí danh `flex` / `hidden` của kit (không `!important`) hoặc thêm/bớt chính class `d-none`.
+     - Chữ phụ màu xám: `text-black400` (**không phải** `text-secondary` — trong sd-core đó là màu `--sd-secondary` #212121 gần đen). Cỡ chữ: `T12R`, `T14M`… hoặc `fs-12`; đậm: `font-weight-medium` (500) / `font-weight-bold` (600). Bo góc `rounded-8`, viền `border` / `border-bottom`, bóng `mat-elevation-z1…z8`.
+     - Nền trang là **reboot của sd-core**: `p` có lề dưới 16px, `h1–h6` 8px, `ul/ol` thụt 40px + lề dưới 16px, `label` lề dưới 8px, link `#007bff`. Muốn sát thì khai `mb-0` / `m-0` / `pl-0`.
+-    - Trang dựng bằng kit **cũ** (trước 2026-10-13, reset `*{margin:0;padding:0}`, khoảng cách Tailwind ×4) → **không sửa tay**: chạy `node ai-instructions/tools/migrate-prototype.mjs prototypes/<feature>/` (xem `generate.md` Mode C bước 1b). Công cụ đổi cả markup tự dựng sang component Core (`ai-instructions/migrate-components.md`); trang nâng bằng bản công cụ trước 2026-10-15 mà còn dòng `! … id của bản gốc không còn` → chạy lại với `--redo`. Trang kit cũ chưa nâng tự hiện hộp nhắc ở góc phải dưới. Trang mới không nạp `legacy-reset.css` / `legacy-shim.js`.
++    - Trang dựng bằng kit **cũ** (trước 2026-10-13, reset `*{margin:0;padding:0}`, khoảng cách Tailwind ×4) → **không sửa tay**: chạy `node ai-instructions/tools/migrate-prototype.mjs prototypes/` (quét mọi thư mục con; một feature: `prototypes/<feature>/`), rồi xử lý `prototypes/_migrate-report.md` (xem `generate.md` Mode C bước 1b). Công cụ đổi cả markup tự dựng sang component Core (`ai-instructions/migrate-components.md`); trang nâng bằng bản công cụ trước 2026-10-15 mà còn dòng `! … id của bản gốc không còn` → chạy lại với `--redo`. Trang kit cũ chưa nâng tự hiện hộp nhắc ở góc phải dưới. Trang mới không nạp `legacy-reset.css` / `legacy-shim.js`.
+ 16. **Cancel button label** — nút hủy/thoát chỉ được dùng đúng 1 trong 3 label: **"Bỏ qua"**, **"Thoát"**, **"Quay lại"**. **Không dùng** "Hủy", "Huỷ", "Cancel", "Đóng" hay bất kỳ biến thể nào khác.
+ 17. **Cụm nút trong hộp thoại phân cấp ba bậc, cùng `color="primary"`** - bậc 1 hành động chính dùng `type="fill"`, bậc 2 hành động phụ trong cùng cụm CTA dùng `type="light"`, bậc 3 thoát ra không làm gì (Bỏ qua / Thoát / Quay lại) dùng `type="link"`. Nút thoát **không dùng** `light`/`outline` vì nó nổi ngang hàng các bậc trên; `link color="secondary"` thì chữ quá mờ nhìn như bị disable, nên luôn là `type="link" color="primary"`. **Ngoại lệ — nút huỷ MẶC ĐỊNH của `SdConfirmService`** theo thư viện / catalog `#c-confirm`: `light` · `secondary`, chữ vẫn "Bỏ qua" (Builder 2026-10-13: *"Kiểu catalog, giữ chữ Bỏ qua"*). Rule 17 áp cho hộp thoại AI tự dựng trên trang.
+ 18. **KHÔNG tự thêm thứ mốc chuẩn không có.** Nếu `@sd-angular/core` 19.0.10 không có một slot / biến thể / attribute, thì **kit cũng không có**. Thấy kit đang có mà catalog không có thì mặc định là **GỠ**, không phải "ghi known-gaps rồi giữ lại".
+@@ -171,6 +171,16 @@
+     trường. Mẫu + quy tắc: `ai-instructions/dev-spec.md`. Phần `sd-*` chuẩn KHÔNG chép vào spec — dev dịch bằng
+     `ai-instructions/html-to-angular.md` (+ bảng tra từng component `html-to-angular-api.md`, tự sinh từ `.d.ts` 19.0.10).
+ 
++21. **Không bám vào DOM BÊN TRONG `sd-*`** (2026-10-15). JS / CSS của trang chỉ dùng **thuộc tính, sự kiện, method công khai**
++    của component (bảng API trong `design-system/components/*.md`). Không querySelector / viết CSS vào phần bên trong (`mat-*`, `c-*`,
++    `.sd-form-field`, `input` bên trong `sd-input`, danh sách chọn của `sd-select`, ô lọc / chân phân trang của `sd-table`…), không
++    đếm ô bảng theo vị trí (`td:nth-child`, `cells[n]`, `tbody tr` thứ i) — dùng `columns` (`transform` / `useBadge` / `type`), `data`,
++    sự kiện `sd-table-command`. Cần thứ component không có → báo thiếu năng lực (Rule 0b), đừng vá vào ruột component.
++
++    Lý do: DOM bên trong đổi mỗi lần kit đồng bộ theo catalog. Prototype thật `design-test` (2026-10-15) mất cột Mã, dòng lấy nhầm dữ
++    liệu, bộ lọc chọn nhiều / phân trang tự viết thôi chạy — đều vì mã trang bám vào DOM bên trong của kit cũ. `migrate-prototype.mjs`
++    báo các chỗ đó vào `prototypes/_migrate-report.md`.
++
+ > **Rà soát với catalog thì đọc `reviews/ds-mirror/RA-SOAT-2-CHIEU.md` trước.**
+ > Ở đó mô tả **ba phép** phải chạy đủ (catalog→kit theo giá trị · catalog→kit theo
+ > sự tồn tại · **kit→catalog**) và cách chạy
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-15 01:10:15.865474183 +0000
++++ b/CHANGELOG.md	2026-10-15 01:40:54.570083488 +0000
+@@ -8,6 +8,23 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Added — đưa kit cho người khác áp vào prototype của họ: một lệnh + một báo cáo (Builder 2026-10-15: *„Tôi không muốn chỉ giải quyết trên file này, tôi muốn giờ làm sao để tôi đưa bộ kit này cho người khác thì họ cũng vẫn dùng được mà không gặp vấn đề“*)
++
++- **Một lệnh cho cả thư mục**: `node ai-instructions/tools/migrate-prototype.mjs prototypes/` nay quét **đệ quy** mọi trang (bỏ
++  `_pre-migrate/`, thư mục ẩn, `design-system/`). Trước chỉ lấy file ngay trong thư mục — chạy `prototypes/` là chỉ nâng `index.html`.
++  Kiểm: chạy một lần trên design-test ra đúng từng byte như chạy từng feature.
++- **`prototypes/_migrate-report.md`** (công cụ tự viết): mọi dòng `!` theo từng trang + mục **"Mã dùng chung bám vào DOM bên trong
++  component kit cũ"** — công cụ quét JS / CSS trong trang và file `.js` / `.css` cục bộ trang nạp, tìm selector vào ruột component cũ
++  (`.sd-dropdown-item`, `input.sd-input`, `.sd-form-field`, `.c-checkbox-input`, ô lọc / chân phân trang sd-table cũ, đầu sd-section cũ),
++  báo file + dòng + cách viết theo API. Không tự sửa (viết lại logic trang là việc của người dựng — không chắc thì không sửa).
++  design-test: 56 file dùng chung bị báo (41 JS · 15 CSS, mỗi vai một bản sao — multi-filter.js, table-filter.js, du-lieu-chu-form.js, ds-gaps.css…).
++- **AGENTS Rule 21 — không bám vào DOM bên trong `sd-*`**: JS / CSS của trang chỉ dùng thuộc tính / sự kiện / method công khai, không
++  đếm ô bảng theo vị trí. Đây là nguyên nhân gốc của các lỗi trên prototype thật; giữ rule thì lần đồng bộ catalog sau không vỡ lại.
++- **README → "Cập nhật toolkit — và áp kit vào prototype có sẵn"** viết lại thành 4 bước (thay file kit giữ `prototypes/` · chạy một lệnh ·
++  đọc `_migrate-report.md` · mở trang kiểm, hộp vàng = chưa nâng). Bản cũ ghi *"Các trang prototype hiện có không cần sửa"* — sai từ
++  2026-10-13, chính là đường dẫn tới các lỗi Builder gặp. Yêu cầu Node.js ghi thêm cho việc nâng trang.
++- Bản vá: `reviews/ds-mirror/KIT-HANDOFF-2026-10-15.patch`.
++
+ ### Fixed — chạy trên prototype THẬT của Builder (`design-test.zip`, 110 trang, 4 vai): cột Mã biến mất, dòng lệch dữ liệu, inform warning lệch Core (Builder 2026-10-15: *„đây là mục prototype thật đang bị các lỗi layout khi áp dụng kit mới“*)
+ 
+ - **Cách tìm**: dựng lại bản gốc từ `_pre-migrate/` (trang Builder đã nâng bằng công cụ v4), mở từng trang ba bản (kit 12/10 · kit
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/README.md b/README.md
+--- a/README.md	2026-10-14 14:01:22.415545800 +0000
++++ b/README.md	2026-10-15 01:36:45.252811068 +0000
+@@ -232,8 +232,8 @@
+   Code CLI, hoặc IDE extension (VS Code, JetBrains)
+ - Trình duyệt web (Chrome, Firefox, Edge — không cần kết nối internet để xem
+   prototype)
+-- **Node.js** — chỉ cần khi dùng tính năng export (đóng gói prototype thành 1
+-  file HTML)
++- **Node.js** — cần khi export (đóng gói prototype thành 1 file HTML) và khi nâng
++  prototype dựng bằng kit cũ (`ai-instructions/tools/migrate-prototype.mjs`)
+ 
+ ### Thiết lập
+ 
+@@ -244,24 +244,48 @@
+ 
+ ---
+ 
+-## Cập nhật toolkit
++## Cập nhật toolkit — và áp kit vào prototype có sẵn
+ 
+-Khi PD gửi version mới của toolkit, BA chỉ cần giữ lại thư mục `prototypes/` của
+-mình. Toàn bộ còn lại thay bằng bản PD gửi:
++Dùng khi nhận version mới của kit, hoặc khi đưa kit này cho người khác áp vào prototype họ đã dựng bằng kit cũ.
++Kit từ 2026-10-13 đổi nền theo **Core UI catalog** (`@sd-angular/core` 19.0.10): thang khoảng cách, reset, DOM bên trong
++component. Trang dựng bằng kit cũ **phải chạy công cụ nâng** — mở thẳng bằng kit mới sẽ lệch khoảng cách, mất cột bảng, lệch
++dòng, hộp thông báo lệch Core.
+ 
++**Bước 1 — thay file kit, giữ prototype.** Sao lưu cả thư mục trước.
++
++```
++Giữ lại:    prototypes/                  ← prototype của bạn
++            _memory/session-handoff.md   ← (nếu có)
++
++Thay hết:   design-system/   ai-instructions/   .claude/skills/
++            AGENTS.md   CLAUDE.md   CHANGELOG.md   README.md
++            _memory/lessons.md   _memory/known-gaps.md
+ ```
+-Giữ lại:    prototypes/          ← prototype của bạn, không đụng vào
+ 
+-Thay hết:   design-system/
+-            ai-instructions/
+-            CLAUDE.md
+-            CHANGELOG.md
+-            ROADMAP.md
+-            README.md
++**Bước 2 — chạy công cụ nâng một lần cho cả thư mục** (cần Node.js, không cần cài thêm gì):
++
+ ```
++node ai-instructions/tools/migrate-prototype.mjs prototypes/ --dry    # xem trước, chưa ghi
++node ai-instructions/tools/migrate-prototype.mjs prototypes/          # nâng — quét MỌI thư mục con
++```
++
++- Bản gốc từng trang được chép vào `_pre-migrate/` cạnh trang. Chạy lại không sao — trang đã nâng không bị đổi lần hai.
++- Prototype **đã nâng bằng bản công cụ cũ** (trước 2026-10-15) và **chưa sửa tay** sau đó → chạy thêm `--redo` để nâng lại từ bản gốc
++  bằng công cụ mới: `node ai-instructions/tools/migrate-prototype.mjs prototypes/ --redo`.
++- Trang **xuất ra 1 file** (export) không phụ thuộc kit — công cụ tự bỏ qua.
++
++**Bước 3 — đọc `prototypes/_migrate-report.md`.** Mỗi dòng là chỗ công cụ không tự sửa vì không chắc, kèm cách sửa:
++
++- *Từng trang*: markup tự dựng chưa đổi được (bảng JS đổ dòng, modal dựng bằng JS…).
++- *Mã dùng chung bám vào DOM bên trong component kit cũ*: file `.js` / `.css` của prototype querySelector / CSS vào phần BÊN TRONG
++  `sd-*` cũ (`.sd-dropdown-item`, `input.sd-input`, `.sd-form-field`, ô lọc / chân bảng cũ…). Giao diện không vỡ, nhưng bộ lọc / phân
++  trang / chọn nhiều tự viết đó thôi chạy — viết lại theo API công khai của component. Có thể nhờ AI: *"sửa các mục trong
++  prototypes/_migrate-report.md"*.
++
++**Bước 4 — mở trang kiểm tra.** Trang dựng bằng kit cũ mà chưa nâng sẽ hiện **hộp vàng ở góc phải dưới** nhắc chạy công cụ.
+ 
+-Các trang prototype hiện có **không cần sửa** — pattern system tự áp dụng styles
+-mới khi tải lại trình duyệt.
++Để lần cập nhật sau không phải sửa lại: **JS / CSS của prototype chỉ dùng thuộc tính, sự kiện, method công khai của `sd-*`**
++(AGENTS Rule 21) — không bám vào DOM bên trong component, không đếm ô bảng theo vị trí.
+ 
+ ---
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-15 01:10:15.867234848 +0000
++++ b/_memory/known-gaps.md	2026-10-15 01:40:19.396933474 +0000
+@@ -22,7 +22,7 @@
+ | 2026-10-11 | **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]** `sd-stepper` — nhãn bước đang làm | Catalog **có** rule tô nhãn bước đang làm màu brand + 600, nhưng rule `.mat-step-label-active` đứng trước lại nhiều class hơn nên luôn thắng → nhãn bước đang làm KHÔNG khác các bước khác. Kit chép lại đúng tương quan điểm đó. **Builder nên xem lại:** bước đang làm giờ chỉ phân biệt bằng vòng tròn (số, nền đặc), nhãn thì giống hệt bước khác | Đây là hành vi THẬT của catalog (nhiều khả năng là lỗi thứ tự rule của thư viện). Muốn trả lại: nâng điểm rule `sd-stepper .sd-stepper__label--selected` |
+ | 2026-10-14 | Kit có, `.d.ts` 19.0.10 không có (phát hiện khi sinh `html-to-angular-api.md`) | `sd-select showSelectAll` / `hideReadError` · `sd-input-number clearable` · `sd-radio helperText` · `sd-date-range inlineError` · `autoId` trên `sd-label` / `sd-view` / `sd-history` / `sd-import-excel` / `sd-form-builder` / `sd-document-builder` / `sd-header-footer-builder` · `sd-table addable` / `filterRequired` / cột number `option.precision`. Ngược lại `.d.ts` CÓ mà kit đã gỡ theo bảng API catalog: `sd-tab-group disableRipple` / `autoId`; `sd-side-drawer` 19.0.10 chỉ có `[sdFooter]` (không `sdFooterLeft/Right`) | Rule 18 đo theo **bảng API catalog**, còn `.d.ts` là mã thật — hai nguồn lệch nhau. Chờ Builder chọn nguồn khi rà Rule 18. Bảng dịch đã ghi "Kit-only — bỏ khi dịch" |
+ | 2026-10-15 | **`sd-table[data-legacy-dom]` — chế độ trang cũ** | Có cột "#" (catalog không có), không có `tr.c-detail-row`, không cắt trang phía client, giữ ô trang tự sửa khi vẽ lại. Chỉ trang cũ (công cụ gắn). Trang muốn về đúng Core: bỏ CSS / JS đếm ô theo vị trí (`nth-child`, `cells[n]`, `tbody tr` thứ i) rồi gỡ thuộc tính | Rule 18 ngoại lệ 3; gỡ khi không còn prototype cũ |
+-| 2026-10-15 | **Mã riêng của prototype dựa vào DOM bên trong component kit cũ** (design-test: `multi-filter.js`, `table-filter.js`, `treasury-request.js`, `tr-table-bulk.js`, `theo-doi.html`, chân bảng tự điều khiển) | Selector `.sd-dropdown-item`, `input.sd-input`, `.sd-form-field`, `.c-checkbox-input`, `th.c-has-filter .c-th-filter`, `.c-paginator-center .T12M` không còn (DOM nay là Material của catalog) → bộ lọc chọn nhiều / lọc trên tiêu đề / phân trang tự viết không chạy (hình không vỡ) | Kit không giả lập DOM cũ được mà vẫn theo Core; phải viết lại mã trang theo API component (`sd-select multiple`, sự kiện `sd-change`, lọc / phân trang có sẵn của sd-table) — chờ Builder quyết |
++| 2026-10-15 | **Mã riêng của prototype dựa vào DOM bên trong component kit cũ** (design-test: `multi-filter.js`, `table-filter.js`, `treasury-request.js`, `tr-table-bulk.js`, `theo-doi.html`, chân bảng tự điều khiển) | Selector `.sd-dropdown-item`, `input.sd-input`, `.sd-form-field`, `.c-checkbox-input`, `th.c-has-filter .c-th-filter`, `.c-paginator-center .T12M` không còn (DOM nay là Material của catalog) → bộ lọc chọn nhiều / lọc trên tiêu đề / phân trang tự viết không chạy (hình không vỡ) | Kit không giả lập DOM cũ được mà vẫn theo Core (296 luật CSS của design-test nhắm vào chính các lớp đó — giả lập là vẽ lại hình cũ). Công cụ báo đúng file + dòng vào `prototypes/_migrate-report.md`; người dựng trang viết lại theo API (`sd-select multiple`, `sd-change`, lọc / phân trang có sẵn của sd-table). Rule 21 chặn lỗi mới cùng loại |
+ | 2026-10-15 | **Áp kit vào prototype cũ — còn khác kit 12/10 (bài so 193 trang)** | Không mất chữ do công cụ nữa. Còn khác, CÓ CHỦ Ý theo Core: cột `#` của sd-table · `helperText` → icon (i) · dòng phân trang / "Export" / "Thiết lập" · nút quay lại chỉ icon · `sd-section avatar` (báo `!`). Còn để nguyên (báo `!`, không chắc → không đổi): bảng JS đổ dòng (vẫn `<table>` — Rule 10 muốn `sd-table`), hộp thông báo JS ghi chữ / có id-nút bên trong / dựng bằng JS, markup trong chuỗi JS dùng làm nội dung `sd-code-editor`. Chưa có trang thật của Builder (Treasury, Danh sách bộ lệnh) để chạy bài so — hai lỗi Builder chụp được dựng lại trên trang mẫu `ai2` | Chờ Builder gửi thư mục prototype thật |
+ | 2026-10-15 | **Bí danh kit cũ còn giữ trong `sd-components.js`** | `sd-badge type="status"` · `<sd-scorecard>` (vẽ bằng bpm-*) · nhắc "trang kit cũ chưa nâng" | Rule 18 ngoại lệ 3; trang mới không dùng — gỡ khi không còn prototype cũ |
+ | 2026-10-14 | **`migrate-prototype.mjs` v4 — đổi component tự dựng** | Chưa tự đổi (chỉ báo `!`, cách sửa ở `ai-instructions/migrate-components.md`): bảng dựng bằng JS / JS đọc ghi bảng / dòng có onclick / rowspan; modal dựng bằng JS; nút có lớp CSS của trang (widget riêng — đúng Rule 0b); tab dựng bằng JS hoặc nội dung không liền sau thanh tab; phân trang, toast, menu thả xuống, avatar, chấm trạng thái, khối trống, thanh bước, `input type=file` tự dựng. `<select>` dựng bằng JS đổi LÚC CHẠY (select gốc ẩn làm nguồn) — markup nguồn vẫn là `<select data-legacy-upgrade>`. Các bảng tài liệu API trong `design-system/preview/**` cũng là `<table>` tĩnh (`--components --dry` liệt kê) — là trang tài liệu của kit, không phải prototype, để nguyên. Bản đóng băng `tra-cuu-cam-nang` không đổi | Mỗi chỗ cần hiểu JS của trang; tự đổi dễ làm hỏng hành vi mà không báo lỗi |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/tools/migrate-prototype.mjs b/ai-instructions/tools/migrate-prototype.mjs
+--- a/ai-instructions/tools/migrate-prototype.mjs	2026-10-15 01:10:15.868831561 +0000
++++ b/ai-instructions/tools/migrate-prototype.mjs	2026-10-15 01:36:08.562638574 +0000
+@@ -57,8 +57,18 @@
+ const inputs = argv.filter(a => !a.startsWith('--'));
+ if (!inputs.length) { console.error('Cách dùng: node migrate-prototype.mjs <file.html | thư mục> … [--dry] [--force]'); process.exit(1); }
+ const SKIP = /^(memory|CHANGELOG)\.html$/i;
+-const files = inputs.flatMap(a => fs.statSync(a).isDirectory()
+-  ? fs.readdirSync(a).filter(f => f.endsWith('.html') && !SKIP.test(f)).sort().map(f => path.join(a, f)) : [a]);
++/* Thư mục → quét ĐỆ QUY mọi trang .html bên dưới (2026-10-15: trước chỉ lấy file ngay trong thư mục — người nhận kit chạy
++   `prototypes/` tưởng đã nâng hết mà thực ra chỉ nâng index.html). Bỏ `_pre-migrate/`, `node_modules/`, thư mục ẩn, `design-system/`. */
++const SKIP_DIR = /^(_pre-migrate|node_modules|design-system|ai-instructions|reviews|\..*)$/;
++function walk(d) {
++  const out = [];
++  for (const e of fs.readdirSync(d, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
++    if (e.isDirectory()) { if (!SKIP_DIR.test(e.name)) out.push(...walk(path.join(d, e.name))); }
++    else if (e.name.endsWith('.html') && !SKIP.test(e.name)) out.push(path.join(d, e.name));
++  }
++  return out;
++}
++const files = inputs.flatMap(a => fs.statSync(a).isDirectory() ? walk(a) : [a]);
+ 
+ const KIT_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
+ const MARK = 'kit-migrated';
+@@ -561,6 +571,86 @@
+   });
+ }
+ 
++
++/* 18. Mã RIÊNG của trang bám vào DOM BÊN TRONG component kit cũ (2026-10-15, prototype thật design-test: multi-filter.js,
++   table-filter.js…). DOM bên trong sd-* nay là Material của catalog — selector cũ không còn tìm thấy gì: bộ lọc / phân trang /
++   chọn nhiều tự viết lặng lẽ thôi chạy (hình không vỡ). Công cụ KHÔNG tự sửa (viết lại logic là việc của người dựng trang) —
++   chỉ quét JS (trong trang + file .js cục bộ trang nạp) và CSS (trong trang + .css cục bộ), báo đúng chỗ + cách viết theo API. */
++const HOOKS = [
++  [/\.sd-dropdown-(?:item|menu|empty)(?![\w-])|sd-dropdown-item-label/, 'danh sách chọn bên trong sd-select / sd-autocomplete cũ (nay chỉ có trong overlay khi mở)', 'dùng thuộc tính `items` / `value` + sự kiện `sd-change`; chọn nhiều → `<sd-select multiple>` thay bộ chọn nhiều tự dựng'],
++  [/input\.sd-input(?![\w-])|['"\s,>(]\.sd-input(?![\w-])/, '<input> bên trong sd-input / sd-select cũ (lớp `sd-input`)', 'đọc / ghi `el.value` của chính thẻ sd-*; nghe `input` / `sd-change`'],
++  [/\.sd-textarea(?![\w-])/, '<textarea> bên trong sd-textarea cũ', '`el.value` của sd-textarea'],
++  [/\.sd-form-field(?![\w-])/, 'khung `.sd-form-field` bên trong sd-* cũ', 'thao tác trên chính thẻ sd-* (value / disabled / required / error)'],
++  [/\.c-checkbox-input(?![\w-])/, 'ô tick bên trong sd-checkbox cũ', '`el.checked` / thuộc tính `checked` + sự kiện `sd-change`'],
++  [/c-has-filter|\.c-th-(?:filter|inner|label)(?![\w-])/, 'ô lọc trên tiêu đề sd-table cũ', 'sd-table nay LỌC THẬT theo `columns` (type, `option.items`) — bỏ mã lọc tự viết'],
++  [/\.c-paginator-(?:center|nav)(?![\w-])|sd-page-size-select|aria-label=\\?["']Trang (?:đầu|trước|tiếp|cuối)/, 'chân phân trang sd-table cũ', 'sd-table nay PHÂN TRANG THẬT (`paginated`, `pageSize`, `pageSizes`) — bỏ mã tự cắt trang'],
++  [/\.c-section-header|\.c-collapsable(?![\w-])/, 'đầu sd-section cũ', 'thuộc tính `title` / `collapsible` / `[sdHeaderRight]` của sd-section']
++];
++const HOOK_SEEN = new Map();   // file dùng chung (.js / .css) → đã quét
++const REPORT = { pages: new Map(), shared: new Map() };
++function hookScan(text, kind) {
++  const found = [];
++  const lines = text.split('\n');
++  for (const [re, what, how] of HOOKS) {
++    const hits = [];
++    lines.forEach((ln, i) => {
++      let t = ln;
++      if (kind === 'css') { const b = t.indexOf('{'); if (b >= 0) t = t.slice(0, b); else if (/[:;]\s*[^,]*$/.test(t) && !/,\s*$/.test(t)) return; }
++      const m = t.match(re); if (m) hits.push({ line: i + 1, sel: m[0].trim() });
++    });
++    if (hits.length) found.push({ what, how: kind === 'css' ? 'luật CSS này nay không khớp phần tử nào (DOM bên trong theo catalog) — bỏ; đừng viết lại cho DOM mới (Rule 0b: component cơ bản không custom)' : how, hits });
++  }
++  return found;
++}
++function hookReportPage(f, src) {
++  const local = (m, attr) => [...src.matchAll(new RegExp('<' + m + '\\b[^>]*\\s' + attr + '\\s*=\\s*["\']([^"\']+)["\']', 'gi'))].map(x => x[1])
++    .filter(u => !/^(https?:|data:|\/\/)/.test(u) && !/design-system\//.test(u));
++  /* giữ đúng số dòng của file: dòng ngoài <script> / <style> thay bằng dòng trống */
++  const keepOnly = re => { const lines = src.split('\n').map(() => ''); for (const m of src.matchAll(re)) { const l0 = src.slice(0, m.index).split('\n').length - 1; m[0].split('\n').forEach((t, k) => { lines[l0 + k] = t; }); } return lines.join('\n'); };
++  const inlineJs = keepOnly(/<script\b(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/gi);
++  const inlineCss = keepOnly(/<style\b[^>]*>[\s\S]*?<\/style>/gi);
++  const own = [...hookScan(inlineJs, 'js').map(x => ({ ...x, kind: 'JS' })), ...hookScan(inlineCss, 'css').map(x => ({ ...x, kind: 'CSS' }))];
++  if (own.length) REPORT.pages.set(f, (REPORT.pages.get(f) || []).concat(own.map(o => 'mã trang (' + o.kind + ') dùng ' + o.what + ': `' + o.hits[0].sel + '`' + (o.hits.length > 1 ? ' ×' + o.hits.length : '') + ' (dòng ' + o.hits.slice(0, 3).map(h => h.line).join(', ') + ') → ' + o.how)));
++  for (const [list, kind] of [[local('script', 'src'), 'js'], [local('link', 'href').filter(u => /\.css(\?|$)/.test(u)), 'css']]) {
++    for (const u of list) {
++      const abs = path.resolve(path.dirname(f), u.split('?')[0]);
++      if (HOOK_SEEN.has(abs)) { HOOK_SEEN.get(abs).add(f); continue; }
++      const users = new Set([f]); HOOK_SEEN.set(abs, users);
++      let text; try { text = fs.readFileSync(abs, 'utf8'); } catch (e) { continue; }
++      const r = hookScan(text, kind);
++      if (r.length) REPORT.shared.set(abs, { kind: kind.toUpperCase(), items: r, users });
++    }
++  }
++}
++function writeReport() {
++  const lines = [];
++  if (REPORT.shared.size) {
++    console.log('\nMÃ DÙNG CHUNG BÁM VÀO DOM BÊN TRONG COMPONENT KIT CŨ — không tự sửa, viết lại theo API (bộ lọc / phân trang / chọn nhiều tự viết sẽ thôi chạy):');
++    lines.push('## Mã dùng chung bám vào DOM bên trong component kit cũ', '', 'DOM bên trong `sd-*` nay là Material của catalog. Các selector dưới đây không còn tìm thấy gì → phần việc của đoạn mã đó (bộ lọc, phân trang, chọn nhiều tự viết…) lặng lẽ thôi chạy; giao diện không vỡ. Viết lại theo API công khai của component.', '');
++    for (const [abs, r] of REPORT.shared) {
++      const rel = path.relative(process.cwd(), abs);
++      console.log('  ! ' + rel + ' (' + r.kind + ', ' + r.users.size + ' trang dùng)');
++      lines.push('### `' + rel + '` (' + r.kind + ' — ' + r.users.size + ' trang dùng)', '');
++      for (const it of r.items) {
++        const where = it.hits.slice(0, 4).map(h => h.line).join(', ') + (it.hits.length > 4 ? '…' : '');
++        console.log('      · ' + it.what + ': `' + it.hits[0].sel + '` (dòng ' + where + ') → ' + it.how);
++        lines.push('- ' + it.what + ': `' + it.hits[0].sel + '` — dòng ' + where + ' → ' + it.how);
++      }
++      lines.push('');
++    }
++  }
++  if (DRY || (!REPORT.pages.size && !REPORT.shared.size)) return;
++  const root = inputs.length === 1 && fs.statSync(inputs[0]).isDirectory() ? inputs[0] : process.cwd();
++  const out = ['# Báo cáo nâng trang — ' + TODAY, '', 'Sinh bởi `ai-instructions/tools/migrate-prototype.mjs`. Mỗi dòng là một chỗ công cụ **không tự sửa** vì không chắc — sửa tay theo gợi ý (bảng đầy đủ: `ai-instructions/migrate-components.md` mục 3). Chạy lại công cụ sau khi sửa: trang đã nâng không bị đổi lần hai.', ''];
++  if (REPORT.pages.size) {
++    out.push('## Từng trang', '');
++    for (const [f, notes] of REPORT.pages) { out.push('### `' + path.relative(root, f) + '`', ''); for (const n of notes) out.push('- ' + n); out.push(''); }
++  }
++  out.push(...lines);
++  fs.writeFileSync(path.join(root, '_migrate-report.md'), out.join('\n'));
++  console.log('\nBáo cáo đầy đủ: ' + path.join(root, '_migrate-report.md'));
++}
++
+ /* báo cáo — không tự sửa */
+ function report(s, st) {
+   const handHeader = /<div[^>]*class=["'][^"']*\bpage-header\b(?![\w-])[^"']*["']/.test(s) && !/data-pattern=["']page-header["']/.test(s) && !/c-page-header/.test(s);
+@@ -583,6 +673,7 @@
+ const REDO_CUR = new Map();
+ for (const f of files) {
+   let src = fs.readFileSync(f, 'utf8');
++  if (!(!/<(?:script|link)\b[^>]*(?:src|href)\s*=\s*["'][^"']*design-system\//i.test(src) && /customElements\.define\(\s*['"]sd-/.test(src))) hookReportPage(f, src);
+   if (REDO) {
+     const orig = path.join(path.dirname(f), '_pre-migrate', path.basename(f));
+     if (!fs.existsSync(orig)) { console.log('· ' + f + ' — --redo: không có bản gốc trong _pre-migrate/ → chạy như thường'); }
+@@ -611,6 +702,7 @@
+     console.log((nC ? '✓ ' : '· ') + f + ' — dải thông báo → sd-inform ' + st.inform + (ONLY_COMP ? ' · ' + compSummary(st) : ''));
+     st.inform = nC;
+     for (const n of st.notes) console.log('    ! ' + n);
++    if (st.notes.length) REPORT.pages.set(f, st.notes.concat(REPORT.pages.get(f) || []));
+     if (!DRY && s !== src) {
+       const bak = path.join(path.dirname(f), '_pre-migrate', 'inform'); fs.mkdirSync(bak, { recursive: true });
+       const dst = path.join(bak, path.basename(f)); if (!fs.existsSync(dst)) fs.writeFileSync(dst, src);
+@@ -670,6 +762,8 @@
+   if (nNo) console.log('    · lớp kit cũ KHÔNG có (vô tác dụng) nay sd-core có nghĩa px → đã gỡ để giữ hình: ' + Object.entries(st.noop).map(([k, v]) => k + (v > 1 ? '×' + v : '')).join(' ') +
+     ' — muốn có khoảng thì thêm lại theo px (vd p-12)');
+   for (const n of st.notes) console.log('    ! ' + n);
++  for (const n of (REPORT.pages.get(f) || [])) console.log('    ! ' + n);
++  if (st.notes.length) REPORT.pages.set(f, st.notes.concat(REPORT.pages.get(f) || []));
+   if (!DRY && (s !== src || REDO_CUR.has(f))) {
+     /* bản gốc (trước mọi lần nâng) giữ nguyên ở _pre-migrate/; bản đã chạy v1 chép sang _pre-migrate/v1/ */
+     const bak = path.join(path.dirname(f), '_pre-migrate', UPGRADE ? 'v' + ver : ''); fs.mkdirSync(bak, { recursive: true });
+@@ -681,3 +775,4 @@
+ }
+ console.log('\n' + total.files + ' trang ' + (DRY ? '(chạy thử, chưa ghi)' : 'đã nâng') + ' · ' + total.skipped + ' trang bỏ qua' +
+   (DRY || !total.files ? '' : ' · bản gốc ở _pre-migrate/'));
++writeReport();

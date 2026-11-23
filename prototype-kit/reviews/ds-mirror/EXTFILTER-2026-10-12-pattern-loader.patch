@@ -1,0 +1,45 @@
+--- /tmp/pl.bak.ef	2026-10-12 10:43:29.031238938 +0000
++++ design-system/core/js/pattern-loader.js	2026-10-12 10:49:34.899096580 +0000
+@@ -142,7 +142,42 @@
+   /**
+    * filter-bar: slot-based (children → filter-bar-grid)
+    */
++  /* Ô lọc của external filter — thư viện dựng từ `externalFilters: [{ field,
++     title, type }]` và LUÔN ra cùng một kiểu (đo catalog #c-table 2026-10-12):
++       · `title` hiện làm PLACEHOLDER trong ô, KHÔNG có nhãn nổi
++         (mat-form-field-hide-placeholder, `label` rỗng);
++       · cỡ `sd-md` (43.5px) — không có tuỳ chọn cỡ;
++       · `hide-inline-error` — không chừa dòng lỗi bên dưới, lỗi tô viền đỏ.
++     Kit nhận ô lọc là thẻ sd-* do Builder viết tay, nên chuẩn hoá ở đây để
++     mọi trang (kể cả trang đã sinh từ trước, còn `label=` / `size="sm"`) ra
++     đúng một kiểu như catalog: `label` thành placeholder (vai trò của `title`),
++     bỏ `size`, thêm `hideInlineError`. Chỉ đụng các ô NHẬP là con trực tiếp. */
++  var FILTER_FIELD_TAGS = ['SD-INPUT', 'SD-SELECT', 'SD-DATE', 'SD-DATE-RANGE',
++    'SD-DATETIME', 'SD-AUTOCOMPLETE', 'SD-INPUT-NUMBER', 'SD-CHIP', 'SD-CHIP-CALENDAR'];
++
++  function normalizeFilterField(f) {
++    if (FILTER_FIELD_TAGS.indexOf(f.tagName) === -1) return;
++    var label = f.getAttribute('label');
++    if (label !== null) {
++      if (label.trim()) f.setAttribute('placeholder', label.trim());
++      f.removeAttribute('label');
++    }
++    f.removeAttribute('size');
++    if (!f.hasAttribute('hideInlineError') && !f.hasAttribute('hideinlineerror')) {
++      f.setAttribute('hideInlineError', '');
++    }
++  }
++
+   function processFilterBar(el, pattern, attrs) {
++    /* Chỉ chuẩn hoá khi MỌI con trực tiếp đều là ô nhập sd-* — tức bộ lọc dựng
++       đúng kiểu externalFilters. Có con nào khác (vd. `<details>` lọc nhiều lựa
++       chọn tự dựng ở danh-sach-position.html) là trang đã tự căn bố cục riêng
++       theo cỡ ô của nó; đổi cỡ một mình ô sd-* sẽ làm lệch hàng. */
++    var kids = Array.prototype.slice.call(el.children);
++    var allFields = kids.length && kids.every(function (k) {
++      return FILTER_FIELD_TAGS.indexOf(k.tagName) !== -1;
++    });
++    if (allFields) kids.forEach(normalizeFilterField);
+     var slotContent = el.innerHTML.trim();
+     var html = interpolate(pattern.template, attrs, pattern.defaults);
+     html = html.replace('<!-- SLOT -->', slotContent);

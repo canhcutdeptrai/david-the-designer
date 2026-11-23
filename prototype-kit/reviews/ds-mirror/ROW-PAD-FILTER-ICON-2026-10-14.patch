@@ -1,0 +1,171 @@
+# ROW-PAD-FILTER-ICON 2026-10-14 — dòng sd-table có ô nhập đệm trên = dưới = 8px (vạch lỗi kiểu subscriptSizing dynamic); 4 icon header filter-bar về --sd-black400
+# Quyết định Builder: 'padding top và bottom của row đang khác nhau -> đồng bộ lại 1 số đo' + 'các icon trong external filter để màu nhẹ hơn'
+# 7 file: sd-tokens.css, components.css, filter-bar.js, sd-data.md, CHANGELOG, known-gaps, lessons
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/ROW-PAD-FILTER-ICON-2026-10-14.patch
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-13 18:10:00.049573750 +0000
++++ b/CHANGELOG.md	2026-10-13 18:16:22.983419746 +0000
+@@ -8,6 +8,18 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — dòng bảng có ô nhập đệm đều 8px; icon header thanh lọc màu nhạt (Builder 2026-10-14)
++
++Builder: *„1. Trong table có Thêm dòng, padding top và bottom của row đang khác nhau → đồng bộ lại 1 số đo. 2. Trừ fields
++thì các icon trong external filter (icon filter, icon reset filter, icon setting, icon arrow up/down) để màu nhẹ hơn“*.
++
++- `sd-table` dòng có ô nhập: đệm trên = dưới = 8px, dòng cao 48px (trước 8px trên / 20px dưới do vạch lỗi luôn chừa
++  chỗ). Vạch lỗi trong ô bảng theo kiểu `subscriptSizing="dynamic"` của Material: chỉ chiếm chỗ khi có lỗi.
++- `filter-bar`: icon `filter_alt`, nút đặt lại, nút thiết lập và mũi tên thu/mở về `--sd-black400` #757575. Ô lọc và
++  chữ "Bộ lọc" giữ nguyên.
++- Đổi `sd-tokens.css`, `components.css`, `patterns/filter-bar.js`; docs `sd-data.md`. Lệch catalog có chủ ý — known-gaps.
++  Bản vá: `reviews/ds-mirror/ROW-PAD-FILTER-ICON-2026-10-14.patch`.
++
+ ### Changed — `sd-stepper` theo Core UI `@sdcorejs/angular` 22.3.1 (Builder 2026-10-14)
+ 
+ Builder: *„Cập nhật phần Stepper theo Core UI này https://sdcorejs.github.io/sdcorejs-angular/3.1/v/22.3.1/components/stepper/examples“*.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-13 18:10:00.050913883 +0000
++++ b/_memory/known-gaps.md	2026-10-13 18:16:22.977172600 +0000
+@@ -27,6 +27,18 @@
+ | 2026-10-10 | Token màu | **[2026-10-14: đã thêm `--sd-{primary…error}-contrast: #ffffff` vào `:root` vì stepper 22.3.1 đọc chúng — giá trị = theme mặc định của thư viện; vấn đề tương phản của `warning` vẫn còn]** Thiếu bộ `--sd-*-contrast` (màu chữ hợp lệ trên nền từng màu). Hệ quả thấy được: chip `warning` của `sd-stepper` dùng chữ trắng trên nền vàng ≈ **2.4:1**, dưới ngưỡng WCAG AA 4.5:1 | Chạm vào bảng token gốc, ảnh hưởng mọi component dùng màu — cần một đợt riêng và phải đối chiếu lại giá trị thật của theme `portal-fins` |
+ | 2026-10-11 | Catalog | **12 mục catalog kit chưa dựng** — nhóm A (dựng được đầy đủ) đã đóng hết; còn B/C/D. Dòng cũ ghi "25 mục" là của lượt trước, giữ nguyên phần diễn giải bên dưới để hiểu lịch sử: **25 mục catalog kit chưa dựng** (2026-10-11 đã dựng **7**: `sd-label`, `sd-view`, `sd-inline-text`, `sd-autocomplete`, `sd-date-range`, `sd-tree`, `sd-quick-action` — **hết nhóm "đáng làm trước cho back-office"**). Trước đó là **32 mục** (rà soát lại cả 63 mục: kit dựng 27, thêm 4 mục catalog xếp là directive/service mà kit có tương đương). Nhóm đáng làm trước đã xong hết; 25 mục còn lại là soạn thảo/chart/dựng form động/hạ tầng | Là việc dựng mới, không phải vá lệch — chờ Builder xếp thứ tự ưu tiên. Danh sách đầy đủ theo nhóm ở `reviews/ds-mirror/CORE-CATALOG-GAP.md` (mục cập nhật 2026-10-11) |
+ 
++## `filter-bar` — icon header màu nhạt (2026-10-14, QUYẾT ĐỊNH CỦA BUILDER)
++
++Builder: *„Trừ fields thì các icon trong external filter (icon filter, icon reset filter, icon setting, icon arrow
++up/down) để màu nhẹ hơn“*.
++
++| Chỗ | Catalog `external-filter` | Kit |
++|---|---|---|
++| `filter_alt` | `text-secondary` #212121 | `text-black400` #757575 |
++| Nút đặt lại / thiết lập (`sd-button link secondary`) | #000 | #757575 — đè màu trong `.filter-bar-actions` (components.css), nút vẫn là `sd-button` |
++| Mũi tên thu / mở | `--sd-secondary` #212121 | `--sd-black400` #757575 |
++| Chữ "Bộ lọc", ô lọc | — | giữ nguyên |
++
+ ## `sd-stepper` — theo @sdcorejs/angular 22.3.1 (2026-10-14, QUYẾT ĐỊNH CỦA BUILDER)
+ 
+ Builder: *„Cập nhật phần Stepper theo Core UI này https://sdcorejs.github.io/sdcorejs-angular/3.1/v/22.3.1/components/stepper/examples“*
+@@ -55,8 +67,10 @@
+ với table giống ảnh“* (ảnh = `.inline-table-wrapper` của add-page). `sd-section .c-section-body sd-table`: viền 1px
+ `--sd-black200`, bo 8px (host đã `overflow:auto` nên bo cắt luôn nền hàng tiêu đề), `.c-paginator` kẻ trên 1px; thân
+ `noPaddingBody` thì bảng `margin:16px`. Thân đó `display:flow-root` (không thì lề dưới gộp lọt ra ngoài thẻ — bảng dính đáy). Dòng có
+-ô nhập chừa vạch lỗi: `td` căn đầu + đệm trên 8px để nút × thẳng hàng khung ô (cũng là quyết định Builder 2026-10-14;
+-catalog chỉ có bảng chữ). **Lệch catalog có chủ ý** — catalog không có ví dụ bảng trong section, và
++ô nhập: `td` căn đầu để nút × thẳng hàng khung ô, ~~đệm trên 8px + vạch lỗi 20px dưới~~ **[ĐÃ THAY THẾ 2026-10-14 lượt 2]**
++đệm **trên = dưới = 8px** và vạch lỗi trong ô bảng theo kiểu `subscriptSizing="dynamic"` của Material (không chừa chỗ khi
++không lỗi; có lỗi thì dòng cao thêm) — Builder: *„padding top và bottom của row đang khác nhau → đồng bộ lại 1 số đo“*.
++Catalog (luôn chừa 20px) chỉ có bảng chữ, nên đây vẫn là quyết định riêng của Builder. **Lệch catalog có chủ ý** — catalog không có ví dụ bảng trong section, và
+ 2026-10-12 Builder đã gỡ khung thẻ của `.c-container` cho bảng đứng riêng (vẫn giữ nguyên như thế ngoài section).
+ 
+ ## `sd-select` — panel nổi trong overlay ở `<body>` (2026-10-13, Builder: *„dropdown của các ô select … bị che, khắc phục lại“*)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-13 18:10:00.051266490 +0000
++++ b/_memory/lessons.md	2026-10-13 18:16:22.984809787 +0000
+@@ -13,6 +13,13 @@
+ - Nhắc Worker rằng `AGENTS.md` ở root là nguồn quy ước, nhưng nó **không chứa bối cảnh phần việc đang giao** — cái đó chỉ nằm trong brief.
+ - **Cấm đọc, ghi, xoá `_memory/session-handoff.md`.** File đó thuộc về phiên đang đối thoại với Builder; Worker ghi vào là mất bàn giao. Ràng buộc này cố ý không nằm trong skill `orchestration` vì skill đó phải dùng được ở repo khác — nên brief của kit này phải tự mang theo.
+ 
++## Ô nhập trong dòng bảng: vạch lỗi cố định làm lệch đệm (2026-10-14)
++
++`mat-form-field` luôn chừa 20px vạch lỗi bên dưới (`.mat-mdc-form-field-bottom-align::before` cao 16px + hint/lỗi
++`position:absolute`). Trong dòng bảng, chỉnh đệm `td` không bao giờ cân được trên/dưới vì 20px đó nằm trong ô. Cách
++đúng là bật lại hành vi `subscriptSizing="dynamic"` của chính Material (bỏ `::before`, hint/lỗi `position:static`) và
++nhớ trả `--sd-field-sub` về 0 cho các ô có popup bám mép dưới khung. Đo bằng cả dòng có lỗi lẫn không lỗi.
++
+ ## Đối chiếu theo trang tài liệu SPA: dựng lại trang demo thật, đừng đoán (stepper 22.3.1, 2026-10-14)
+ 
+ - Trang `sdcorejs.github.io/sdcorejs-angular/<ver>/…/examples` là SPA — WebFetch chỉ ra metadata. Nguồn thật:
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-data.md b/design-system/components/sd-data.md
+--- a/design-system/components/sd-data.md	2026-10-13 17:29:12.675810298 +0000
++++ b/design-system/components/sd-data.md	2026-10-13 18:16:22.974522538 +0000
+@@ -247,6 +247,10 @@
+ > `--sd-black200`, bo 8px, đường kẻ trên chân bảng, và cách mép thân 16px — kể cả khi section khai `noPaddingBody`
+ > (bảng tự lùi 16px). Bảng đặt thẳng trong `content-zone` (trang danh sách) giữ nguyên, không khung. Không cần
+ > tự thêm class / style.
++>
++> **Dòng có ô nhập** (bảng `addable`, cột `raw` chứa `sd-input` / `sd-select`…; Builder 2026-10-14): ô căn đầu, đệm
++> **trên = dưới = 8px** → dòng cao 48px. Vạch lỗi KHÔNG chừa chỗ sẵn (kiểu `subscriptSizing="dynamic"`): ô báo lỗi
++> thì riêng dòng đó cao thêm đúng dòng chữ lỗi, nút × vẫn thẳng hàng khung ô.
+ 
+ ```html
+ <sd-section title="Chi tiết" icon="list" collapsable noPaddingBody>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/components.css b/design-system/core/styles/components.css
+--- a/design-system/core/styles/components.css	2026-10-13 17:29:12.673428514 +0000
++++ b/design-system/core/styles/components.css	2026-10-13 18:13:25.786661806 +0000
+@@ -2519,10 +2519,19 @@
+   border: none;
+   padding: 0;
+   cursor: pointer;
+-  color: var(--sd-secondary);
++  color: var(--sd-black400);   /* catalog --sd-secondary #212121 — kit nhạt hơn, xem dưới */
+   flex-shrink: 0;
+ }
+ 
++/* Icon header màu NHẠT — QUYẾT ĐỊNH CỦA BUILDER 2026-10-14: *„Trừ fields thì các icon trong
++   external filter (icon filter, icon reset filter, icon setting, icon arrow up/down) để màu
++   nhẹ hơn“*. Catalog: filter_alt `text-secondary` #212121, hai nút `link secondary` #000,
++   chevron #212121 → cả bốn về `--sd-black400` #757575 (màu chữ phụ của kit). Chữ "Bộ lọc"
++   và các ô lọc giữ nguyên. Nút vẫn là `sd-button` — chỉ đè màu chữ/icon trong vỏ này
++   (rule `link secondary` của sd-button mang !important nên phải !important theo). */
++.filter-bar .filter-bar-header-left .material-icons-outlined { color: var(--sd-black400) !important; }
++.filter-bar .filter-bar-actions sd-button .c-button.c-link.mat-secondary { color: var(--sd-black400) !important; }
++
+ /* ─ Body: catalog `p-16` + `border-top: 1px solid #e6e6e6`.
+      Bản trước còn `align-items: flex-end` để xếp nút "Tìm kiếm" — nút đó đã gỡ
+      (catalog không có), nên body nay chỉ còn đúng cái lưới.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-13 18:10:00.052512250 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-13 18:13:25.791622560 +0000
+@@ -4301,8 +4301,19 @@
+    Ô nhập khai `hideInlineError` (không chừa vạch) thì dòng vẫn căn giữa như cũ. */
+ sd-table tr:has(> td mat-form-field:not(.hide-inline-error)) > td.c-td {
+   vertical-align: top;
+-  padding-top: 8px;   /* khung ô nhập không dính sát đường kẻ trên; dưới đã có vạch lỗi 20px */
++  padding-top: 8px;
++  padding-bottom: 8px;
+ }
++/* Đệm trên = đệm dưới = 8px (Builder 2026-10-14 lượt 2: *„padding top và bottom của row đang
++   khác nhau → đồng bộ lại 1 số đo“* — trước 8px trên / 20px dưới vì vạch lỗi luôn chừa chỗ).
++   Trong dòng bảng, vạch lỗi theo kiểu `subscriptSizing="dynamic"` của Material: KHÔNG chừa chỗ
++   khi không lỗi, có lỗi thì dòng cao thêm đúng dòng chữ lỗi. Dòng không lỗi cao 48px (ô sm 32 +
++   8 + 8) — bằng dòng dữ liệu thường. Ba rule dưới = rule `.mat-mdc-form-field-subscript-dynamic-size`
++   của Material; `--sd-field-sub: 0` để lịch / gợi ý bám đúng mép dưới khung ô. */
++sd-table td.c-td mat-form-field .mat-mdc-form-field-bottom-align::before { content: none; }
++sd-table td.c-td mat-form-field .mat-mdc-form-field-hint-wrapper,
++sd-table td.c-td mat-form-field .mat-mdc-form-field-error-wrapper { position: static; }
++sd-table td.c-td :is(sd-select, sd-autocomplete, sd-date, sd-datetime, sd-date-range, sd-chip-calendar):has(> div > mat-form-field:not(.hide-inline-error) > .mat-mdc-form-field-subscript-wrapper) { --sd-field-sub: 0px; }
+ sd-table .mat-mdc-paginator {
+   display: block;
+   color: rgba(0, 0, 0, .87);
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/patterns/filter-bar.js b/design-system/patterns/filter-bar.js
+--- a/design-system/patterns/filter-bar.js	2026-10-13 17:29:12.675333422 +0000
++++ b/design-system/patterns/filter-bar.js	2026-10-13 18:13:25.784161472 +0000
+@@ -11,6 +11,7 @@
+  *         div.d-flex.align-items-center.justify-content-between.w-full.px-16.py-8.cursor-pointer
+  *           div.d-flex.align-items-center
+  *             span.mr-8.material-icons-outlined.text-secondary  (filter_alt, 24px)
++ *                 (kit: `text-black400` — QUYẾT ĐỊNH CỦA BUILDER 2026-10-14, xem dưới)
+  *             div > div.T16M  "Bộ lọc"
+  *           div.d-flex
+  *             div.d-flex.mr-4[sdHeaderRight]  → 2 × sd-button (link / square / sm)
+@@ -27,6 +28,10 @@
+  *      làm vỏ thụ động được. Cùng kiểu lệch đã ghi cho `sd-select` ở sd-query-bar.
+  *   2. Lưới dựng bằng CSS grid + media query thay cho hệ `.row/.col-*` của
+  *      Bootstrap — kit không nạp Bootstrap. Số cột theo đúng breakpoint catalog.
++ *   4. Bốn icon của header (filter_alt, đặt lại, thiết lập, mũi tên thu/mở) màu NHẠT
++ *      `--sd-black400` #757575 thay vì #212121 / #000 của catalog — Builder 2026-10-14:
++ *      „Trừ fields thì các icon trong external filter … để màu nhẹ hơn“. Ô lọc giữ nguyên.
++ *      CSS ở components.css (mục FILTER BAR).
+  *   3. Chevron bọc trong <button> để điều hướng bàn phím được (Rule 9 của
+  *      AGENTS.md); catalog để `mat-icon` trần vì cả header là vùng bấm.
+  *
+@@ -57,7 +62,7 @@
+   <div class="filter-bar-shell c-shadow-section">
+     <div class="filter-bar-header" onclick="toggleFilterBar('{{id}}')">
+       <div class="filter-bar-header-left">
+-        <span class="material-icons-outlined mi-xl text-secondary mr-8">filter_alt</span>
++        <span class="material-icons-outlined mi-xl text-black400 mr-8">filter_alt</span>
+         <div class="T16M">Bộ lọc</div>
+       </div>
+       <div class="filter-bar-header-right">

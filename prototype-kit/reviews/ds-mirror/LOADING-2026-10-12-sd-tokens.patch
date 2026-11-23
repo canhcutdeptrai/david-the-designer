@@ -1,0 +1,73 @@
+--- /tmp/sd-tokens.bak5	2026-10-12 10:24:46.050429685 +0000
++++ prototype-kit-CATALOG-1012m/design-system/core/styles/sd-tokens.css	2026-10-12 10:24:53.044051817 +0000
+@@ -4664,34 +4664,45 @@
+   flex-wrap: wrap;
+ }
+ 
+-/* ── SdLoadingService - overlay loading gắn vào target ───────
+-   Portal: /service/loading. Target không phải body phải có
+-   position: relative (service tự set khi đang static và restore
+-   khi stop). Nền dùng rgba(255,255,255,0.7) - không có token
+-   tương đương nên hardcode như backdrop sd-modal. */
+-.sd-loading-overlay {
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  background: rgba(255, 255, 255, 0.7);
+-}
+-.sd-loading-overlay--fixed {
+-  position: fixed;
+-  inset: 0;
+-  z-index: 1400;
+-}
+-.sd-loading-overlay--absolute {
++/* ── SdLoadingService — mirror catalog `#c-loading` (rà soát 2026-10-12) ──
++   Đúng giá trị STYLE INLINE mà service thật đặt lên hai phần tử:
++     .sd-loading         position:absolute; top:0; left:0; height:100%; width:100%;
++                         opacity:0.6; background:#fff; z-index:99999
++     .sd-loading-spinner position:absolute; top/left: calc(50% - 2.5rem);
++                         5rem × 5rem; border: .5rem solid; border-color:
++                         var(--sd-black200) var(--sd-primary) var(--sd-primary);
++                         border-radius:50%; animation: 1s linear infinite
++   `opacity` đặt trên CẢ lớp phủ nên spinner cũng mờ theo — đúng ghi chú catalog.
++   Bó theo THẺ `div.sd-loading`: lớp `sd-loading` cũng là lớp trạng thái của
++   `sd-button` (`sd-button.sd-loading` lúc nút đang tải) — khai trần
++   `.sd-loading{position:absolute…}` sẽ thổi bay mọi nút đang loading.
++   Bản trước: nền rgba(255,255,255,.7), spinner 32px viền 3px (nâu trên, xám
++   ba cạnh — NGƯỢC màu catalog), quay .6s; body thì position:fixed. */
++div.sd-loading {
+   position: absolute;
+-  inset: 0;
+-  z-index: 10;
++  top: 0;
++  left: 0;
++  height: 100%;
++  width: 100%;
++  opacity: .6;
++  background: #fff;
++  z-index: 99999;
+ }
+-.sd-loading-spinner {
+-  width: 32px;
+-  height: 32px;
+-  border: 3px solid var(--sd-black200);
+-  border-top-color: var(--sd-primary);
++div.sd-loading > .sd-loading-spinner {
++  position: absolute;
++  top: calc(50% - 2.5rem);
++  left: calc(50% - 2.5rem);
++  width: 5rem;
++  height: 5rem;
++  box-sizing: border-box;
++  border: .5rem solid;
++  border-color: var(--sd-black200) var(--sd-primary) var(--sd-primary);
+   border-radius: 50%;
+-  animation: sd-spin 0.6s linear infinite;
++  animation: sd-loading-spin 1s linear infinite;
++}
++@keyframes sd-loading-spin {
++  0%   { transform: rotate(0deg); }
++  100% { transform: rotate(360deg); }
+ }
+ 
+ /* --- sd-query-bar styles ---

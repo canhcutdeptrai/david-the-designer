@@ -1,0 +1,95 @@
+--- /tmp/filter-bar.bak	2026-10-12 09:09:11.828763044 +0000
++++ prototype-kit-CATALOG-1012m/design-system/patterns/filter-bar.js	2026-10-12 09:09:11.832229440 +0000
+@@ -1,16 +1,37 @@
+ /**
+- * Pattern: Filter Bar
+- * ===================
+- * Thanh lọc dữ liệu — dùng trên Browse pages.
+- * PD kiểm soát: header, toggle, actions, collapse, search button.
+- * BA cung cấp (slot): các filter fields bên trong grid.
++ * Pattern: Filter Bar  (outgrid filter)
++ * =====================================
++ * Mirror của `external-filter` trong Core UI Catalog `#c-table`.
++ * Rà soát lại toàn mục 2026-10-12 — trước đó pattern này chỉ "na ná" catalog.
++ *
++ * Cây DOM của catalog:
++ *   external-filter.mb-16
++ *     sd-section
++ *       div.rounded-8.bg-white.c-shadow-section
++ *         div.d-flex.align-items-center.justify-content-between.w-full.px-16.py-8.cursor-pointer
++ *           div.d-flex.align-items-center
++ *             span.mr-8.material-icons-outlined.text-secondary  (filter_alt, 24px)
++ *             div > div.T16M  "Bộ lọc"
++ *           div.d-flex
++ *             div.d-flex.mr-4[sdHeaderRight]  → 2 × sd-button (link / square / sm)
++ *             div.d-flex.align-items-center   → mat-icon expand_less (24px)
++ *         div.p-16 { border-top: 1px solid #e6e6e6 }
++ *           div.row.mx-0 { row-gap:16px } → div.col-lg-3.col-md-3.col-sm-6.px-8 × n
++ *
++ * Ba chỗ kit cố ý khác, đều có lý do:
++ *   1. Dùng lớp `.c-shadow-section` của kit (đã mirror đúng công thức bóng/viền
++ *      inset của catalog ở `sd-section`) thay vì lồng thật một thẻ `<sd-section>`
++ *      — `sd-section` của kit là component SỐNG, tự vẽ lại innerHTML nên không
++ *      làm vỏ thụ động được. Cùng kiểu lệch đã ghi cho `sd-select` ở sd-query-bar.
++ *   2. Lưới dựng bằng CSS grid + media query thay cho hệ `.row/.col-*` của
++ *      Bootstrap — kit không nạp Bootstrap. Số cột theo đúng breakpoint catalog.
++ *   3. Chevron bọc trong <button> để điều hướng bàn phím được (Rule 9 của
++ *      AGENTS.md); catalog để `mat-icon` trần vì cả header là vùng bấm.
+  *
+  * Cách dùng:
+  *   <div data-pattern="filter-bar" data-id="filter-main">
+- *     <!-- slot: filter fields -->
+- *     <div class="form-field form-field-sm">
+- *       <input class="form-field-input" placeholder="Tìm kiếm...">
+- *     </div>
++ *     <sd-input label="Mã hồ sơ"></sd-input>
++ *     <sd-select label="Trạng thái" ...></sd-select>
+  *   </div>
+  */
+ 
+@@ -18,25 +39,28 @@
+ 
+ OMEU_PATTERNS['filter-bar'] = {
+   template: /* html */`
+-<div class="filter-bar mb-3" id="{{id}}">
+-  <div class="filter-bar-header">
+-    <button class="filter-bar-toggle" onclick="toggleFilterBar('{{id}}')">
+-      <span class="filter-bar-icon"><span class="material-icons-outlined mi-md">filter_alt</span></span>
+-      <span class="filter-bar-title">Bộ lọc</span>
+-    </button>
+-    <div class="filter-bar-actions">
+-      <button aria-label="Xóa bộ lọc"><span class="material-icons-outlined mi-sm">cleaning_services</span></button>
+-      <button aria-label="Thiết lập"><span class="material-icons-outlined mi-sm">settings</span></button>
++<div class="filter-bar mb-4" id="{{id}}">
++  <div class="filter-bar-shell c-shadow-section">
++    <div class="filter-bar-header" onclick="toggleFilterBar('{{id}}')">
++      <div class="filter-bar-header-left">
++        <span class="material-icons-outlined mi-xl text-secondary mr-8">filter_alt</span>
++        <div class="T16M">Bộ lọc</div>
++      </div>
++      <div class="filter-bar-header-right">
++        <div class="filter-bar-actions" onclick="event.stopPropagation()">
++          <sd-button type="link" color="secondary" size="sm" prefixIcon="cleaning_services" aria-label="Xoá bộ lọc"></sd-button>
++          <sd-button type="link" color="secondary" size="sm" prefixIcon="settings" aria-label="Thiết lập bộ lọc"></sd-button>
++        </div>
++        <button class="filter-bar-collapse" type="button" aria-label="Thu gọn bộ lọc">
++          <span class="material-icons-outlined mi-xl" id="{{id}}-chevron">expand_less</span>
++        </button>
++      </div>
+     </div>
+-    <button class="filter-bar-collapse" onclick="toggleFilterBar('{{id}}')" aria-label="Thu gọn bộ lọc">
+-      <span class="material-icons-outlined mi-sm" id="{{id}}-chevron">expand_less</span>
+-    </button>
+-  </div>
+-  <div class="filter-bar-body" id="{{id}}-body">
+-    <div class="filter-bar-grid">
+-      <!-- SLOT -->
++    <div class="filter-bar-body" id="{{id}}-body">
++      <div class="filter-bar-grid">
++        <!-- SLOT -->
++      </div>
+     </div>
+-    <sd-button type="fill" color="primary" size="sm" prefixIcon="filter_alt" title="Tìm kiếm"></sd-button>
+   </div>
+ </div>`,
+ 

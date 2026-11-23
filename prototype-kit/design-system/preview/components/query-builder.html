@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-query-builder — Preview</title>
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-area">
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-query-builder"
+         data-subtitle="Trình dựng bộ lọc trực quan — nhóm AND/OR lồng nhau, phát ra Filter chuẩn"></div>
+    <div class="content-zone">
+
+      <sd-inform color="info" title="Kit làm được nhiều hơn catalog ở một chỗ">
+        Catalog ghi: <em>“menu toán tử và panel của select không mở”</em> — vì nó dán DOM đã render.
+        Kit dựng <code>sd-select</code>, <code>sd-input-number</code> và <code>sd-operator</code> chạy thật,
+        nên đổi trường / toán tử / giá trị đều hoạt động và <code>[(value)]</code> cập nhật ngay.
+      </sd-inform>
+
+      <sd-section title="Nhóm AND với nhóm OR lồng nhau">
+        <p class="fs-12 text-black400 mb-8">values · number BETWEEN · date tương đối · nhóm con. Bấm <strong>+</strong> để thêm điều kiện hoặc nhóm.</p>
+        <sd-query-builder id="qb1"></sd-query-builder>
+        <p class="fs-12 text-black400 mt-8 mb-0">value: <code id="qb1-out">—</code></p>
+      </sd-section>
+
+      <sd-section title="So sánh với trường khác — comparisonMode=&quot;value-or-field&quot;">
+        <p class="fs-12 text-black400 mb-8">Ô nguồn giá trị cho chọn <strong>Nhập giá trị</strong> hoặc <strong>Chọn trường</strong>; chọn trường thì vế phải là một trường khác.</p>
+        <sd-query-builder id="qb2"></sd-query-builder>
+      </sd-section>
+
+      <sd-section title="Trạng thái rỗng &amp; điều kiện mới">
+        <p class="fs-12 text-black400 mb-8">Chưa có điều kiện nào; và một điều kiện mới chưa chọn trường thì chỉ hiện ô “Chọn trường”.</p>
+        <sd-query-builder id="qb3"></sd-query-builder>
+        <div class="mt-16"></div>
+        <sd-query-builder id="qb4"></sd-query-builder>
+      </sd-section>
+
+      <sd-section title="Chỉ đọc &amp; vô hiệu">
+        <p class="fs-12 text-black400 mb-8"><code>mode="view"</code> — chuỗi truy vấn chỉ đọc, tô màu theo token.</p>
+        <sd-query-builder id="qb5" mode="view"></sd-query-builder>
+        <div class="mt-16"></div>
+        <p class="fs-12 text-black400 mb-8">Rỗng:</p>
+        <sd-query-builder id="qb6" mode="view"></sd-query-builder>
+        <div class="mt-16"></div>
+        <p class="fs-12 text-black400 mb-8"><code>disabled</code> — vô hiệu toàn bộ control.</p>
+        <sd-query-builder id="qb7" disabled></sd-query-builder>
+      </sd-section>
+
+    </div>
+  </div>
+</div>
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+<script>
+  (function () {
+    var FIELDS = [
+      { key: 'bankCode', label: 'Ngân hàng cho vay', type: 'values', icon: 'account_balance',
+        values: [{ value: 'VCB', display: 'Vietcombank' }, { value: 'BIDV', display: 'BIDV' }] },
+      { key: 'loanAmount', label: 'Số tiền vay (VND)', type: 'number', icon: 'tag', min: 0 },
+      { key: 'disbursementDate', label: 'Ngày giải ngân', type: 'date', icon: 'event' },
+      { key: 'status', label: 'Trạng thái hồ sơ', type: 'values', icon: 'list',
+        values: [{ value: 'PENDING', display: 'Chờ phê duyệt' }, { value: 'APPROVED', display: 'Đã phê duyệt' },
+                 { value: 'DISBURSING', display: 'Chờ giải ngân' }] },
+      { key: 'remainingLimit', label: 'Hạn mức còn lại (VND)', type: 'number', icon: 'tag' },
+      { key: 'requestedAmount', label: 'Số tiền đề nghị (VND)', type: 'number', icon: 'tag' },
+      { key: 'contractNo', label: 'Số hợp đồng', type: 'text', icon: 'text_fields' }
+    ];
+
+    var FILTER = {
+      logic: 'AND',
+      filters: [
+        { field: 'bankCode', operator: 'IN', data: ['VCB', 'BIDV'] },
+        { field: 'loanAmount', operator: 'BETWEEN', data: [1000000000, 5000000000] },
+        { field: 'disbursementDate', operator: 'GREATER_THAN', dateMode: 'relative', data: 30, unit: 'ngày trước' },
+        { logic: 'OR', filters: [
+          { field: 'status', operator: 'EQUAL', data: 'PENDING' },
+          { field: 'remainingLimit', operator: 'LESS_THAN', data: 500000000 }
+        ] }
+      ]
+    };
+
+    var qb1 = document.getElementById('qb1');
+    qb1.fields = FIELDS;
+    qb1.value = JSON.parse(JSON.stringify(FILTER));
+    var out = document.getElementById('qb1-out');
+    function show() { out.textContent = JSON.stringify(qb1.value); }
+    show();
+    qb1.addEventListener('sd-change', show);
+
+    var qb2 = document.getElementById('qb2');
+    qb2.option = { fields: FIELDS, comparisonMode: 'value-or-field' };
+    /* như ảnh catalog: menu "+" của nhóm gốc đang mở (bấm ra ngoài là đóng) */
+    setTimeout(function () { qb2._open = ''; qb2._render(); }, 0);
+    qb2.value = {
+      logic: 'AND',
+      filters: [
+        { field: 'requestedAmount', operator: 'LESS_OR_EQUAL', dataType: 'field', data: 'remainingLimit' },
+        { field: 'contractNo', operator: 'CONTAIN', data: 'HĐTD-2026' }
+      ]
+    };
+
+    var qb3 = document.getElementById('qb3');
+    qb3.fields = FIELDS;
+    qb3.value = { logic: 'AND', filters: [] };
+
+    var qb4 = document.getElementById('qb4');
+    qb4.fields = FIELDS;
+    qb4.value = { logic: 'OR', filters: [{ field: '', operator: '', data: '' }] };
+
+    var qb5 = document.getElementById('qb5');
+    qb5.fields = FIELDS;
+    qb5.value = JSON.parse(JSON.stringify(FILTER));
+
+    var qb6 = document.getElementById('qb6');
+    qb6.fields = FIELDS;
+    qb6.value = { logic: 'AND', filters: [] };
+
+    var qb7 = document.getElementById('qb7');
+    qb7.fields = FIELDS;
+    qb7.value = { logic: 'AND', filters: [{ field: 'status', operator: 'IN', data: ['APPROVED', 'DISBURSING'] }] };
+  })();
+</script>
+</body>
+</html>

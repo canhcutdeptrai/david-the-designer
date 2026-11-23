@@ -1,0 +1,298 @@
+# SITE-TABS-REMOVE 2026-10-14 — gỡ data-site-tabs (tab kiểu trình duyệt) khỏi pattern page-header, CSS .site-tab*, mẫu demo + tài liệu
+# Quyết định Builder: 'ý là không hiện trong kit và các prototype' (Core / portal-template không có)
+# 7 file: pattern-loader.js, page-header.js, layout.css, utilities.css (chú thích), preview page-header, CHANGELOG, known-gaps
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/SITE-TABS-REMOVE-2026-10-14.patch
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-14 06:25:08.076709604 +0000
++++ b/CHANGELOG.md	2026-10-14 06:34:32.488207741 +0000
+@@ -17,7 +17,9 @@
+   CSS `.tab` tự dựng loại nút này ra bằng `:not(:where(.sd-tab__button))` (giữ độ ưu tiên). Kiểm: hành vi chuyển tab của
+   bản đóng băng, v2 và 3 trang preview giống hệt bản trước; đổi chế độ bằng code (`setLookupMode`) thì tab hiển thị theo.
+ - `.main-area` tô nền `#f9f9f9` (= `:host` của `sd-page` 19.0.10) — trước trong suốt, lộ nền body `#EBECED`.
+-- `data-site-tabs`: Builder *„bỏ qua“* — giữ nguyên, không làm tiếp.
++- **Gỡ `data-site-tabs`** (tab kiểu trình duyệt — Core / portal-template không có; Builder: *„không hiện trong kit và các
++  prototype“*): bỏ `buildSiteTabZone` + 2 bộ bắt click trong `pattern-loader.js`, CSS `.site-tab*` trong `layout.css`, mẫu demo
++  và tài liệu trong `preview/patterns/page-header.html`. Không prototype nào dùng; trang nào lỡ khai thì thuộc tính bị bỏ qua.
+ - **Sửa lỗi do mục page header bên dưới gây ra:** nút chính nay có icon (`Lưu` → save) nên `textContent` thành "saveLưu" —
+   `sua-workitem.html` bấm "Lưu" không mở popup nâng version nữa, `tao-workitem.html` cùng kiểu so chữ. Hai chỗ nay so nhãn
+   `sd-button` (`_title`); kịch bản kiểm thử `workitem-interact.mjs` / `wi-extra.mjs` nhận cả "saveLưu".
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-14 06:25:08.080735453 +0000
++++ b/_memory/known-gaps.md	2026-10-14 06:34:32.490980123 +0000
+@@ -21,7 +21,7 @@
+ | 2026-10-11 | Ô nhập — viền khi hover / focus / lỗi | Catalog ghim màu viền ô nhập ở **mọi trạng thái** bằng `!important` (`.mat-mdc-notch-piece.mdc-notched-outline__leading{border-color:var(--sd-black200)!important}`), nên hover không đổi màu, focus chỉ **dày lên 2px** chứ không chuyển nâu, và **ô lỗi vẫn giữ viền xám** — chỉ `hideInlineError` mới cho viền đỏ. Kit đã làm theo. **Builder nên xem lại:** bản cũ của kit (hover xám đậm, focus nâu + quầng, lỗi viền đỏ) dễ thấy hơn nhiều khi điền form dài | Đã mirror đúng catalog theo yêu cầu "mọi thứ giống catalog". Từ 2026-10-13 mọi `sd-*` dùng DOM Material: luật nằm ở các khối `catalog #c-…` (`.mat-mdc-notch-piece… {border-color:var(--sd-black200)!important}`) trong `sd-tokens.css` — muốn trả lại thì sửa ở đó. Ba rule `.sd-form-field:hover` / `:focus-within` / `.sd-error` nay chỉ còn áp cho markup viết tay |
+ | 2026-10-11 | **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]** `sd-stepper` — nhãn bước đang làm | Catalog **có** rule tô nhãn bước đang làm màu brand + 600, nhưng rule `.mat-step-label-active` đứng trước lại nhiều class hơn nên luôn thắng → nhãn bước đang làm KHÔNG khác các bước khác. Kit chép lại đúng tương quan điểm đó. **Builder nên xem lại:** bước đang làm giờ chỉ phân biệt bằng vòng tròn (số, nền đặc), nhãn thì giống hệt bước khác | Đây là hành vi THẬT của catalog (nhiều khả năng là lỗi thứ tự rule của thư viện). Muốn trả lại: nâng điểm rule `sd-stepper .sd-stepper__label--selected` |
+ | 2026-10-14 | ~~`page-header` — tab trang~~ **ĐÃ SỬA 2026-10-14** (nay `sd-tab-group`, cầu tương thích `phBindPageTabs` giữ lớp móc `.tab`) | ~~`data-page-tabs` vẫn là `.page-tab-zone .tabs button.tab` của kit, không phải `sd-tab-group` như portal (chỉ dời xuống dưới khung header) | Bản đóng băng `tra-cuu-cam-nang.html` (không được sửa), `tra-cuu-cam-nang-v2.html` và ~45 trang preview gắn JS thẳng vào DOM này — đổi sang `sd-tab-group` là phải viết lại JS các trang đó~~ |
+-| 2026-10-14 | `page-header` — `data-site-tabs` | Tab kiểu trình duyệt — Core / portal-template không có. Chỉ trang demo `preview/patterns/page-header.html` dùng | Builder 2026-10-14: *„bỏ qua“* — giữ nguyên, không làm tiếp (nằm trên khung header) |
++| 2026-10-14 | ~~`page-header` — `data-site-tabs`~~ **ĐÃ GỠ 2026-10-14** (Builder: *„không hiện trong kit và các prototype“*) | Tab kiểu trình duyệt — Core / portal-template không có. Chỉ trang demo `preview/patterns/page-header.html` dùng | — |
+ | 2026-10-14 | ~~Nền trang~~ **ĐÃ SỬA 2026-10-14** (Builder: *„đổi theo core“*) | `.main-area` nay `#f9f9f9` như `sd-page`. Body vẫn `--surface-page` #EBECED nhưng bị `.main-area` che hết | — |
+ | 2026-10-14 | `page-header` — biến thể "Tác vụ có gom nhóm" của portal | Gom ≥ 2 tác vụ phụ vào nút ⋮ cần `sd-button-item` — chỉ có ở 22.3.1, 19.0.10 và catalog không có | Ngoại lệ phiên bản phải hỏi Builder. Rule 14 (tối đa 3 nút chữ) vẫn do người dựng trang tự giữ |
+ | 2026-10-14 | `page-header` — khác portal nhỏ | (1) Mã bản ghi là `span` đứng CẠNH tiêu đề (portal để trong cùng thẻ tiêu đề) — `sua-cam-nang.html` gán `textContent` cho `.page-title`, để chung thì mất mã. (2) Mô tả dùng `text-secondary` của sd-core = `--sd-secondary` (#212121, gần đen) đúng template `sd-page` 19.0.10 — **Builder nên xem lại**: trước là 12px xám, nay 14px gần đen. (3) Phần thân `.c-page-wrapper > .c-page-content` của `sd-page` không dựng — kit vẫn dùng `.content-zone` (nền `#f9f9f9` của sd-page đã đặt lên `.main-area`) | (1)(3) để không vỡ JS / bố cục các trang; (2) là đúng Core theo yêu cầu |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/js/pattern-loader.js b/design-system/core/js/pattern-loader.js
+--- a/design-system/core/js/pattern-loader.js	2026-10-14 06:25:08.082782973 +0000
++++ b/design-system/core/js/pattern-loader.js	2026-10-14 06:34:22.453065880 +0000
+@@ -60,24 +60,8 @@
+ 
+   // ── Pattern Processors ────────────────────────────────────
+ 
+-  /**
+-   * Build site-tab zone HTML from comma-separated string.
+-   * Format: "Trang chủ,Other page"  — first tab is always active.
+-   */
+-  function buildSiteTabZone(siteTabsStr) {
+-    if (!siteTabsStr) return '';
+-    var tabs = siteTabsStr.split(',');
+-    var items = tabs.map(function (label, i) {
+-      var active = i === 0 ? ' active' : '';
+-      return '<div class="site-tab' + active + '">' +
+-        '<span class="site-tab-label">' + label.trim() + '</span>' +
+-        '<button class="site-tab-close" aria-label="Đóng tab">' +
+-          '<span class="material-icons-outlined mi-xs">close</span>' +
+-        '</button>' +
+-      '</div>';
+-    }).join('');
+-    return '<div class="site-tab-zone">' + items + '</div>';
+-  }
++  /* buildSiteTabZone (data-site-tabs — tab kiểu trình duyệt) ĐÃ GỠ 2026-10-14: Core / portal-template không có
++     (Builder: „không hiện trong kit và các prototype“). Thuộc tính data-site-tabs nay bị bỏ qua. */
+ 
+   /**
+    * Build page-tab zone HTML from comma-separated string.
+@@ -155,7 +139,6 @@
+    * page-header: variant-based, no slot.
+    * VIẾT LẠI 2026-10-14 — khung là header của `sd-page` (@sd-angular/core 19.0.10):
+    *   div.page-header (vỏ — chỉ là lớp móc cho prototype/preview, không có CSS hình)
+-   *     [site-tab zone]
+    *     div.c-page-header.bg-white > div.p-16.d-flex.align-items-center.w-full.justify-content-between.page-header-content
+    *       > (nội dung biến thể: div.d-flex bên trái + [headerRight])
+    *     [page-tab zone — DƯỚI khung, như sd-tab-group nằm ngay dưới header trong portal-template]
+@@ -204,11 +187,9 @@
+     attrs['badge-icon'] = bAttr.icon;
+     attrs['badge-font'] = bAttr.fontSet || 'material-icons';
+     var contentHtml = interpolate(tpl, attrs, pattern.defaults);
+-    var siteTabHtml = buildSiteTabZone(attrs['site-tabs'] || '');
+     var pageTabHtml = buildPageTabZone(attrs['page-tabs'] || '');
+ 
+     var html = '<div class="page-header">' +
+-      siteTabHtml +
+       '<div class="c-page-header bg-white">' +
+         '<div class="p-16 d-flex align-items-center w-full justify-content-between page-header-content">' +
+           contentHtml +
+@@ -530,24 +511,7 @@
+ 
+   // Page tab: `.active` nay do phBindPageTabs giữ theo sd-tab-group (sd-tab-change) — bỏ bộ bắt click cũ (2026-10-14)
+ 
+-  // Site tab click — activate clicked tab (ignore close button)
+-  document.addEventListener('click', function (e) {
+-    if (e.target.closest('.site-tab-close')) return;
+-    var siteTab = e.target.closest('.site-tab');
+-    if (!siteTab) return;
+-    var zone = siteTab.closest('.site-tab-zone');
+-    if (!zone) return;
+-    zone.querySelectorAll('.site-tab').forEach(function (t) { t.classList.remove('active'); });
+-    siteTab.classList.add('active');
+-  });
+-
+-  // Site tab close — remove tab
+-  document.addEventListener('click', function (e) {
+-    var closeBtn = e.target.closest('.site-tab-close');
+-    if (!closeBtn) return;
+-    var tab = closeBtn.closest('.site-tab');
+-    if (tab) tab.remove();
+-  });
++  // Site tab click / close — đã gỡ cùng data-site-tabs (2026-10-14)
+ 
+   // Bulk snackbar close handler
+   document.addEventListener('click', function (e) {
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/layout.css b/design-system/core/styles/layout.css
+--- a/design-system/core/styles/layout.css	2026-10-14 06:25:08.082979341 +0000
++++ b/design-system/core/styles/layout.css	2026-10-14 06:34:22.458452240 +0000
+@@ -716,7 +716,7 @@
+ 
+ /* Page Header — khung `sd-page` (2026-10-14, Builder: „đồng bộ theo core“).
+    DOM do patterns/page-header.js + pattern-loader.js dựng:
+-     .page-header (vỏ, chỉ là lớp móc) > [.site-tab-zone] + .c-page-header + [.page-tab-zone]
++     .page-header (vỏ, chỉ là lớp móc) > .c-page-header + [.page-tab-zone]
+    Hình của khung do lớp sd-core trong template của sd-page quyết định (bg-white, p-16, d-flex…);
+    `.c-page-header` dưới đây chép nguyên `styles` của SdPageComponent 19.0.10. Bản cũ (hàng 60px,
+    border-bottom, .page-title 20px nowrap, .page-subtitle 12px xám, .record-id riêng) đã gỡ. */
+@@ -730,86 +730,7 @@
+   position: relative;
+ }
+ 
+-/* ── Site Tab Zone — browser-like multi-page tabs ──────────── */
+-
+-.site-tab-zone {
+-  display: flex;
+-  align-items: center;
+-  background: var(--color-neutral-150);  /* #F2F2F2 ≈ Figma #F2F3F4 */
+-}
+-
+-.site-tab {
+-  display: flex;
+-  align-items: center;
+-  gap: var(--space-1);
+-  max-width: 200px;
+-  padding: var(--space-2) var(--space-3);
+-  padding-right: var(--space-8);         /* room for close button */
+-  position: relative;
+-  border-right: 1px solid var(--color-neutral-200);
+-  font-family: var(--font-family-sans);
+-  font-size: var(--text-md);
+-  line-height: var(--leading-normal);
+-  color: var(--text-tertiary);
+-  text-decoration: none;
+-  cursor: pointer;
+-  background: var(--color-neutral-100);  /* #F5F5F5 ≈ Figma #F5F6F7 */
+-  white-space: nowrap;
+-  overflow: hidden;
+-}
+-
+-.site-tab.active {
+-  background: var(--surface-primary);    /* white */
+-  color: var(--text-primary);
+-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+-}
+-
+-.site-tab-icon {
+-  width: 16px;
+-  height: 16px;
+-  flex-shrink: 0;
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-}
+-
+-.site-tab-icon svg {
+-  width: 16px;
+-  height: 16px;
+-}
+-
+-.site-tab-label {
+-  flex: 1;
+-  min-width: 40px;
+-  overflow: hidden;
+-  text-overflow: ellipsis;
+-}
+-
+-.site-tab-close {
+-  position: absolute;
+-  right: var(--space-2-5);
+-  top: 50%;
+-  transform: translateY(-50%);
+-  width: 12px;
+-  height: 12px;
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  border: none;
+-  background: transparent;
+-  cursor: pointer;
+-  color: var(--icon-default);
+-  padding: 0;
+-}
+-
+-.site-tab-close svg {
+-  width: 12px;
+-  height: 12px;
+-}
+-
+-.site-tab:not(.active) .site-tab-close {
+-  opacity: 0.5;
+-}
++/* ── Site Tab Zone (.site-tab*) — ĐÃ GỠ 2026-10-14 cùng data-site-tabs (Core không có) ── */
+ 
+ /* ── Header Content — gỡ 2026-10-14 ──────────────────────────
+    .page-header-content / .page-header-left / .page-title-row / .page-title / .record-id /
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/utilities.css b/design-system/core/styles/utilities.css
+--- a/design-system/core/styles/utilities.css	2026-10-13 20:23:30.563007270 +0000
++++ b/design-system/core/styles/utilities.css	2026-10-14 06:34:22.461208971 +0000
+@@ -4702,7 +4702,7 @@
+   -webkit-font-smoothing: antialiased;
+ }
+ 
+-.mi-xs  { font-size: 12px; } /* site-tab close */
++.mi-xs  { font-size: 12px; }
+ .mi-sm  { font-size: 14px; } /* table footer, pagination */
+ .mi-md  { font-size: 16px; } /* button icons, input icons */
+ .mi-lg  { font-size: 20px; } /* toast / alert icons */
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/patterns/page-header.js b/design-system/patterns/page-header.js
+--- a/design-system/patterns/page-header.js	2026-10-14 06:25:08.083721987 +0000
++++ b/design-system/patterns/page-header.js	2026-10-14 06:34:22.455806124 +0000
+@@ -26,7 +26,7 @@
+  *     "Chỉnh sửa" → fill primary (icon edit) đặt NGOÀI CÙNG bên phải · nhãn khác → light secondary.
+  *
+  * Vùng tuỳ chọn:
+- *   data-site-tabs   — tab kiểu trình duyệt, nằm TRÊN khung (portal không có — giữ nguyên như cũ, xem known-gaps)
++ *   (data-site-tabs — tab kiểu trình duyệt — ĐÃ GỠ 2026-10-14: Core không có; Builder: „không hiện trong kit và các prototype“)
+  *   data-page-tabs   — tab trong trang, nằm DƯỚI khung header và là `sd-tab-group` của kit (portal-template:
+  *                      `div.bg-white > sd-tab-group [stretchTabs]="false"` ngay dưới header). Nút tab mang thêm lớp móc
+  *                      `.tab` / `.tab.active` cho JS cũ (bản đóng băng, ~45 trang preview) — xem phBindPageTabs.
+@@ -121,7 +121,6 @@
+       'show-history': 'true',
+       'actions': '',
+       'subtitle': '',
+-      'site-tabs': '',
+       'page-tabs': ''
+     }
+   };
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/patterns/page-header.html b/design-system/preview/patterns/page-header.html
+--- a/design-system/preview/patterns/page-header.html	2026-10-14 06:25:08.083881159 +0000
++++ b/design-system/preview/patterns/page-header.html	2026-10-14 06:34:22.463456755 +0000
+@@ -54,17 +54,6 @@
+ 
+         <div class="mb-16"></div>
+ 
+-        <!-- ── Browse + site-tabs + page-tabs ────────────── -->
+-        <p class="fs-12 text-black400 mb-12"><strong>variant="browse" + site-tabs + page-tabs</strong> — Full header với cả hai loại tab</p>
+-        <div data-pattern="page-header" data-variant="browse"
+-             data-title="Quản lý sản phẩm"
+-             data-primary-action="Thêm sản phẩm"
+-             data-primary-icon="add"
+-             data-site-tabs="Trang chủ,Sản phẩm,Đơn hàng"
+-             data-page-tabs="Đang bán,Hết hàng,Ngừng bán"></div>
+-
+-        <div class="mb-16"></div>
+-
+         <!-- ── Read ────────────────────────────────────────── -->
+         <p class="fs-12 text-black400 mb-12"><strong>variant="read"</strong> — Chi tiết record: title + record ID + badge + primary action</p>
+         <div data-pattern="page-header" data-variant="read"
+@@ -129,7 +118,6 @@
+                   <li>Header cho mọi trang OMEU — đây là component bắt buộc</li>
+                   <li>Thể hiện title và primary CTA của trang</li>
+                   <li>Dùng <code>page-tabs</code> khi trang có nhiều trạng thái hoặc sub-views</li>
+-                  <li>Dùng <code>site-tabs</code> khi hệ thống mở nhiều trang cùng lúc (browser-like)</li>
+                 </ul>
+               </div>
+               <div class="ds-guide-dont">
+@@ -139,7 +127,6 @@
+                 </div>
+                 <ul class="ds-guide-list">
+                   <li>Standalone — page-header luôn đi kèm với page layout, không dùng riêng lẻ</li>
+-                  <li>Không dùng <code>page-tabs</code> và <code>site-tabs</code> cùng lúc trừ khi thiết kế yêu cầu</li>
+                 </ul>
+               </div>
+             </div>
+@@ -182,13 +169,7 @@
+      data-badge="Hoạt động" data-badge-status="active"
+      data-subtitle="Cập nhật lần cuối: 15/04/2026"
+      data-primary-action="Chỉnh sửa"
+-     data-page-tabs="Thông tin chung,Lịch sử,Hợp đồng"&gt;&lt;/div&gt;
+-
+-&lt;!-- Site tabs + page tabs --&gt;
+-&lt;div data-pattern="page-header" data-variant="browse"
+-     data-title="Quản lý sản phẩm"
+-     data-site-tabs="Trang chủ,Sản phẩm,Đơn hàng"
+-     data-page-tabs="Đang bán,Hết hàng,Ngừng bán"&gt;&lt;/div&gt;</pre>
++     data-page-tabs="Thông tin chung,Lịch sử,Hợp đồng"&gt;&lt;/div&gt;</pre>
+               </div>
+             </div>
+ 
+@@ -261,7 +242,6 @@
+                   <tr><td>data-show-history</td><td>true | false</td><td>true</td><td>Nút "Lịch sử thay đổi" (read / read-approval) — light secondary, chỉ icon + tooltip</td></tr>
+                   <tr><td>data-actions</td><td>CSV hoặc "icon:label,…"</td><td>-</td><td>Tác vụ (read-approval) theo luật portal: Từ chối → light warning · Duyệt / Phê duyệt → light success · Chỉnh sửa → fill primary ngoài cùng phải · nhãn khác → light secondary</td></tr>
+                   <tr><td>data-page-tabs</td><td>CSV: "Tab 1,Tab 2,Tab 3"</td><td>-</td><td>Tab trong trang = <code>sd-tab-group stretchTabs="false"</code>, nằm DƯỚI khung header như portal. Prefix * để chọn active: "*Tab 2". JS: nghe <code>sd-tab-change</code>; lớp móc cũ <code>.page-tab-zone .tab</code> vẫn chạy</td></tr>
+-                  <tr><td>data-site-tabs</td><td>CSV: "Page 1,Page 2"</td><td>-</td><td>Browser-like tabs ở trên cùng — Core / portal không có; Builder 2026-10-14: „bỏ qua“ (giữ nguyên, không làm tiếp)</td></tr>
+                 </tbody>
+               </table>
+             </div>

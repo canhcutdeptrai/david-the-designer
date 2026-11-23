@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-code-editor — Preview</title>
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-area">
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-code-editor"
+         data-subtitle="Khung xem/sửa code tô màu cú pháp kiểu cửa sổ macOS tối, có nút copy"></div>
+    <div class="content-zone">
+
+      <sd-section title="JSON, đang sửa">
+        <p class="fs-12 text-black400 mb-8">Mặc định <code>viewed = false</code> — gõ thử được, lớp tô màu bên dưới cập nhật theo từng phím. Model là object nên tự <code>JSON.stringify(…, null, 2)</code>; gõ JSON hợp lệ thì <code>sd-change</code> trả lại object.</p>
+        <sd-code-editor id="ce-json" language="json"></sd-code-editor>
+        <p class="fs-12 text-black400 mt-8 mb-0">Model hiện tại: <code id="ce-json-out">—</code></p>
+      </sd-section>
+
+      <sd-section title="TypeScript, chỉ xem">
+        <p class="fs-12 text-black400 mb-8"><code>viewed</code> — không có <code>&lt;textarea&gt;</code>, nhãn đổi thành <code>(READ ONLY)</code>.</p>
+        <sd-code-editor id="ce-ts" language="typescript" viewed></sd-code-editor>
+      </sd-section>
+
+      <sd-section title="HTML, maxHeight 120px">
+        <p class="fs-12 text-black400 mb-8">Nội dung dài hơn khung thì vùng code tự cuộn. Bấm <strong>Copy</strong> để thấy trạng thái đã copy (icon <code>check</code>, chữ xanh).</p>
+        <sd-code-editor id="ce-html" language="html" viewed maxHeight="120"></sd-code-editor>
+      </sd-section>
+
+      <sd-section title="SCSS">
+        <p class="fs-12 text-black400 mb-8">Catalog không có ví dụ <code>css</code>/<code>scss</code> — bảng màu <code>.token.*</code> thì có đủ, nên kit tách ở mức selector / property / value. Xem <code>_memory/known-gaps.md</code>.</p>
+        <sd-code-editor id="ce-scss" language="scss" viewed maxHeight="200"></sd-code-editor>
+      </sd-section>
+
+    </div>
+  </div>
+</div>
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+<script>
+  (function () {
+    var json = document.getElementById('ce-json');
+    json.model = {
+      maKeHoach: 'KH-FUND-2026-Q4',
+      donVi: 'Ban Tài chính',
+      tongNhuCau: 1250000000000,
+      nguonVon: [
+        { nganHang: 'Vietcombank', hanMuc: 500000000000, laiSuat: 5.2 },
+        { nganHang: 'BIDV', hanMuc: 450000000000, laiSuat: 5.45 }
+      ],
+      daPheDuyet: false,
+      ghiChu: null
+    };
+    var out = document.getElementById('ce-json-out');
+    out.textContent = typeof json.model;
+    json.addEventListener('sd-change', function (e) {
+      out.textContent = typeof e.detail.model === 'object' ? 'object (JSON hợp lệ)' : 'string (JSON chưa hợp lệ)';
+    });
+
+    document.getElementById('ce-ts').model = [
+      'export interface KhoanVay {',
+      '  maKhoanVay: string;',
+      '  nganHang: string;',
+      '  soTien: number;',
+      '  ngayDaoHan: Date;',
+      '}',
+      '',
+      '// Tính tổng dư nợ đến hạn trong kỳ',
+      'export const tongDenHan = (ds: KhoanVay[], den: Date): number =>',
+      '  ds.filter(k => k.ngayDaoHan <= den).reduce((s, k) => s + k.soTien, 0);'
+    ].join('\n');
+
+    document.getElementById('ce-html').model = [
+      '<sd-section title="Dòng tiền tuần 41">',
+      '  <sd-table [option]="tableOption" autoId="dong-tien"></sd-table>',
+      '  <sd-button title="Xuất Excel" color="primary" (click)="export()"></sd-button>',
+      '</sd-section>',
+      '',
+      '<!-- bảng lấy dữ liệu từ API /cashflow/weekly -->',
+      '<sd-inform color="warning" title="Số liệu tạm tính"></sd-inform>'
+    ].join('\n');
+
+    document.getElementById('ce-scss').model = [
+      '/* thẻ KPI của trung tâm công việc */',
+      '.bpm-kpi-card {',
+      '  --gap: 12px;',
+      '  display: flex;',
+      '  gap: var(--gap);',
+      '  padding: 16px 20px;',
+      '  border: 1px solid #e6e6e6;',
+      '',
+      '  &:hover { border-color: $primary; }',
+      '}'
+    ].join('\n');
+  })();
+</script>
+</body>
+</html>

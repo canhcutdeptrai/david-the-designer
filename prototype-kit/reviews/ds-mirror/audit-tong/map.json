@@ -1,0 +1,338 @@
+{
+ "c-anchor": {
+  "tags": [
+   "sd-anchor"
+  ],
+  "page": "anchor.html"
+ },
+ "c-autoid-inspector": {
+  "tags": [
+   "sd-autoid-inspector"
+  ],
+  "page": "autoid-inspector.html"
+ },
+ "c-avatar": {
+  "tags": [
+   "sd-avatar"
+  ],
+  "page": "avatar.html"
+ },
+ "c-badge": {
+  "tags": [
+   "sd-badge"
+  ],
+  "page": "badge.html"
+ },
+ "c-button": {
+  "tags": [
+   "sd-button"
+  ],
+  "page": "button.html"
+ },
+ "c-chart": {
+  "tags": [
+   "sd-bar-chart"
+  ],
+  "page": "chart.html"
+ },
+ "c-code-editor": {
+  "tags": [
+   "sd-code-editor"
+  ],
+  "page": "code-editor.html"
+ },
+ "c-document-builder": {
+  "tags": [
+   "sd-document-builder"
+  ],
+  "page": "document-builder.html"
+ },
+ "c-editor": {
+  "tags": [
+   "sd-editor"
+  ],
+  "page": "editor.html"
+ },
+ "c-form-builder": {
+  "tags": [
+   "sd-form-builder"
+  ],
+  "page": "form-builder.html"
+ },
+ "c-form-generic": {
+  "tags": [
+   "sd-input"
+  ],
+  "page": "form-generic.html"
+ },
+ "c-history": {
+  "tags": [
+   "sd-history"
+  ],
+  "page": "history.html"
+ },
+ "c-import-excel": {
+  "tags": [
+   "sd-button"
+  ],
+  "page": "import-excel.html"
+ },
+ "c-inform": {
+  "tags": [
+   "sd-inform"
+  ],
+  "page": "inform.html"
+ },
+ "c-mini-editor": {
+  "tags": [
+   "sd-mini-editor"
+  ],
+  "page": "mini-editor.html"
+ },
+ "c-modal": {
+  "tags": [
+   "sd-button"
+  ],
+  "page": "modal.html"
+ },
+ "c-modal-resizable": {
+  "tags": [
+   "sd-button"
+  ],
+  "page": "modal-resizable.html"
+ },
+ "c-operator": {
+  "tags": [
+   "sd-operator"
+  ],
+  "page": "operator.html"
+ },
+ "c-org-chart": {
+  "tags": [
+   "sd-org-chart"
+  ],
+  "page": "org-chart.html"
+ },
+ "c-preview-image": {
+  "tags": [
+   "sd-preview-image"
+  ],
+  "page": "preview-image.html"
+ },
+ "c-preview-pdf": {
+  "tags": [
+   "sd-preview-pdf"
+  ],
+  "page": "preview-pdf.html"
+ },
+ "c-query-bar": {
+  "tags": [
+   "sd-query-bar"
+  ],
+  "page": "query-bar.html"
+ },
+ "c-query-builder": {
+  "tags": [
+   "sd-query-builder"
+  ],
+  "page": "query-builder.html"
+ },
+ "c-quick-action": {
+  "tags": [
+   "sd-quick-action"
+  ],
+  "page": "quick-action.html"
+ },
+ "c-section": {
+  "tags": [
+   "sd-section"
+  ],
+  "page": "section.html"
+ },
+ "c-side-drawer": {
+  "tags": [
+   "sd-button"
+  ],
+  "page": "side-drawer.html"
+ },
+ "c-splitter": {
+  "tags": [
+   "sd-splitter"
+  ],
+  "page": "splitter.html"
+ },
+ "c-stepper": {
+  "tags": [
+   "sd-stepper"
+  ],
+  "page": "stepper.html"
+ },
+ "c-tab": {
+  "tags": [
+   "sd-tab-group"
+  ],
+  "page": "tab-group.html"
+ },
+ "c-tab-router": {
+  "tags": [
+   "sd-tab-router-outlet"
+  ],
+  "page": null
+ },
+ "c-table": {
+  "tags": [
+   "sd-table"
+  ],
+  "page": "table.html"
+ },
+ "c-tree": {
+  "tags": [
+   "sd-tree"
+  ],
+  "page": "tree.html"
+ },
+ "c-upload-file": {
+  "tags": [
+   "sd-upload-file"
+  ],
+  "page": "upload-file.html"
+ },
+ "c-view": {
+  "tags": [
+   "sd-view"
+  ],
+  "page": "view.html"
+ },
+ "c-autocomplete": {
+  "tags": [
+   "sd-autocomplete"
+  ],
+  "page": "autocomplete.html"
+ },
+ "c-checkbox": {
+  "tags": [
+   "sd-checkbox"
+  ],
+  "page": "checkbox.html"
+ },
+ "c-chip": {
+  "tags": [
+   "sd-chip"
+  ],
+  "page": "chip.html"
+ },
+ "c-chip-calendar": {
+  "tags": [
+   "sd-chip-calendar"
+  ],
+  "page": "chip-calendar.html"
+ },
+ "c-date": {
+  "tags": [
+   "sd-date"
+  ],
+  "page": "date.html"
+ },
+ "c-date-range": {
+  "tags": [
+   "sd-date-range"
+  ],
+  "page": "date-range.html"
+ },
+ "c-datetime": {
+  "tags": [
+   "sd-datetime"
+  ],
+  "page": "datetime.html"
+ },
+ "c-inline-text": {
+  "tags": [
+   "sd-inline-text"
+  ],
+  "page": "inline-text.html"
+ },
+ "c-input": {
+  "tags": [
+   "sd-input"
+  ],
+  "page": "input.html"
+ },
+ "c-input-color": {
+  "tags": [
+   "sd-input-color"
+  ],
+  "page": "input-color.html"
+ },
+ "c-input-number": {
+  "tags": [
+   "sd-input-number"
+  ],
+  "page": "input-number.html"
+ },
+ "c-label": {
+  "tags": [
+   "sd-label"
+  ],
+  "page": "label.html"
+ },
+ "c-radio": {
+  "tags": [
+   "sd-radio"
+  ],
+  "page": "radio.html"
+ },
+ "c-select": {
+  "tags": [
+   "sd-select"
+  ],
+  "page": "select.html"
+ },
+ "c-switch": {
+  "tags": [
+   "sd-switch"
+  ],
+  "page": "switch.html"
+ },
+ "c-textarea": {
+  "tags": [
+   "sd-textarea"
+  ],
+  "page": "textarea.html"
+ },
+ "c-tooltip": {
+  "tags": [
+   "sd-button"
+  ],
+  "page": "tooltip.html"
+ },
+ "c-confirm": {
+  "tags": [
+   "sd-button"
+  ],
+  "page": "service.html"
+ },
+ "c-loading": {
+  "tags": [
+   "sd-button"
+  ],
+  "page": "service.html"
+ },
+ "c-notify": {
+  "tags": [
+   "sd-button"
+  ],
+  "page": "service.html"
+ },
+ "c-filter-scorecard": {
+  "tags": [
+   "bpm-filter-scorecard"
+  ],
+  "page": "work-center.html"
+ },
+ "c-kpi-card": {
+  "tags": [
+   "bpm-kpi-card"
+  ],
+  "page": "work-center.html"
+ }
+}

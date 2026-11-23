@@ -1,0 +1,160 @@
+--- /tmp/sd-tokens.bak2	2026-10-12 09:30:49.603202509 +0000
++++ prototype-kit-CATALOG-1012m/design-system/core/styles/sd-tokens.css	2026-10-12 09:36:12.952588290 +0000
+@@ -1542,10 +1542,10 @@
+   padding-bottom: 7px;
+ }
+ sd-chip .sd-chip-list {
++  /* gap: 0 — khoảng cách do lề của từng chip lo, xem rule .sd-chip */
+   display: flex;
+   align-items: center;
+   flex-wrap: wrap;
+-  gap: 4px;
+   flex: 1;
+   min-width: 0;
+ }
+@@ -1554,6 +1554,10 @@
+    Bản trước dùng nền --sd-primary-light + chữ --sd-primary (nâu) và bo theo
+    --sd-border-radius — chip nhìn ra "thẻ màu thương hiệu" thay vì thẻ trung tính. */
+ sd-chip .sd-chip {
++  /* Catalog tách các chip bằng LỀ trên từng chip (`margin: 4px 0 4px 8px`),
++     không bằng `gap` của danh sách — nên khe ngang thật là 8px, khe dọc 8px
++     (4px+4px) khi chip xuống dòng. Rà soát 2026-10-12. */
++  margin: 4px 0 4px 8px;
+   display: inline-flex;
+   align-items: center;
+   gap: 2px;
+@@ -1578,13 +1582,18 @@
+ /* Nút xoá: catalog để opacity .54 trên icon cùng màu chữ, rõ lên khi focus —
+    không đổi nền thành màu thương hiệu như bản trước. */
+ sd-chip .sd-chip-remove {
++  /* Catalog: hộp flex 18×18 căn giữa, KHÔNG bo tròn (bo 50% là của kit). */
+   flex-shrink: 0;
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  width: 18px;
++  height: 18px;
+   font-size: 18px;
+   line-height: 1;
+   color: rgba(0, 0, 0, .87);
+   opacity: .54;
+   cursor: pointer;
+-  border-radius: 50%;
+   transition: opacity .15s ease;
+ }
+ sd-chip .sd-chip-remove:hover,
+@@ -1632,52 +1641,70 @@
+   box-shadow: 0 0 0 1px var(--sd-primary);
+ }
+ sd-chip-calendar .sd-cc-list {
++  /* gap: 0 — khoảng cách do lề của từng chip lo, xem rule .sd-chip */
+   display: flex;
+   align-items: center;
+   flex-wrap: wrap;
+-  gap: 4px;
+   flex: 1;
+   min-width: 0;
+ }
++/* Rà soát 2026-10-12. Đo `mat-chip-row` ở `#c-chip` và `#c-chip-calendar` của
++   catalog: GIỐNG HỆT NHAU — nền xám `rgba(0,0,0,.1045)`, chữ `rgba(0,0,0,.87)`,
++   bo 16px, cao 24px, nhãn 14px/500/20px, lề `4px 0 4px 8px`.
++   Vòng mirror trước đã sửa đúng cho `sd-chip` nhưng BỎ QUÊN `sd-chip-calendar` —
++   nó có bộ rule riêng, vẫn giữ nền `--sd-primary-light` + chữ `--sd-primary`
++   (nâu), bo 4px, chữ 13px. Nhìn ra "thẻ màu thương hiệu" thay vì thẻ trung tính. */
+ sd-chip-calendar .sd-chip {
++  /* Catalog tách các chip bằng LỀ trên từng chip (`margin: 4px 0 4px 8px`),
++     không bằng `gap` của danh sách — nên khe ngang thật là 8px, khe dọc 8px
++     (4px+4px) khi chip xuống dòng. Rà soát 2026-10-12. */
++  margin: 4px 0 4px 8px;
+   display: inline-flex;
+   align-items: center;
+   gap: 2px;
+   height: 24px;
+   max-width: 100%;
+-  padding: 0 4px 0 10px;
+-  background: var(--sd-primary-light);
+-  color: var(--sd-primary);
+-  border-radius: var(--sd-border-radius);
++  padding: 0 4px 0 12px;
++  background: color-mix(in srgb, rgba(0, 0, 0, .87) 12%, transparent);
++  color: rgba(0, 0, 0, .87);
++  border-radius: 16px;
+   font-family: var(--sd-font-family);
+-  font-size: 13px;
++  font-size: 14px;
+   font-weight: 500;
+   line-height: 20px;
+   white-space: nowrap;
+   cursor: default;
+ }
+-sd-chip-calendar .sd-form-field.sd-sm .sd-chip { height: 20px; font-size: 12px; }
++sd-chip-calendar .sd-form-field.sd-sm .sd-chip { height: 20px; font-size: 13px; }
+ sd-chip-calendar .sd-form-field.sd-lg .sd-chip { height: 28px; font-size: 14px; }
+ sd-chip-calendar .sd-chip-label {
+   overflow: hidden;
+   text-overflow: ellipsis;
+ }
++/* Nút xoá: y hệt `sd-chip` — icon 18px cùng màu chữ, mờ .54, rõ lên khi hover.
++   Bản trước 16px màu nâu và hover thì ĐỔI NỀN sang nâu đặc (2026-10-12). */
+ sd-chip-calendar .sd-chip-remove {
++  /* Catalog: hộp flex 18×18 căn giữa, KHÔNG bo tròn (bo 50% là của kit). */
+   flex-shrink: 0;
+-  font-size: 16px;
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  width: 18px;
++  height: 18px;
++  font-size: 18px;
+   line-height: 1;
+-  color: var(--sd-primary);
++  color: rgba(0, 0, 0, .87);
++  opacity: .54;
+   cursor: pointer;
+-  border-radius: 50%;
+-  transition: background 0.15s ease, color 0.15s ease;
+-}
+-sd-chip-calendar .sd-chip-remove:hover {
+-  background: var(--sd-primary);
+-  color: var(--color-neutral-0);
++  transition: opacity .15s ease;
+ }
++sd-chip-calendar .sd-chip-remove:hover,
++sd-chip-calendar .sd-chip-remove:focus { opacity: 1; }
+ sd-chip-calendar .sd-chip-input {
+-  flex: 1;
+-  min-width: 80px;
++  /* Catalog: `flex: 1 0 150px` — ô nhập giữ bề rộng tối thiểu 150px nên khi đủ
++     chip nó TỰ XUỐNG DÒNG, làm khung cao thêm một hàng. Kit để `flex:1;
++     min-width:80px` nên ô nhập cứ chen vào cùng hàng với chip (2026-10-12). */
++  flex: 1 0 150px;
+   height: 24px;
+   border: none;
+   outline: none;
+@@ -1698,6 +1725,26 @@
+ sd-chip-calendar .sd-form-field.sd-disabled .sd-chip-input {
+   cursor: default;
+ }
++/* Ngày ĐÃ CHỌN trong lịch của `sd-chip-calendar` khác hẳn `sd-date`.
++   Catalog có hẳn một rule riêng trong `css/components/chip-calendar.css`:
++     #c-chip-calendar .sd-chip-calendar-selected-date .mat-calendar-body-cell-content
++     { border-radius:50%; background: var(--sd-primary-light) !important;
++       color: var(--sd-primary) !important }
++   tức viên TRÒN nền nâu NHẠT + chữ nâu — không phải nền nâu ĐẶC + chữ trắng của
++   `.mat-calendar-body-selected` mà `sd-date` / `sd-date-range` dùng.
++   `_memory/known-gaps.md` từng ghi lớp này là "do script của trang catalog gắn,
++   không phải của thư viện" — SAI: nó có luật CSS thật trong chính tệp CSS của
++   component, và nhãn biến thể của catalog cũng ghi "ngày đã chọn tô
++   --sd-primary-light". Đã sửa lại ghi chú đó (rà soát 2026-10-12). */
++sd-chip-calendar .sd-cc-days .form-field-datepicker-day.selected {
++  border-radius: 50%;
++  background: var(--sd-primary-light);
++  color: var(--sd-primary);
++}
++sd-chip-calendar .sd-cc-days .form-field-datepicker-day.selected.today {
++  border-color: rgba(0, 0, 0, .54);
++  box-shadow: none;
++}
+ sd-chip-calendar .sd-field-suffix {
+   flex-shrink: 0;
+   font-size: 18px;

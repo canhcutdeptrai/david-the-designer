@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directive — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="Directive"
+         data-subtitle="a[sdHref] · [sdHoverCopy] · [sdScroll] · *sdDesktop / *sdMobile"></div>
+
+    <div class="content-zone">
+
+        <sd-section title="a[sdHref]">
+          <p class="fs-12 text-black400 mb-8">Link bắt đầu bằng <code>http</code> mở tab mới; link nội bộ điều hướng thường. <code>sdHref</code> rỗng thì không làm gì.</p>
+          <div class="d-flex align-items-center gap-8" style="gap:24px;">
+            <a sdHref="/funding-plan/detail?id=KH-2026-031&amp;tab=cash-flow">KH-2026-031 (nội bộ)</a>
+            <a sdHref="https://www.sbv.gov.vn">sbv.gov.vn (ngoài — mở tab mới)</a>
+            <a sdHref="">Không có URL</a>
+          </div>
+        </sd-section>
+
+        <sd-section title="[sdHoverCopy]">
+          <p class="fs-12 text-black400 mb-8">Rê chuột vào ô giá trị để thấy nút sao chép ở mép phải; bấm thì tooltip đổi thành “Copied” trong 1 giây.</p>
+          <div style="display:flex;flex-direction:column;width:420px;max-width:100%;background:#fff;border:1px solid var(--sd-black200);border-radius:8px;">
+            <div style="display:flex;align-items:center;min-height:40px;border-bottom:1px solid var(--sd-black200);font-size:14px;">
+              <span style="width:150px;flex-shrink:0;padding:0 12px;color:var(--sd-black400);font-size:12px;">Mã hồ sơ</span>
+              <div sdHoverCopy="HS-2026-00125" style="flex:1;min-width:0;padding:10px 40px 10px 12px;white-space:nowrap;">HS-2026-00125</div>
+            </div>
+            <div style="display:flex;align-items:center;min-height:40px;border-bottom:1px solid var(--sd-black200);font-size:14px;">
+              <span style="width:150px;flex-shrink:0;padding:0 12px;color:var(--sd-black400);font-size:12px;">Số hợp đồng vay</span>
+              <div sdHoverCopy="HĐTD/2026/VCB-0417" style="flex:1;min-width:0;padding:10px 40px 10px 12px;white-space:nowrap;">HĐTD/2026/VCB-0417</div>
+            </div>
+            <div style="display:flex;align-items:center;min-height:40px;font-size:14px;">
+              <span style="width:150px;flex-shrink:0;padding:0 12px;color:var(--sd-black400);font-size:12px;">Không cho chép</span>
+              <div sdHoverCopy="0071001234567" sdHoverCopyDisabled style="flex:1;min-width:0;padding:10px 40px 10px 12px;white-space:nowrap;">0071001234567</div>
+            </div>
+          </div>
+        </sd-section>
+
+        <sd-section title="[sdScroll]">
+          <p class="fs-12 text-black400 mb-8">Cuộn dọc bình thường; thanh cuộn ngang chỉ hiện khi rê chuột vào khung.</p>
+          <div sdScroll id="sc-box" style="width:460px;max-width:100%;height:150px;background:#fff;border:1px solid var(--sd-black200);border-radius:8px;">
+            <!-- Giữ <table> thuần (2026-10-14): đây chỉ là NỘI DUNG mẫu đủ rộng để thấy thanh cuộn của
+                 [sdScroll] — sd-table tự có khung cuộn riêng nên không minh hoạ được directive. -->
+            <table style="border-collapse:collapse;font-size:13px;white-space:nowrap;">
+              <thead><tr><th style="padding:8px 12px;text-align:left;">Mã khoản vay</th><th style="padding:8px 12px;text-align:left;">Ngân hàng</th><th style="padding:8px 12px;text-align:left;">Ngày giải ngân</th><th style="padding:8px 12px;text-align:left;">Ngày đáo hạn</th><th style="padding:8px 12px;text-align:left;">Dư nợ (tỷ VND)</th><th style="padding:8px 12px;text-align:left;">Lãi suất</th><th style="padding:8px 12px;text-align:left;">Trạng thái</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:8px 12px;">KV-2026-0112</td><td style="padding:8px 12px;">Vietcombank</td><td style="padding:8px 12px;">05/01/2026</td><td style="padding:8px 12px;">05/07/2026</td><td style="padding:8px 12px;">120,00</td><td style="padding:8px 12px;">6,20%</td><td style="padding:8px 12px;">Đang hiệu lực</td></tr>
+                <tr><td style="padding:8px 12px;">KV-2026-0118</td><td style="padding:8px 12px;">BIDV</td><td style="padding:8px 12px;">12/02/2026</td><td style="padding:8px 12px;">12/08/2026</td><td style="padding:8px 12px;">85,50</td><td style="padding:8px 12px;">6,45%</td><td style="padding:8px 12px;">Đang hiệu lực</td></tr>
+                <tr><td style="padding:8px 12px;">KV-2026-0124</td><td style="padding:8px 12px;">Techcombank</td><td style="padding:8px 12px;">20/03/2026</td><td style="padding:8px 12px;">20/09/2026</td><td style="padding:8px 12px;">200,00</td><td style="padding:8px 12px;">6,10%</td><td style="padding:8px 12px;">Chờ giải ngân</td></tr>
+                <tr><td style="padding:8px 12px;">KV-2026-0131</td><td style="padding:8px 12px;">VietinBank</td><td style="padding:8px 12px;">02/04/2026</td><td style="padding:8px 12px;">02/10/2026</td><td style="padding:8px 12px;">64,75</td><td style="padding:8px 12px;">6,30%</td><td style="padding:8px 12px;">Đang hiệu lực</td></tr>
+                <tr><td style="padding:8px 12px;">KV-2026-0140</td><td style="padding:8px 12px;">MB Bank</td><td style="padding:8px 12px;">15/05/2026</td><td style="padding:8px 12px;">15/11/2026</td><td style="padding:8px 12px;">150,00</td><td style="padding:8px 12px;">6,55%</td><td style="padding:8px 12px;">Quá hạn</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <sd-button class="mt-8" type="light" color="primary" size="sm" title="Đưa về đầu" onclick="sdScrollTop('#sc-box')"></sd-button>
+        </sd-section>
+
+        <sd-section title="*sdDesktop / *sdMobile">
+          <p class="fs-12 text-black400 mb-8">Directive cấu trúc: phần tử KHÔNG thuộc loại thiết bị hiện tại bị <b>gỡ khỏi DOM</b>, không phải ẩn. Kiểm tra một lần lúc khởi tạo.</p>
+          <div class="d-flex align-items-center" style="gap:16px;">
+            <sd-badge sdDesktop type="round" color="info" title="Khối này chỉ có trên desktop"></sd-badge>
+            <sd-badge sdMobile type="round" color="warning" title="Khối này chỉ có trên mobile"></sd-badge>
+          </div>
+        </sd-section>
+
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+</body>
+</html>

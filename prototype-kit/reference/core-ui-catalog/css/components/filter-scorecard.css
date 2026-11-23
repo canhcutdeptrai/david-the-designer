@@ -1,0 +1,21 @@
+/* Filter scorecard — #c-filter-scorecard */
+#c-filter-scorecard .filter-scorecard {position:relative;display:flex;flex-direction:column;gap:2px;min-width:160px;min-height:60px;padding:8px 32px 8px 12px;border:1px solid var(--sd-black200);border-radius:8px;background:#fff;cursor:pointer;text-align:left;font:inherit;transition:background 0.15s ease,border-color 0.15s ease}
+#c-filter-scorecard .filter-scorecard:hover {background:var(--sd-black100);border-color:var(--sd-black300)}
+#c-filter-scorecard .filter-scorecard:hover .filter-scorecard__filter {opacity:1}
+#c-filter-scorecard .filter-scorecard:focus-visible {outline:2px solid var(--sd-primary);outline-offset:2px}
+#c-filter-scorecard .filter-scorecard--active {border-color:var(--sd-primary);background:#fff}
+#c-filter-scorecard .filter-scorecard--active:hover {background:var(--sd-primary-light);border-color:var(--sd-primary)}
+#c-filter-scorecard .filter-scorecard__filter {position:absolute;top:4px;right:4px;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:4px;color:var(--sd-black400);opacity:0;transition:opacity 0.15s ease,background 0.15s ease,color 0.15s ease}
+#c-filter-scorecard .filter-scorecard__filter .material-icons,
+#c-filter-scorecard .filter-scorecard__filter .material-icons-outlined {font-size:14px;line-height:1}
+#c-filter-scorecard .filter-scorecard--active .filter-scorecard__filter {opacity:1;background:var(--sd-primary);color:#fff}
+#c-filter-scorecard .filter-scorecard--active:hover .filter-scorecard__filter {background:var(--sd-primary-dark)}
+#c-filter-scorecard .filter-scorecard__label {color:var(--sd-black400)}
+#c-filter-scorecard .filter-scorecard__value {color:var(--sd-black500);font-size:14px;font-weight:700;line-height:20px}
+#c-filter-scorecard .T12R {font-size:12px!important;font-weight:400;line-height:16px}
+#c-filter-scorecard :where(.strip) button {margin:0;overflow:visible;text-transform:none;-webkit-appearance:button}
+#c-filter-scorecard .strip {display:flex;flex-wrap:wrap;gap:16px;font-family:Roboto,'Helvetica Neue',sans-serif;font-size:14px;line-height:1.5;color:#212529}
+#c-filter-scorecard .strip--hover .filter-scorecard[data-force-hover] {background:var(--sd-black100);border-color:var(--sd-black300)}
+#c-filter-scorecard .strip--hover .filter-scorecard[data-force-hover] .filter-scorecard__filter {opacity:1}
+#c-filter-scorecard .strip--hover .filter-scorecard--active[data-force-hover] {background:var(--sd-primary-light);border-color:var(--sd-primary)}
+#c-filter-scorecard .strip--hover .filter-scorecard--active[data-force-hover] .filter-scorecard__filter {background:var(--sd-primary-dark)}

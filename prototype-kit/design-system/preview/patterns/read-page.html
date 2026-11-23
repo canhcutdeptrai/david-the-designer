@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Read Page Layout — Enterprise Portal</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="read-approval"
+         data-title="Chi tiết [Record Type]"
+         data-record-id="#REC-00123"
+         data-badge="Chờ duyệt" data-badge-status="waiting"
+         data-actions="edit:Chỉnh sửa,thumb_down:Từ chối,thumb_up:Phê duyệt"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+      <div class="detail-page-wrapper">
+
+        <!-- ══════════════════════════════════════════════════
+             DEMO 1 — 3-Column Info Cards
+             Dùng sd-section + sd-section-item với noPaddingBody collapsible
+             Điều kiện: đúng 3 card + số rows gần nhau (±3)
+             ══════════════════════════════════════════════════ -->
+        <div class="detail-cards-row">
+
+          <sd-section title="Thông tin chung" noPaddingBody collapsible>
+            <sd-section-item label="Mã [Record Type]">REC-00123</sd-section-item>
+            <sd-section-item label="Tên [Record Type]">Tên record ví dụ</sd-section-item>
+            <sd-section-item label="Danh mục">Loại A</sd-section-item>
+            <sd-section-item label="Ngày tạo">01/04/2026 09:00</sd-section-item>
+          </sd-section>
+
+          <sd-section title="Thông tin phê duyệt" noPaddingBody collapsible>
+            <sd-section-item label="Trạng thái"><sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" title="Chờ duyệt"></sd-badge></sd-section-item>
+            <sd-section-item label="Người duyệt">—</sd-section-item>
+            <sd-section-item label="Nội dung duyệt">—</sd-section-item>
+            <sd-section-item label="Ngày duyệt">—</sd-section-item>
+          </sd-section>
+
+          <sd-section title="Hồ sơ gửi duyệt" noPaddingBody collapsible>
+            <sd-section-item label="Người tạo">nhanvien@company.com</sd-section-item>
+            <sd-section-item label="Ngày tạo">22/02/2022 20:22:00</sd-section-item>
+            <sd-section-item label="Ghi chú gửi duyệt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ultrices nisi vehicula, vehicula turpis quis, maximus tortor.</sd-section-item>
+          </sd-section>
+
+        </div>
+
+        <!-- ══════════════════════════════════════════════════
+             DEMO 2 — Full-width sd-section chia nhóm con
+             (.detail-section-group + .detail-section-group-title)
+             Dùng khi 1 section có nhiều field không chia đều 3 cột
+             cho detail-cards-row. KHÔNG dùng .form-sub-group (chỉ
+             cho Add/Edit) — title nhóm con là text đậm full-width,
+             KHÔNG icon trên title sd-section.
+             Theo Figma: MAG Sales Platform | Design System,
+             node 62938:1961 ("Section title" + grid Label/Content).
+             ══════════════════════════════════════════════════ -->
+        <sd-section title="Thông tin chiết khấu" collapsible>
+
+          <div class="detail-section-group">
+            <div class="detail-section-group-title">Nhóm field 1</div>
+            <div class="form-grid-4">
+              <div class="form-field-group">
+                <sd-input label="Loại chiết khấu" value="Cam kết tiền thuê" disabled viewed></sd-input>
+              </div>
+              <div class="form-field-group">
+                <sd-input label="Đơn giá thuê" value="50.000.000 VND/tháng" disabled viewed></sd-input>
+              </div>
+              <div class="form-field-group">
+                <sd-input label="Chu kỳ trả" value="2 tháng" disabled viewed></sd-input>
+              </div>
+              <div class="form-field-group">
+                <sd-input label="Số tháng cam kết" value="6 tháng" disabled viewed></sd-input>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section-group">
+            <div class="detail-section-group-title">Nhóm field 2</div>
+            <div class="form-grid-4">
+              <div class="form-field-group">
+                <sd-input label="Giá trả định kỳ" value="45.000.000 VND" disabled viewed></sd-input>
+              </div>
+              <div class="form-field-group">
+                <sd-input label="Thời gian trả" value="Đầu chu kỳ" disabled viewed></sd-input>
+              </div>
+              <div class="form-field-group col-span-2">
+                <sd-input label="Điều kiện áp dụng" value="Diện tích thông thuỷ 30–40 m², giá trị hợp đồng ≥ 100tr VND" disabled viewed></sd-input>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section-group">
+            <div class="detail-section-group-title">Nhóm field 3</div>
+            <div class="form-grid-4">
+              <div class="form-field-group">
+                <sd-input label="Loại căn hộ" value="Studio, 1PN, 2PN" disabled viewed></sd-input>
+              </div>
+              <div class="form-field-group">
+                <sd-input label="Diện tích đất (m²)" value="> 100" disabled viewed></sd-input>
+              </div>
+              <div class="form-field-group col-span-2">
+                <sd-input label="Thời gian ráp căn" value="22/02/2022 – 22/02/2099" disabled viewed></sd-input>
+              </div>
+            </div>
+          </div>
+
+        </sd-section>
+
+        <!-- ══════════════════════════════════════════════════
+             DEMO 3 — Full-width sd-section với sd-table
+             ══════════════════════════════════════════════════ -->
+        <sd-section title="Bảng giá (80)" collapsible noPaddingBody>
+
+          <!-- Tab theo nhóm bảng giá = sd-tab-group (catalog #c-tab), số dòng ở `badge` của sd-tab.
+               Bản trước dùng `.tabs > button.tab` + `.tab-count` tự dựng (2026-10-14 đổi). -->
+          <sd-tab-group variant="line" selectedIndex="0">
+            <sd-tab label="Sơ cấp - VN" badge="20">
+              <sd-table
+                hide-inline-filter
+                paginated
+                pageSize="10"
+                pageSizes="10,20,50"
+                total="20"
+                columns='[
+                  {"field":"sysCode","title":"Mã căn hệ thống","type":"string"},
+                  {"field":"comCode","title":"Mã căn thương mại","type":"string"},
+                  {"field":"unitType","title":"Loại căn","type":"string"},
+                  {"field":"direction","title":"Hướng","type":"string"},
+                  {"field":"netArea","title":"DT thông thuỷ (m²)","type":"number","align":"right","option":{"precision":0}},
+                  {"field":"allIn","title":"ALL IN (VND)","type":"number","align":"right","option":{"precision":0}},
+                  {"field":"netOff","title":"Net off (VND)","type":"number","align":"right","option":{"precision":0}}
+                ]'
+                data='[
+                  {"sysCode":"HH-A-05-01","comCode":"U38A-04-01","unitType":"Studio","direction":"Bắc","netArea":52.3,"allIn":5326000000,"netOff":326000},
+                  {"sysCode":"HH-A-20-15","comCode":"U38A-04-02","unitType":"1PN","direction":"Nam","netArea":67.3,"allIn":5327000000,"netOff":327000},
+                  {"sysCode":"HH-B-10-08","comCode":"U38A-04-03","unitType":"2PN","direction":"Nam","netArea":77.5,"allIn":5328000000,"netOff":328000}
+                ]'
+              ></sd-table>
+            </sd-tab>
+            <sd-tab label="Sơ cấp NNN - HĐMB" badge="25">
+              <sd-table
+                hide-inline-filter
+                paginated
+                pageSize="10"
+                pageSizes="10,20,50"
+                total="25"
+                columns='[
+                  {"field":"sysCode","title":"Mã căn hệ thống","type":"string"},
+                  {"field":"comCode","title":"Mã căn thương mại","type":"string"},
+                  {"field":"unitType","title":"Loại căn","type":"string"},
+                  {"field":"direction","title":"Hướng","type":"string"},
+                  {"field":"netArea","title":"DT thông thuỷ (m²)","type":"number","align":"right","option":{"precision":0}},
+                  {"field":"allIn","title":"ALL IN (VND)","type":"number","align":"right","option":{"precision":0}},
+                  {"field":"netOff","title":"Net off (VND)","type":"number","align":"right","option":{"precision":0}}
+                ]'
+                data='[
+                  {"sysCode":"HH-C-03-02","comCode":"U38C-03-02","unitType":"2PN","direction":"Đông","netArea":74.1,"allIn":6120000000,"netOff":412000},
+                  {"sysCode":"HH-C-11-06","comCode":"U38C-11-06","unitType":"3PN","direction":"Tây","netArea":98.6,"allIn":8450000000,"netOff":515000}
+                ]'
+              ></sd-table>
+            </sd-tab>
+            <sd-tab label="Sơ cấp NNN - HĐT" badge="35">
+              <sd-table
+                hide-inline-filter
+                paginated
+                pageSize="10"
+                pageSizes="10,20,50"
+                total="35"
+                columns='[
+                  {"field":"sysCode","title":"Mã căn hệ thống","type":"string"},
+                  {"field":"comCode","title":"Mã căn thương mại","type":"string"},
+                  {"field":"unitType","title":"Loại căn","type":"string"},
+                  {"field":"direction","title":"Hướng","type":"string"},
+                  {"field":"netArea","title":"DT thông thuỷ (m²)","type":"number","align":"right","option":{"precision":0}},
+                  {"field":"allIn","title":"ALL IN (VND)","type":"number","align":"right","option":{"precision":0}},
+                  {"field":"netOff","title":"Net off (VND)","type":"number","align":"right","option":{"precision":0}}
+                ]'
+                data='[
+                  {"sysCode":"HH-D-07-04","comCode":"U38D-07-04","unitType":"1PN","direction":"Bắc","netArea":55.0,"allIn":4980000000,"netOff":298000},
+                  {"sysCode":"HH-D-15-09","comCode":"U38D-15-09","unitType":"Studio","direction":"Nam","netArea":38.2,"allIn":3610000000,"netOff":215000}
+                ]'
+              ></sd-table>
+            </sd-tab>
+          </sd-tab-group>
+
+        </sd-section>
+
+        <!-- ══════════════════════════════════════════════════
+             DEMO 4 — Lịch sử (sd-table không paginated)
+             ══════════════════════════════════════════════════ -->
+        <sd-section title="Lịch sử thay đổi" collapsible noPaddingBody>
+          <sd-table
+            hide-inline-filter
+            columns='[
+              {"field":"time","title":"Thời gian","type":"datetime"},
+              {"field":"actor","title":"Người thực hiện","type":"string"},
+              {"field":"action","title":"Hành động","type":"string"},
+              {"field":"note","title":"Ghi chú","type":"string"}
+            ]'
+            data='[
+              {"time":"2026/04/01 09:00","actor":"admin@company.com","action":"Tạo nháp","note":"Khởi tạo record"},
+              {"time":"2026/04/02 14:30","actor":"admin@company.com","action":"Gửi duyệt","note":"Gửi lên Quản lý phê duyệt"},
+              {"time":"2026/04/03 09:00","actor":"Hệ thống","action":"Phân công duyệt","note":"Chuyển đến manager@company.com"}
+            ]'
+          ></sd-table>
+        </sd-section>
+
+      </div><!-- /detail-page-wrapper -->
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Trang chi tiết một record cụ thể (chi tiết đơn hàng, hồ sơ nhân viên)</li>
+                  <li>Sau khi click vào hàng trong Browse page</li>
+                  <li>Hiển thị thông tin đầy đủ với actions (Sửa, Duyệt, Từ chối...)</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Danh sách nhiều records (dùng Browse)</li>
+                  <li>Chỉnh sửa inline (dùng Edit page)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Trang chi tiết đơn hàng gồm: header với mã đơn + badge trạng thái + nút Duyệt/Từ chối, 3 info cards (Thông tin chung / Tài chính / Hệ thống), section Danh sách sản phẩm, section Lịch sử duyệt."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+
+        <!-- ── Pattern: 3-Column Info Cards ─────────────────── -->
+        <sd-section title="Pattern: 3-Column Info Cards">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi đủ 2 điều kiện
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Đúng 3 card đặt cạnh nhau trên 1 hàng</li>
+                  <li>Số rows giữa 3 card chênh lệch ≤ 3 rows</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Chỉ có 2 card (dùng sd-section xếp dọc)</li>
+                  <li>Số rows chênh lệch lớn — card ngắn bị stretch nhiều, tạo khoảng trắng thừa</li>
+                  <li>Nội dung card có bảng hoặc danh sách dài (dùng sd-section full-width)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp — dùng <code>sd-section noPaddingBody collapsible</code> bên trong <code>div.detail-cards-row</code></p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;div class="detail-cards-row"&gt;
+
+  &lt;sd-section title="Thông tin chung" noPaddingBody collapsible&gt;
+    &lt;sd-section-item label="Mã"&gt;REC-001&lt;/sd-section-item&gt;
+    &lt;sd-section-item label="Tên"&gt;Record 1&lt;/sd-section-item&gt;
+    &lt;sd-section-item label="Trạng thái"&gt;
+      &lt;sd-badge color="success" icon="play_circle" title="Hoạt động"&gt;&lt;/sd-badge&gt;
+    &lt;/sd-section-item&gt;
+  &lt;/sd-section&gt;
+
+  &lt;!-- card 2, card 3 — cùng cấu trúc --&gt;
+
+&lt;/div&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Ghi chú kỹ thuật</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Điểm</th><th>Giải thích</th></tr></thead>
+                <tbody>
+                  <tr><td>Equal-height</td><td>CSS tự xử lý khi <code>sd-section</code> là con trực tiếp của <code>.detail-cards-row</code></td></tr>
+                  <tr><td>Collapse toggle</td><td><code>sd-section collapsible</code> tự xử lý, không cần JS thêm</td></tr>
+                  <tr><td>Badge trong card</td><td>Đặt <code>sd-badge</code> trực tiếp bên trong <code>sd-section-item</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </sd-section>
+
+        <!-- ── Pattern: Detail Section Group ────────────────── -->
+        <sd-section title="Pattern: Detail Section Group">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>1 section full-width có nhiều field, không chia đều 3 cột cho detail-cards-row</li>
+                  <li>Cần chia field theo nhiều nhóm con (VD: "Đợt thu" / "Điều khoản thanh toán")</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Dùng <code>.form-sub-group</code> cho Read page — pattern đó có cột label trái 160px, chỉ đúng cho Add/Edit</li>
+                  <li>Thêm <code>icon</code> trên title <code>sd-section</code> — Read page không dùng icon (xem Figma node 62938:1961)</li>
+                  <li>Trộn field <code>col-span-1</code> và <code>col-span-2</code> trong cùng 1 row — mỗi row nên đồng nhất độ rộng cột</li>
+                  <li>Row chỉ có 2 field (1 ngắn + 1 dài) chia đều <code>col-span-2</code>+<code>col-span-2</code> — field dài sẽ bị đẩy sang cột 3 thay vì bắt đầu ngay ở cột 2. Dùng <code>col-span-1</code>+<code>col-span-3</code> thay thế</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Section 'Thông tin đợt thu' chia 2 nhóm con: Đợt thu (4 field) và Điều khoản thanh toán (2 field: 1 field mã ngắn + 1 field tên dài) — mỗi nhóm có title đậm, không icon, cách nhau bằng đường kẻ. Field dài trong row 2-field bắt đầu ngay ở cột 2, không nhảy sang cột 3."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Page header — variant read</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;!-- Read: title + record-id + badge + 1 primary action --&gt;
+&lt;div data-pattern="page-header" data-variant="read"
+     data-title="Chi tiết Đơn hàng"
+     data-record-id="#DH-2024-001"
+     data-badge="Chờ duyệt" data-badge-status="waiting"
+     data-primary-action="Chỉnh sửa"
+     data-primary-href="chinh-sua.html"&gt;&lt;/div&gt;
+
+&lt;!-- Read-approval: nhiều action buttons --&gt;
+&lt;div data-pattern="page-header" data-variant="read-approval"
+     data-title="Chi tiết Đơn hàng"
+     data-record-id="#DH-2024-001"
+     data-badge="Chờ duyệt" data-badge-status="waiting"
+     data-actions="thumb_up:Phê duyệt,thumb_down:Từ chối,feedback:Yêu cầu bổ sung"&gt;&lt;/div&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes — page-header</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>data-variant</td><td>read | read-approval</td><td>—</td><td>read: 1 primary button; read-approval: N secondary buttons</td></tr>
+                  <tr><td>data-title</td><td>string</td><td>—</td><td>Tiêu đề trang</td></tr>
+                  <tr><td>data-record-id</td><td>string</td><td>—</td><td>Mã định danh, hiển thị màu primary (ví dụ: "#DH-001")</td></tr>
+                  <tr><td>data-badge</td><td>string</td><td>—</td><td>Tên trạng thái hiển thị</td></tr>
+                  <tr><td>data-badge-status</td><td>STATUS_MAP key</td><td>—</td><td>pending | waiting | approved | denied | warning | active | deactivated...</td></tr>
+                  <tr><td>data-primary-action</td><td>string</td><td>—</td><td>Label nút primary (chỉ variant read)</td></tr>
+                  <tr><td>data-primary-href</td><td>path</td><td>—</td><td>URL nút primary navigate đến</td></tr>
+                  <tr><td>data-actions</td><td>"icon:Label,..."</td><td>—</td><td>Danh sách action buttons (chỉ variant read-approval)</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Detail Section Group — chia nhóm con trong 1 sd-section full-width (KHÔNG dùng .form-sub-group)</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;!-- Read page: sd-section KHÔNG có icon trên title --&gt;
+&lt;sd-section title="Thông tin đợt thu"&gt;
+
+  &lt;div class="detail-section-group"&gt;
+    &lt;div class="detail-section-group-title"&gt;Đợt thu&lt;/div&gt;
+    &lt;div class="form-grid-4"&gt;
+      &lt;div class="form-field-group"&gt;
+        &lt;sd-input label="Loại đợt thu" value="HDMB" disabled viewed&gt;&lt;/sd-input&gt;
+      &lt;/div&gt;
+      &lt;!-- đủ 4 field/row — dùng col-span-2/3/4 nếu value dài,
+           nhưng giữ cùng độ rộng cho mọi field trong CÙNG 1 row --&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- .detail-section-group + .detail-section-group + ... tự có divider --&gt;
+  &lt;div class="detail-section-group"&gt;
+    &lt;div class="detail-section-group-title"&gt;Điều khoản thanh toán&lt;/div&gt;
+    &lt;div class="form-grid-4"&gt;
+      &lt;!-- Row chỉ có 2 field (1 ngắn + 1 dài): col-span-1 + col-span-3,
+           KHÔNG chia đều col-span-2 + col-span-2 (field 2 sẽ bị đẩy
+           sang track 3 thay vì bắt đầu ngay ở cột 2) --&gt;
+      &lt;div class="form-field-group"&gt;
+        &lt;sd-input label="Mã điều khoản thanh toán" value="PTTT-STANDARD-24" disabled viewed&gt;&lt;/sd-input&gt;
+      &lt;/div&gt;
+      &lt;div class="form-field-group col-span-3"&gt;
+        &lt;sd-input label="Tên phương án tiến độ" value="Tiến độ tiêu chuẩn 24 đợt" disabled viewed&gt;&lt;/sd-input&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+&lt;/sd-section&gt;</pre>
+              </div>
+              <p class="fs-12 text-black400 mt-8 mb-0">Nguồn: <a href="https://www.figma.com/design/ZoMxT636uSRCchdZ9GUILs/%F0%9F%A7%AC-MAG-Sales-Platform-%7C-Design-System?node-id=62938-1961" target="_blank" rel="noopener">MAG Sales Platform | Design System</a>, node 62938:1961.</p>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      // Show first panel on load
+      showPanel(0);
+    }
+
+    // patterns:loaded already fired before this inline script runs,
+    // so call directly — DOM is ready at this point.
+    initPreviewTabs();
+  })();
+</script>
+
+</body>
+</html>

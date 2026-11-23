@@ -1,0 +1,355 @@
+--- a/design-system/sd-components/sd-components.js
++++ b/design-system/sd-components/sd-components.js
+@@ -2995,6 +2995,11 @@
+       if (!this.isConnected) return;
+       this._render();
+     }
++    get selectedTemplate() { return this._selectedTemplate || null; }
++    set selectedTemplate(fn) {
++      this._selectedTemplate = typeof fn === 'function' ? fn : null;
++      if (this.isConnected) this._render();
++    }
+ 
+     /* booleanAttribute của Angular: attr="false" là FALSE, có mặt là TRUE */
+     _boolAttr(a, b, dflt) {
+@@ -3114,6 +3119,17 @@
+ 
+       var displayText = multiple ? this._getDisplayTextMulti() : this._getDisplayText();
+ 
++      /* `sdSelectedDef` của catalog (mẫu cho phần giá trị đã chọn) — HTML không
++         truyền được ng-template nên kit trải phẳng thành thuộc tính JS
++         `el.selectedTemplate = function (item) { return '<…>'; }` (Rule 18,
++         ngoại lệ 2). Chỉ áp cho chọn ĐƠN khi đang có mục được chọn. */
++      var customTrigger = '';
++      if (typeof this._selectedTemplate === 'function' && !multiple && value) {
++        var vfT = this._getValueField();
++        var hit = this._getItems().find(function (i) { return String(i[vfT]) === String(value); });
++        if (hit) customTrigger = String(this._selectedTemplate(hit) || '');
++      }
++
+       /* viewed=true: xem tĩnh hẳn, không dựng editor.
+          viewed='inline': vẫn là editor nhưng mặt ngoài là chữ, bấm vào mới mở
+          panel; có × xoá khi clearable (mặc định true) và đang có giá trị. */
+@@ -3260,12 +3276,13 @@
+            nó mang `text-overflow: ellipsis`. Kit dựng ô này bằng <input readonly>
+            (để dùng chung CSS .sd-form-field với các ô nhập khác) nên gắn thêm
+            lớp đó; thiếu nó thì tên dài bị CẮT CỤT không có dấu … (đo 2026-10-11). */
+-        '<input class="sd-input sd-trigger-text" type="text" readonly placeholder="' + escAttr(placeholder) + '" value="' + escAttr(displayText) + '"' + (disabled ? ' disabled' : '') +
++        '<input class="sd-input sd-trigger-text' + (customTrigger ? ' sd-trigger-hidden' : '') + '" type="text" readonly placeholder="' + escAttr(placeholder) + '" value="' + escAttr(displayText) + '"' + (disabled ? ' disabled' : '') +
+           (nameAttr ? ' name="' + escAttr(nameAttr) + '"' : '') +
+           ' data-disabled="' + (disabled ? 'true' : 'false') + '"' +
+           ' data-invalid="' + (showError ? 'true' : 'false') + '"' +
+           ' data-required="' + (required ? 'true' : 'false') + '"' +
+           (errorMsg ? ' data-error-message="' + escAttr(errorMsg) + '"' : '') + '>' +
++        (customTrigger ? '<div class="sd-trigger-custom">' + customTrigger + '</div>' : '') +
+         errorIconHtml +
+         clearHtml +
+         arrowHtml +
+@@ -18911,6 +18928,18 @@
+   function sdQbItems(list) {
+     return escAttr(JSON.stringify(list));
+   }
++  /* Icon mặc định theo kiểu trường — catalog `#c-query-builder` vẽ `tag` cho
++     trường số, `event` cho ngày, `list` cho danh sách, `text_fields` cho chữ khi
++     cấu hình trường không khai `icon` (ví dụ của catalog chỉ khai icon cho
++     `bankCode`). */
++  var SD_QB_TYPE_ICON = { number: 'tag', date: 'event', values: 'list', text: 'text_fields' };
++  /* Mẫu ô đã chọn của catalog: `<span class="qb-opt"><mat-icon class="mat-icon
++     qb-opt-icon material-icons-outlined">…</mat-icon><span class="qb-opt-label">…`. */
++  function sdQbOptTemplate(item) {
++    return '<span class="qb-opt">' +
++      (item.icon ? '<mat-icon class="mat-icon qb-opt-icon material-icons-outlined" aria-hidden="true">' + esc(item.icon) + '</mat-icon>' : '') +
++      '<span class="qb-opt-label">' + esc(item.name == null ? '' : item.name) + '</span></span>';
++  }
+ 
+   class SdQueryBuilder extends HTMLElement {
+     static get observedAttributes() { return ['mode', 'disabled', 'comparisonmode', 'comparisonMode', 'fields', 'autoid', 'autoId']; }
+@@ -18971,7 +19000,7 @@
+       return f || null;
+     }
+     _fieldItems() {
+-      return this.fields.map(function (f) { return { id: f.key, name: f.label }; });
++      return this.fields.map(function (f) { return { id: f.key, name: f.label, icon: f.icon || SD_QB_TYPE_ICON[f.type] || '' }; });
+     }
+     _opsFor(f) {
+       if (!f) return SD_OPERATOR_ORDER.slice();
+@@ -19000,6 +19029,13 @@
+         '<div class="qb-container' + (this.disabled ? ' is-disabled' : '') + '">' +
+           this._groupHtml({ logic: this.rootLogic, filters: this._filters || [] }, '', true) +
+         '</div>';
++      /* Ô chọn có icon (trường · nguồn giá trị · chế độ ngày · trường so sánh)
++         hiện mục đã chọn theo mẫu `qb-opt` của catalog. */
++      this.querySelectorAll('sd-select.qb-field, sd-select.qb-value-source, sd-select.qb-date-mode, sd-select.qb-compare-field')
++        .forEach(function (el) { el.selectedTemplate = sdQbOptTemplate; });
++      /* disabled: catalog chỉ khoá nút (AND/OR, +, ✕, toán tử, × của ô chọn); ô vẫn
++         vẽ như thường dưới lớp `.is-disabled`. */
++      if (this.disabled) this.querySelectorAll('.qb-rule .sd-clear-btn').forEach(function (b) { b.disabled = true; });
+       sdSyncAutoId(this, 'query-builder-');
+     }
+ 
+@@ -19048,7 +19084,7 @@
+         " items='" + sdQbItems(items) + "'" +
+         (value == null || value === '' ? '' : ' value="' + escAttr(Array.isArray(value) ? value.join(',') : value) + '"') +
+         (placeholder ? ' placeholder="' + escAttr(placeholder) + '"' : '') +
+-        (this.disabled ? ' disabled' : '') +
++        /* catalog: ô chọn KHÔNG mang disabled — khoá bằng `.qb-container.is-disabled` (mờ .7, chặn chuột) + nút × disabled */ '' +
+         '></sd-select>';
+     }
+ 
+@@ -19076,20 +19112,20 @@
+ 
+     _valueHtml(rule, f) {
+       var T = SD_QUERY_BUILDER_TEXT;
+-      var dis = this.disabled ? ' disabled' : '';
++      var dis = '';   /* như _sel: ô giá trị không mang disabled (catalog) */
+       var op = rule.operator || '';
+       var html = '';
+ 
+       /* `comparisonMode="value-or-field"`: thêm ô chọn NGUỒN giá trị trước đã. */
+       if (this.comparisonMode === 'value-or-field') {
+         html += this._sel('qb-value-source', [
+-          { id: 'value', name: T.sourceValue },
+-          { id: 'field', name: T.sourceField }
++          { id: 'value', name: T.sourceValue, icon: T.sourceValueIcon },
++          { id: 'field', name: T.sourceField, icon: T.sourceFieldIcon }
+         ], rule.dataType === 'field' ? 'field' : 'value') +
+         '<div class="qb-divider"></div>';
+         if (rule.dataType === 'field') {
+           var others = this.fields.filter(function (x) { return x.key !== rule.field; })
+-            .map(function (x) { return { id: x.key, name: x.label }; });
++            .map(function (x) { return { id: x.key, name: x.label, icon: x.icon || SD_QB_TYPE_ICON[x.type] || '' }; });
+           return html + this._sel('qb-val qb-compare-field', others, rule.data);
+         }
+       }
+@@ -19110,8 +19146,8 @@
+       if (f.type === 'date') {
+         var mode = rule.dateMode || 'relative';
+         html += this._sel('qb-date-mode', [
+-          { id: 'relative', name: T.dateRelative },
+-          { id: 'absolute', name: T.dateAbsolute }
++          { id: 'relative', name: T.dateRelative, icon: 'history' },
++          { id: 'absolute', name: T.dateAbsolute, icon: 'event' }
+         ], mode);
+         if (mode === 'absolute') {
+           return html + '<sd-date class="qb-val" size="sm" hideInlineError' +
+@@ -19211,7 +19247,9 @@
+     }
+ 
+     /* ---- API thao tác ---- */
+-    addRule(path) {
++    /* Gỡ khỏi API công khai 2026-10-13 (Rule 18): catalog không khai addRule /
++       addGroup / removeAt — chỉ nút "+" / "✕" trong giao diện. */
++    _addRule(path) {
+       var node = this._at(path == null ? '' : path);
+       node.filters = node.filters || [];
+       node.filters.push({ field: '', operator: '', data: '' });
+@@ -19219,7 +19257,7 @@
+       this._open = null;
+       this._emit();
+     }
+-    addGroup(path) {
++    _addGroup(path) {
+       var node = this._at(path == null ? '' : path);
+       node.filters = node.filters || [];
+       node.filters.push({ logic: 'AND', filters: [] });
+@@ -19227,7 +19265,7 @@
+       this._open = null;
+       this._emit();
+     }
+-    removeAt(path) {
++    _removeAt(path) {
+       var p = this._parentOf(path);
+       p.node.filters.splice(p.index, 1);
+       this._emit();
+@@ -19272,14 +19310,14 @@
+         var pick = e.target.closest('[data-add]');
+         if (pick) {
+           var gp2 = pick.closest('.qb-group').getAttribute('data-path');
+-          if (pick.getAttribute('data-add') === 'rule') self.addRule(gp2);
+-          else self.addGroup(gp2);
++          if (pick.getAttribute('data-add') === 'rule') self._addRule(gp2);
++          else self._addGroup(gp2);
+           return;
+         }
+         var rmRule = e.target.closest('.qb-btn-remove-rule');
+-        if (rmRule) { self.removeAt(rmRule.closest('.qb-rule').getAttribute('data-path')); return; }
++        if (rmRule) { self._removeAt(rmRule.closest('.qb-rule').getAttribute('data-path')); return; }
+         var rmGroup = e.target.closest('.qb-btn-remove');
+-        if (rmGroup) { self.removeAt(rmGroup.closest('.qb-group').getAttribute('data-path')); return; }
++        if (rmGroup) { self._removeAt(rmGroup.closest('.qb-group').getAttribute('data-path')); return; }
+         /* Bấm ra ngoài thì đóng menu "+" */
+         if (self._open !== null && !e.target.closest('.qb-dropdown')) {
+           self._open = null;
+--- a/design-system/core/styles/sd-tokens.css
++++ b/design-system/core/styles/sd-tokens.css
+@@ -2362,6 +2362,17 @@
+   cursor: pointer;
+   caret-color: transparent;
+ }
++/* `selectedTemplate` (≙ `sdSelectedDef` của catalog): ô chữ readonly lùi vào
++   hậu trường, khối mẫu đứng chỗ giá trị. Đệm 4/6px: catalog để `mat-select`
++   (inline-block, cao 28px vì dòng 24px + chân chữ) cách mép trên 5px trong ô
++   sm 36px — viền 1px của kit + 4px. */
++sd-select .sd-form-field .sd-input.sd-trigger-hidden {
++  position: absolute; left: 0; top: 0; width: 0; height: 0; padding: 0; border: 0; opacity: 0; pointer-events: none;
++}
++sd-select .sd-trigger-custom {
++  flex: 1 1 auto; min-width: 0; overflow: hidden; white-space: nowrap;
++  padding: 4px 0 6px; font-size: 14px; line-height: 24px; color: rgba(0, 0, 0, .87);
++}
+ /* Mũi tên đuôi ô — rà soát external filter lần 2 (2026-10-12), đo ở cả
+    `#c-select` lẫn `#c-table external-filter`:
+      catalog `mat-icon.sd-suffix-icon` « keyboard_arrow_down », #757575, KHÔNG xoay
+@@ -8408,7 +8419,9 @@
+ /* `position: relative` là của KIT, không có trong catalog: menu của catalog nằm
+    trong `cdk-overlay-container` ở `body`, còn menu của kit là CON của host nên
+    cần host làm mốc định vị. Cùng kiểu đã ghi cho sd-autocomplete / sd-tree. */
+-sd-operator { display: inline-flex; position: relative; }
++/* Catalog không khai `display` cho host → mặc định `inline` (trong hàng flex của
++   query-builder nó thành khối, cao 30px = dòng chữ chứa nút 28px). 2026-10-13. */
++sd-operator { display: inline; position: relative; }
+ sd-operator .c-op-trigger {
+   display: inline-flex;
+   align-items: center;
+@@ -9082,6 +9095,17 @@
+ sd-query-builder .c-op-icon{display:inline-flex;align-items:center}
+ sd-query-builder .c-op-icon svg{display:block}
+ sd-query-builder{width:100%}
++/* Ngoài 56 rule chép nguyên văn ở trên, catalog còn hai thứ của trang/vỏ ô chọn
++   tác động vào query-builder (rà 2026-10-13):
++   · nút dùng font của trang (`.sd-scope button{font-family:inherit}` — reboot của
++     portal) và giữ đệm mặc định của trình duyệt `1px 6px` cho `.qb-btn`;
++   · `sd-select .mat-mdc-select-value{width:0;min-width:100%}` — phần giá trị không
++     góp bề rộng, nên ô chọn rộng đúng `min-width` của nó (170 / 140 / 132 / 160 /
++     110px), chữ dài thì cắt "…". */
++sd-query-builder button{font-family:inherit}
++sd-query-builder .qb-btn{padding:1px 6px}
++sd-query-builder sd-select .sd-form-field > .sd-input:not(.sd-trigger-hidden),
++sd-query-builder sd-select .sd-trigger-custom{width:0;flex:1 1 0;min-width:0}
+ 
+ 
+ /* ===================================================================
+--- a/design-system/preview/components/query-builder.html
++++ b/design-system/preview/components/query-builder.html
+@@ -73,12 +73,12 @@
+   (function () {
+     var FIELDS = [
+       { key: 'bankCode', label: 'Ngân hàng cho vay', type: 'values', icon: 'account_balance',
+-        values: [{ value: 'VCB', display: 'Vietcombank' }, { value: 'BIDV', display: 'BIDV' },
+-                 { value: 'TCB', display: 'Techcombank' }] },
++        values: [{ value: 'VCB', display: 'Vietcombank' }, { value: 'BIDV', display: 'BIDV' }] },
+       { key: 'loanAmount', label: 'Số tiền vay (VND)', type: 'number', icon: 'tag', min: 0 },
+       { key: 'disbursementDate', label: 'Ngày giải ngân', type: 'date', icon: 'event' },
+       { key: 'status', label: 'Trạng thái hồ sơ', type: 'values', icon: 'list',
+-        values: [{ value: 'PENDING', display: 'Chờ phê duyệt' }, { value: 'APPROVED', display: 'Đã duyệt' }] },
++        values: [{ value: 'PENDING', display: 'Chờ phê duyệt' }, { value: 'APPROVED', display: 'Đã phê duyệt' },
++                 { value: 'DISBURSING', display: 'Chờ giải ngân' }] },
+       { key: 'remainingLimit', label: 'Hạn mức còn lại (VND)', type: 'number', icon: 'tag' },
+       { key: 'requestedAmount', label: 'Số tiền đề nghị (VND)', type: 'number', icon: 'tag' },
+       { key: 'contractNo', label: 'Số hợp đồng', type: 'text', icon: 'text_fields' }
+@@ -133,7 +133,7 @@
+ 
+     var qb7 = document.getElementById('qb7');
+     qb7.fields = FIELDS;
+-    qb7.value = { logic: 'AND', filters: [{ field: 'bankCode', operator: 'IN', data: ['VCB', 'BIDV'] }] };
++    qb7.value = { logic: 'AND', filters: [{ field: 'status', operator: 'IN', data: ['APPROVED', 'DISBURSING'] }] };
+   })();
+ </script>
+ </body>
+--- a/design-system/components/sd-data.md
++++ b/design-system/components/sd-data.md
+@@ -922,11 +922,17 @@
+ | `.value` · `.filters` · `.rootLogic` | Filter chuẩn; `value` là tổng của hai cái kia |
+ | `mode="view"` | Chuỗi truy vấn chỉ đọc, tô màu theo token |
+ | `comparisonMode="value-or-field"` | Thêm ô chọn nguồn: nhập giá trị **hoặc** so với trường khác |
+-| `disabled` · `autoId` | Như mọi component khác |
+-| `addRule(path)` · `addGroup(path)` · `removeAt(path)` | Thao tác theo đường dẫn (`''` = nhóm gốc, `'3.1'` = nhánh lồng) |
++| `disabled` | Như catalog: khoá nút AND/OR, +, ✕, toán tử và nút × của ô chọn; khung mờ `.7` và chặn chuột — **ô chọn / ô nhập không mang `disabled`** nên vẫn vẽ như thường |
++| `autoId` | Như mọi component khác |
+ 
+ Sự kiện: `sd-change` → `{ value }` · `sd-logic-change` → `{ path, logic }`.
+ 
++Ô chọn trường / nguồn giá trị / chế độ ngày / trường so sánh hiện mục đã chọn theo
++mẫu `qb-opt` của catalog (icon 18px + nhãn) — kit dựng bằng `selectedTemplate` của
++`sd-select`. Icon trường: `icon` khai trong `fields`, không khai thì theo kiểu
++(`number` → `tag` · `date` → `event` · `values` → `list` · `text` → `text_fields`).
++`addRule` / `addGroup` / `removeAt` đã gỡ khỏi API công khai (catalog không có).
++
+ **Cấu trúc rule**: `{ field, operator, dataType?, data }` —
+ `BETWEEN` dùng `data: [từ, đến]`, `IN`/`NOT_IN` dùng mảng,
+ `dataType: 'field'` thì `data` là **key** của trường đem so sánh,
+--- a/design-system/components/sd-form.md
++++ b/design-system/components/sd-form.md
+@@ -185,6 +185,7 @@
+ | `hideReadError` | boolean — ẩn trạng thái lỗi khi đọc dữ liệu | — |
+ | `limit` | Số item tối đa panel dựng ra; `0` = không giới hạn | `0` |
+ | `minWidthPanel` | Bề rộng tối thiểu của panel (`320` → `320px`) | — |
++| `.selectedTemplate` (JS) | Hàm `item => '<html>'` vẽ phần giá trị đã chọn (chọn đơn) — trải phẳng `sdSelectedDef` của catalog vì HTML không truyền được `ng-template` | — |
+ | `showSelectAll` | boolean — hàng "Tất cả" đầu panel, **chỉ tác dụng với `multiple`** | `false` |
+ | `clearable` | boolean — × xoá giá trị ở mặt chữ `viewed="inline"` | **`true`** |
+ | `name` | Tên field, áp vào input bên trong | — |
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -8,6 +8,25 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `#c-query-builder`: `sd-query-builder` khớp catalog — ô chọn có icon, bề rộng ô, nút, disabled
++
++Builder: *„Tiếp tục phần Query Builder“*. Đo 7 query-builder của 4 mẫu catalog. Trước khi sửa lệch
++gần hết mọi hàng (ô chọn rộng 224px thay vì 170/140px, cao 32 thay vì 36px, ô trường thiếu icon,
++nút AND/OR font Arial, toán tử cao 28 thay vì 30px → cả cây lệch 4px mỗi hàng). Sau khi sửa: **mọi
++khối trùng toạ độ** cả 7.
++
++| | Catalog | Kit trước | Kit nay |
++|---|---|---|---|
++| Ô chọn trường / nguồn giá trị / chế độ ngày / trường so sánh | `qb-opt`: icon 18px + nhãn, cao 36px | chỉ nhãn, 32px | khớp — thêm `sd-select.selectedTemplate` (trải phẳng `sdSelectedDef`), icon mặc định theo kiểu trường |
++| Bề rộng ô chọn | đúng `min-width` (phần giá trị `width:0`) | 224px | khớp |
++| Nút AND / OR / + / ✕ | font của trang, `.qb-btn` đệm `1px 6px` | Arial, đệm 0 | khớp |
++| `sd-operator` | host `inline` → cao 30px trong hàng | `inline-flex`, 28px | khớp (đổi cho mọi chỗ dùng `sd-operator`) |
++| `disabled` | khoá nút + × của ô chọn; ô chọn vẽ như thường dưới lớp mờ | ô chọn bị disabled (mất ×, hiện mũi tên) | khớp |
++
++Gỡ theo Rule 18: `addRule()` / `addGroup()` / `removeAt()` (catalog không có). Preview dùng đúng dữ
++liệu catalog. Docs `sd-data.md`, `sd-form.md` (`selectedTemplate`). 97 trang, 0 lỗi JS; 26 bộ so
++catalog của các component khác không đổi.
++
+ ### Changed — Icon theo NGỮ CẢNH catalog: `sd-button` trong bảng / modal / drawer / thanh thao tác, icon tự bấm của upload
+ 
+ Builder: *„những phần icon theo Catalog luôn nhé“*. Hai chỗ còn khác ở lượt icon trước, nay theo catalog:
+--- a/_memory/known-gaps.md
++++ b/_memory/known-gaps.md
+@@ -140,6 +140,25 @@
+ Đã gỡ (Rule 18): `autoId`, `expand()`, `collapse()`, `clearSelection()`, `selectedIds`, tooltip „Bỏ chọn“.
+ Đã thêm theo bảng API catalog: setter `selectedItems`, `tree`.
+ 
++## `sd-query-builder` — rà soát `#c-query-builder` 2026-10-13
++
++Đo 7 query-builder của 4 mẫu catalog (nhóm lồng · so với trường + menu "+" mở · rỗng / điều kiện
++mới · view có giá trị / view rỗng / disabled): **mọi khối `qb-*`, ô chọn, ô nhập, toán tử, nút, đường
++nhánh trùng toạ độ, màu, viền, cỡ chữ**. Chụp so từng mẫu: chỉ khác khử răng cưa của chữ.
++
++| Chỗ | Catalog | Kit | Vì sao |
++|---|---|---|---|
++| Chữ giá trị của ô chọn thường / ô số | `div.sd-trigger-text` (chữ) / `input` | `input.sd-trigger-text` readonly | Cách dựng chung của `sd-select` kit (đã ghi). Cùng toạ độ, cùng chữ |
++| Chọn nhiều ở ô đã chọn có mẫu | — | `selectedTemplate` chỉ áp cho chọn ĐƠN | Mọi ô có mẫu trong catalog đều chọn đơn |
++| Icon "Ngày cụ thể" (`event`) | catalog chỉ in "Tương đối" (`history`) | `event` | Lựa chọn của kit — cùng họ icon ngày của catalog |
++| Panel của ô chọn trường | catalog không mở panel | panel chỉ hiện nhãn (chưa có icon) | `sdItemDef` chưa mirror; catalog không có hình panel để đối chiếu |
++
++Đã sửa vòng này: nút dùng font trang + đệm `1px 6px` của `.qb-btn` (catalog reboot); ô chọn rộng
++đúng `min-width` (170 / 140 / 132 / 160 / 110px, chữ dài cắt "…") thay vì 224px; ô có icon cao 36px;
++`sd-operator` là `inline` (catalog không khai `display`) → cao 30px trong hàng; `disabled` không còn
++truyền xuống ô chọn/ô nhập (catalog chỉ khoá nút, × của ô chọn `disabled`); dữ liệu preview đúng
++catalog (VCB/BIDV, "Đã phê duyệt", "Chờ giải ngân"). Gỡ (Rule 18): `addRule` / `addGroup` / `removeAt`.
++
+ ## `sd-quick-action` — rà soát `#c-quick-action` 2026-10-13
+ 
+ Trùng toạ độ cả hai mẫu, không sửa component. Chỉ còn hai chỗ đã ghi ở nơi khác: `position:fixed`
+@@ -560,7 +579,7 @@
+ | Side-drawer "Tạo mới/cập nhật" của `lib-table` | Mở drawer thêm/sửa dòng | **Không dựng**; nút "Thêm mới" chỉ bắn `sd-form-add-row` | Catalog ghi "side-drawer không mở". Bảng cũng là bảng tĩnh đúng như catalog (2026-10-11) |
+ | Chế độ xem của `radio` / `upload` trong `sd-form-render` | Catalog render hai dòng `T14R`/`T14M` (radio) và `.text-secondary` + danh sách tệp (upload), **không** qua `<sd-view>` như các control khác | Kit chép đúng chỗ mâu thuẫn đó | Catalog tự mâu thuẫn với chính nó; sửa cho nhất quán là cố ý lệch mốc chuẩn. Cùng loại với tooltip ngược của `sd-import-excel` (2026-10-11) |
+ | `.col-1`..`.col-12` của `sd-form-render` | Catalog chỉ dùng tới `col-6` và `col-12` | Kit sinh đủ 12 mức | `layout.columns` là lưới 12 cột nên cấu hình khác hẳn sinh ra `col-3`, `col-4`… Mở rộng có chủ ý (2026-10-11) |
+-| Ô chọn trường của `sd-query-builder` chỉ hiện NHÃN | Catalog hiện **icon + nhãn** (`.qb-opt` + `.qb-opt-icon` + `.qb-opt-label`) | Kit chỉ hiện nhãn | `sd-select` của kit dựng ô hiện giá trị bằng `<input readonly>` (lớp `.sd-trigger-text`), không nhét được icon vào. CSS `.qb-opt*` vẫn chép đủ (2026-10-11) |
++| ~~Ô chọn trường của `sd-query-builder` chỉ hiện NHÃN~~ **ĐÃ SỬA 2026-10-13** | Catalog hiện **icon + nhãn** (`.qb-opt` + `.qb-opt-icon` + `.qb-opt-label`) | Kit nay dựng đúng mẫu đó qua `sd-select.selectedTemplate` (≙ `sdSelectedDef`) | Xem mục `sd-query-builder` 2026-10-13 |
+ | Chuỗi toán tử ở `mode="view"` | Catalog in ra đúng NĂM cái: `in` · `between` · `>` · `=` · `<` | Mười hai mã còn lại kit dùng ký hiệu SQL thông dụng (`>=`, `<=`, `!=`, `not in`, `like`, `is null`…) | Phải có chữ cho mọi toán tử mới chạy được `mode="view"`. Năm cái catalog in ra thì giữ nguyên văn (2026-10-11) |
+ | Bảng toán tử hợp lệ theo kiểu trường (`sd-query-builder`) | Catalog không nêu | Kit suy từ đúng các toán tử catalog dùng cho từng kiểu, rồi thêm các mã cùng họ; `field.operators` ghi đè | Không có bảng thì không lọc được danh sách toán tử. Lựa chọn của kit, sửa được bằng cấu hình (2026-10-11) |
+ | Ô chế độ ngày của `sd-query-builder` | Catalog chỉ in "Tương đối" và đơn vị "ngày trước" | Kit thêm "Ngày cụ thể" + ba đơn vị tuần/tháng/năm trước | Một lựa chọn duy nhất thì ô select vô nghĩa. Mở rộng có chủ ý (2026-10-11) |

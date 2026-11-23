@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-select — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-select"
+         data-subtitle="Ô chọn từ danh sách — một hoặc nhiều giá trị, tự có ô tìm kiếm khi &gt; 10 mục"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <!-- ══ Mirror catalog #c-select — 5 biến thể, cùng nội dung. Ba khối
+             "panel đang mở" bật sẵn lớp sd-open; bấm ra ngoài là đóng như thật.
+             Inline style ở các khung bọc chỉ để chừa chỗ cho panel / cố định
+             bề ngang 280px như catalog, không phải kiểu dáng DS. ══ -->
+        <sd-section title="Rỗng, đã chọn, bắt buộc + lỗi, disabled" subtitle="có giá trị và không required: icon mũi tên đổi thành nút xoá">
+          <div class="d-flex flex-wrap gap-16">
+            <div style="width:280px"><sd-select label="Ngân hàng cho vay" valueField="code" displayField="name" items='[{"code":"VCB","name":"Vietcombank"},{"code":"BIDV","name":"BIDV"},{"code":"CTG","name":"VietinBank"},{"code":"TCB","name":"Techcombank"}]'></sd-select></div>
+            <div style="width:280px"><sd-select label="Ngân hàng cho vay" valueField="code" displayField="name" value="BIDV" items='[{"code":"VCB","name":"Vietcombank"},{"code":"BIDV","name":"BIDV"},{"code":"CTG","name":"VietinBank"},{"code":"TCB","name":"Techcombank"}]'></sd-select></div>
+            <div style="width:280px"><sd-select id="sel-cat-required" label="Loại tiền tệ" required valueField="code" displayField="name" items='[{"code":"VND","name":"VND – Đồng Việt Nam"},{"code":"USD","name":"USD – Đô la Mỹ"},{"code":"EUR","name":"EUR – Euro"}]'></sd-select></div>
+            <div style="width:280px"><sd-select label="Loại tiền tệ" disabled valueField="code" displayField="name" value="VND" items='[{"code":"VND","name":"VND – Đồng Việt Nam"},{"code":"USD","name":"USD – Đô la Mỹ"},{"code":"EUR","name":"EUR – Euro"}]'></sd-select></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Panel đang mở — chọn một" subtitle="dòng đã chọn: nền 12% + dấu tick, chữ primary">
+          <div style="width:280px;min-height:240px"><sd-select class="sd-open" label="Kỳ trả lãi" required valueField="code" displayField="name" value="Q" items='[{"code":"M","name":"Hàng tháng"},{"code":"Q","name":"Hàng quý"},{"code":"H","name":"6 tháng/lần"},{"code":"E","name":"Cuối kỳ"}]'></sd-select></div>
+        </sd-section>
+
+        <sd-section title="multiple — panel đang mở" subtitle="trigger nối tên bằng dấu phẩy, option có checkbox">
+          <div style="width:280px;min-height:230px"><sd-select class="sd-open" label="Loại tài sản bảo đảm" multiple valueField="code" displayField="name" value="BDS,TG" items='[{"code":"BDS","name":"Bất động sản"},{"code":"TG","name":"Tiền gửi có kỳ hạn"},{"code":"GTCG","name":"Giấy tờ có giá"},{"code":"HTK","name":"Hàng tồn kho"}]'></sd-select></div>
+        </sd-section>
+
+        <sd-section title="Hơn 10 phần tử: ô tìm kiếm trong panel" subtitle="tự hiện khi items &gt; 10">
+          <div style="width:280px;min-height:300px"><sd-select id="sel-cat-filter" class="sd-open" label="Chi nhánh ngân hàng" valueField="code" displayField="name" items='[{"code":"1","name":"Vietcombank – CN Hà Nội"},{"code":"2","name":"VietinBank – CN Hà Nội"},{"code":"3","name":"BIDV – CN Hà Nội"},{"code":"4","name":"Techcombank – CN Hà Nội"},{"code":"5","name":"MB – CN Đà Nẵng"},{"code":"6","name":"ACB – CN Cần Thơ"},{"code":"7","name":"VPBank – CN Hải Phòng"},{"code":"8","name":"TPBank – CN Huế"},{"code":"9","name":"SHB – CN Vinh"},{"code":"10","name":"HDBank – CN Nha Trang"},{"code":"11","name":"Sacombank – CN Biên Hoà"},{"code":"12","name":"OCB – CN Quy Nhơn"}]'></sd-select></div>
+        </sd-section>
+
+        <sd-section title="Chế độ xem: viewed" subtitle="viewed='inline' xem ở mục Bổ sung theo Core bên dưới">
+          <sd-select label="Trạng thái hồ sơ" viewed valueField="code" displayField="name" value="P" items='[{"code":"P","name":"Chờ phê duyệt"},{"code":"A","name":"Đã duyệt"}]'></sd-select>
+        </sd-section>
+
+        <sd-section title="Normal — with items">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:900px;">
+            <sd-select label="Bộ phận" placeholder="Chọn bộ phận..." items='[{"id":"1","name":"Kế toán"},{"id":"2","name":"Nhân sự"},{"id":"3","name":"Kỹ thuật"},{"id":"4","name":"Kinh doanh"}]' required></sd-select>
+            <sd-select label="Trạng thái" placeholder="Chọn..." value="1" items='[{"id":"1","name":"Hoạt động"},{"id":"2","name":"Tạm dừng"},{"id":"3","name":"Đã khóa"}]'></sd-select>
+            <sd-select label="Khu vực" placeholder="Chọn khu vực..." items='[{"id":"HN","name":"Hà Nội"},{"id":"HCM","name":"TP. Hồ Chí Minh"},{"id":"DN","name":"Đà Nẵng"}]'></sd-select>
+          </div>
+        </sd-section>
+
+        <sd-section title="States">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:900px;">
+            <sd-select label="Normal" placeholder="Chọn..." items='[{"id":"1","name":"Option A"},{"id":"2","name":"Option B"}]'></sd-select>
+            <sd-select label="Disabled" value="1" items='[{"id":"1","name":"Option A"},{"id":"2","name":"Option B"}]' disabled></sd-select>
+            <sd-select label="Bộ phận" value="Kế toán" viewed></sd-select>
+          </div>
+        </sd-section>
+
+        <sd-section title="Sizes">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:900px;">
+            <sd-select label="Small" placeholder="sm..." size="sm" items='[{"id":"1","name":"A"},{"id":"2","name":"B"}]'></sd-select>
+            <sd-select label="Medium (default)" placeholder="md..." items='[{"id":"1","name":"A"},{"id":"2","name":"B"}]'></sd-select>
+          </div>
+        </sd-section>
+
+        <sd-section title="Multiple select (attribute multiple)">
+          <p class="ds-preview-label mb-0">Dropdown hiện checkbox — chọn nhiều, hiển thị phân tách dấu phẩy, dropdown không đóng khi chọn.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:900px;">
+            <sd-select label="Dự án" multiple placeholder="Chọn dự án..."
+              items='[{"id":"mcp","name":"Masteri Centre Point"},{"id":"mw","name":"Masteri Waterfront"},{"id":"lr","name":"LUMIERE Riverside"},{"id":"mwh","name":"Masteri West Heights"}]'></sd-select>
+            <sd-select label="Loại sản phẩm" multiple placeholder="Chọn loại..."
+              value="1pn,2pn"
+              items='[{"id":"studio","name":"Studio"},{"id":"1pn","name":"1PN"},{"id":"2pn","name":"2PN"},{"id":"3pn","name":"3PN"},{"id":"penthouse","name":"Penthouse"}]'></sd-select>
+            <sd-select label="Bộ phận" multiple size="sm" placeholder="Chọn..."
+              items='[{"id":"kt","name":"Kế toán"},{"id":"ns","name":"Nhân sự"},{"id":"kd","name":"Kinh doanh"},{"id":"kyt","name":"Kỹ thuật"}]'></sd-select>
+          </div>
+        </sd-section>
+
+        <sd-section title="Required & hideInlineError">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:900px;" id="select-required-demo">
+            <sd-select label="Bắt buộc" placeholder="Chọn phòng ban..." required
+              items='[{"id":"hr","name":"Nhân sự"},{"id":"it","name":"Công nghệ"},{"id":"sales","name":"Kinh doanh"}]'></sd-select>
+            <sd-select label="hideInlineError" placeholder="Chọn phòng ban..." required hideInlineError
+              items='[{"id":"hr","name":"Nhân sự"},{"id":"it","name":"Công nghệ"},{"id":"sales","name":"Kinh doanh"}]'></sd-select>
+            <sd-select size="sm" placeholder="Chọn... (size=sm trong table)" required hideInlineError
+              items='[{"id":"hr","name":"Nhân sự"},{"id":"it","name":"Công nghệ"},{"id":"sales","name":"Kinh doanh"}]'></sd-select>
+          </div>
+          <p class="ds-preview-label mt-12 mb-0">
+            Lỗi chỉ hiện SAU KHI đã mở rồi đóng dropdown (bấm ra ngoài) — mở lần đầu chưa hiện lỗi ngay,
+            khác <code>sd-input</code> (hiện lỗi ngay khi gõ). Cột giữa/phải dùng <code>hideInlineError</code>
+            để chuyển lỗi thành icon + tooltip. Xem đầy đủ tại trang
+            <a href="validation.html">Validation & hideInlineError</a>.
+          </p>
+        </sd-section>
+
+
+        <sd-section title="Ô tìm kiếm trong panel — tự hiện khi danh sách &gt; 10 mục">
+          <p class="fs-12 text-black400 mb-12">
+            Catalog: <em>"tự hiện ô tìm kiếm khi danh sách &gt; 10 phần tử hoặc <code>items</code> là hàm
+            tải từ server"</em>. Kit nhận <code>items</code> qua attribute nên chỉ còn vế đầu —
+            <strong>ngưỡng cố định, không có input nào để bật/tắt</strong>. Mở panel là con trỏ nhảy
+            thẳng vào ô; gõ để lọc; đóng panel thì xoá từ khoá.
+          </p>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="fs-12 font-weight-medium mb-8">12 mục — <strong>CÓ</strong> ô tìm kiếm</p>
+              <sd-select label="Chi nhánh ngân hàng" placeholder="Chọn chi nhánh..." items='[{"id": "1", "name": "Vietcombank – CN Hà Nội"}, {"id": "2", "name": "VietinBank – CN Hà Nội"}, {"id": "3", "name": "BIDV – CN Hà Nội"}, {"id": "4", "name": "Techcombank – CN Hà Nội"}, {"id": "5", "name": "MB – CN Đà Nẵng"}, {"id": "6", "name": "ACB – CN Cần Thơ"}, {"id": "7", "name": "VPBank – CN Hải Phòng"}, {"id": "8", "name": "TPBank – CN Huế"}, {"id": "9", "name": "SHB – CN Vinh"}, {"id": "10", "name": "HDBank – CN Nha Trang"}, {"id": "11", "name": "Sacombank – CN Biên Hoà"}, {"id": "12", "name": "OCB – CN Quy Nhơn"}]'></sd-select>
+            </div>
+            <div>
+              <p class="fs-12 font-weight-medium mb-8">10 mục — <strong>KHÔNG</strong> có</p>
+              <sd-select label="Chi nhánh ngân hàng" placeholder="Chọn chi nhánh..." items='[{"id": "1", "name": "Vietcombank – CN Hà Nội"}, {"id": "2", "name": "VietinBank – CN Hà Nội"}, {"id": "3", "name": "BIDV – CN Hà Nội"}, {"id": "4", "name": "Techcombank – CN Hà Nội"}, {"id": "5", "name": "MB – CN Đà Nẵng"}, {"id": "6", "name": "ACB – CN Cần Thơ"}, {"id": "7", "name": "VPBank – CN Hải Phòng"}, {"id": "8", "name": "TPBank – CN Huế"}, {"id": "9", "name": "SHB – CN Vinh"}, {"id": "10", "name": "HDBank – CN Nha Trang"}]'></sd-select>
+            </div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Bổ sung theo Core — rà soát 2026-10-10">
+          <p class="fs-12 text-black400 mb-12">
+            11 input của thư viện trước đây kit chưa có. Nguồn:
+            <code>sdcorejs-angular-forms-select.d.ts</code> của
+            <code>@sdcorejs/angular</code> v22.2.12.
+          </p>
+
+          <p class="fs-12 text-black400 mb-8"><code>helperText</code> · <code>name</code> · <code>autoId</code></p>
+          <div class="flex gap-4 flex-wrap mb-16">
+            <sd-select label="Trạng thái" name="status" autoId="trang-thai"
+              helperText="Chỉ hồ sơ đang áp dụng mới gửi duyệt được"
+              items='[{&quot;id&quot;:&quot;active&quot;,&quot;name&quot;:&quot;Đang áp dụng&quot;},{&quot;id&quot;:&quot;draft&quot;,&quot;name&quot;:&quot;Nháp&quot;},{&quot;id&quot;:&quot;locked&quot;,&quot;name&quot;:&quot;Đã khoá&quot;,&quot;disabled&quot;:true},{&quot;id&quot;:&quot;stop&quot;,&quot;name&quot;:&quot;Ngừng áp dụng&quot;}]' style="min-width:260px"></sd-select>
+          </div>
+
+          <p class="fs-12 text-black400 mb-8"><code>inlineError</code> — lỗi do bên ngoài truyền vào, hiện ngay không cần chạm vào field</p>
+          <div class="flex gap-4 flex-wrap mb-16">
+            <sd-select label="Trạng thái" inlineError="Trạng thái này đã bị khoá bởi quản trị"
+              items='[{&quot;id&quot;:&quot;active&quot;,&quot;name&quot;:&quot;Đang áp dụng&quot;},{&quot;id&quot;:&quot;draft&quot;,&quot;name&quot;:&quot;Nháp&quot;},{&quot;id&quot;:&quot;locked&quot;,&quot;name&quot;:&quot;Đã khoá&quot;,&quot;disabled&quot;:true},{&quot;id&quot;:&quot;stop&quot;,&quot;name&quot;:&quot;Ngừng áp dụng&quot;}]' style="min-width:260px"></sd-select>
+          </div>
+
+          <p class="fs-12 text-black400 mb-8"><code>limit</code> — số item tối đa panel dựng · <code>minWidthPanel</code> — bề rộng tối thiểu của panel</p>
+          <div class="flex gap-4 flex-wrap mb-16">
+            <sd-select label="limit=2" limit="2" items='[{&quot;id&quot;:&quot;active&quot;,&quot;name&quot;:&quot;Đang áp dụng&quot;},{&quot;id&quot;:&quot;draft&quot;,&quot;name&quot;:&quot;Nháp&quot;},{&quot;id&quot;:&quot;locked&quot;,&quot;name&quot;:&quot;Đã khoá&quot;,&quot;disabled&quot;:true},{&quot;id&quot;:&quot;stop&quot;,&quot;name&quot;:&quot;Ngừng áp dụng&quot;}]' style="min-width:200px"></sd-select>
+            <sd-select label="minWidthPanel=360" minWidthPanel="360" items='[{&quot;id&quot;:&quot;active&quot;,&quot;name&quot;:&quot;Đang áp dụng&quot;},{&quot;id&quot;:&quot;draft&quot;,&quot;name&quot;:&quot;Nháp&quot;},{&quot;id&quot;:&quot;locked&quot;,&quot;name&quot;:&quot;Đã khoá&quot;,&quot;disabled&quot;:true},{&quot;id&quot;:&quot;stop&quot;,&quot;name&quot;:&quot;Ngừng áp dụng&quot;}]' style="min-width:200px"></sd-select>
+          </div>
+
+          <p class="fs-12 text-black400 mb-8"><code>disabledField</code> — đổi tên trường đánh dấu item bị khoá (mặc định <code>disabled</code>)</p>
+          <div class="flex gap-4 flex-wrap mb-16">
+            <sd-select label="disabledField=locked" disabledField="locked"
+              items='[{&quot;id&quot;:&quot;a&quot;,&quot;name&quot;:&quot;Bình thường&quot;},{&quot;id&quot;:&quot;b&quot;,&quot;name&quot;:&quot;Bị khoá&quot;,&quot;locked&quot;:true}]'
+              style="min-width:260px"></sd-select>
+          </div>
+
+          <p class="fs-12 text-black400 mb-8">
+            <code>showSelectAll</code> — hàng "Tất cả" đầu panel. Chỉ hiện khi có <code>multiple</code>.
+            Trạng thái tính trên item <strong>enabled</strong>, item bị khoá bỏ qua; đang chọn hết thì
+            bấm lại là bỏ sạch, chưa hết thì bấm là chọn thêm cả phạm vi.
+          </p>
+          <div class="flex gap-4 flex-wrap mb-16">
+            <sd-select label="Chọn nhiều" multiple showSelectAll
+              items='[{&quot;id&quot;:&quot;active&quot;,&quot;name&quot;:&quot;Đang áp dụng&quot;},{&quot;id&quot;:&quot;draft&quot;,&quot;name&quot;:&quot;Nháp&quot;},{&quot;id&quot;:&quot;locked&quot;,&quot;name&quot;:&quot;Đã khoá&quot;,&quot;disabled&quot;:true},{&quot;id&quot;:&quot;stop&quot;,&quot;name&quot;:&quot;Ngừng áp dụng&quot;}]' style="min-width:300px"></sd-select>
+          </div>
+
+          <p class="fs-12 text-black400 mb-8">
+            <code>viewed</code> ba trạng thái và <code>clearable</code>.
+            <code>viewed</code> trần hoặc <code>="true"</code> là xem tĩnh;
+            <code>="false"</code> vẫn sửa được (đúng <code>booleanAttribute</code>);
+            <code>="inline"</code> là editor nhưng mặt ngoài chỉ còn chữ — rê chuột mới hiện
+            mũi tên và nút × xoá (× tắt được bằng <code>clearable="false"</code>).
+          </p>
+          <div class="flex gap-4 flex-wrap align-items-center">
+            <sd-select label="viewed" viewed value="active" items='[{&quot;id&quot;:&quot;active&quot;,&quot;name&quot;:&quot;Đang áp dụng&quot;},{&quot;id&quot;:&quot;draft&quot;,&quot;name&quot;:&quot;Nháp&quot;},{&quot;id&quot;:&quot;locked&quot;,&quot;name&quot;:&quot;Đã khoá&quot;,&quot;disabled&quot;:true},{&quot;id&quot;:&quot;stop&quot;,&quot;name&quot;:&quot;Ngừng áp dụng&quot;}]' style="min-width:200px"></sd-select>
+            <sd-select label="viewed=&quot;false&quot;" viewed="false" value="active" items='[{&quot;id&quot;:&quot;active&quot;,&quot;name&quot;:&quot;Đang áp dụng&quot;},{&quot;id&quot;:&quot;draft&quot;,&quot;name&quot;:&quot;Nháp&quot;},{&quot;id&quot;:&quot;locked&quot;,&quot;name&quot;:&quot;Đã khoá&quot;,&quot;disabled&quot;:true},{&quot;id&quot;:&quot;stop&quot;,&quot;name&quot;:&quot;Ngừng áp dụng&quot;}]' style="min-width:200px"></sd-select>
+            <sd-select label="viewed=&quot;inline&quot;" viewed="inline" value="active" items='[{&quot;id&quot;:&quot;active&quot;,&quot;name&quot;:&quot;Đang áp dụng&quot;},{&quot;id&quot;:&quot;draft&quot;,&quot;name&quot;:&quot;Nháp&quot;},{&quot;id&quot;:&quot;locked&quot;,&quot;name&quot;:&quot;Đã khoá&quot;,&quot;disabled&quot;:true},{&quot;id&quot;:&quot;stop&quot;,&quot;name&quot;:&quot;Ngừng áp dụng&quot;}]' style="min-width:200px"></sd-select>
+            <sd-select label="inline, clearable=false" viewed="inline" clearable="false" value="active" items='[{&quot;id&quot;:&quot;active&quot;,&quot;name&quot;:&quot;Đang áp dụng&quot;},{&quot;id&quot;:&quot;draft&quot;,&quot;name&quot;:&quot;Nháp&quot;},{&quot;id&quot;:&quot;locked&quot;,&quot;name&quot;:&quot;Đã khoá&quot;,&quot;disabled&quot;:true},{&quot;id&quot;:&quot;stop&quot;,&quot;name&quot;:&quot;Ngừng áp dụng&quot;}]' style="min-width:220px"></sd-select>
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Chọn <strong>một</strong> giá trị từ danh sách cố định (trạng thái, danh mục, khu vực)</li>
+                  <li>Chọn <strong>nhiều</strong> giá trị từ danh sách (loại sản phẩm, dự án, điều kiện lọc) — thêm attribute <code>multiple</code></li>
+                  <li>Filter bar với dropdown đơn hoặc đa chọn</li>
+                  <li>Form có field chọn loại/nhóm</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Danh sách &gt;50 items cần tìm kiếm (cân nhắc autocomplete/search input)</li>
+                  <li>Boolean on/off đơn lẻ (dùng checkbox hoặc toggle)</li>
+                  <li>Chỉ có 2–3 lựa chọn ngắn, hiển thị trực quan luôn (cân nhắc radio group)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Dropdown chọn Danh mục (bắt buộc) với các tùy chọn: Loại A, Loại B, Loại C."</p>
+                <p>"Dropdown <strong>chọn nhiều</strong> Dự án, các giá trị: Masteri Centre Point, Masteri Waterfront, LUMIERE Riverside... Hiển thị giá trị đã chọn phân tách bởi dấu phẩy trong input." — Giao AI: thêm attribute <code>multiple</code>.</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code"><span class="code-comment">&lt;!-- Đơn chọn --&gt;</span>
+&lt;sd-select label="Danh mục" placeholder="Chọn danh mục" required
+  items='[{"id":"a","name":"Loại A"},{"id":"b","name":"Loại B"}]'&gt;
+&lt;/sd-select&gt;
+
+<span class="code-comment">&lt;!-- Đa chọn — thêm attribute multiple --&gt;</span>
+&lt;sd-select label="Dự án" multiple placeholder="Chọn dự án..."
+  items='[{"id":"mcp","name":"Masteri Centre Point"},{"id":"mw","name":"Masteri Waterfront"}]'&gt;
+&lt;/sd-select&gt;
+
+<span class="code-comment">&lt;!-- Đa chọn với giá trị mặc định (comma-separated ids) --&gt;</span>
+&lt;sd-select label="Loại sản phẩm" multiple value="1pn,2pn"
+  items='[{"id":"studio","name":"Studio"},{"id":"1pn","name":"1PN"},{"id":"2pn","name":"2PN"}]'&gt;
+&lt;/sd-select&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>label</td><td>string</td><td>-</td><td>Floating label</td></tr>
+                  <tr><td>placeholder</td><td>string</td><td>-</td><td>Placeholder</td></tr>
+                  <tr><td>items</td><td>JSON string array of {id,name}</td><td>-</td><td>Danh sách options</td></tr>
+                  <tr><td>value</td><td>string</td><td>-</td><td>id của item đang chọn</td></tr>
+                  <tr><td>required</td><td>boolean</td><td>false</td><td>Hiện dấu *</td></tr>
+                  <tr><td>disabled</td><td>boolean</td><td>false</td><td>Vô hiệu hóa</td></tr>
+                  <tr><td>size</td><td>sm | md</td><td>md</td><td>Kích thước: md 43.5px, sm 32px <span class="fs-12 text-black400">(catalog chỉ có hai cỡ; <code>lg</code> / <code>xs</code> cũ vẫn nhận nhưng hiển thị như <code>md</code>)</span></td></tr>
+                  <tr><td>multiple</td><td>boolean</td><td>false</td><td>Bật chế độ đa chọn — checkbox, dropdown không tự đóng, <code>value</code> là comma-separated ids</td></tr>
+                  <tr><td>hideInlineError</td><td>boolean</td><td>false</td><td>Ẩn text lỗi, chuyển thành icon + tooltip (dùng trong cell table)</td></tr>
+                </tbody>
+              </table>
+              <p class="fs-12 text-black400 mt-8 mb-0">
+                Lỗi "Vui lòng nhập thông tin" (khi <code>required</code> + rỗng) chỉ hiện SAU KHI đã mở
+                rồi đóng dropdown — mirror <code>touched</code> thật, không có khái niệm "dirty" cho
+                control kiểu chọn. Xem đầy đủ tại trang <a href="validation.html">Validation & hideInlineError</a>.
+              </p>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Lệch có chủ ý / ngoài phạm vi so với thư viện thật (đã rà soát 2026-09-23)</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Điểm</th><th>Ghi chú</th></tr></thead>
+                <tbody>
+                  <tr><td>customValidator, inlineError</td><td>2 nhánh còn lại của <code>errorMessage()</code> thật — ngoài phạm vi đợt Validation & hideInlineError (không phải lỗi user tự gõ sai)</td></tr>
+                  <tr><td>autoId, name</td><td>Chưa có trong kit — gap có từ trước, không thuộc đợt validation này</td></tr>
+                  <tr><td>appearance, floatLabel, form, hyperlink, viewed="inline", showSelectAll, clearable, footer actions, SdSearch lazy-load</td><td>Chưa mirror — sd-select trong kit chỉ nhận <code>items</code> tĩnh dạng JSON</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Events</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Event</th><th>Detail</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>sd-change</td><td><code>{ value: string }</code></td><td>Single: id được chọn. Multiple: comma-separated ids, e.g. <code>"mcp,mw"</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      // Show first panel on load
+      showPanel(0);
+    }
+
+    // patterns:loaded already fired before this inline script runs,
+    // so call directly — DOM is ready at this point.
+    initPreviewTabs();
+  })();
+
+  // Khối catalog: ô bắt buộc hiện lỗi như đã chạm; ô tìm kiếm điền sẵn "Hà Nội"
+  (function () {
+    var req = document.getElementById('sel-cat-required');
+    if (req) { req._touched = true; req._render(); }
+    /* panel đang mở nằm trong overlay ở <body> (el._pane), không còn là con của thẻ */
+    var sc = document.getElementById('sel-cat-filter');
+    var f = sc && (sc._pane || sc).querySelector('.c-search-input');
+    if (f) { f.value = 'Hà Nội'; f.dispatchEvent(new Event('input', { bubbles: true })); }
+  })();
+</script>
+
+</body>
+</html>

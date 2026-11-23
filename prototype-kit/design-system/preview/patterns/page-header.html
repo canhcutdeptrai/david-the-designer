@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Header Pattern — Enterprise Portal</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="Page Header — Pattern Preview"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <!-- ── Browse ──────────────────────────────────────── -->
+        <p class="fs-12 text-black400 mb-12"><strong>variant="browse"</strong> — Trang danh sách: title + primary CTA</p>
+        <div data-pattern="page-header" data-variant="browse"
+             data-title="Danh sách sản phẩm"
+             data-primary-action="Tạo sản phẩm mới"
+             data-primary-icon="add"></div>
+
+        <div class="mb-16"></div>
+
+        <!-- ── Browse + page-tabs ─────────────────────────── -->
+        <p class="fs-12 text-black400 mb-12"><strong>variant="browse" + page-tabs</strong> — Danh sách có tab lọc theo trạng thái</p>
+        <div data-pattern="page-header" data-variant="browse"
+             data-title="Danh sách đơn hàng"
+             data-primary-action="Tạo đơn hàng"
+             data-primary-icon="add"
+             data-page-tabs="Tất cả,Chờ xử lý,Đang giao,Hoàn thành,Đã huỷ"></div>
+
+        <div class="mb-16"></div>
+
+        <!-- ── Read ────────────────────────────────────────── -->
+        <p class="fs-12 text-black400 mb-12"><strong>variant="read"</strong> — Chi tiết record: title + record ID + badge + primary action</p>
+        <div data-pattern="page-header" data-variant="read"
+             data-title="Chi tiết sản phẩm"
+             data-record-id="#SP-00123"
+             data-badge="Đang bán" data-badge-status="active"
+             data-primary-action="Chỉnh sửa"></div>
+
+        <div class="mb-16"></div>
+
+        <!-- ── Read + subtitle + page-tabs ───────────────── -->
+        <p class="fs-12 text-black400 mb-12"><strong>variant="read" + subtitle + page-tabs</strong> — Chi tiết có sub title và tab điều hướng</p>
+        <div data-pattern="page-header" data-variant="read"
+             data-title="Chi tiết nhà cung cấp"
+             data-record-id="#NCC-0042"
+             data-badge="Hoạt động" data-badge-status="active"
+             data-subtitle="Cập nhật lần cuối: 15/04/2026 · bởi Nguyễn Văn A"
+             data-primary-action="Chỉnh sửa"
+             data-page-tabs="Thông tin chung,Lịch sử giao dịch,Hợp đồng,Đính kèm"></div>
+
+        <div class="mb-16"></div>
+
+        <!-- ── Read Approval ───────────────────────────────── -->
+        <p class="fs-12 text-black400 mb-12"><strong>variant="read-approval"</strong> — Chi tiết chờ duyệt: ← Quay lại + title + record ID + badge | Lịch sử + Từ chối (light warning) + Duyệt (light success) + Chỉnh sửa (fill)</p>
+        <div data-pattern="page-header" data-variant="read-approval"
+             data-title="Chi tiết đơn hàng"
+             data-record-id="#ĐH-2024-0042"
+             data-badge="Chờ duyệt" data-badge-status="pending"
+             data-actions="Chỉnh sửa,Từ chối,Duyệt"></div>
+
+        <div class="mb-16"></div>
+
+        <!-- ── Edit (có Lưu nháp) ──────────────────────────── -->
+        <p class="fs-12 text-black400 mb-12"><strong>variant="edit"</strong> — Form có approval: Bỏ qua + Lưu nháp + Primary</p>
+        <div data-pattern="page-header" data-variant="edit"
+             data-title="Tạo mới sản phẩm"
+             data-primary-action="Lưu &amp; Gửi duyệt"
+             data-has-draft="true"></div>
+
+        <div class="mb-16"></div>
+
+        <!-- ── Edit (không Lưu nháp) ───────────────────────── -->
+        <p class="fs-12 text-black400 mb-12"><strong>variant="edit"</strong> — Form đơn giản: Bỏ qua + Primary</p>
+        <div data-pattern="page-header" data-variant="edit"
+             data-title="Chỉnh sửa nhà cung cấp"
+             data-primary-action="Lưu"></div>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Header cho mọi trang OMEU — đây là component bắt buộc</li>
+                  <li>Thể hiện title và primary CTA của trang</li>
+                  <li>Dùng <code>page-tabs</code> khi trang có nhiều trạng thái hoặc sub-views</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Standalone — page-header luôn đi kèm với page layout, không dùng riêng lẻ</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Trang Danh sách Đơn hàng: header có tab lọc Tất cả / Chờ xử lý / Hoàn thành, nút Tạo đơn hàng."</p>
+                <p>"Trang Chi tiết Nhà cung cấp: header có mã NCC-0042, badge Hoạt động, subtitle ngày cập nhật, nút Chỉnh sửa. Bên dưới có tab: Thông tin chung / Lịch sử / Hợp đồng."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp đầy đủ</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;!-- Browse + page-tabs --&gt;
+&lt;div data-pattern="page-header" data-variant="browse"
+     data-title="Danh sách đơn hàng"
+     data-primary-action="Tạo đơn hàng"
+     data-primary-icon="add"
+     data-page-tabs="Tất cả,Chờ xử lý,Hoàn thành"&gt;&lt;/div&gt;
+
+&lt;!-- Read + subtitle + page-tabs --&gt;
+&lt;div data-pattern="page-header" data-variant="read"
+     data-title="Chi tiết nhà cung cấp"
+     data-record-id="#NCC-0042"
+     data-badge="Hoạt động" data-badge-status="active"
+     data-subtitle="Cập nhật lần cuối: 15/04/2026"
+     data-primary-action="Chỉnh sửa"
+     data-page-tabs="Thông tin chung,Lịch sử,Hợp đồng"&gt;&lt;/div&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Code Angular tương ứng (@sd-angular/core — sd-page + pattern Page Header của portal-template, 2026-10-14)</p>
+              <p class="fs-12 text-black400 mb-8">Pattern dựng đúng DOM header của <code>sd-page</code>: <code>div.c-page-header.bg-white &gt; div.p-16.d-flex…</code> với vùng <code>headerLeft</code> / <code>headerRight</code>. Dev viết lại bằng <code>&lt;sd-page&gt;</code> như dưới. Nút "Lịch sử thay đổi", "Bỏ qua", "Lưu nháp" là tác vụ kit giữ lại — portal-template không có. Badge: <code>color</code> / <code>icon</code> lấy theo STATUS_MAP của <code>data-badge-status</code>.</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">Angular</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;!-- Danh sách (data-variant="browse") --&gt;
+&lt;sd-page title="Danh sách đơn hàng" description="Mô tả (data-subtitle)"&gt;
+  &lt;div headerRight class="d-flex align-items-center flex-wrap gap-8 justify-content-end"&gt;
+    &lt;sd-button title="Tạo đơn hàng" prefixIcon="add" type="fill" color="primary" (click)="create()" /&gt;
+  &lt;/div&gt;
+  &lt;!-- nội dung trang (content-zone) --&gt;
+&lt;/sd-page&gt;
+
+&lt;!-- Chi tiết (read / read-approval) --&gt;
+&lt;sd-page title="Chi tiết nhà cung cấp"&gt;
+  &lt;div headerLeft class="d-flex align-items-center gap-8"&gt;
+    &lt;sd-button prefixIcon="arrow_back" tooltip="Quay lại" type="link" (click)="back()" /&gt;
+    &lt;div&gt;
+      &lt;div class="d-flex align-items-center flex-wrap gap-8"&gt;
+        &lt;div class="T20M"&gt;Chi tiết nhà cung cấp&lt;/div&gt;
+        &lt;span class="T20M text-primary"&gt;#NCC-0042&lt;/span&gt;
+        &lt;sd-badge title="Hoạt động" color="success" icon="play_circle" /&gt;
+      &lt;/div&gt;
+      &lt;div class="T14R text-secondary mt-4"&gt;Cập nhật lần cuối: 15/04/2026&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div headerRight class="d-flex align-items-center flex-wrap gap-8 justify-content-end"&gt;
+    &lt;sd-button prefixIcon="history" tooltip="Lịch sử thay đổi" type="light" color="secondary" /&gt;
+    &lt;sd-button title="Từ chối" prefixIcon="close" type="light" color="warning" (click)="reject()" /&gt;
+    &lt;sd-button title="Duyệt" prefixIcon="check" type="light" color="success" (click)="approve()" /&gt;
+    &lt;sd-button title="Chỉnh sửa" prefixIcon="edit" type="fill" color="primary" (click)="edit()" /&gt;
+  &lt;/div&gt;
+  &lt;!-- data-page-tabs → sd-tab-group ngay dưới header, trong phần nội dung --&gt;
+  &lt;div class="bg-white"&gt;
+    &lt;sd-tab-group [stretchTabs]="false"&gt;
+      &lt;sd-tab label="Thông tin chung"&gt;…&lt;/sd-tab&gt;
+      &lt;sd-tab label="Lịch sử"&gt;…&lt;/sd-tab&gt;
+    &lt;/sd-tab-group&gt;
+  &lt;/div&gt;
+&lt;/sd-page&gt;
+
+&lt;!-- Tạo / sửa (edit / add): headerLeft như Chi tiết, headerRight: --&gt;
+&lt;sd-button title="Bỏ qua" type="link" color="primary" (click)="back()" /&gt;
+&lt;sd-button title="Lưu nháp" type="light" color="primary" (click)="saveDraft()" /&gt;  &lt;!-- data-has-draft --&gt;
+&lt;sd-button title="Lưu" prefixIcon="save" type="fill" color="primary" (click)="save()" /&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>data-variant</td><td>browse | read | read-approval | add | edit</td><td>browse</td><td>Loại page. <code>add</code> = <code>edit</code>; read / read-approval / edit có nút ← Quay lại đầu header</td></tr>
+                  <tr><td>data-title</td><td>string</td><td>-</td><td>Tiêu đề trang</td></tr>
+                  <tr><td>data-subtitle</td><td>string</td><td>-</td><td>Mô tả dưới tiêu đề — <code>description</code> của sd-page (<code>T14R text-secondary mt-4</code>)</td></tr>
+                  <tr><td>data-record-id</td><td>string</td><td>-</td><td>Mã định danh, chữ <code>T20M text-primary</code> cạnh tiêu đề (read / read-approval / edit)</td></tr>
+                  <tr><td>data-badge</td><td>string</td><td>-</td><td>Nhãn <code>sd-badge</code> kiểu <code>icon</code> — màu / icon tra STATUS_MAP theo <code>data-badge-status</code> (read / read-approval / edit)</td></tr>
+                  <tr><td>data-badge-status</td><td>active | pending | inactive | …</td><td>active</td><td>Màu badge</td></tr>
+                  <tr><td>data-primary-action</td><td>string</td><td>Tạo mới</td><td>Label nút primary (browse/read)</td></tr>
+                  <tr><td>data-primary-icon</td><td>material icon name</td><td>add (browse) · theo nhãn (read/edit)</td><td>Icon nút primary. read / edit không khai thì "Chỉnh sửa" → edit, "Lưu" → save như portal</td></tr>
+                  <tr><td>data-primary-href</td><td>URL</td><td>-</td><td>Link cho primary button</td></tr>
+                  <tr><td>data-back-href</td><td>URL</td><td>history.back()</td><td>Đích của ← Quay lại và "Bỏ qua" (read / read-approval / edit)</td></tr>
+                  <tr><td>data-has-draft</td><td>true</td><td>-</td><td>Hiện nút Lưu nháp (edit)</td></tr>
+                  <tr><td>data-cancel-label</td><td>Bỏ qua | Thoát | Quay lại</td><td>Bỏ qua</td><td>Nhãn nút thoát (edit / add) — chỉ 3 nhãn của Rule 16, nhãn khác quy về "Bỏ qua". Trang tạo nhiều bước (sd-stepper) dùng "Thoát" (2026-10-14)</td></tr>
+                  <tr><td>data-primary-suffix-icon</td><td>material icon name</td><td>-</td><td>Icon ĐUÔI nút chính (edit / add) = <code>suffixIcon</code> của sd-button, vd <code>arrow_forward</code> cho "Tiếp tục" (2026-10-14)</td></tr>
+                  <tr><td>data-show-history</td><td>true | false</td><td>true</td><td>Nút "Lịch sử thay đổi" (read / read-approval) — light secondary, chỉ icon + tooltip</td></tr>
+                  <tr><td>data-actions</td><td>CSV hoặc "icon:label,…"</td><td>-</td><td>Tác vụ (read-approval) theo luật portal: Từ chối → light warning · Duyệt / Phê duyệt → light success · Chỉnh sửa → fill primary ngoài cùng phải · nhãn khác → light secondary</td></tr>
+                  <tr><td>data-page-tabs</td><td>CSV: "Tab 1,Tab 2,Tab 3"</td><td>-</td><td>Tab trong trang = <code>sd-tab-group stretchTabs="false"</code>, nằm DƯỚI khung header như portal. Prefix * để chọn active: "*Tab 2". JS: nghe <code>sd-tab-change</code>; lớp móc cũ <code>.page-tab-zone .tab</code> vẫn chạy</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      // The first .page-tab-zone in .main-area is the page's own header tabs
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      // Show first panel on load
+      showPanel(0);
+    }
+
+    // patterns:loaded already fired before this inline script runs,
+    // so call directly — DOM is ready at this point.
+    initPreviewTabs();
+  })();
+</script>
+
+</body>
+</html>

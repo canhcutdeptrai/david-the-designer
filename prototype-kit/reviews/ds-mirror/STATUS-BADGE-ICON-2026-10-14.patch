@@ -1,0 +1,3019 @@
+# STATUS-BADGE-ICON 2026-10-14 — badge trạng thái lifecycle kiểu icon toàn kit: STATUS_MAP +5 khoá (PD duyệt), page-header, prototype, cột status / useBadge của sd-table (không fontSet như thư viện), tài liệu + _dev-spec B4
+# Quyết định Builder: 'đồng bộ lại dạng UI dạng icon' + duyệt (Sắp hiệu lực info, Hết hiệu lực secondary, page-header đổi theo)
+# 30 file — xem danh sách 'diff' bên dưới
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/STATUS-BADGE-ICON-2026-10-14.patch (sau HTML-TO-ANGULAR-REFRESH-2026-10-14.patch)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-14 11:10:03.411614640 +0000
++++ b/CHANGELOG.md	2026-10-14 11:48:07.987474716 +0000
+@@ -8,6 +8,24 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — badge trạng thái lifecycle đồng bộ kiểu `icon` (Builder 2026-10-14: *„Tôi muốn các trạng thái đồng bộ lại dạng UI dạng icon“*)
++
++- **STATUS_MAP +5 khoá (PD duyệt)**: `draft` Nháp (`secondary`, `edit_note`) · `upcoming` Sắp hiệu lực (`info`, `update`) · `expired` Hết hiệu lực
++  (`secondary`, `event_busy`) · `unpublished` Ngưng phát hành (`secondary`, `unpublished`) · `partial` Một phần (`warning`, `incomplete_circle`).
++  Màu hai trạng thái từng lệch giữa các màn của cùng feature nay thống nhất: Sắp hiệu lực = info, Hết hiệu lực = secondary.
++- **Page-header**: badge `data-badge-status` nay kiểu icon (trước `round` như portal-template — lệch có chủ ý, known-gaps).
++- **Prototype**: 12 badge trạng thái tĩnh + 2 drawer (`stat-status`) + 4 cột `useBadge` (danh-sach-workitem, quan-ly-cam-nang) đổi sang kiểu icon theo
++  STATUS_MAP; `uy-quyen-noi-bo` dùng khoá `upcoming` / `expired` (trước `pending` / `deactivated`); cây Đầu việc của `quan-ly-cam-nang` đổi màu icon
++  theo bảng tra. **Giữ `round`**: nhãn phân loại (SAP HCM / Manual, Cấp 2, vai trò, số bước), cột Có / Không, cột `boolean`.
++- **`sd-table`**: cột `type:"status"` vẽ đúng như thư viện vẽ `useBadge → { type:'icon', color, icon, title }` — **không `fontSet`** (ô bảng thư viện không
++  nhận) nên icon trong bảng là bộ đặc.
++- **Preview**: Badge (bảng tra 22 trạng thái, ghi chú ô bảng), page-header, side-drawer, tooltip; pattern browse-page / table: "Nháp" dùng khoá `draft`.
++- **Tài liệu**: `html-to-angular.md` (cột `status` → `useBadge … type: 'icon'` — sửa lỗi cũ ghi `round`; header bỏ `type="round"`), `sd-data.md`,
++  `generate-components.md`, `generate-skeletons.md`, `sd-layout.md`, `sd-interactive.md` (ví dụ `round` đổi sang nhãn phân loại), `_dev-spec.md` mục B4
++  (màu + icon từng trạng thái).
++- **Kiểm**: 94 trang không lỗi JS; bộ kịch bản prototype qua (3 kịch bản sửa cách đọc chữ badge — ô kiểu icon có chữ ligature); đối chiếu catalog badge /
++  table / tooltip / side-drawer không đổi. Bản vá: `reviews/ds-mirror/STATUS-BADGE-ICON-2026-10-14.patch`.
++
+ ### Docs — rà bảng dịch HTML → Angular và `_dev-spec.md` sau vòng lịch / bảng (Builder 2026-10-14: *„Đã update các file về bảng mapping và _dev-spec.md chưa?“*)
+ 
+ - `html-to-angular-api.md` + `kit-api.json`: sinh lại từ mã hiện tại — attribute / sự kiện của mọi `sd-*` **không đổi** (vòng vừa rồi chỉ đổi DOM
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-14 11:10:03.122290579 +0000
++++ b/_memory/known-gaps.md	2026-10-14 11:48:07.981638557 +0000
+@@ -24,6 +24,7 @@
+ | 2026-10-14 | **Đối chiếu tổng kit ↔ catalog** — `reviews/ds-mirror/DOI-CHIEU-TONG-2026-10-14.md` | Khớp hẳn: button, badge, avatar, radio, anchor, history, org-chart, preview-image, inform, tooltip, tab-group, kpi-card, filter-scorecard. **Lệch cấu trúc thật:** ~~`sd-checkbox` / `sd-switch`~~ (**ĐÃ SỬA 2026-10-14** — DOM Material, 13/13 + 13/13 khớp), ~~`sd-tree` (ô chọn / nút lệnh / spinner)~~ (**ĐÃ SỬA 2026-10-14**), ~~khối popup ẩn trong thẻ của select / autocomplete / date / date-range / datetime / chip-calendar~~ (**ĐÃ SỬA 2026-10-14** — ra overlay), ~~`sd-upload-file` thiếu `<preview>`~~ (**ĐÃ SỬA**), ~~`sd-chip` viewed~~ (ghép nhầm mẫu — trang preview thiếu mẫu "Đang nhập thêm", đã thêm), ~~`sd-query-builder`~~ (**ĐÃ SỬA** mũi tên select + mẫu menu "+" mở; dòng dưới ô là bản dựng giản lược của catalog — xem dòng `data-ff`). Lệch nhỏ: `sd-label` cao 22 thay 20px, dòng lỗi form-generic, lớp `<table>` của sd-table. Chưa so được: modal / drawer / confirm (overlay), stepper, splitter, chart, import-excel | **Đã sửa 4 nhóm 2026-10-14** (checkbox/switch · popup overlay · tree/upload/chip/qb · lệch nhỏ): khớp hẳn 146 → 232 / 360 mẫu ghép được. Phần còn lại đã phân loại ở mục "Cập nhật sau vòng sửa" cuối báo cáo |
+ | 2026-10-14 | **Popup nổi** (`sd-date` / `sd-date-range` / `sd-datetime` / `sd-chip-calendar` / `sd-autocomplete`, + `sd-select` khi đóng) — sau khi ra overlay | Thẻ host nay trùng catalog (chỉ có ô; `position` static). Còn khác: (1) ~~ruột lịch là bộ `.form-field-datepicker-*` tự dựng~~ **ĐÃ SỬA 2026-10-14** — nay `mat-datepicker-content > mat-calendar` (`table.mat-calendar-table`) / `sd-datetime-picker` / `mat-mdc-menu-panel` như catalog, so pane 4/4 mục trùng 100% số nút (185 · 185 · 212 · 186); (2) pane là `cdk-overlay-pane sd-float-pane sd-<tên>-pane` (catalog: `mat-datepicker-popup` / `mat-mdc-autocomplete-panel`…); (3) `sd-select` / `sd-autocomplete` còn lớp trạng thái `sd-open` trên host khi mở (catalog không có); (4) mẫu "đang mở" của trang preview nay nổi theo màn hình (trước nằm trong khung demo) | (1) xong. (2) pane nay mang lớp của catalog (`mat-datepicker-popup` · `sd-datetime-overlay-panel`) kèm lớp kit `sd-float-pane sd-<tên>-pane` (JS / CSS tìm theo); (3) còn — lớp trạng thái kit, không có hình |
+ | 2026-10-14 | **Lịch `mat-calendar`** (`sd-date` / `sd-date-range` / `sd-datetime` / `sd-chip-calendar`) — sau khi dựng lại | Còn khác catalog: (1) nút kỳ `[OCT 2026 ▾]` không mở bảng năm / tháng (catalog tĩnh cũng chỉ có `mat-month-view`); (2) nút huỷ của `sd-datetime` là "Bỏ qua" (catalog "Hủy" — Rule 16); (3) ô giờ của `sd-datetime` mở ra với giờ hiện tại (bản chụp catalog: `00`) — dữ liệu, không phải DOM; (4) không có ripple / focus-indicator động, không điều hướng bàn phím trong lưới ngày (Material có ← → ↑ ↓ / PageUp). `shell.js` (markup `.form-field-datepicker-wrapper` viết tay) và luật `.form-field-datepicker*` của `components.css` **giữ nguyên** — không phải `sd-*` | (1)(4) catalog không có căn cứ; (2) Rule 16; (3) không đổi |
++| 2026-10-14 | **Badge trạng thái lifecycle = kiểu `icon` toàn kit** (Builder: *„đồng bộ lại dạng UI dạng icon“*, PD duyệt bảng tra) | Lệch CÓ CHỦ Ý so với hai nguồn mẫu: (1) **page-header** — portal-template vẽ `statusBadge(status, 'round')`, kit vẽ kiểu icon (Builder: *„Page-header: đổi theo“*); (2) **`useBadge` của bảng** — thư viện mặc định `badge.type ?? 'round'` và ví dụ `#c-table` của catalog là `round`; kit / prototype ghi rõ `type: 'icon'` (Angular phải ghi giống). Không đổi: cột `boolean` (thư viện cố định `round`), nhãn phân loại (nguồn, cấp, vai trò, có / không, số đếm) vẫn `round`, ví dụ `#c-table` trên trang preview giữ `round` như catalog. **Icon trong ô bảng luôn bộ đặc**: template ô của thư viện không truyền `fontSet` → kit bỏ `fontSet` ở cột `status` / `useBadge` cho giống (pending, access_time, task_alt… trong bảng ra bản đặc, ngoài bảng vẫn viền) | Quyết định Builder 2026-10-14. STATUS_MAP thêm `draft` · `upcoming` (info) · `expired` (secondary) · `unpublished` · `partial` — PD duyệt |
+ | 2026-10-14 | **Catalog tự dựng khung ô bằng JS ở `#c-form-generic` / `#c-query-builder` / `#c-form-builder`** (`mat-form-field[data-ff]`, `js/components/form-generic.js`) | Ở ba mục đó dòng dưới ô là `subscript-wrapper` RỖNG hoặc `mat-error.mat-mdc-form-field-bare-error`; ở mục của từng component (`#c-input`, `#c-select`…) là `hint-wrapper` / `error-wrapper` như Material thật. Bộ so tự động báo "lệch cấu trúc" ở ba mục kia | **Kit theo mục của component** (= Material thật) — KHÔNG sửa theo bản dựng giản lược. Đối chiếu ba mục kia bỏ qua phần dòng dưới ô |
+ | 2026-10-14 | `sd-select` — `div.mat-mdc-select-arrow` | Catalog có thẻ này (rỗng, ẩn bằng `sd-select .mat-mdc-select-arrow{display:none!important}`) ở 24 mẫu (#c-query-builder · #c-form-generic · #c-form-builder · #c-table), riêng mục #c-select bản chụp bỏ (7 mẫu) | **ĐÃ QUYẾT 2026-10-14** (Builder: *„Cần bạn quyết“*): vẽ thẻ **theo ngữ cảnh** như chính catalog — có khi `sd-select` nằm trong `sd-table` / `sd-query-builder` / `sd-form-render` / `sd-form-builder`, không có ở chỗ khác (mục #c-select). Cả hai phía khớp; thẻ vẫn ẩn nên không đổi hình |
+ | 2026-10-14 | Biểu tượng gợi ý của `sd-label` (`info_outline`) | Catalog không thống nhất: mục #c-label có lớp `mat-mdc-tooltip-trigger`, các mục #c-input / #c-upload-file / #c-editor không | Kit giữ lớp đó (directive `matTooltip` thật luôn gắn) |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-14 11:10:03.122221684 +0000
++++ b/_memory/lessons.md	2026-10-14 11:48:07.993598294 +0000
+@@ -1506,3 +1506,12 @@
+   nền / viền; luôn chụp ảnh so trước / sau.
+ - Bộ so tự động dừng ở nút lệch đầu tiên: muốn thấy lệch style phía sau thì so riêng (bỏ cây con đã biết, chuẩn hoá lớp trạng thái demo).
+ 
++## Đổi kiểu hiển thị dùng chung (badge trạng thái, 2026-10-14)
++
++- Trước khi đổi, kiểm **mã thư viện** chỗ component được vẽ gián tiếp: ô `sd-table` vẽ `sd-badge` chỉ với `type / title / color / icon` —
++  không `fontSet`. Prototype vẽ icon viền trong bảng thì Angular sẽ ra bản đặc → lệch 1:1 dù cùng API.
++- Tách **trạng thái** (vòng đời — kiểu icon) khỏi **nhãn phân loại** (nguồn, cấp, vai trò, có / không — `round`); thay hàng loạt theo `type="round"`
++  là sai.
++- Gom màu theo bảng tra trước khi sửa trang: hai màn cùng feature từng tô "Sắp hiệu lực" / "Hết hiệu lực" khác nhau — PD quyết một lần.
++- Kiểu icon thêm chữ ligature vào `innerText` của ô — kịch bản kiểm đọc chữ badge phải đọc `.c-badge-title`.
++
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/generate-components.md b/ai-instructions/generate-components.md
+--- a/ai-instructions/generate-components.md	2026-10-14 11:10:03.118525342 +0000
++++ b/ai-instructions/generate-components.md	2026-10-14 11:25:58.087646542 +0000
+@@ -37,7 +37,7 @@
+ | Checkbox (đa lựa chọn) | `<sd-checkbox>` | `<sd-checkbox label="Đồng ý điều khoản" checked></sd-checkbox>` |
+ | Radio (chọn 1 trong nhiều) | `<sd-radio>` | `<sd-radio name="payment" value="card" label="Thẻ tín dụng" checked></sd-radio>` |
+ | Trạng thái (lifecycle) | `<sd-badge>` (type mặc định `icon`) + `color` / `icon` tra STATUS_MAP | `<sd-badge color="success" icon="thumb_up" fontSet="material-icons-outlined" title="Đã duyệt"></sd-badge>` |
+-| Tag/label tự do | `<sd-badge type="round">` | `<sd-badge type="round" color="secondary" title="Nháp"></sd-badge>` |
++| Tag/label phân loại (không phải trạng thái — nguồn, cấp, vai trò, số đếm) | `<sd-badge type="round">` | `<sd-badge type="round" color="info" title="SAP HCM"></sd-badge>` |
+ | Input text | `<sd-input>` | `<sd-input label="Họ tên" placeholder="Nhập..." required></sd-input>` |
+ | Dropdown chọn | `<sd-select>` | `<sd-select label="Loại" items='[{"id":"1","name":"A"}]'></sd-select>` |
+ | Số | `<sd-input-number>` | `<sd-input-number label="Giá" value="50000"></sd-input-number>` |
+@@ -167,7 +167,7 @@
+ > div.p-16.d-flex…`, tiêu đề `T20M`, mô tả `T14R text-secondary mt-4`), nội dung theo pattern **Page Header** của
+ > portal-template (`src/modules/pattern/features/header`, `docs/pattern.md`):
+ > - **read / read-approval / edit** có nút **← Quay lại** (`sd-button type="link" prefixIcon="arrow_back" tooltip`) ở đầu;
+->   mã bản ghi `T20M text-primary` cạnh tiêu đề; badge `sd-badge type="round"`.
++>   mã bản ghi `T20M text-primary` cạnh tiêu đề; badge trạng thái `sd-badge` kiểu `icon` (2026-10-14 — portal vẽ `round`, kit đổi theo quyết định Builder: trạng thái lifecycle toàn kit là kiểu icon).
+ > - Nút chính `fill primary` ngoài cùng phải; "Chỉnh sửa" tự có icon `edit`, "Lưu" icon `save` (khai `data-primary-icon` thì theo đó).
+ > - read-approval: Từ chối → `light warning` · Duyệt / Phê duyệt → `light success` · Chỉnh sửa → `fill primary` (dời ra cuối) · nhãn khác → `light secondary`.
+ > - **Giữ tác vụ kit** (portal không có — Builder: *„giữ tác vụ“*): "Lịch sử thay đổi" (`light secondary`, chỉ icon + tooltip), "Bỏ qua" (`link primary`), "Lưu nháp" (`light primary`).
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/generate-skeletons.md b/ai-instructions/generate-skeletons.md
+--- a/ai-instructions/generate-skeletons.md	2026-10-14 11:10:03.118406066 +0000
++++ b/ai-instructions/generate-skeletons.md	2026-10-14 11:32:40.938076941 +0000
+@@ -238,7 +238,7 @@
+             subTitle="H2H · 5.000.000.000 VND · CF: CF_OUT_001"
+             collapsible>
+   <div class="d-flex align-items-center gap-8" sdHeaderRight>
+-    <sd-badge type="round" color="secondary" title="Nháp"></sd-badge>
++    <sd-badge color="secondary" icon="edit_note" fontSet="material-icons-outlined" title="Nháp"></sd-badge>
+     <div class="c-header-divider"></div>
+     <sd-button type="light" color="primary" size="sm" prefixIcon="content_copy" title="Nhân bản"></sd-button>
+     <sd-button type="light" color="primary" size="sm" prefixIcon="delete_outline" title="Xóa"></sd-button>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/html-to-angular.md b/ai-instructions/html-to-angular.md
+--- a/ai-instructions/html-to-angular.md	2026-10-14 11:10:03.412565627 +0000
++++ b/ai-instructions/html-to-angular.md	2026-10-14 11:25:27.914007938 +0000
+@@ -121,7 +121,7 @@
+ 
+ | Kit | Angular |
+ |---|---|
+-| `status` (badge theo STATUS_MAP) | `type: 'string'` (hoặc `'values'`) + `useBadge: (value, row) => ({ type: 'round', color, icon, title })` |
++| `status` (badge theo STATUS_MAP) | `type: 'string'` (hoặc `'values'`) + `useBadge: (value, row) => ({ type: 'icon', color, icon, title })` — **phải ghi `type: 'icon'`**: thư viện mặc định `badge.type ?? 'round'`; `color` / `icon` lấy đúng STATUS_MAP như prototype (sửa 2026-10-14 — bản trước ghi nhầm `round`, kit vẽ cột này kiểu icon) |
+ | `link` | `click: (value, row) => …` hoặc template ô (dòng dưới) |
+ | `raw` (HTML / sd-* trong ô) | `<ng-template sdTableCellDef="field" let-row="item">…</ng-template>` trong `<sd-table>`, hoặc `htmlTemplate: (value, row) => string` |
+ | `action` (1 nút) · `menu` (nhiều hành động) + `sd-table-command` / `sd-table-menu-click` | `commands: [...]` · `commands: [{ icon, children: [...] }]` — `click(row)` là callback, không có sự kiện DOM |
+@@ -141,7 +141,7 @@
+   items: (filterReq, pagingReq) => this.api.search(filterReq, pagingReq),   // → Promise<{ items, total }>
+   columns: [
+     { field: 'code', title: 'Mã', type: 'string', click: (v, row) => this.open(row) },
+-    { field: 'status', title: 'Trạng thái', type: 'string', useBadge: v => this.statusBadge(v) },
++    { field: 'status', title: 'Trạng thái', type: 'string', useBadge: v => this.statusBadge(v) },   // → { type: 'icon', color, icon, title } theo STATUS_MAP
+   ],
+   paginate: { pageSize: 20, pages: [20, 50, 100] },
+   selector: { visible: true },
+@@ -161,7 +161,7 @@
+ |---|---|
+ | `data-title` · `data-subtitle` | `<sd-page title="…" description="…">` (browse) — trang chi tiết / sửa dựng tiêu đề trong `headerLeft` |
+ | ← Quay lại (read / edit) | `<sd-button prefixIcon="arrow_back" tooltip="Quay lại" type="link" (click)="back()" />` trong `headerLeft` |
+-| `data-record-id` · `data-badge` + `data-badge-status` | `<span class="T20M text-primary">#…</span>` · `<sd-badge type="round" [color] [icon] [title]>` |
++| `data-record-id` · `data-badge` + `data-badge-status` | `<span class="T20M text-primary">#…</span>` · `<sd-badge [color] [icon] [fontSet] [title]>` (kiểu `icon` mặc định — không vẽ `round` như portal, 2026-10-14) |
+ | `data-primary-action` (+ icon) · tác vụ phụ · `data-actions` | các `sd-button` trong `<div headerRight class="d-flex align-items-center flex-wrap gap-8 justify-content-end">` |
+ | `data-page-tabs` | `<div class="bg-white"><sd-tab-group [stretchTabs]="false" [(selectedIndex)]="tab">…</sd-tab-group></div>` ngay sau header |
+ | `.content-zone` | nội dung mặc định của `<sd-page>` |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-data.md b/design-system/components/sd-data.md
+--- a/design-system/components/sd-data.md	2026-10-14 11:10:03.125453942 +0000
++++ b/design-system/components/sd-data.md	2026-10-14 11:33:05.622823210 +0000
+@@ -56,6 +56,10 @@
+ overlay `<body>` (`.cdk-overlay-pane.sd-table-pane .c-table-menu-dropdown .c-table-menu-item`), không nằm trong ô. Bảng rỗng:
+ chữ là `.c-no-data-row > .T16R` (lọc rỗng: `.T16M` + `.T16R`).
+ 
++**Badge trạng thái trong bảng (2026-10-14)**: trạng thái lifecycle vẽ kiểu `icon` — cột `type:"status"`, hoặc `useBadge` trả
++`{ type: 'icon', color, icon, title }` lấy từ `window.sdStatusBadgeAttrs(khoá, nhãn)` (không truyền `fontSet` — ô bảng thư viện
++không nhận). `round` chỉ cho nhãn phân loại (nguồn, cấp, vai trò, có / không) và cột `boolean` (thư viện cố định `round`).
++
+ **`option.items` dạng mảng** (chế độ client, 2026-10-14) = như attribute `data`; attribute `data` khai tay vẫn thắng.
+ 
+ **Phân trang (2026-10-14 — trước đó chỉ là UI tĩnh):** `paginated` (hoặc `option.paginate`) cắt dòng THẬT theo
+@@ -109,7 +113,7 @@
+ | `datetime` | sd-date-range (sm) — "Từ – đến" | `div.T14R` dd/MM/yyyy + giờ xám | — |
+ | `boolean` | sd-select (sm) | sd-badge `round` success / error (như thư viện) — chữ mặc định **True / False** | `displayOnTrue`, `displayOnFalse` |
+ | `values` | sd-select (sm) | Lookup display text | `items`, `valueField`, `displayField` |
+-| `status` | sd-select (sm) | sd-badge (`color` + `icon` tra STATUS_MAP — API catalog) | `items` (id = khoá STATUS_MAP) |
++| `status` | sd-select (sm) | sd-badge kiểu `icon` (`color` + `icon` tra STATUS_MAP) — icon luôn bộ đặc như ô bảng của thư viện (thư viện không truyền `fontSet` vào ô) | `items` (id = khoá STATUS_MAP) |
+ | `link` | sd-input (sm) | Clickable link | `href` |
+ | `raw` | — (hidden) | Raw HTML — dùng cho cells chứa sd-components động | — |
+ | `action` | — (hidden) | Icon button đơn (1 hành động) | `icon`, `tooltip`, `onclick` hoặc `href`, `width` |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-interactive.md b/design-system/components/sd-interactive.md
+--- a/design-system/components/sd-interactive.md	2026-10-14 11:10:03.125648022 +0000
++++ b/design-system/components/sd-interactive.md	2026-10-14 11:25:58.088339274 +0000
+@@ -346,8 +346,9 @@
+ <sd-badge color="error" icon="error" size="lg" title="Quá hạn" description="trễ 5 ngày"></sd-badge>
+ 
+ <!-- round: viên thuốc, bo 20px, nền --sd-{color}-light + chữ --sd-{color} -->
+-<sd-badge type="round" color="info" title="Đang xử lý"></sd-badge>
+-<sd-badge type="round" color="success" icon="check_circle" title="Đã phê duyệt"></sd-badge>
++<!-- (quy ước kit 2026-10-14) round chỉ cho nhãn PHÂN LOẠI — trạng thái lifecycle dùng kiểu icon + STATUS_MAP -->
++<sd-badge type="round" color="info" title="SAP HCM"></sd-badge>
++<sd-badge type="round" color="secondary" icon="person" fontSet="material-icons-outlined" title="Cấp 2"></sd-badge>
+ 
+ <!-- tag: khung viền 1px, bo 4px — type duy nhất hiện description trong khung -->
+ <sd-badge type="tag" color="warning" icon="event"
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-layout.md b/design-system/components/sd-layout.md
+--- a/design-system/components/sd-layout.md	2026-10-14 11:10:03.125684553 +0000
++++ b/design-system/components/sd-layout.md	2026-10-14 11:32:40.938871423 +0000
+@@ -148,7 +148,7 @@
+             subTitle="H2H · 5.000.000.000 VND · CF: CF_OUT_001"
+             collapsible>
+   <div class="d-flex align-items-center gap-8" sdHeaderRight>
+-    <sd-badge type="round" color="secondary" title="Nháp"></sd-badge>
++    <sd-badge color="secondary" icon="edit_note" fontSet="material-icons-outlined" title="Nháp"></sd-badge>
+     <div class="c-header-divider"></div>
+     <sd-button type="light" color="primary" size="sm" prefixIcon="content_copy" title="Nhân bản"></sd-button>
+     <sd-button type="light" color="primary" size="sm" prefixIcon="delete_outline" title="Xóa"></sd-button>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/patterns/page-header.js b/design-system/patterns/page-header.js
+--- a/design-system/patterns/page-header.js	2026-10-14 11:10:03.125338188 +0000
++++ b/design-system/patterns/page-header.js	2026-10-14 11:25:14.450034237 +0000
+@@ -9,7 +9,7 @@
+  *   · NỘI DUNG headerLeft / headerRight = pattern "Page Header" của portal-template
+  *     (src/modules/pattern/features/header, docs/pattern.md):
+  *       danh sách  — tiêu đề (+ mô tả) | nút chính fill primary
+- *       chi tiết   — ← Quay lại · tiêu đề · #mã (text-primary) · sd-badge type="round" | tác vụ phụ light · nút chính fill primary
++ *       chi tiết   — ← Quay lại · tiêu đề · #mã (text-primary) · sd-badge trạng thái | tác vụ phụ light · nút chính fill primary
+  *       tạo / sửa  — ← Quay lại · tiêu đề | Lưu (fill primary, icon save)
+  *     Nút ← Quay lại: catalog 19.0.10 không có type "text" của 22.3.1 → `type="link"` (kit vốn coi text là bí danh của link),
+  *     màu mặc định (secondary) như portal. Cỡ nút: portal không khai size → mặc định 19.0.10 là `sm`, đúng như kit vẫn dùng.
+@@ -40,7 +40,9 @@
+  *                          không khai thì history.back().
+  *
+  * data-badge-status — khoá STATUS_MAP (active, pending, waiting, approved…). pattern-loader tra ra color / icon / fontSet
+- *                     rồi vẽ `<sd-badge type="round">` như portal (`statusBadge(status, 'round')`).
++ *                     rồi vẽ `<sd-badge>` kiểu `icon` (mặc định của sd-badge — icon + chữ, không nền).
++ *                     2026-10-14 (Builder: „Page-header: đổi theo“ — trạng thái lifecycle toàn kit dùng kiểu icon):
++ *                     portal-template vẽ `statusBadge(status, 'round')` — kit lệch CÓ CHỦ Ý, ghi known-gaps.
+  *
+  * `{{primary-icon-attr}}` do pattern-loader tính sẵn (chuỗi `prefixIcon="…" ` hoặc rỗng) — interpolate() KHÔNG hỗ trợ
+  * {{#if}} lồng nhau, nên không viết điều kiện icon bên trong {{#if primary-action}}.
+@@ -61,7 +63,7 @@
+       <div class="d-flex align-items-center flex-wrap gap-8">
+         <div class="T20M page-title">{{title}}</div>
+         {{#if record-id}}<span class="T20M text-primary record-id" title="{{record-id-field}}">{{record-id}}</span>{{/if}}
+-        {{#if badge}}<sd-badge type="round" color="{{badge-color}}" icon="{{badge-icon}}" fontSet="{{badge-font}}" title="{{badge}}"></sd-badge>{{/if}}
++        {{#if badge}}<sd-badge color="{{badge-color}}" icon="{{badge-icon}}" fontSet="{{badge-font}}" title="{{badge}}"></sd-badge>{{/if}}
+       </div>
+       {{#if subtitle}}<div class="T14R text-secondary mt-4 page-subtitle">{{subtitle}}</div>{{/if}}
+     </div>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/badge.html b/design-system/preview/components/badge.html
+--- a/design-system/preview/components/badge.html	2026-10-14 11:10:03.127851906 +0000
++++ b/design-system/preview/components/badge.html	2026-10-14 11:31:24.663855377 +0000
+@@ -145,7 +145,7 @@
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="Trạng thái lifecycle — 17 trạng thái của bảng tra STATUS_MAP, viết bằng API catalog">
++        <sd-section title="Trạng thái lifecycle — 22 trạng thái của bảng tra STATUS_MAP, viết bằng API catalog">
+           <p class="fs-12 text-black400 mb-12">
+             Thư viện chỉ có 3 type <code>icon</code> / <code>round</code> / <code>tag</code>. Trạng thái lifecycle
+             viết bằng <code>type="icon"</code> (mặc định) + <code>color</code> + <code>icon</code> (+ <code>fontSet</code>)
+@@ -197,6 +197,15 @@
+             <sd-badge color="success" icon="thumb_up" fontSet="material-icons-outlined" title="Approved"></sd-badge>
+             <sd-badge color="error" icon="thumb_down" fontSet="material-icons-outlined" title="Denied"></sd-badge>
+           </div>
++
++          <p class="fs-12 text-black400 mb-12">Bổ sung 2026-10-14 (PD duyệt) — trạng thái nghiệp vụ của prototype: Nháp (New) · Sắp hiệu lực (Processing) · Một phần (Warning) · Hết hiệu lực, Ngưng phát hành (End)</p>
++          <div class="flex gap-12 flex-wrap mb-16">
++            <sd-badge color="secondary" icon="edit_note" fontSet="material-icons-outlined" title="Draft"></sd-badge>
++            <sd-badge color="info" icon="update" fontSet="material-icons-outlined" title="Upcoming"></sd-badge>
++            <sd-badge color="warning" icon="incomplete_circle" title="Partial"></sd-badge>
++            <sd-badge color="secondary" icon="event_busy" fontSet="material-icons-outlined" title="Expired"></sd-badge>
++            <sd-badge color="secondary" icon="unpublished" fontSet="material-icons-outlined" title="Unpublished"></sd-badge>
++          </div>
+         </sd-section>
+ 
+         <sd-section title="Trạng thái lifecycle — nhãn tiếng Việt">
+@@ -209,6 +218,7 @@
+           </div>
+         </sd-section>
+ 
++
+       </div><!-- /tab-panel: Preview -->
+ 
+       <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+@@ -250,7 +260,7 @@
+         <sd-section title="Bảng mapping Badge Status">
+           <div class="ds-guide">
+             <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Toàn bộ 17 trạng thái (bảng tra STATUS_MAP) — màu, nhóm nghĩa, icon, nhãn tiếng Việt thường dùng</p>
++              <p class="ds-guide-label">Toàn bộ 22 trạng thái (bảng tra STATUS_MAP) — màu, nhóm nghĩa, icon, nhãn tiếng Việt thường dùng</p>
+               <table class="ds-guide-table">
+                 <thead>
+                   <tr>
+@@ -406,6 +416,46 @@
+                     <td>Đã bị từ chối</td>
+                     <td>Từ chối, Không duyệt, Bị bác</td>
+                   </tr>
++                  <tr>
++                    <td><sd-badge color="secondary" icon="edit_note" fontSet="material-icons-outlined" title="Draft"></sd-badge></td>
++                    <td>New — Mới (bổ sung 2026-10-14)</td>
++                    <td><code>draft</code></td>
++                    <td><code>edit_note</code></td>
++                    <td>Đang soạn, chưa phát hành</td>
++                    <td>Nháp</td>
++                  </tr>
++                  <tr>
++                    <td><sd-badge color="info" icon="update" fontSet="material-icons-outlined" title="Upcoming"></sd-badge></td>
++                    <td>Processing — Đang xử lý (bổ sung 2026-10-14)</td>
++                    <td><code>upcoming</code></td>
++                    <td><code>update</code></td>
++                    <td>Đã duyệt / phát hành, chưa tới ngày hiệu lực</td>
++                    <td>Sắp hiệu lực</td>
++                  </tr>
++                  <tr>
++                    <td><sd-badge color="warning" icon="incomplete_circle" title="Partial"></sd-badge></td>
++                    <td>Warning — Cần chú ý (bổ sung 2026-10-14)</td>
++                    <td><code>partial</code></td>
++                    <td><code>incomplete_circle</code></td>
++                    <td>Xử lý xong một phần</td>
++                    <td>Một phần, Thành công một phần</td>
++                  </tr>
++                  <tr>
++                    <td><sd-badge color="secondary" icon="event_busy" fontSet="material-icons-outlined" title="Expired"></sd-badge></td>
++                    <td>End — Không còn hiệu lực (bổ sung 2026-10-14)</td>
++                    <td><code>expired</code></td>
++                    <td><code>event_busy</code></td>
++                    <td>Quá ngày hiệu lực</td>
++                    <td>Hết hiệu lực, Hết hạn</td>
++                  </tr>
++                  <tr>
++                    <td><sd-badge color="secondary" icon="unpublished" fontSet="material-icons-outlined" title="Unpublished"></sd-badge></td>
++                    <td>End — Không còn hiệu lực (bổ sung 2026-10-14)</td>
++                    <td><code>unpublished</code></td>
++                    <td><code>unpublished</code></td>
++                    <td>Đã phát hành rồi bị ngưng</td>
++                    <td>Ngưng phát hành</td>
++                  </tr>
+                 </tbody>
+               </table>
+             </div>
+@@ -525,7 +575,7 @@
+                   </tr>
+                   <tr>
+                     <td><strong>2. Map vào trạng thái của bảng tra</strong></td>
+-                    <td>Đối chiếu từng trạng thái nghiệp vụ với bảng 17 trạng thái ở trên</td>
++                    <td>Đối chiếu từng trạng thái nghiệp vụ với bảng 22 trạng thái ở trên</td>
+                     <td>Trạng thái này thuộc semantic group nào (New / Processing / Success / Warning / Error / End)?</td>
+                   </tr>
+                   <tr>
+@@ -636,10 +686,13 @@
+               <p class="ds-guide-note mb-0"><code>type="status"</code> / <code>status="…"</code> <strong>không còn</strong> (gỡ 2026-10-13 —
+                 thư viện 19.0.10 không có). Cột <code>type:"status"</code> của <code>sd-table</code> và <code>data-badge-status</code>
+                 của pattern page-header vẫn nhận khoá trạng thái, tự tra bảng này rồi vẽ badge theo API catalog.</p>
++              <p class="ds-guide-note mb-0"><strong>Trong ô <code>sd-table</code></strong> (2026-10-14): thư viện vẽ badge từ
++                <code>useBadge → { type, color, icon, title }</code> và <strong>không truyền <code>fontSet</code></strong> — icon trong bảng
++                luôn là bộ đặc (<code>material-icons</code>). Kit vẽ y như vậy; Angular: <code>useBadge: v =&gt; ({ type: 'icon', color, icon, title })</code>.</p>
+             </div>
+ 
+             <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Bảng tra 17 trạng thái — nhãn mặc định, icon, màu</p>
++              <p class="ds-guide-label">Bảng tra 22 trạng thái — nhãn mặc định, icon, màu</p>
+               <table class="ds-guide-table">
+                 <thead>
+                   <tr><th>Trạng thái</th><th>Nhãn thường dùng</th><th>icon (fontSet viền nếu có)</th><th>color</th><th>Hình</th></tr>
+@@ -662,6 +715,11 @@
+                   <tr><td><code>removed</code></td><td>Đã xóa</td><td><code>remove_circle_outline</code></td><td>secondary</td><td><sd-badge color="secondary" icon="remove_circle_outline" fontSet="material-icons-outlined" title="Removed"></sd-badge></td></tr>
+                   <tr><td><code>approved</code></td><td>Đã duyệt</td><td><code>thumb_up</code></td><td>success</td><td><sd-badge color="success" icon="thumb_up" fontSet="material-icons-outlined" title="Approved"></sd-badge></td></tr>
+                   <tr><td><code>denied</code></td><td>Từ chối</td><td><code>thumb_down</code></td><td>error</td><td><sd-badge color="error" icon="thumb_down" fontSet="material-icons-outlined" title="Denied"></sd-badge></td></tr>
++                  <tr><td><code>draft</code></td><td>Nháp</td><td><code>edit_note</code></td><td>secondary</td><td><sd-badge color="secondary" icon="edit_note" fontSet="material-icons-outlined" title="Draft"></sd-badge></td></tr>
++                  <tr><td><code>upcoming</code></td><td>Sắp hiệu lực</td><td><code>update</code></td><td>info</td><td><sd-badge color="info" icon="update" fontSet="material-icons-outlined" title="Upcoming"></sd-badge></td></tr>
++                  <tr><td><code>partial</code></td><td>Một phần</td><td><code>incomplete_circle</code></td><td>warning</td><td><sd-badge color="warning" icon="incomplete_circle" title="Partial"></sd-badge></td></tr>
++                  <tr><td><code>expired</code></td><td>Hết hiệu lực</td><td><code>event_busy</code></td><td>secondary</td><td><sd-badge color="secondary" icon="event_busy" fontSet="material-icons-outlined" title="Expired"></sd-badge></td></tr>
++                  <tr><td><code>unpublished</code></td><td>Ngưng phát hành</td><td><code>unpublished</code></td><td>secondary</td><td><sd-badge color="secondary" icon="unpublished" fontSet="material-icons-outlined" title="Unpublished"></sd-badge></td></tr>
+                 </tbody>
+               </table>
+             </div>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/side-drawer.html b/design-system/preview/components/side-drawer.html
+--- a/design-system/preview/components/side-drawer.html	2026-10-14 11:10:03.126984139 +0000
++++ b/design-system/preview/components/side-drawer.html	2026-10-14 11:32:53.602914792 +0000
+@@ -229,7 +229,7 @@
+   <!-- `[sdHeaderLeft]` chiếu vào ĐÚNG chỗ tiêu đề (catalog) — muốn chữ + badge cùng hàng thì tự đặt cả hai vào đây. -->
+   <div sdHeaderLeft class="d-flex align-items-center gap-8">
+     <span>Chi tiết giao dịch</span>
+-    <sd-badge type="round" color="success" title="Đã thanh toán"></sd-badge>
++    <sd-badge color="success" icon="check_circle" title="Đã thanh toán"></sd-badge>
+   </div>
+   <div sdHeaderRight>
+     <sd-button title="Tải xuống" size="sm" type="light" prefixIcon="download"></sd-button>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/tooltip.html b/design-system/preview/components/tooltip.html
+--- a/design-system/preview/components/tooltip.html	2026-10-14 11:10:03.128116844 +0000
++++ b/design-system/preview/components/tooltip.html	2026-10-14 11:32:53.604115153 +0000
+@@ -135,7 +135,7 @@
+             <sd-button type="fill" color="primary" title="Tạo mới" prefixIcon="add" sdTooltip="Nhấn để tạo đơn hàng mới"></sd-button>
+             <sd-button type="light" color="primary" size="sm" prefixIcon="group_add" aria-label="Thêm người" sdTooltip="Thêm người vào nhóm"></sd-button>
+             <sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" sdTooltip="Đang chờ người phụ trách xác nhận" title="Waiting"></sd-badge>
+-            <sd-badge type="round" color="info" title="Mới" sdTooltip="Đơn hàng tạo trong vòng 24 giờ"></sd-badge>
++            <sd-badge color="info" icon="circle" title="Mới" sdTooltip="Đơn hàng tạo trong vòng 24 giờ"></sd-badge>
+           </div>
+ 
+           <div class="ds-guide">
+@@ -152,7 +152,7 @@
+ 
+ <span class="code-comment">&lt;!-- sd-badge: mọi type đều dùng chung sdTooltip --&gt;</span>
+ &lt;sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" title="Waiting" sdTooltip="Đang chờ người phụ trách xác nhận"&gt;&lt;/sd-badge&gt;
+-&lt;sd-badge type="round" color="info" title="Mới" sdTooltip="Đơn hàng tạo trong vòng 24 giờ"&gt;&lt;/sd-badge&gt;</pre>
++&lt;sd-badge color="info" icon="circle" title="Mới" sdTooltip="Đơn hàng tạo trong vòng 24 giờ"&gt;&lt;/sd-badge&gt;</pre>
+               </div>
+             </div>
+           </div>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/patterns/browse-page-outgrid.html b/design-system/preview/patterns/browse-page-outgrid.html
+--- a/design-system/preview/patterns/browse-page-outgrid.html	2026-10-14 11:10:03.126067869 +0000
++++ b/design-system/preview/patterns/browse-page-outgrid.html	2026-10-14 11:47:27.787368354 +0000
+@@ -51,7 +51,7 @@
+           items='[{"id":"all","name":"Tất cả"},{"id":"a","name":"Loại A"},{"id":"b","name":"Loại B"},{"id":"c","name":"Loại C"}]'
+         ></sd-select>
+         <sd-select placeholder="Trạng thái"
+-          items='[{"id":"all","name":"Tất cả"},{"id":"active","name":"Hoạt động"},{"id":"deactivated","name":"Ngừng bán"},{"id":"pending","name":"Chờ duyệt"},{"id":"unknown","name":"Nháp"},{"id":"inprogress","name":"Đang xử lý"}]'
++          items='[{"id":"all","name":"Tất cả"},{"id":"active","name":"Hoạt động"},{"id":"deactivated","name":"Ngừng bán"},{"id":"pending","name":"Chờ duyệt"},{"id":"draft","name":"Nháp"},{"id":"inprogress","name":"Đang xử lý"}]'
+         ></sd-select>
+         <sd-input placeholder="Người tạo"></sd-input>
+         <sd-select placeholder="Khu vực"
+@@ -82,7 +82,7 @@
+             {"icon":"print","label":"In"}
+           ]}},
+           {"field":"code","title":"Mã","type":"link","option":{"href":"read-page.html"}},
+-          {"field":"status","title":"Trạng thái","type":"status","option":{"items":[{"id":"active","name":"Hoạt động"},{"id":"pending","name":"Chờ duyệt"},{"id":"deactivated","name":"Ngừng bán"},{"id":"unknown","name":"Nháp"},{"id":"inprogress","name":"Đang xử lý"}]}},
++          {"field":"status","title":"Trạng thái","type":"status","option":{"items":[{"id":"active","name":"Hoạt động"},{"id":"pending","name":"Chờ duyệt"},{"id":"deactivated","name":"Ngừng bán"},{"id":"draft","name":"Nháp"},{"id":"inprogress","name":"Đang xử lý"}]}},
+           {"field":"name","title":"Tên","type":"text"},
+           {"field":"category","title":"Danh mục","type":"values","option":{"items":[{"id":"food","name":"Thực phẩm"},{"id":"drink","name":"Đồ uống"},{"id":"household","name":"Gia dụng"},{"id":"cosmetic","name":"Mỹ phẩm"}]}},
+           {"field":"unit","title":"Đơn vị","type":"text"},
+@@ -99,7 +99,7 @@
+           {"code":"SP-00004","name":"Dầu gội Clear 650ml","category":"cosmetic","unit":"Chai","qty":5100,"price":89000,"region":"north","creator":"thao.nguyen@company.com","createdAt":"2026/04/09 16:30","status":"active"},
+           {"code":"SP-00005","name":"Trà xanh Không Độ 500ml","category":"drink","unit":"Chai","qty":20000,"price":10000,"region":"south","creator":"duy.pham@company.com","createdAt":"2026/04/08 11:00","status":"deactivated"},
+           {"code":"SP-00006","name":"Mì Hảo Hảo lốc 30 gói","category":"food","unit":"Lốc","qty":15800,"price":95000,"region":"central","creator":"hung.tran@company.com","createdAt":"2026/04/07 09:45","status":"active"},
+-          {"code":"SP-00007","name":"Kem đánh răng P/S 180g","category":"cosmetic","unit":"Tuýp","qty":9600,"price":28000,"region":"north","creator":"van.le@company.com","createdAt":"2026/04/06 13:20","status":"unknown"},
++          {"code":"SP-00007","name":"Kem đánh răng P/S 180g","category":"cosmetic","unit":"Tuýp","qty":9600,"price":28000,"region":"north","creator":"van.le@company.com","createdAt":"2026/04/06 13:20","status":"draft"},
+           {"code":"SP-00008","name":"Nước rửa chén Sunlight 3.6kg","category":"household","unit":"Can","qty":7400,"price":75000,"region":"south","creator":"duy.pham@company.com","createdAt":"2026/04/05 10:05","status":"inprogress"},
+           {"code":"SP-00009","name":"Cà phê G7 3in1 hộp 20 gói","category":"drink","unit":"Hộp","qty":11200,"price":55000,"region":"central","creator":"thao.nguyen@company.com","createdAt":"2026/04/04 15:40","status":"active"},
+           {"code":"SP-00010","name":"Bánh quy Oreo 133g","category":"food","unit":"Gói","qty":6700,"price":22000,"region":"north","creator":"hung.tran@company.com","createdAt":"2026/04/03 08:30","status":"pending"}
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/patterns/browse-page.html b/design-system/preview/patterns/browse-page.html
+--- a/design-system/preview/patterns/browse-page.html	2026-10-14 11:10:03.126039606 +0000
++++ b/design-system/preview/patterns/browse-page.html	2026-10-14 11:47:27.786797941 +0000
+@@ -62,7 +62,7 @@
+             {"icon":"print","label":"In"}
+           ]}},
+           {"field":"code","title":"Mã","type":"link","option":{"href":"read-page.html"}},
+-          {"field":"status","title":"Trạng thái","type":"status","option":{"items":[{"id":"active","name":"Hoạt động"},{"id":"pending","name":"Chờ duyệt"},{"id":"deactivated","name":"Ngừng bán"},{"id":"unknown","name":"Nháp"},{"id":"inprogress","name":"Đang xử lý"}]}},
++          {"field":"status","title":"Trạng thái","type":"status","option":{"items":[{"id":"active","name":"Hoạt động"},{"id":"pending","name":"Chờ duyệt"},{"id":"deactivated","name":"Ngừng bán"},{"id":"draft","name":"Nháp"},{"id":"inprogress","name":"Đang xử lý"}]}},
+           {"field":"name","title":"Tên","type":"text"},
+           {"field":"category","title":"Danh mục","type":"values","option":{"items":[{"id":"food","name":"Thực phẩm"},{"id":"drink","name":"Đồ uống"},{"id":"household","name":"Gia dụng"},{"id":"cosmetic","name":"Mỹ phẩm"}]}},
+           {"field":"unit","title":"Đơn vị","type":"text"},
+@@ -79,7 +79,7 @@
+           {"code":"SP-00004","name":"Dầu gội Clear 650ml","category":"cosmetic","unit":"Chai","qty":5100,"price":89000,"region":"north","creator":"thao.nguyen@company.com","createdAt":"2026/04/09 16:30","status":"active"},
+           {"code":"SP-00005","name":"Trà xanh Không Độ 500ml","category":"drink","unit":"Chai","qty":20000,"price":10000,"region":"south","creator":"duy.pham@company.com","createdAt":"2026/04/08 11:00","status":"deactivated"},
+           {"code":"SP-00006","name":"Mì Hảo Hảo lốc 30 gói","category":"food","unit":"Lốc","qty":15800,"price":95000,"region":"central","creator":"hung.tran@company.com","createdAt":"2026/04/07 09:45","status":"active"},
+-          {"code":"SP-00007","name":"Kem đánh răng P/S 180g","category":"cosmetic","unit":"Tuýp","qty":9600,"price":28000,"region":"north","creator":"van.le@company.com","createdAt":"2026/04/06 13:20","status":"unknown"},
++          {"code":"SP-00007","name":"Kem đánh răng P/S 180g","category":"cosmetic","unit":"Tuýp","qty":9600,"price":28000,"region":"north","creator":"van.le@company.com","createdAt":"2026/04/06 13:20","status":"draft"},
+           {"code":"SP-00008","name":"Nước rửa chén Sunlight 3.6kg","category":"household","unit":"Can","qty":7400,"price":75000,"region":"south","creator":"duy.pham@company.com","createdAt":"2026/04/05 10:05","status":"inprogress"},
+           {"code":"SP-00009","name":"Cà phê G7 3in1 hộp 20 gói","category":"drink","unit":"Hộp","qty":11200,"price":55000,"region":"central","creator":"thao.nguyen@company.com","createdAt":"2026/04/04 15:40","status":"active"},
+           {"code":"SP-00010","name":"Bánh quy Oreo 133g","category":"food","unit":"Gói","qty":6700,"price":22000,"region":"north","creator":"hung.tran@company.com","createdAt":"2026/04/03 08:30","status":"pending"}
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/patterns/page-header.html b/design-system/preview/patterns/page-header.html
+--- a/design-system/preview/patterns/page-header.html	2026-10-14 11:10:03.126002641 +0000
++++ b/design-system/preview/patterns/page-header.html	2026-10-14 11:25:14.451569476 +0000
+@@ -197,7 +197,7 @@
+       &lt;div class="d-flex align-items-center flex-wrap gap-8"&gt;
+         &lt;div class="T20M"&gt;Chi tiết nhà cung cấp&lt;/div&gt;
+         &lt;span class="T20M text-primary"&gt;#NCC-0042&lt;/span&gt;
+-        &lt;sd-badge type="round" title="Hoạt động" color="success" icon="play_circle" /&gt;
++        &lt;sd-badge title="Hoạt động" color="success" icon="play_circle" /&gt;
+       &lt;/div&gt;
+       &lt;div class="T14R text-secondary mt-4"&gt;Cập nhật lần cuối: 15/04/2026&lt;/div&gt;
+     &lt;/div&gt;
+@@ -233,7 +233,7 @@
+                   <tr><td>data-title</td><td>string</td><td>-</td><td>Tiêu đề trang</td></tr>
+                   <tr><td>data-subtitle</td><td>string</td><td>-</td><td>Mô tả dưới tiêu đề — <code>description</code> của sd-page (<code>T14R text-secondary mt-4</code>)</td></tr>
+                   <tr><td>data-record-id</td><td>string</td><td>-</td><td>Mã định danh, chữ <code>T20M text-primary</code> cạnh tiêu đề (read / read-approval / edit)</td></tr>
+-                  <tr><td>data-badge</td><td>string</td><td>-</td><td>Nhãn <code>sd-badge type="round"</code> (read / read-approval / edit)</td></tr>
++                  <tr><td>data-badge</td><td>string</td><td>-</td><td>Nhãn <code>sd-badge</code> kiểu <code>icon</code> — màu / icon tra STATUS_MAP theo <code>data-badge-status</code> (read / read-approval / edit)</td></tr>
+                   <tr><td>data-badge-status</td><td>active | pending | inactive | …</td><td>active</td><td>Màu badge</td></tr>
+                   <tr><td>data-primary-action</td><td>string</td><td>Tạo mới</td><td>Label nút primary (browse/read)</td></tr>
+                   <tr><td>data-primary-icon</td><td>material icon name</td><td>add (browse) · theo nhãn (read/edit)</td><td>Icon nút primary. read / edit không khai thì "Chỉnh sửa" → edit, "Lưu" → save như portal</td></tr>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/patterns/table.html b/design-system/preview/patterns/table.html
+--- a/design-system/preview/patterns/table.html	2026-10-14 11:10:03.126099639 +0000
++++ b/design-system/preview/patterns/table.html	2026-10-14 11:47:27.787724518 +0000
+@@ -84,7 +84,7 @@
+           {"field":"code","title":"Mã","type":"text","sortable":true},
+           {"field":"name","title":"Tên","type":"text","sortable":true},
+           {"field":"qty","title":"Số lượng","type":"number","align":"right","sortable":true,"option":{"precision":0}},
+-          {"field":"status","title":"Trạng thái","type":"status","option":{"items":[{"id":"active","name":"Hoạt động"},{"id":"pending","name":"Chờ duyệt"},{"id":"deactivated","name":"Ngừng HĐ"},{"id":"unknown","name":"Nháp"}]}},
++          {"field":"status","title":"Trạng thái","type":"status","option":{"items":[{"id":"active","name":"Hoạt động"},{"id":"pending","name":"Chờ duyệt"},{"id":"deactivated","name":"Ngừng HĐ"},{"id":"draft","name":"Nháp"}]}},
+           {"field":"_menu","title":"","type":"menu","option":{"icon":"more_horiz","width":"48px","items":[
+             {"id":"view","icon":"visibility","label":"Xem chi tiết"},
+             {"id":"approve","icon":"task_alt","label":"Phê duyệt","color":"success"},
+@@ -95,7 +95,7 @@
+           {"code":"DM-001","name":"Item demo 1","qty":1250,"status":"active"},
+           {"code":"DM-002","name":"Item demo 2","qty":830,"status":"pending"},
+           {"code":"DM-003","name":"Item demo 3","qty":0,"status":"deactivated"},
+-          {"code":"DM-004","name":"Item demo 4","qty":450,"status":"unknown"}
++          {"code":"DM-004","name":"Item demo 4","qty":450,"status":"draft"}
+         ]'
+       ></sd-table>
+       <p class="ds-preview-label">Sự kiện <code>sd-table-menu-click</code> gần nhất: <span id="demo-table-sel-menu-log" class="text-black500">chưa có</span></p>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-14 11:10:03.122514717 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-14 11:30:53.433285784 +0000
+@@ -2270,7 +2270,14 @@
+     deactivated: { icon: 'remove_circle',          color: 'secondary', filled: true },
+     removed:     { icon: 'remove_circle_outline',  color: 'secondary', filled: false },
+     approved:    { icon: 'thumb_up',               color: 'success', filled: false },
+-    denied:      { icon: 'thumb_down',             color: 'error',   filled: false }
++    denied:      { icon: 'thumb_down',             color: 'error',   filled: false },
++    /* Trạng thái nghiệp vụ của prototype — bổ sung 2026-10-14, PD DUYỆT 2026-10-14 (Builder chọn: Sắp hiệu lực = info
++       theo nhóm Processing, Hết hiệu lực = secondary theo nhóm End). */
++    draft:       { icon: 'edit_note',              color: 'secondary', filled: false },
++    upcoming:    { icon: 'update',                 color: 'info',    filled: false },
++    expired:     { icon: 'event_busy',             color: 'secondary', filled: false },
++    unpublished: { icon: 'unpublished',            color: 'secondary', filled: false },
++    partial:     { icon: 'incomplete_circle',      color: 'warning', filled: true }
+   };
+   /* Thuộc tính sd-badge (API catalog) cho một khoá trạng thái — khoá lạ → 'unknown'.
+      `title` bỏ trống → tên khoá viết hoa chữ đầu (như kiểu cũ). */
+@@ -8787,8 +8794,12 @@
+             var sf = col.option.items.find(function (i) { return String(i[svf]) === sKey; });
+             if (sf) sTitle = sf[sdf];
+           }
+-          /* cột trạng thái (quy ước của kit): badge viết theo API catalog — color + icon từ STATUS_MAP */
+-          return sdStatusBadgeHtml(sKey, sTitle);
++          /* cột trạng thái (quy ước của kit): badge kiểu icon, color + icon từ STATUS_MAP — vẽ đúng như thư viện vẽ
++             `useBadge → { type: 'icon', color, icon, title }`: ô bảng của thư viện KHÔNG truyền `fontSet` (template
++             desktop-cell chỉ có type / title / color / icon) nên icon luôn là bộ `material-icons` (đặc). 2026-10-14 —
++             trước kit truyền fontSet outlined → khác Angular ở các icon viền (pending, access_time, task_alt…). */
++          var sA = sdStatusBadgeAttrs(sKey, sTitle);
++          return '<sd-badge data-sd-cfg="' + escAttr(JSON.stringify({ type: 'icon', color: sA.color, icon: sA.icon, title: sA.title, ctx: 'T' })) + '"></sd-badge>';
+         }
+         case 'link': {
+           var linkHref = (col.option && col.option.href) ? col.option.href : '#';
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/_dev-spec.md b/prototypes/cam-nang-phan-quyen/_dev-spec.md
+--- a/prototypes/cam-nang-phan-quyen/_dev-spec.md	2026-10-14 11:10:03.121919415 +0000
++++ b/prototypes/cam-nang-phan-quyen/_dev-spec.md	2026-10-14 11:33:21.488326304 +0000
+@@ -1,6 +1,6 @@
+ # Dev spec — Cẩm nang Phân quyền (`cam-nang-phan-quyen`)
+ 
+-> Cập nhật: 2026-10-14 (bản đầu — thử nghiệm mẫu `ai-instructions/dev-spec.md`, AGENTS Rule 20) · Nguồn: `requirements.md`,
++> Cập nhật: 2026-10-14 (badge trạng thái kiểu icon theo STATUS_MAP; trước đó: bản đầu — thử nghiệm mẫu `ai-instructions/dev-spec.md`, AGENTS Rule 20) · Nguồn: `requirements.md`,
+ > `memory.md`, sơ đồ `activity-diagram-uqnb-logic.drawio.xml`, prototype (JS demo).
+ > Phần `sd-*` chuẩn và page-header: dev dịch bằng `ai-instructions/html-to-angular.md` + `html-to-angular-api.md` — không chép lại ở đây.
+ > Ký hiệu: **giả định — PD xác nhận** = suy luận, chưa có nguồn · `⚠ trần` = giá trị không qua token trong prototype.
+@@ -106,7 +106,12 @@
+ **B4. Quy tắc nghiệp vụ**
+ 
+ - Trạng thái đầu việc: Nháp · Sắp hiệu lực · Đang hiệu lực · Ngưng phát hành · Hết hiệu lực; không dùng Active/Inactive — `requirements.md §2026-06-19 Chuẩn hóa trạng thái` + `memory.md Data Model`.
+-- Màu badge: Nháp / Ngưng phát hành `secondary`, Đang hiệu lực `success`, Sắp hiệu lực `warning`, Hết hiệu lực `error` — `JS demo: WI_STATUS_ITEMS`.
++- Badge trạng thái: `sd-badge` kiểu **icon**, màu + icon theo STATUS_MAP (PD duyệt 2026-10-14) — Nháp `draft` (`secondary`, `edit_note`) ·
++  Đang hiệu lực `active` (`success`, `play_circle`) · Sắp hiệu lực `upcoming` (`info`, `update`) · Hết hiệu lực `expired` (`secondary`,
++  `event_busy`) · Ngưng phát hành `unpublished` (`secondary`, `unpublished`). Trong bảng: `useBadge: v => ({ type: 'icon', color, icon, title })`
++  (ô bảng thư viện không nhận `fontSet` → icon bộ đặc) — `JS demo: WI_STATUS_ITEMS`, `wiStatusBadge`. Trước 2026-10-14: `round`, Sắp hiệu lực
++  `warning`, Hết hiệu lực `error`.
++- Bảng xem trước nhập: VALID `checked` (`success`, `task_alt`) · WARNING `warning` · BLOCKED `blocked` (`error`, `block`), kiểu icon — `JS demo: IMPORT_ROW_STATUS`.
+ - Đầu việc tạo mới luôn là Nháp — `requirements.md §2026-06-22 Publish/Unpublish`.
+ - Chỉ đầu việc lá (cấp thấp nhất) được Publish / Unpublish / chọn nhiều; hạng mục cha không có Publish — `requirements.md §2026-06-22 Publish/Unpublish`.
+ - Publish hàng loạt chỉ tác động lá chưa publish hoặc Ngưng phát hành, bỏ qua dòng đã publish — `requirements.md §2026-06-23 Chuẩn hóa mã hệ thống` (JS chỉ nhận Nháp — B5.1).
+@@ -332,7 +337,7 @@
+ 
+ **B4. Quy tắc nghiệp vụ**
+ 
+-- Trạng thái (mã mẫu → nhãn): `active` Đang hiệu lực · `upcoming` Sắp hiệu lực · `waiting` Chờ xác nhận · `expired` Hết hiệu lực · `revoked` Đã hủy · `denied` Đã từ chối — `JS demo: DELEGATION_STATUS_VIEW`; memory.md Data Model chỉ liệt kê 4 (Đang hiệu lực, Hết hiệu lực, Đã huỷ, Đã từ chối).
++- Trạng thái (mã mẫu → nhãn): `active` Đang hiệu lực · `upcoming` Sắp hiệu lực · `waiting` Chờ xác nhận · `expired` Hết hiệu lực · `revoked` Đã hủy · `denied` Đã từ chối — `JS demo: DELEGATION_STATUS_VIEW`; badge kiểu icon theo khoá STATUS_MAP cùng tên (`upcoming` `info` · `expired` `secondary` — PD duyệt 2026-10-14, khớp màn Đầu việc; `revoked` → khoá `cancelled`); memory.md Data Model chỉ liệt kê 4 (Đang hiệu lực, Hết hiệu lực, Đã huỷ, Đã từ chối).
+ - Người ủy quyền tự tạo → Chờ xác nhận, người xác nhận = người được ủy quyền — `sơ đồ drawio: Tạo bản ghi UQNB Status = Chờ xác nhận`.
+ - Admin tạo → bắt buộc văn bản đính kèm, chọn điều kiện/tier nếu đầu việc có nhiều quyền; người xác nhận = Thư ký hội đồng / người có quyền xác nhận — `sơ đồ drawio: Admin tạo ủy quyền`.
+ - Xác nhận: đã tới Hiệu lực từ → Đang hiệu lực, chưa tới → Sắp hiệu lực; bản ghi rời tab Chờ xác nhận sang tab Tra cứu — `sơ đồ drawio: Nếu đến ngày hiệu lực`. (JS demo `resolveConfirmation` luôn đặt `active`.)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/chi-tiet-cam-nang.html b/prototypes/cam-nang-phan-quyen/chi-tiet-cam-nang.html
+--- a/prototypes/cam-nang-phan-quyen/chi-tiet-cam-nang.html	2026-10-14 11:10:03.121658578 +0000
++++ b/prototypes/cam-nang-phan-quyen/chi-tiet-cam-nang.html	2026-10-14 11:32:18.563815808 +0000
+@@ -1,79 +1,79 @@
+-<!DOCTYPE html>
+-<html lang="vi">
+-<head>
+-  <meta charset="UTF-8">
+-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-  <title>Chi tiết Cẩm nang — Cẩm nang Phân quyền</title>
+-
+-  <link rel="preconnect" href="https://fonts.googleapis.com">
+-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+-
+-  <link rel="stylesheet" href="../../design-system/core/styles/tokens.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/layout.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/components.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/utilities.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/page-patterns.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/sd-tokens.css">
+-
+-  <style>
+-    .log-row { display:flex; gap:12px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border-secondary); font-size:12px; }
+-    .log-row:last-child { border-bottom:none; }
+-    .log-time { color:var(--text-tertiary); white-space:nowrap; min-width:130px; }
+-    .mono-code { font-family:'JetBrains Mono',monospace; font-size:11px; padding:1px 6px; border-radius:4px; background:var(--surface-secondary); border:1px solid var(--border-secondary); }
+-  </style>
+-</head>
+-<body>
+-<div class="app-shell">
+-  <aside class="sidebar" id="sidebar"></aside>
+-  <div class="main-area">
+-    <div data-pattern="page-header" data-variant="read"
+-         data-title="Cẩm nang MAG"
+-         data-record-id="#MAG"
+-         data-badge-status="active"
+-         data-badge="Đang áp dụng"
+-         data-back-href="danh-sach-cam-nang.html"
+-         data-primary-action="Chỉnh sửa"
+-         data-primary-icon="edit"
+-         data-primary-href="sua-cam-nang.html?id=MAG"></div>
+-
+-    <div class="content-zone">
+-      <sd-section title="Thông tin chung" icon="menu_book" collapsible>
+-        <div class="form-grid-2">
+-          <sd-section-item label="Mã Cẩm nang"><span class="mono-code">MAG</span></sd-section-item>
+-          <sd-section-item label="Trạng thái"><sd-badge type="round" color="success" title="Đang áp dụng"></sd-badge></sd-section-item>
+-          <sd-section-item label="Tên Cẩm nang">Cẩm nang MAG</sd-section-item>
+-        </div>
+-        <sd-section-item label="Mô tả">Cẩm nang phân quyền áp dụng cho các đầu việc thuộc MAG Holding.</sd-section-item>
+-      </sd-section>
+-
+-      <sd-section title="Lịch sử thay đổi" icon="history" collapsible>
+-        <div class="log-row">
+-          <span class="log-time">25/04/2026 16:20</span>
+-          <div><strong>Nguyễn Quản Trị</strong> cập nhật mô tả phạm vi áp dụng</div>
+-        </div>
+-        <div class="log-row">
+-          <span class="log-time">10/01/2026 14:30</span>
+-          <div><strong>Trần Phụ Trách</strong> bổ sung 3 đầu việc vào Cẩm nang</div>
+-        </div>
+-        <div class="log-row">
+-          <span class="log-time">01/01/2026 10:00</span>
+-          <div><strong>Nguyễn Quản Trị</strong> tạo Cẩm nang</div>
+-        </div>
+-      </sd-section>
+-    </div>
+-  </div>
+-</div>
+-
+-<script src="../../design-system/sd-components/sd-components.js"></script>
+-<script src="../../design-system/patterns/page-header.js"></script>
+-<script src="../../design-system/patterns/filter-bar.js"></script>
+-
+-<script src="../../design-system/core/js/pattern-loader.js"></script>
+-<script src="../../design-system/core/js/shell.js"></script>
+-<script src="../../design-system/patterns/sidebar.js"></script>
+-<script src="../shared-nav.js"></script>
+-</body>
+-</html>
++<!DOCTYPE html>
++<html lang="vi">
++<head>
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1.0">
++  <title>Chi tiết Cẩm nang — Cẩm nang Phân quyền</title>
++
++  <link rel="preconnect" href="https://fonts.googleapis.com">
++  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
++  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
++  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
++
++  <link rel="stylesheet" href="../../design-system/core/styles/tokens.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/layout.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/components.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/utilities.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/page-patterns.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/sd-tokens.css">
++
++  <style>
++    .log-row { display:flex; gap:12px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border-secondary); font-size:12px; }
++    .log-row:last-child { border-bottom:none; }
++    .log-time { color:var(--text-tertiary); white-space:nowrap; min-width:130px; }
++    .mono-code { font-family:'JetBrains Mono',monospace; font-size:11px; padding:1px 6px; border-radius:4px; background:var(--surface-secondary); border:1px solid var(--border-secondary); }
++  </style>
++</head>
++<body>
++<div class="app-shell">
++  <aside class="sidebar" id="sidebar"></aside>
++  <div class="main-area">
++    <div data-pattern="page-header" data-variant="read"
++         data-title="Cẩm nang MAG"
++         data-record-id="#MAG"
++         data-badge-status="active"
++         data-badge="Đang áp dụng"
++         data-back-href="danh-sach-cam-nang.html"
++         data-primary-action="Chỉnh sửa"
++         data-primary-icon="edit"
++         data-primary-href="sua-cam-nang.html?id=MAG"></div>
++
++    <div class="content-zone">
++      <sd-section title="Thông tin chung" icon="menu_book" collapsible>
++        <div class="form-grid-2">
++          <sd-section-item label="Mã Cẩm nang"><span class="mono-code">MAG</span></sd-section-item>
++          <sd-section-item label="Trạng thái"><sd-badge color="success" icon="play_circle" title="Đang áp dụng"></sd-badge></sd-section-item>
++          <sd-section-item label="Tên Cẩm nang">Cẩm nang MAG</sd-section-item>
++        </div>
++        <sd-section-item label="Mô tả">Cẩm nang phân quyền áp dụng cho các đầu việc thuộc MAG Holding.</sd-section-item>
++      </sd-section>
++
++      <sd-section title="Lịch sử thay đổi" icon="history" collapsible>
++        <div class="log-row">
++          <span class="log-time">25/04/2026 16:20</span>
++          <div><strong>Nguyễn Quản Trị</strong> cập nhật mô tả phạm vi áp dụng</div>
++        </div>
++        <div class="log-row">
++          <span class="log-time">10/01/2026 14:30</span>
++          <div><strong>Trần Phụ Trách</strong> bổ sung 3 đầu việc vào Cẩm nang</div>
++        </div>
++        <div class="log-row">
++          <span class="log-time">01/01/2026 10:00</span>
++          <div><strong>Nguyễn Quản Trị</strong> tạo Cẩm nang</div>
++        </div>
++      </sd-section>
++    </div>
++  </div>
++</div>
++
++<script src="../../design-system/sd-components/sd-components.js"></script>
++<script src="../../design-system/patterns/page-header.js"></script>
++<script src="../../design-system/patterns/filter-bar.js"></script>
++
++<script src="../../design-system/core/js/pattern-loader.js"></script>
++<script src="../../design-system/core/js/shell.js"></script>
++<script src="../../design-system/patterns/sidebar.js"></script>
++<script src="../shared-nav.js"></script>
++</body>
++</html>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/chi-tiet-loai-dieu-kien.html b/prototypes/cam-nang-phan-quyen/chi-tiet-loai-dieu-kien.html
+--- a/prototypes/cam-nang-phan-quyen/chi-tiet-loai-dieu-kien.html	2026-10-14 11:10:03.119667725 +0000
++++ b/prototypes/cam-nang-phan-quyen/chi-tiet-loai-dieu-kien.html	2026-10-14 11:32:18.563081803 +0000
+@@ -1,80 +1,80 @@
+-<!DOCTYPE html>
+-<html lang="vi">
+-<head>
+-  <meta charset="UTF-8">
+-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-  <title>Chi tiết Loại điều kiện — Cẩm nang Phân quyền</title>
+-
+-  <link rel="preconnect" href="https://fonts.googleapis.com">
+-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+-
+-  <link rel="stylesheet" href="../../design-system/core/styles/tokens.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/layout.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/components.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/utilities.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/page-patterns.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/sd-tokens.css">
+-
+-  <style>
+-    .log-row { display:flex; gap:12px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border-secondary); font-size:12px; }
+-    .log-row:last-child { border-bottom:none; }
+-    .log-time { color:var(--text-tertiary); white-space:nowrap; min-width:130px; }
+-    .mono-code { font-family:'JetBrains Mono',monospace; font-size:11px; padding:1px 6px; border-radius:4px; background:var(--surface-secondary); border:1px solid var(--border-secondary); }
+-  </style>
+-</head>
+-<body>
+-<div class="app-shell">
+-  <aside class="sidebar" id="sidebar"></aside>
+-  <div class="main-area">
+-    <div data-pattern="page-header" data-variant="read"
+-         data-title="Giá trị hợp đồng"
+-         data-record-id="#COND-001"
+-         data-badge-status="active"
+-         data-badge="Đang áp dụng"
+-         data-back-href="danh-sach-loai-dieu-kien.html"
+-         data-primary-action="Chỉnh sửa"
+-         data-primary-icon="edit"
+-         data-primary-href="sua-loai-dieu-kien.html?id=COND-001"></div>
+-
+-    <div class="content-zone">
+-      <sd-section title="Thông tin chung" icon="rule" collapsible>
+-        <div class="form-grid-2">
+-          <sd-section-item label="Mã">COND-001</sd-section-item>
+-          <sd-section-item label="Trạng thái"><sd-badge type="round" color="success" title="Đang áp dụng"></sd-badge></sd-section-item>
+-          <sd-section-item label="Tên">Giá trị hợp đồng</sd-section-item>
+-          <sd-section-item label="Loại">number</sd-section-item>
+-          <sd-section-item label="Đơn vị">VND</sd-section-item>
+-        </div>
+-      </sd-section>
+-
+-      <sd-section title="Lịch sử thay đổi" icon="history" collapsible>
+-        <div class="log-row">
+-          <span class="log-time">20/05/2026 14:32</span>
+-          <div><strong>Nguyễn Văn A</strong> cập nhật đơn vị từ <span class="mono-code">VNĐ</span> sang <span class="mono-code">VND</span></div>
+-        </div>
+-        <div class="log-row">
+-          <span class="log-time">10/04/2026 09:15</span>
+-          <div><strong>Trần Thị B</strong> cập nhật tên loại điều kiện</div>
+-        </div>
+-        <div class="log-row">
+-          <span class="log-time">01/03/2026 08:00</span>
+-          <div><strong>Admin</strong> tạo loại điều kiện</div>
+-        </div>
+-      </sd-section>
+-    </div>
+-  </div>
+-</div>
+-
+-<script src="../../design-system/sd-components/sd-components.js"></script>
+-<script src="../../design-system/patterns/page-header.js"></script>
+-<script src="../../design-system/patterns/filter-bar.js"></script>
+-
+-<script src="../../design-system/core/js/pattern-loader.js"></script>
+-<script src="../../design-system/core/js/shell.js"></script>
+-<script src="../../design-system/patterns/sidebar.js"></script>
+-<script src="../shared-nav.js"></script>
+-</body>
+-</html>
++<!DOCTYPE html>
++<html lang="vi">
++<head>
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1.0">
++  <title>Chi tiết Loại điều kiện — Cẩm nang Phân quyền</title>
++
++  <link rel="preconnect" href="https://fonts.googleapis.com">
++  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
++  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
++  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
++
++  <link rel="stylesheet" href="../../design-system/core/styles/tokens.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/layout.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/components.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/utilities.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/page-patterns.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/sd-tokens.css">
++
++  <style>
++    .log-row { display:flex; gap:12px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border-secondary); font-size:12px; }
++    .log-row:last-child { border-bottom:none; }
++    .log-time { color:var(--text-tertiary); white-space:nowrap; min-width:130px; }
++    .mono-code { font-family:'JetBrains Mono',monospace; font-size:11px; padding:1px 6px; border-radius:4px; background:var(--surface-secondary); border:1px solid var(--border-secondary); }
++  </style>
++</head>
++<body>
++<div class="app-shell">
++  <aside class="sidebar" id="sidebar"></aside>
++  <div class="main-area">
++    <div data-pattern="page-header" data-variant="read"
++         data-title="Giá trị hợp đồng"
++         data-record-id="#COND-001"
++         data-badge-status="active"
++         data-badge="Đang áp dụng"
++         data-back-href="danh-sach-loai-dieu-kien.html"
++         data-primary-action="Chỉnh sửa"
++         data-primary-icon="edit"
++         data-primary-href="sua-loai-dieu-kien.html?id=COND-001"></div>
++
++    <div class="content-zone">
++      <sd-section title="Thông tin chung" icon="rule" collapsible>
++        <div class="form-grid-2">
++          <sd-section-item label="Mã">COND-001</sd-section-item>
++          <sd-section-item label="Trạng thái"><sd-badge color="success" icon="play_circle" title="Đang áp dụng"></sd-badge></sd-section-item>
++          <sd-section-item label="Tên">Giá trị hợp đồng</sd-section-item>
++          <sd-section-item label="Loại">number</sd-section-item>
++          <sd-section-item label="Đơn vị">VND</sd-section-item>
++        </div>
++      </sd-section>
++
++      <sd-section title="Lịch sử thay đổi" icon="history" collapsible>
++        <div class="log-row">
++          <span class="log-time">20/05/2026 14:32</span>
++          <div><strong>Nguyễn Văn A</strong> cập nhật đơn vị từ <span class="mono-code">VNĐ</span> sang <span class="mono-code">VND</span></div>
++        </div>
++        <div class="log-row">
++          <span class="log-time">10/04/2026 09:15</span>
++          <div><strong>Trần Thị B</strong> cập nhật tên loại điều kiện</div>
++        </div>
++        <div class="log-row">
++          <span class="log-time">01/03/2026 08:00</span>
++          <div><strong>Admin</strong> tạo loại điều kiện</div>
++        </div>
++      </sd-section>
++    </div>
++  </div>
++</div>
++
++<script src="../../design-system/sd-components/sd-components.js"></script>
++<script src="../../design-system/patterns/page-header.js"></script>
++<script src="../../design-system/patterns/filter-bar.js"></script>
++
++<script src="../../design-system/core/js/pattern-loader.js"></script>
++<script src="../../design-system/core/js/shell.js"></script>
++<script src="../../design-system/patterns/sidebar.js"></script>
++<script src="../shared-nav.js"></script>
++</body>
++</html>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/chi-tiet-luong.html b/prototypes/cam-nang-phan-quyen/chi-tiet-luong.html
+--- a/prototypes/cam-nang-phan-quyen/chi-tiet-luong.html	2026-10-14 11:10:03.119826279 +0000
++++ b/prototypes/cam-nang-phan-quyen/chi-tiet-luong.html	2026-10-14 11:32:18.563355704 +0000
+@@ -1,86 +1,86 @@
+-﻿<!DOCTYPE html>
+-<html lang="vi">
+-<head>
+-  <meta charset="UTF-8">
+-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-  <title>Chi tiết Hoạt động — Cẩm nang Phân quyền</title>
+-
+-  <link rel="preconnect" href="https://fonts.googleapis.com">
+-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+-
+-  <link rel="stylesheet" href="../../design-system/core/styles/tokens.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/layout.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/components.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/utilities.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/page-patterns.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/sd-tokens.css">
+-
+-  <style>
+-    .log-row { display:flex; gap:12px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border-secondary); font-size:12px; }
+-    .log-row:last-child { border-bottom:none; }
+-    .log-time { color:var(--text-tertiary); white-space:nowrap; min-width:130px; }
+-  </style>
+-</head>
+-<body>
+-<div class="app-shell">
+-  <aside class="sidebar" id="sidebar"></aside>
+-  <div class="main-area">
+-
+-    <div data-pattern="page-header" data-variant="read"
+-         data-title="Đề xuất theo Khu vực"
+-         data-record-id="#LUO-001-01"
+-         data-badge-status="active"
+-         data-badge="Đang áp dụng"
+-         data-back-href="danh-sach-luong.html"
+-         data-primary-action="Chỉnh sửa"
+-         data-primary-icon="edit"
+-         data-primary-href="sua-luong.html?id=LUO-001-01"></div>
+-
+-    <div class="content-zone">
+-
+-      <!-- 1. THÔNG TIN CHUNG -->
+-      <sd-section title="Thông tin chung" icon="info" collapsible>
+-        <div class="form-grid-2">
+-          <sd-section-item label="Mã hoạt động">LUO-001-01</sd-section-item>
+-          <sd-section-item label="Trạng thái">
+-            <sd-badge type="round" color="success" title="Đang áp dụng"></sd-badge>
+-          </sd-section-item>
+-          <sd-section-item label="Tên hoạt động">Đề xuất theo Khu vực</sd-section-item>
+-          <sd-section-item label="Loại hoạt động">Đề xuất</sd-section-item>
+-        </div>
+-        <sd-section-item label="Mô tả">Hoạt động đề xuất phân theo từng khu vực địa lý.</sd-section-item>
+-      </sd-section>
+-
+-      <!-- 2. LỊCH SỬ THAY ĐỔI -->
+-      <sd-section title="Lịch sử thay đổi" icon="history" collapsible>
+-        <div class="log-row">
+-          <span class="log-time">20/05/2026 14:32</span>
+-          <div><strong>Nguyễn Văn A</strong> cập nhật mô tả</div>
+-        </div>
+-        <div class="log-row">
+-          <span class="log-time">10/04/2026 09:15</span>
+-          <div><strong>Trần Thị B</strong> cập nhật tên hoạt động</div>
+-        </div>
+-        <div class="log-row">
+-          <span class="log-time">01/03/2025 08:00</span>
+-          <div><strong>Admin</strong> tạo hoạt động</div>
+-        </div>
+-      </sd-section>
+-
+-    </div><!-- /content-zone -->
+-  </div>
+-</div>
+-
+-<script src="../../design-system/sd-components/sd-components.js"></script>
+-<script src="../../design-system/patterns/page-header.js"></script>
+-<script src="../../design-system/patterns/filter-bar.js"></script>
+-
+-<script src="../../design-system/core/js/pattern-loader.js"></script>
+-<script src="../../design-system/core/js/shell.js"></script>
+-<script src="../../design-system/patterns/sidebar.js"></script>
+-<script src="../shared-nav.js"></script>
+-</body>
+-</html>
++﻿<!DOCTYPE html>
++<html lang="vi">
++<head>
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1.0">
++  <title>Chi tiết Hoạt động — Cẩm nang Phân quyền</title>
++
++  <link rel="preconnect" href="https://fonts.googleapis.com">
++  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
++  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
++  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
++
++  <link rel="stylesheet" href="../../design-system/core/styles/tokens.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/layout.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/components.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/utilities.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/page-patterns.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/sd-tokens.css">
++
++  <style>
++    .log-row { display:flex; gap:12px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border-secondary); font-size:12px; }
++    .log-row:last-child { border-bottom:none; }
++    .log-time { color:var(--text-tertiary); white-space:nowrap; min-width:130px; }
++  </style>
++</head>
++<body>
++<div class="app-shell">
++  <aside class="sidebar" id="sidebar"></aside>
++  <div class="main-area">
++
++    <div data-pattern="page-header" data-variant="read"
++         data-title="Đề xuất theo Khu vực"
++         data-record-id="#LUO-001-01"
++         data-badge-status="active"
++         data-badge="Đang áp dụng"
++         data-back-href="danh-sach-luong.html"
++         data-primary-action="Chỉnh sửa"
++         data-primary-icon="edit"
++         data-primary-href="sua-luong.html?id=LUO-001-01"></div>
++
++    <div class="content-zone">
++
++      <!-- 1. THÔNG TIN CHUNG -->
++      <sd-section title="Thông tin chung" icon="info" collapsible>
++        <div class="form-grid-2">
++          <sd-section-item label="Mã hoạt động">LUO-001-01</sd-section-item>
++          <sd-section-item label="Trạng thái">
++            <sd-badge color="success" icon="play_circle" title="Đang áp dụng"></sd-badge>
++          </sd-section-item>
++          <sd-section-item label="Tên hoạt động">Đề xuất theo Khu vực</sd-section-item>
++          <sd-section-item label="Loại hoạt động">Đề xuất</sd-section-item>
++        </div>
++        <sd-section-item label="Mô tả">Hoạt động đề xuất phân theo từng khu vực địa lý.</sd-section-item>
++      </sd-section>
++
++      <!-- 2. LỊCH SỬ THAY ĐỔI -->
++      <sd-section title="Lịch sử thay đổi" icon="history" collapsible>
++        <div class="log-row">
++          <span class="log-time">20/05/2026 14:32</span>
++          <div><strong>Nguyễn Văn A</strong> cập nhật mô tả</div>
++        </div>
++        <div class="log-row">
++          <span class="log-time">10/04/2026 09:15</span>
++          <div><strong>Trần Thị B</strong> cập nhật tên hoạt động</div>
++        </div>
++        <div class="log-row">
++          <span class="log-time">01/03/2025 08:00</span>
++          <div><strong>Admin</strong> tạo hoạt động</div>
++        </div>
++      </sd-section>
++
++    </div><!-- /content-zone -->
++  </div>
++</div>
++
++<script src="../../design-system/sd-components/sd-components.js"></script>
++<script src="../../design-system/patterns/page-header.js"></script>
++<script src="../../design-system/patterns/filter-bar.js"></script>
++
++<script src="../../design-system/core/js/pattern-loader.js"></script>
++<script src="../../design-system/core/js/shell.js"></script>
++<script src="../../design-system/patterns/sidebar.js"></script>
++<script src="../shared-nav.js"></script>
++</body>
++</html>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/chi-tiet-orgbase.html b/prototypes/cam-nang-phan-quyen/chi-tiet-orgbase.html
+--- a/prototypes/cam-nang-phan-quyen/chi-tiet-orgbase.html	2026-10-14 11:10:03.121259103 +0000
++++ b/prototypes/cam-nang-phan-quyen/chi-tiet-orgbase.html	2026-10-14 11:32:18.562727746 +0000
+@@ -58,7 +58,7 @@
+               <div class="form-field-group">
+                 <label class="sd-label mb-0">Trạng thái</label>
+                 <div style="margin-top:6px;">
+-                  <sd-badge type="round" color="success" title="Đang áp dụng"></sd-badge>
++                  <sd-badge color="success" icon="play_circle" title="Đang áp dụng"></sd-badge>
+                 </div>
+               </div>
+             </div>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/chi-tiet-position.html b/prototypes/cam-nang-phan-quyen/chi-tiet-position.html
+--- a/prototypes/cam-nang-phan-quyen/chi-tiet-position.html	2026-10-14 11:10:03.119717683 +0000
++++ b/prototypes/cam-nang-phan-quyen/chi-tiet-position.html	2026-10-14 11:32:18.562108459 +0000
+@@ -81,7 +81,7 @@
+               <sd-badge type="round" color="info" title="SAP HCM"></sd-badge>
+             </sd-section-item>
+             <sd-section-item label="Trạng thái">
+-              <sd-badge type="round" color="success" title="Đang hoạt động"></sd-badge>
++              <sd-badge color="success" icon="play_circle" title="Đang hoạt động"></sd-badge>
+             </sd-section-item>
+           </div>
+           <sd-section-item label="Mô tả">Quản lý và giám sát các hoạt động kế toán của công ty, phê duyệt các khoản chi theo thẩm quyền.</sd-section-item>
+@@ -132,7 +132,7 @@
+             <sd-section-item label="Nguồn dữ liệu">SAP HCM</sd-section-item>
+             <sd-section-item label="Lần sync cuối">2026/04/25 08:30:45</sd-section-item>
+             <sd-section-item label="Kết quả sync cuối">
+-              <sd-badge type="round" color="success" title="Thành công"></sd-badge>
++              <sd-badge color="success" icon="check_circle" title="Thành công"></sd-badge>
+             </sd-section-item>
+             <sd-section-item label="Thay đổi lần sync cuối">Không có thay đổi</sd-section-item>
+           </div>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/chi-tiet-workitem.html b/prototypes/cam-nang-phan-quyen/chi-tiet-workitem.html
+--- a/prototypes/cam-nang-phan-quyen/chi-tiet-workitem.html	2026-10-14 11:10:03.121199162 +0000
++++ b/prototypes/cam-nang-phan-quyen/chi-tiet-workitem.html	2026-10-14 11:32:18.564566740 +0000
+@@ -1,862 +1,863 @@
+-<!DOCTYPE html>
+-<html lang="vi">
+-<head>
+-  <meta charset="UTF-8">
+-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-  <title>Chi tiết Đầu việc — Cẩm nang Phân quyền</title>
+-
+-  <link rel="preconnect" href="https://fonts.googleapis.com">
+-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+-
+-  <link rel="stylesheet" href="../../design-system/core/styles/tokens.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/layout.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/components.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/utilities.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/page-patterns.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/sd-tokens.css">
+-  <script>
+-    if (new URLSearchParams(window.location.search || '').get('embedded') === '1') {
+-      document.documentElement.classList.add('embedded-mode');
+-    }
+-  </script>
+-
+-  <style>
+-    html.embedded-mode body { background:var(--surface-primary); }
+-    html.embedded-mode .sidebar { display:none !important; }
+-    html.embedded-mode .app-shell { display:block; min-height:100vh; }
+-    html.embedded-mode .main-area { margin-left:0 !important; width:100% !important; min-height:100vh; }
+-    html.embedded-mode .content-zone { padding:12px !important; overflow:auto !important; scrollbar-gutter:stable both-edges; }
+-    html.embedded-mode .content-zone > sd-section,
+-    html.embedded-mode .content-zone > .snapshot-backdrop { min-width:760px; width:100%; box-sizing:border-box; }
+-
+-    .role-chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+-    .role-chip.proposer { background:var(--color-info-100); color:var(--color-info-700); }
+-    .role-chip.reviewer { background:var(--color-warning-100); color:var(--color-warning-700); }
+-    .role-chip.approver { background:var(--color-success-100); color:var(--color-success-700); }
+-    .mono-code { font-family:'JetBrains Mono',monospace; font-size:12px; padding:2px 6px; border-radius:4px; background:var(--surface-secondary); border:1px solid var(--border-secondary); }
+-    .note-banner { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border-radius:8px; border:1px solid var(--color-info-200); background:var(--color-info-50); color:var(--color-info-700); font-size:12px; line-height:1.45; margin-bottom:12px; }
+-    .info-stack { max-width:none; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:28px; border-top:1px solid var(--border-secondary); }
+-    .info-row { display:grid; grid-template-columns:150px minmax(0,1fr); gap:12px; padding:10px 0; border-bottom:1px solid var(--border-secondary); font-size:13px; min-width:0; }
+-    .info-row.full-span { grid-column:1 / -1; }
+-    .info-row.description-row { grid-template-columns:150px minmax(0,760px); gap:12px; max-width:960px; }
+-    .info-row.description-row .info-value { max-width:760px; }
+-    .info-label { color:var(--text-secondary); text-transform:none !important; letter-spacing:0; }
+-    .info-value { color:var(--text-primary); font-weight:500; line-height:1.5; overflow-wrap:anywhere; }
+-    .version-row { display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-bottom:1px solid var(--border-secondary); }
+-    .version-row.clickable { cursor:pointer; border-radius:6px; padding-left:8px; padding-right:8px; }
+-    .version-row.clickable:hover { background:var(--surface-secondary); }
+-    .version-row:last-child { border-bottom:none; }
+-    .version-icon { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--surface-secondary); color:var(--text-secondary); }
+-    .version-icon.current { background:var(--color-primary-600); color:var(--text-inverse); }
+-    .version-title { font-size:13px; font-weight:600; color:var(--text-primary); }
+-    .version-meta { font-size:11px; color:var(--text-secondary); margin-top:3px; }
+-    .version-change { font-size:12px; color:var(--text-tertiary); margin-top:4px; line-height:1.55; }
+-    .version-change strong { color:var(--text-secondary); font-weight:600; }
+-    .dept-resolve-row { display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:12px; padding:10px 12px; border:1px solid var(--border-secondary); border-radius:8px; background:var(--surface-secondary); }
+-    .resolve-filter-title { font-size:12px; font-weight:700; color:var(--text-primary); margin-bottom:8px; }
+-    .resolve-filter-grid { display:grid; grid-template-columns:repeat(2,minmax(220px,1fr)); gap:12px; }
+-    .condition-filter-note { margin:0 0 10px; color:var(--text-secondary); font-size:12px; font-style:italic; line-height:1.45; }
+-    .condition-filter-card { border:1px solid var(--border-secondary); border-radius:8px; padding:10px 12px; background:var(--surface-primary); }
+-    .condition-filter-card + .condition-filter-card { margin-top:10px; }
+-    .condition-filter-card-title { margin-bottom:8px; color:var(--text-primary); font-size:12px; font-weight:700; }
+-    .resolve-stack { display:flex; flex-direction:column; gap:4px; min-width:0; line-height:1.35; }
+-    .resolve-stack div { min-height:18px; }
+-    .resolve-tag { display:none; }
+-    .position-config-cell { display:grid; gap:8px; min-width:0; }
+-    .position-config-block { display:grid; gap:3px; }
+-    .position-config-label { color:var(--text-secondary); font-size:11px; font-weight:600; }
+-    .resolve-pair-stack { display:grid; gap:8px; min-width:0; }
+-    .resolve-pair { display:grid; grid-template-columns:minmax(130px,1fr) minmax(110px,0.8fr); gap:10px; align-items:start; padding-bottom:8px; border-bottom:1px dashed var(--border-secondary); }
+-    .resolve-pair:last-child { border-bottom:0; padding-bottom:0; }
+-    .resolve-pair-position { color:var(--text-primary); font-weight:500; line-height:1.35; min-width:0; }
+-    .resolve-pair-holder { color:var(--text-primary); line-height:1.35; min-width:0; }
+-    .resolve-pair-holder.missing { color:var(--text-tertiary); }
+-    .resolve-line-stack { display:grid; gap:6px; min-width:0; }
+-    .resolve-line { color:var(--text-primary); line-height:1.35; white-space:normal; }
+-    .resolve-line-position { font-weight:700; }
+-    .resolve-line-holder { font-weight:400; margin-left:10px; }
+-    .resolve-line.missing { color:var(--text-tertiary); }
+-    .runtime-table-note { color:var(--color-info-700); display:block; font-size:11px; font-weight:600; line-height:1.35; margin:3px 0 0 10px; }
+-    .version-action { margin-left:auto; align-self:center; }
+-    .snapshot-backdrop { position:fixed; inset:0; background:rgba(15,23,42,.35); display:none; align-items:center; justify-content:center; padding:24px; z-index:1000; }
+-    .snapshot-backdrop.open { display:flex; }
+-    .snapshot-dialog { width:min(1120px,100%); max-height:90vh; background:var(--surface-primary); border-radius:8px; border:1px solid var(--border-secondary); box-shadow:0 18px 44px rgba(15,23,42,.22); overflow:hidden; display:flex; flex-direction:column; }
+-    .snapshot-header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 16px; border-bottom:1px solid var(--border-secondary); }
+-    .snapshot-title { font-size:15px; font-weight:600; color:var(--text-primary); }
+-    .snapshot-body { padding:16px; overflow:auto; }
+-    .snapshot-section { border:1px solid var(--border-secondary); border-radius:8px; background:var(--surface-primary); margin-bottom:12px; overflow:hidden; }
+-    .snapshot-section-title { display:flex; align-items:center; gap:8px; padding:10px 12px; border-bottom:1px solid var(--border-secondary); font-size:13px; font-weight:600; color:var(--text-primary); }
+-    .snapshot-section-body { padding:12px; }
+-    .change-action { display:inline-flex; align-items:center; gap:6px; font-weight:600; }
+-    .change-dot { width:8px; height:8px; border-radius:50%; display:inline-block; background:var(--color-warning-500); }
+-    .change-dot.create { background:var(--color-success-500); }
+-    .diff-stack { display:grid; gap:5px; }
+-    .diff-field { display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; }
+-    .diff-key { border:1px solid var(--color-primary-200); background:var(--color-primary-50); color:var(--color-primary-700); border-radius:4px; padding:1px 5px; font-family:monospace; }
+-    .diff-old { border:1px solid var(--color-error-100); background:var(--color-error-50); color:var(--color-error-600); border-radius:4px; padding:1px 5px; text-decoration:line-through; }
+-    .diff-new { border:1px solid var(--color-success-100); background:var(--color-success-50); color:var(--color-success-700); border-radius:4px; padding:1px 5px; }
+-    @media (max-width: 640px) {
+-      .info-stack { grid-template-columns:1fr; }
+-      .info-row { grid-template-columns:1fr; gap:4px; }
+-      .info-row.description-row { grid-template-columns:1fr; }
+-      .resolve-filter-grid { grid-template-columns:1fr; }
+-    }
+-  </style>
+-</head>
+-<body>
+-<div class="app-shell">
+-  <aside class="sidebar" id="sidebar"></aside>
+-  <div class="main-area">
+-
+-    <div data-pattern="page-header" data-variant="read"
+-         data-title="Phê duyệt mua sắm TSCĐ"
+-         data-record-id="#WI-001"
+-         data-badge-status="active"
+-         data-badge-title="Đang hiệu lực"
+-         data-back-href="danh-sach-workitem.html"
+-         data-primary-action="Chỉnh sửa"
+-         data-primary-icon="edit"
+-         data-primary-href="sua-workitem.html?id=WI-001"
+-         data-secondary-actions='[{"title":"Clone","icon":"content_copy"}]'></div>
+-
+-    <div class="content-zone">
+-      <sd-section title="Thông tin chung" icon="info" collapsible>
+-        <div class="info-stack">
+-          <div class="info-row">
+-            <span class="info-label">Mã đầu việc</span>
+-            <span class="info-value"><span class="mono-code">WI-001</span></span>
+-          </div>
+-          <div class="info-row">
+-            <span class="info-label">Trạng thái</span>
+-            <span class="info-value"><sd-badge type="round" color="success" title="Đang hiệu lực"></sd-badge></span>
+-          </div>
+-          <div class="info-row">
+-            <span class="info-label">Cẩm nang</span>
+-            <span class="info-value">MAG</span>
+-          </div>
+-          <div class="info-row">
+-            <span class="info-label">Đầu việc cha</span>
+-            <span class="info-value">Mua sắm tài sản</span>
+-          </div>
+-          <div class="info-row">
+-            <span class="info-label">Client</span>
+-            <span class="info-value">Tất cả Client</span>
+-          </div>
+-          <div class="info-row">
+-            <span class="info-label">Hiệu lực</span>
+-            <span class="info-value">01/01/2026 - </span>
+-          </div>
+-          <div class="info-row">
+-            <span class="info-label">Tự ủy quyền</span>
+-            <span class="info-value">Có</span>
+-          </div>
+-          <div class="info-row full-span description-row">
+-            <span class="info-label">Mô tả</span>
+-            <span class="info-value">Quy trình phê duyệt mua sắm tài sản cố định có giá trị từ 10 tỷ đồng trở lên, áp dụng cho các phòng ban thuộc Cẩm nang MAG.</span>
+-          </div>
+-        </div>
+-      </sd-section>
+-
+-      <sd-section title="Người thực hiện" icon="groups" collapsible>
+-        <div class="dept-resolve-row">
+-          <div class="resolve-filter-block">
+-            <div class="resolve-filter-title">Bộ điều kiện áp dụng</div>
+-            <div class="condition-filter-card">
+-              <div class="resolve-filter-grid">
+-                <!-- Ô chọn điều kiện để xem luồng đã giải: sd-select (2026-10-14), nghe sd-change ở cuối trang. -->
+-                <sd-select id="budget-condition-select" label="Giá trị ngân sách" hideInlineError
+-                  items='[{"id":"condition1","name":"3 tỷ &lt; Giá trị ngân sách &lt; 5 tỷ"},{"id":"condition-mid","name":"5 tỷ ≤ Giá trị ngân sách &lt; 7 tỷ"},{"id":"condition2","name":"Giá trị ngân sách &gt; 7 tỷ"}]'></sd-select>
+-                <sd-select id="contract-condition-select" label="Giá trị hợp đồng" hideInlineError
+-                  items='[{"id":"lt5","name":"Dưới 5 tỷ"},{"id":"gte5","name":"Từ 5 tỷ trở lên"}]'></sd-select>
+-                <sd-select id="contract-type-select" label="Loại hợp đồng" hideInlineError
+-                  items='[{"id":"purchase","name":"Hợp đồng mua sắm"},{"id":"service","name":"Hợp đồng dịch vụ"}]'></sd-select>
+-              </div>
+-            </div>
+-          </div>
+-          <div class="resolve-filter-block">
+-            <div class="resolve-filter-title">Bộ phận đề xuất</div>
+-            <div class="resolve-filter-grid">
+-              <sd-select id="division-resolve-select" label="Khối" hideInlineError
+-                items='[{"id":"mag","name":"MAG"},{"id":"vh","name":"Khối Vận hành"},{"id":"tckt","name":"Khối TC-KT"}]'></sd-select>
+-              <sd-select id="dept-resolve-select" label="Phòng ban" hideInlineError
+-                items='[{"id":"ms","name":"P.Mua sắm"},{"id":"vh","name":"P.Vận hành"},{"id":"tc","name":"P.Tài chính"}]'></sd-select>
+-            </div>
+-          </div>
+-        </div>
+-        <div style="margin-bottom:14px;">
+-          <!-- Bảng luồng đã giải: sd-table (2026-10-14). Cột / độ rộng ở RESOLVED_TABLE_COLUMNS trong JS;
+-               ô "Cấu hình ghế" và "Kết quả resolve" nhiều dòng nên là cột raw. Tổ hợp điều kiện không có
+-               luồng thì ẩn bảng, hiện câu báo bên dưới (sd-table chỉ có câu rỗng chung của catalog). -->
+-          <sd-table id="resolved-dept-table" hide-inline-filter></sd-table>
+-          <div id="resolved-dept-empty" class="hidden text-center text-black400 py-16">Không có luồng phê duyệt phù hợp với tổ hợp điều kiện đang chọn.</div>
+-        </div>
+-      </sd-section>
+-
+-      <sd-section title="Tài liệu và liên kết" icon="attachment" collapsible>
+-        <sd-table
+-          hide-inline-filter
+-          columns='[
+-            {"field":"name","title":"Tên","type":"string"},
+-            {"field":"type","title":"Loại","type":"values","option":{"items":[{"id":"file","name":"File"},{"id":"url","name":"URL"}]}},
+-            {"field":"validity","title":"Hiệu lực","type":"string"},
+-            {"field":"status","title":"Trạng thái","type":"values","option":{"items":[{"id":"valid","name":"Còn hiệu lực"}]}}
+-          ]'
+-          data='[
+-            {"name":"Quy định mua sắm TSCĐ.pdf","type":"file","validity":"01/01/2026 - 31/12/2026","status":"valid"},
+-            {"name":"https://intranet.onemount.com/policy/tscd","type":"url","validity":"-","status":"valid"}
+-          ]'
+-        ></sd-table>
+-      </sd-section>
+-
+-      <sd-section title="Lịch sử phiên bản" icon="history" collapsible>
+-        <div class="version-row clickable" role="button" tabindex="0" onclick="openVersionSnapshot('v3')" onkeydown="onVersionKey(event,'v3')">
+-          <div class="version-icon current"><span class="material-icons-outlined mi-md">edit</span></div>
+-          <div>
+-            <div class="version-title">v3 — Phiên bản hiện tại</div>
+-            <div class="version-meta">15/01/2026 09:45 — Nguyễn Quản Trị</div>
+-          </div>
+-          <sd-button class="version-action" type="light" color="primary" size="sm" prefixIcon="visibility" title="Xem" onclick="event.stopPropagation(); openVersionSnapshot('v3')"></sd-button>
+-        </div>
+-        <div class="version-row clickable" role="button" tabindex="0" onclick="openVersionSnapshot('v2')" onkeydown="onVersionKey(event,'v2')">
+-          <div class="version-icon"><span class="material-icons-outlined mi-md">history</span></div>
+-          <div>
+-            <div class="version-title">v2</div>
+-            <div class="version-meta">10/01/2026 14:30 - 15/01/2026 09:44</div>
+-          </div>
+-          <sd-button class="version-action" type="light" color="primary" size="sm" prefixIcon="visibility" title="Xem" onclick="event.stopPropagation(); openVersionSnapshot('v2')"></sd-button>
+-        </div>
+-        <div class="version-row clickable" role="button" tabindex="0" onclick="openVersionSnapshot('v1')" onkeydown="onVersionKey(event,'v1')">
+-          <div class="version-icon"><span class="material-icons-outlined mi-md">add</span></div>
+-          <div>
+-            <div class="version-title">v1</div>
+-            <div class="version-meta">01/01/2026 10:00 - 10/01/2026 14:29</div>
+-          </div>
+-          <sd-button class="version-action" type="light" color="primary" size="sm" prefixIcon="visibility" title="Xem" onclick="event.stopPropagation(); openVersionSnapshot('v1')"></sd-button>
+-        </div>
+-      </sd-section>
+-
+-    </div>
+-  </div>
+-</div>
+-
+-<div class="snapshot-backdrop" id="versionSnapshot" aria-hidden="true">
+-  <div class="snapshot-dialog" role="dialog" aria-modal="true" aria-labelledby="snapshotTitle">
+-    <div class="snapshot-header">
+-      <div>
+-        <div class="snapshot-title" id="snapshotTitle">Phiên bản</div>
+-        <div class="version-meta" id="snapshotMeta"></div>
+-      </div>
+-      <sd-button type="link" color="secondary" size="sm" prefixIcon="close" title="" aria-label="Thoát" onclick="closeVersionSnapshot()"></sd-button>
+-    </div>
+-    <div class="snapshot-body">
+-      <div id="snapshotBody"></div>
+-    </div>
+-  </div>
+-</div>
+-
+-<script src="../../design-system/sd-components/sd-components.js"></script>
+-<script src="../../design-system/patterns/page-header.js"></script>
+-<script src="../../design-system/patterns/filter-bar.js"></script>
+-<script src="../../design-system/core/js/pattern-loader.js"></script>
+-<script src="../../design-system/core/js/shell.js"></script>
+-<script src="../../design-system/patterns/sidebar.js"></script>
+-<script src="../shared-nav.js"></script>
+-<script>
+-  var resolvedByTierDept = {
+-    tier1: {
+-      label: 'Bộ điều kiện 1',
+-      configSource: 'Nguyên tắc duyệt',
+-      departments: {
+-        ms: {
+-          label: 'P.Mua sắm',
+-          rows: [
+-            ['Đề xuất', 'Nguyên tắc duyệt', 'Cấp 2', '-', 'Trưởng phòng Mua sắm', 'Nguyễn Văn A', '-'],
+-            ['Thẩm định', 'Nguyên tắc duyệt', 'Cấp 3', '-', 'Kế toán trưởng', 'Trần Hoa B', 'Trong phạm vi'],
+-            ['Phê duyệt', 'Nguyên tắc duyệt', '<div class="resolve-stack"><div>Cấp 1</div><div>Cấp 2</div></div>', '<div class="resolve-stack"><div>GĐ Khối TC-KT</div><div>CFO MAG</div></div>', '<div class="resolve-pair-stack"><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Giám đốc Khối Vận hành</div><div class="resolve-pair-holder">Lê Văn C</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Trưởng phòng Mua sắm</div><div class="resolve-pair-holder">Nguyễn Văn A</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>GĐ Khối TC-KT</div><div class="resolve-pair-holder">Nguyễn Tài Chính</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>CFO MAG</div><div class="resolve-pair-holder missing">-</div></div></div>', '', '-']
+-          ]
+-        },
+-        vh: {
+-          label: 'P.Vận hành',
+-          rows: [
+-            ['Đề xuất', 'Nguyên tắc duyệt', 'Cấp 2', '-', 'Trưởng phòng Vận hành', 'Hoàng Minh D', '-'],
+-            ['Thẩm định', 'Nguyên tắc duyệt', 'Cấp 3', '-', 'Giám đốc Vận hành', '-', 'Trong phạm vi'],
+-            ['Phê duyệt', 'Nguyên tắc duyệt', 'Cấp 1', '-', 'Giám đốc Khối Vận hành', 'Lê Văn C', '-']
+-          ]
+-        },
+-        tc: {
+-          label: 'P.Tài chính',
+-          rows: [
+-            ['Đề xuất', 'Nguyên tắc duyệt', 'Cấp 2', '-', 'Trưởng phòng Tài chính', 'Bùi Ngọc F', '-'],
+-            ['Thẩm định', 'Nguyên tắc duyệt', 'Cấp 3', '-', 'Kế toán trưởng', 'Trần Hoa B', 'Trong phạm vi'],
+-            ['Phê duyệt', 'Nguyên tắc duyệt', 'Cấp 1', '-', 'GĐ Khối TC-KT', 'Nguyễn Tài Chính', '-']
+-          ]
+-        }
+-      }
+-    },
+-    tier2: {
+-      label: 'Bộ điều kiện 2',
+-      configSource: 'Tự cấu hình',
+-      departments: {
+-        ms: {
+-          label: 'P.Mua sắm',
+-          rows: [
+-            ['Thẩm định', 'Tự cấu hình', 'Cấp 2', '-', 'Trưởng phòng Mua sắm', 'Nguyễn Văn A', 'Trong phạm vi'],
+-            ['Phê duyệt', 'Tự cấu hình', '<div class="resolve-stack"><div>Cấp 1</div><div>Cấp 2</div></div>', '<div class="resolve-stack"><div>GĐ Khối TC-KT</div><div>CFO MAG</div></div>', '<div class="resolve-pair-stack"><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Giám đốc Khối Vận hành</div><div class="resolve-pair-holder">Lê Văn C</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Trưởng phòng Mua sắm</div><div class="resolve-pair-holder">Nguyễn Văn A</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>GĐ Khối TC-KT</div><div class="resolve-pair-holder">Nguyễn Tài Chính</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>CFO MAG</div><div class="resolve-pair-holder missing">-</div></div></div>', '', '-', '2/4 người', 'Giám đốc Khối Vận hành → Trưởng phòng Mua sắm → GĐ Khối TC-KT → CFO MAG']
+-          ]
+-        },
+-        vh: {
+-          label: 'P.Vận hành',
+-          rows: [
+-            ['Thẩm định', 'Tự cấu hình', 'Cấp 2', '-', 'Trưởng phòng Vận hành', 'Hoàng Minh D', 'Trong phạm vi'],
+-            ['Phê duyệt', 'Tự cấu hình', '<div class="resolve-stack"><div>Cấp 1</div><div>Cấp 2</div></div>', '<div class="resolve-stack"><div>GĐ Khối TC-KT</div><div>CFO MAG</div></div>', '<div class="resolve-pair-stack"><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Giám đốc Khối Vận hành</div><div class="resolve-pair-holder">Lê Văn C</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Trưởng phòng Vận hành</div><div class="resolve-pair-holder">Hoàng Minh D</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>GĐ Khối TC-KT</div><div class="resolve-pair-holder">Nguyễn Tài Chính</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>CFO MAG</div><div class="resolve-pair-holder missing">-</div></div></div>', '', '-', '2/4 người', 'Giám đốc Khối Vận hành → Trưởng phòng Vận hành → GĐ Khối TC-KT → CFO MAG']
+-          ]
+-        },
+-        tc: {
+-          label: 'P.Tài chính',
+-          rows: [
+-            ['Thẩm định', 'Tự cấu hình', 'Cấp 2', '-', 'Trưởng phòng Tài chính', 'Bùi Ngọc F', 'Trong phạm vi'],
+-            ['Phê duyệt', 'Tự cấu hình', '<div class="resolve-stack"><div>Cấp 1</div><div>Cấp 2</div></div>', '<div class="resolve-stack"><div>GĐ Khối TC-KT</div><div>CFO MAG</div></div>', '<div class="resolve-pair-stack"><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>GĐ Khối TC-KT</div><div class="resolve-pair-holder">Nguyễn Tài Chính</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Trưởng phòng Tài chính</div><div class="resolve-pair-holder">Bùi Ngọc F</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>GĐ Khối TC-KT</div><div class="resolve-pair-holder">Nguyễn Tài Chính</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>CFO MAG</div><div class="resolve-pair-holder missing">-</div></div></div>', '', '-', '2/4 người', 'GĐ Khối TC-KT → Trưởng phòng Tài chính → CFO MAG']
+-          ]
+-        }
+-      }
+-    }
+-  };
+-
+-  function getActivityRuntimeConfig(action) {
+-    var normalized = String(action || '').toLowerCase();
+-    if (normalized.indexOf('phê duyệt') >= 0 || normalized.indexOf('phe duyet') >= 0) {
+-      return ['2/3 người', 'Giám đốc Khối Vận hành → GĐ Khối TC-KT → CFO MAG'];
+-    }
+-    return ['Tất cả', 'Không theo thứ tự'];
+-  }
+-
+-  function getActivityRuntimeValue(row, index) {
+-    if (row && row.length > index && row[index]) return row[index];
+-    return getActivityRuntimeConfig(row ? row[0] : '')[index - 7];
+-  }
+-
+-  function renderPositionConfigCell(levels, fixedPositions) {
+-    return '<div class="position-config-cell">' +
+-      '<div class="position-config-block"><span class="position-config-label">Cấp ghế</span><div>' + (levels || '-') + '</div></div>' +
+-      '<div class="position-config-block"><span class="position-config-label">Ghế cố định</span><div>' + (fixedPositions || '-') + '</div></div>' +
+-    '</div>';
+-  }
+-
+-  function extractResolveStackItems(html) {
+-    var value = String(html || '').trim();
+-    if (value.indexOf('resolve-stack') < 0) return [];
+-    var host = document.createElement('div');
+-    host.innerHTML = value;
+-    return Array.prototype.slice.call(host.querySelectorAll('.resolve-stack > div')).map(function(item) {
+-      return item.innerHTML || '-';
+-    });
+-  }
+-
+-  function stripResolveLabel(html) {
+-    var host = document.createElement('div');
+-    host.innerHTML = String(html || '-');
+-    Array.prototype.slice.call(host.querySelectorAll('.resolve-tag')).forEach(function(tag) {
+-      tag.remove();
+-    });
+-    return (host.textContent || '-').trim() || '-';
+-  }
+-
+-  function escapeSnapshotText(value) {
+-    return String(value || '-')
+-      .replace(/&/g, '&amp;')
+-      .replace(/</g, '&lt;')
+-      .replace(/>/g, '&gt;')
+-      .replace(/"/g, '&quot;')
+-      .replace(/'/g, '&#39;');
+-  }
+-
+-  function renderResolveLine(position, holder, runtimeNotes) {
+-    var cleanPosition = stripResolveLabel(position);
+-    var cleanHolder = stripResolveLabel(holder);
+-    var isMissing = !cleanHolder || cleanHolder === '-';
+-    var note = runtimeNotes && runtimeNotes[cleanHolder] ? '<span class="runtime-table-note">' + escapeSnapshotText(runtimeNotes[cleanHolder]) + '</span>' : '';
+-    return '<div class="resolve-line' + (isMissing ? ' missing' : '') + '">' +
+-      '<span class="resolve-line-position">' + escapeSnapshotText(cleanPosition) + '</span>' +
+-      '<span class="resolve-line-holder">' + escapeSnapshotText(isMissing ? '-' : cleanHolder) + note + '</span>' +
+-    '</div>';
+-  }
+-
+-  function renderResolveHolderCell(resolveValue, holderValue, runtimeNotes) {
+-    if (String(resolveValue || '').indexOf('resolve-pair-stack') >= 0) {
+-      var host = document.createElement('div');
+-      host.innerHTML = resolveValue;
+-      var pairLines = Array.prototype.slice.call(host.querySelectorAll('.resolve-pair')).map(function(pair) {
+-        return renderResolveLine(
+-          pair.querySelector('.resolve-pair-position') ? pair.querySelector('.resolve-pair-position').innerHTML : '-',
+-          pair.querySelector('.resolve-pair-holder') ? pair.querySelector('.resolve-pair-holder').innerHTML : '-',
+-          runtimeNotes
+-        );
+-      });
+-      return '<div class="resolve-line-stack">' + pairLines.join('') + '</div>';
+-    }
+-    var positions = extractResolveStackItems(resolveValue);
+-    var holders = extractResolveStackItems(holderValue);
+-    if (positions.length || holders.length) {
+-      var size = Math.max(positions.length, holders.length);
+-      var html = '';
+-      for (var i = 0; i < size; i += 1) {
+-        html += renderResolveLine(positions[i] || '-', holders[i] || '-', runtimeNotes);
+-      }
+-      return '<div class="resolve-line-stack">' + html + '</div>';
+-    }
+-    return '<div class="resolve-line-stack">' + renderResolveLine(resolveValue || '-', holderValue || '-', runtimeNotes) + '</div>';
+-  }
+-
+-  function buildResolvedTableRow(row, runtimeNotes) {
+-    return [
+-      row[0],
+-      // Ô nhiều dòng trong sd-table: py-8 để chữ không chạm vạch dòng (ô sd-table chỉ đệm ngang).
+-      '<div class="py-8">' + renderPositionConfigCell(row[2], row[3]) + '</div>',
+-      '<div class="py-8">' + renderResolveHolderCell(row[4], row[5], runtimeNotes) + '</div>',
+-      getActivityRuntimeValue(row, 7),
+-      getActivityRuntimeValue(row, 8),
+-      row[6]
+-    ];
+-  }
+-
+-  function getRuntimeNoteMap(deptValue) {
+-    var proposerMap = {
+-      ms: 'Nguyễn Văn A',
+-      vh: 'Hoàng Minh D',
+-      tc: 'Bùi Ngọc F'
+-    };
+-    var approverMap = {
+-      ms: 'Lê Văn C',
+-      vh: 'Hoàng Minh D',
+-      tc: 'Nguyễn Tài Chính'
+-    };
+-    var proposer = proposerMap[deptValue] || proposerMap.ms;
+-    var approver = approverMap[deptValue] || approverMap.ms;
+-    var notes = {};
+-    notes[proposer] = 'Người thẩm định: Trần Hoa B - hoa.tran@onemount.com';
+-    notes[approver] = 'Người được ủy quyền: Nguyễn Kim Anh - anh.nguyen23@onemount.com';
+-    return notes;
+-  }
+-
+-  // Cột bảng "Người thực hiện" (bảng luồng đã giải + bảng cùng tên trong ảnh chụp phiên bản).
+-  var RESOLVED_TABLE_COLUMNS = [
+-    { field:'c0', title:'Hoạt động', type:'raw', width:'88px' },
+-    { field:'c1', title:'Cấu hình ghế', type:'raw', width:'210px' },
+-    { field:'c2', title:'Kết quả resolve / Người giữ', type:'raw', width:'300px' },
+-    { field:'c3', title:'Số người cần thực hiện', type:'raw', width:'130px' },
+-    { field:'c4', title:'Thứ tự thực hiện', type:'raw', width:'180px' },
+-    { field:'c5', title:'Ghi chú', type:'raw', width:'88px' }
+-  ];
+-
+-  // Mảng ô (HTML) → dòng sd-table { c0, c1, … }.
+-  function cellsToTableRow(cells) {
+-    var row = {};
+-    cells.forEach(function(cell, index) { row['c' + index] = cell == null ? '' : String(cell); });
+-    return row;
+-  }
+-
+-  function updateResolvedView() {
+-    var conditionValue = document.getElementById('budget-condition-select').value || 'condition1';
+-    var contractValue = document.getElementById('contract-condition-select').value || '';
+-    var contractTypeValue = document.getElementById('contract-type-select').value || '';
+-    var deptValue = document.getElementById('dept-resolve-select').value || 'ms';
+-    var isInvalidCombination = contractValue === 'gte5' && contractTypeValue === 'purchase';
+-    var tierValue = conditionValue === 'condition2' ? 'tier2' : 'tier1';
+-    var tier = resolvedByTierDept[tierValue] || resolvedByTierDept.tier1;
+-    var data = tier.departments[deptValue] || tier.departments.ms;
+-    var table = document.getElementById('resolved-dept-table');
+-    var empty = document.getElementById('resolved-dept-empty');
+-    if (!table) return;
+-    if (isInvalidCombination) {
+-      table.style.display = 'none';
+-      if (empty) empty.classList.remove('hidden');
+-      return;
+-    }
+-    table.style.display = '';
+-    if (empty) empty.classList.add('hidden');
+-    var runtimeNotes = getRuntimeNoteMap(deptValue);
+-    if (!table.hasAttribute('columns')) table.setAttribute('columns', JSON.stringify(RESOLVED_TABLE_COLUMNS));
+-    table.setAttribute('data', JSON.stringify(data.rows.map(function (row) {
+-      return cellsToTableRow(buildResolvedTableRow(row, runtimeNotes));
+-    })));
+-  }
+-
+-  ['budget-condition-select', 'contract-condition-select', 'contract-type-select', 'division-resolve-select', 'dept-resolve-select'].forEach(function(id) {
+-    var select = document.getElementById(id);
+-    if (select) select.addEventListener('sd-change', updateResolvedView);
+-  });
+-
+-  var versionSnapshots = {
+-    v2: {
+-      title: 'v2 — Chi tiết đầu việc tại thời điểm lưu',
+-      meta: '10/01/2026 14:30 — Trần Phụ Trách',
+-      sections: [
+-        {
+-          type: 'info',
+-          title: 'Thông tin chung',
+-          rows: [
+-            ['Mã đầu việc', '<span class="mono-code">WI-001</span>'],
+-            ['Trạng thái', '<sd-badge type="round" color="success" title="Đang hiệu lực"></sd-badge>'],
+-            ['Cẩm nang', 'MAG'],
+-            ['Đầu việc cha', 'Mua sắm tài sản'],
+-            ['Client', 'Tất cả Client'],
+-            ['Hiệu lực', '01/01/2026 - '],
+-            ['Tự ủy quyền', 'Có'],
+-            ['Mô tả', 'Quy trình phê duyệt mua sắm tài sản cố định có giá trị từ 10 tỷ đồng trở lên.']
+-          ]
+-        },
+-        {
+-          type: 'table',
+-          title: 'Bộ điều kiện',
+-          headers: ['Bộ điều kiện', 'Điều kiện', 'Nguyên tắc duyệt'],
+-          rows: [
+-            ['Bộ điều kiện 1', '10 tỷ ≤ Giá trị ngân sách &lt; 15 tỷ', 'Rule-01 — Hoạt động Mua sắm Tiêu chuẩn'],
+-            ['Bộ điều kiện 2', 'Giá trị ngân sách ≥ 15 tỷ', 'Rule-02 — Hoạt động BGĐ Cao cấp']
+-          ]
+-        },
+-        {
+-          type: 'table',
+-          title: 'Người thực hiện',
+-          headers: ['Hoạt động', 'Nguồn cấu hình', 'Cấp ghế', 'Ghế cố định', 'Kết quả resolve', 'Người giữ ghế', 'Ghi chú'],
+-          rows: [
+-            ['Đề xuất', 'Nguyên tắc duyệt', 'Cấp 2', '-', 'Trưởng phòng Mua sắm', 'Nguyễn Văn A', '-'],
+-            ['Thẩm định', 'Nguyên tắc duyệt', 'Cấp 3', '-', 'Kế toán trưởng', 'Trần Hoa B', 'Trong phạm vi'],
+-            ['Phê duyệt', 'Nguyên tắc duyệt', 'Cấp 1', 'GĐ Khối TC-KT, CFO MAG', '<div class="resolve-stack"><div><span class="resolve-tag">Cấp 1</span>Giám đốc Khối Vận hành</div><div><span class="resolve-tag">Cố định</span>GĐ Khối TC-KT</div><div><span class="resolve-tag">Cố định</span>CFO MAG</div></div>', '<div class="resolve-stack"><div>Lê Văn C</div><div>Nguyễn Tài Chính</div><div>-</div></div>', '-']
+-          ]
+-        },
+-        {
+-          type: 'table',
+-          title: 'Tài liệu và liên kết',
+-          headers: ['Tên', 'Loại', 'Hiệu lực'],
+-          rows: [
+-            ['Quy định mua sắm TSCĐ.pdf', 'File', '01/01/2026 - 31/12/2026']
+-          ]
+-        },
+-      ]
+-    },
+-    v1: {
+-      title: 'v1 — Chi tiết đầu việc tại thời điểm lưu',
+-      meta: '01/01/2026 10:00 — Nguyễn Quản Trị',
+-      sections: [
+-        {
+-          type: 'info',
+-          title: 'Thông tin chung',
+-          rows: [
+-            ['Mã đầu việc', '<span class="mono-code">WI-001</span>'],
+-            ['Trạng thái', '<sd-badge type="round" color="success" title="Đang hiệu lực"></sd-badge>'],
+-            ['Cẩm nang', 'MAG'],
+-            ['Đầu việc cha', 'Mua sắm tài sản'],
+-            ['Client', 'Tất cả Client'],
+-            ['Hiệu lực', '01/01/2026 - '],
+-            ['Tự ủy quyền', 'Có'],
+-            ['Mô tả', 'Quy trình phê duyệt mua sắm tài sản cố định.']
+-          ]
+-        },
+-        {
+-          type: 'table',
+-          title: 'Bộ điều kiện',
+-          headers: ['Bộ điều kiện', 'Điều kiện', 'Nguyên tắc duyệt'],
+-          rows: [
+-            ['Bộ điều kiện 1', 'Giá trị ngân sách từ 10 tỷ trở lên', 'Rule-01 — Hoạt động Mua sắm Tiêu chuẩn']
+-          ]
+-        },
+-        {
+-          type: 'table',
+-          title: 'Người thực hiện',
+-          headers: ['Hoạt động', 'Nguồn cấu hình', 'Cấp ghế', 'Ghế cố định', 'Kết quả resolve', 'Người giữ ghế', 'Ghi chú'],
+-          rows: [
+-            ['Đề xuất', 'Nguyên tắc duyệt', 'Cấp 2', '-', 'Trưởng phòng Mua sắm', 'Nguyễn Văn A', '-'],
+-            ['Thẩm định', 'Nguyên tắc duyệt', 'Cấp 3', '-', 'Kế toán trưởng', 'Trần Hoa B', 'Trong phạm vi'],
+-            ['Phê duyệt', 'Nguyên tắc duyệt', 'Cấp 1', '-', 'Giám đốc Khối Vận hành', 'Lê Văn C', '-']
+-          ]
+-        },
+-        {
+-          type: 'table',
+-          title: 'Tài liệu và liên kết',
+-          headers: ['Tên', 'Loại', 'Hiệu lực'],
+-          rows: [
+-            ['-', '-', '-']
+-          ]
+-        },
+-      ]
+-    }
+-  };
+-
+-  versionSnapshots.v3 = {
+-    title: 'v3 — Chi tiết đầu việc hiện tại',
+-    meta: '15/01/2026 09:45 — Nguyễn Quản Trị',
+-    sections: JSON.parse(JSON.stringify(versionSnapshots.v2.sections))
+-  };
+-  versionSnapshots.v3.sections[0].rows[7][1] = 'Quy trình phê duyệt mua sắm tài sản cố định theo từng ngưỡng giá trị.';
+-
+-  var versionChanges = {
+-    v3: [
+-      {
+-        time: '15/01/2026 09:45',
+-        actor: 'Nguyễn Quản Trị',
+-        action: 'Tạo mới version',
+-        diffs: [
+-          { field: 'Mô tả', from: 'Quy trình mua sắm TSCĐ', to: 'Quy trình phê duyệt mua sắm tài sản cố định theo từng ngưỡng giá trị' },
+-          { field: 'Tài liệu', from: '-', to: 'Thêm Quy định mua sắm TSCĐ.pdf và URL intranet chính sách TSCĐ' },
+-          { field: 'Luồng duyệt', from: 'GĐ Khối Tài chính', to: 'GĐ Khối Tài chính + Kế toán trưởng' }
+-        ]
+-      }
+-    ],
+-    v2: [
+-      {
+-        time: '10/01/2026 14:30',
+-        actor: 'Trần Phụ Trách',
+-        action: 'Tạo mới version',
+-        diffs: [
+-          { field: 'Bộ điều kiện', from: '1 bộ điều kiện áp dụng mọi giá trị', to: '2 bộ điều kiện theo ngưỡng ngân sách' },
+-          { field: 'Điều kiện 2', from: '-', to: 'Giá trị ngân sách từ 15 tỷ trở lên' },
+-          { field: 'Nguyên tắc duyệt', from: '1 người Phê duyệt', to: 'Yêu cầu thêm cấp phê duyệt cuối' }
+-        ]
+-      },
+-      {
+-        time: '12/01/2026 09:20',
+-        actor: 'Trần Phụ Trách',
+-        action: 'Cập nhật trong version',
+-        diffs: [
+-          { field: 'Tên hiển thị', from: 'Phê duyệt mua sắm TSCĐ', to: 'Phê duyệt mua sắm Tài sản Cố định MAG 2026' }
+-        ]
+-      }
+-    ],
+-    v1: [
+-      {
+-        time: '01/01/2026 10:00',
+-        actor: 'Nguyễn Quản Trị',
+-        action: 'Tạo mới đầu việc',
+-        diffs: [
+-          { field: 'Đầu việc', from: '-', to: 'WI-001 - Phê duyệt mua sắm TSCĐ' },
+-          { field: 'Hiệu lực', from: '-', to: '01/01/2026 -' }
+-        ]
+-      }
+-    ]
+-  };
+-
+-  function renderChangeDiffs(change) {
+-    if (!change.diffs || !change.diffs.length) return '-';
+-    return '<div class="diff-stack">' + change.diffs.map(function(diff) {
+-      return '<div class="diff-field">' +
+-        '<span class="diff-key">' + escapeSnapshotText(diff.field) + '</span>' +
+-        '<span class="diff-old">' + escapeSnapshotText(diff.from) + '</span>' +
+-        '<span>→</span>' +
+-        '<span class="diff-new">' + escapeSnapshotText(diff.to) + '</span>' +
+-      '</div>';
+-    }).join('') + '</div>';
+-  }
+-
+-  function renderVersionChangeHistory(version) {
+-    var changes = versionChanges[version] || [];
+-    if (!changes.length) {
+-      return '<div class="snapshot-section"><div class="snapshot-section-body" style="color:var(--text-secondary);">Chưa có lịch sử thay đổi trong phiên bản này.</div></div>';
+-    }
+-    // Bảng lịch sử thay đổi: sd-table (2026-10-14); ô Hành động / Chi tiết thay đổi có markup nên là cột raw.
+-    var columns = [
+-      { field:'c0', title:'Thời gian', type:'raw' },
+-      { field:'c1', title:'Người thực hiện', type:'raw' },
+-      { field:'c2', title:'Hành động', type:'raw' },
+-      { field:'c3', title:'Chi tiết thay đổi', type:'raw' }
+-    ];
+-    var rows = changes.map(function(change) {
+-      var isCreate = String(change.action || '').toLowerCase().indexOf('tạo') >= 0;
+-      return cellsToTableRow([
+-        escapeSnapshotText(change.time),
+-        escapeSnapshotText(change.actor),
+-        '<span class="change-action"><span class="change-dot' + (isCreate ? ' create' : '') + '"></span>' + escapeSnapshotText(change.action) + '</span>',
+-        '<div class="py-8">' + renderChangeDiffs(change) + '</div>'
+-      ]);
+-    });
+-    return '<div class="snapshot-section">' +
+-      '<div class="snapshot-section-title"><span class="material-icons-outlined mi-sm">manage_history</span>Lịch sử thay đổi</div>' +
+-      '<div class="snapshot-section-body">' + renderSnapshotTableHtml(columns, rows, 'change-log-table') + '</div>' +
+-    '</div>';
+-  }
+-
+-  // sd-table dựng sẵn trong chuỗi HTML (hộp ảnh chụp phiên bản vẽ bằng innerHTML).
+-  function renderSnapshotTableHtml(columns, rows, id) {
+-    return '<sd-table hide-inline-filter' + (id ? ' data-snapshot-table="' + id + '"' : '') +
+-      ' columns="' + escapeSnapshotText(JSON.stringify(columns)) + '"' +
+-      ' data="' + escapeSnapshotText(JSON.stringify(rows)) + '"></sd-table>';
+-  }
+-
+-  // Tab của hộp ảnh chụp phiên bản là sd-tab-group (2026-10-14): 'info' = tab 0, 'history' = tab 1.
+-  function setSnapshotTab(tabName) {
+-    var group = document.querySelector('#versionSnapshot sd-tab-group');
+-    if (group) group.setAttribute('selectedIndex', tabName === 'history' ? '1' : '0');
+-  }
+-
+-  function renderSnapshotSection(section) {
+-    if (section.type === 'info') {
+-      return '<div class="snapshot-section">' +
+-        '<div class="snapshot-section-title"><span class="material-icons-outlined mi-sm">info</span>' + section.title + '</div>' +
+-        '<div class="snapshot-section-body"><div class="info-stack">' +
+-          section.rows.map(function (row) {
+-            var fullClass = row[0] === 'Mô tả' ? ' full-span description-row' : '';
+-            return '<div class="info-row' + fullClass + '"><span class="info-label">' + row[0] + '</span><span class="info-value">' + row[1] + '</span></div>';
+-          }).join('') +
+-        '</div></div>' +
+-      '</div>';
+-    }
+-    var headers = section.headers;
+-    var rows = section.rows;
+-    var isActorTable = (section.title || '').toLowerCase().indexOf('người thực hiện') >= 0;
+-    var columns = headers.map(function (header, index) { return { field:'c' + index, title:header, type:'raw' }; });
+-    if (isActorTable && headers.length === 7) {
+-      columns = RESOLVED_TABLE_COLUMNS.map(function (col, index) {
+-        var copy = JSON.parse(JSON.stringify(col));
+-        if (index === 0) copy.title = headers[0];
+-        if (index === 5) copy.title = headers[6];
+-        return copy;
+-      });
+-      rows = rows.map(function(row) {
+-        return buildResolvedTableRow(row);
+-      });
+-    }
+-    return '<div class="snapshot-section">' +
+-      '<div class="snapshot-section-title"><span class="material-icons-outlined mi-sm">table_rows</span>' + section.title + '</div>' +
+-      '<div class="snapshot-section-body">' + renderSnapshotTableHtml(columns, rows.map(cellsToTableRow)) + '</div>' +
+-    '</div>';
+-  }
+-
+-  function openVersionSnapshot(version) {
+-    var data = versionSnapshots[version];
+-    if (!data) return;
+-    document.getElementById('snapshotTitle').textContent = data.title;
+-    document.getElementById('snapshotMeta').textContent = data.meta;
+-    document.getElementById('snapshotBody').innerHTML =
+-      '<sd-tab-group variant="line" selectedIndex="0">' +
+-        '<sd-tab label="Thông tin đầu việc"><div class="pt-12">' + data.sections.map(renderSnapshotSection).join('') + '</div></sd-tab>' +
+-        '<sd-tab label="Lịch sử thay đổi"><div class="pt-12">' + renderVersionChangeHistory(version) + '</div></sd-tab>' +
+-      '</sd-tab-group>';
+-    var modal = document.getElementById('versionSnapshot');
+-    modal.classList.add('open');
+-    modal.setAttribute('aria-hidden', 'false');
+-  }
+-
+-  function closeVersionSnapshot() {
+-    var modal = document.getElementById('versionSnapshot');
+-    modal.classList.remove('open');
+-    modal.setAttribute('aria-hidden', 'true');
+-  }
+-
+-  function onVersionKey(event, version) {
+-    if (event.key === 'Enter' || event.key === ' ') {
+-      event.preventDefault();
+-      openVersionSnapshot(version);
+-    }
+-  }
+-
+-  function escapeDetailText(value) {
+-    return String(value || '-')
+-      .replace(/&/g, '&amp;')
+-      .replace(/</g, '&lt;')
+-      .replace(/>/g, '&gt;')
+-      .replace(/"/g, '&quot;')
+-      .replace(/'/g, '&#39;');
+-  }
+-
+-  function initCategoryDetailMode() {
+-    var params = new URLSearchParams(window.location.search || '');
+-    if (params.get('type') !== 'category') return;
+-
+-    var id = params.get('id') || 'WI-CVG';
+-    var categoryNames = {
+-      'WI-001': 'Phê duyệt mua sắm Tài sản Cố định MAG 2026',
+-      'WI-001-HE': 'Phê duyệt mua sắm TSCĐ — Phiên bản H&E',
+-      'WI-001-MN': 'Phê duyệt mua sắm TSCĐ H&E Miền Bắc',
+-      'WI-CVG': 'Các vấn đề chung',
+-      'WI-CVG-CL': 'Chiến lược và điều chỉnh chiến lược chung',
+-      'WI-CVG-CL-113': 'Tổ chức xây dựng bộ kế hoạch năm',
+-      'WI-DTU': 'Tư vấn và đầu tư',
+-      'WI-DTU-11': 'Chủ trương đầu tư dự án',
+-      'WI-PLT': 'Pháp lí tuân thủ',
+-      'WI-TCKT': 'Tài chính kế toán',
+-      'WI-TCKT-11': 'Ngân sách và chi phí'
+-    };
+-    var title = categoryNames[id] || 'Đầu mục công việc';
+-    document.title = title + ' — Cẩm nang Phân quyền';
+-
+-    var header = document.querySelector('[data-pattern="page-header"]');
+-    if (header) {
+-      header.setAttribute('data-title', title);
+-      header.setAttribute('data-record-id', '#' + id);
+-      header.setAttribute('data-primary-href', 'sua-workitem.html?id=' + encodeURIComponent(id) + '&type=category');
+-    }
+-
+-    var infoStack = document.querySelector('.info-stack');
+-    if (infoStack) {
+-      infoStack.innerHTML =
+-        '<div class="info-row"><span class="info-label">Mã đầu việc</span><span class="info-value"><span class="mono-code">' + escapeDetailText(id) + '</span></span></div>' +
+-        '<div class="info-row"><span class="info-label">Loại đầu việc</span><span class="info-value">Đầu mục</span></div>' +
+-        '<div class="info-row"><span class="info-label">Cẩm nang</span><span class="info-value">MAG</span></div>' +
+-        '<div class="info-row"><span class="info-label">Đầu việc cha</span><span class="info-value">-</span></div>' +
+-        '<div class="info-row"><span class="info-label">Tự ủy quyền</span><span class="info-value">Không</span></div>' +
+-        '<div class="info-row full-span description-row"><span class="info-label">Mô tả</span><span class="info-value">Đầu mục dùng để gom nhóm các công việc con trong cây Cẩm nang. Không cấu hình hiệu lực, Bộ điều kiện, người thực hiện hoặc tài liệu riêng.</span></div>';
+-    }
+-
+-    document.querySelectorAll('sd-section').forEach(function(section) {
+-      var sectionTitle = section.getAttribute('title') || '';
+-      if (sectionTitle === 'Điều kiện liên quan' || sectionTitle === 'Người thực hiện' || sectionTitle === 'Tài liệu và liên kết') {
+-        section.style.display = 'none';
+-      }
+-    });
+-  }
+-
+-  document.addEventListener('keydown', function (event) {
+-    if (event.key === 'Escape') closeVersionSnapshot();
+-  });
+-
+-  function routeEmbeddedEditAction() {
+-    if (!document.documentElement.classList.contains('embedded-mode')) return;
+-    var params = new URLSearchParams(window.location.search || '');
+-    var editId = params.get('id') || 'WI-001';
+-    var editHref = 'sua-workitem.html?id=' + encodeURIComponent(editId) + (params.get('type') === 'category' ? '&type=category' : '');
+-    function route(event) {
+-      if (event) {
+-        event.preventDefault();
+-        event.stopPropagation();
+-      }
+-      window.parent.postMessage({
+-        type: 'aam-workitem-panel-navigate',
+-        href: editHref
+-      }, '*');
+-    }
+-    document.addEventListener('click', function(event) {
+-      var trigger = event.target.closest('[href*="sua-workitem.html"], [onclick*="sua-workitem.html"]');
+-      if (!trigger) return;
+-      route(event);
+-    }, true);
+-    function bind() {
+-      document.querySelectorAll('[href*="sua-workitem.html"], [onclick*="sua-workitem.html"]').forEach(function(action) {
+-        if (action.dataset.embeddedEditBound === 'true') return;
+-        action.dataset.embeddedEditBound = 'true';
+-        action.addEventListener('click', route, true);
+-      });
+-    }
+-    bind();
+-    setTimeout(bind, 0);
+-    setTimeout(bind, 100);
+-  }
+-
+-  function openInitialVersionFromQuery() {
+-    var params = new URLSearchParams(window.location.search || '');
+-    var version = params.get('version');
+-    if (version && versionSnapshots[version]) {
+-      setTimeout(function() {
+-        openVersionSnapshot(version);
+-      }, 0);
+-    }
+-  }
+-
+-  initCategoryDetailMode();
+-  updateResolvedView();
+-  routeEmbeddedEditAction();
+-  openInitialVersionFromQuery();
+-</script>
+-</body>
+-</html>
++<!DOCTYPE html>
++<html lang="vi">
++<head>
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1.0">
++  <title>Chi tiết Đầu việc — Cẩm nang Phân quyền</title>
++
++  <link rel="preconnect" href="https://fonts.googleapis.com">
++  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
++  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
++  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
++
++  <link rel="stylesheet" href="../../design-system/core/styles/tokens.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/layout.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/components.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/utilities.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/page-patterns.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/sd-tokens.css">
++  <script>
++    if (new URLSearchParams(window.location.search || '').get('embedded') === '1') {
++      document.documentElement.classList.add('embedded-mode');
++    }
++  </script>
++
++  <style>
++    html.embedded-mode body { background:var(--surface-primary); }
++    html.embedded-mode .sidebar { display:none !important; }
++    html.embedded-mode .app-shell { display:block; min-height:100vh; }
++    html.embedded-mode .main-area { margin-left:0 !important; width:100% !important; min-height:100vh; }
++    html.embedded-mode .content-zone { padding:12px !important; overflow:auto !important; scrollbar-gutter:stable both-edges; }
++    html.embedded-mode .content-zone > sd-section,
++    html.embedded-mode .content-zone > .snapshot-backdrop { min-width:760px; width:100%; box-sizing:border-box; }
++
++    .role-chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
++    .role-chip.proposer { background:var(--color-info-100); color:var(--color-info-700); }
++    .role-chip.reviewer { background:var(--color-warning-100); color:var(--color-warning-700); }
++    .role-chip.approver { background:var(--color-success-100); color:var(--color-success-700); }
++    .mono-code { font-family:'JetBrains Mono',monospace; font-size:12px; padding:2px 6px; border-radius:4px; background:var(--surface-secondary); border:1px solid var(--border-secondary); }
++    .note-banner { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border-radius:8px; border:1px solid var(--color-info-200); background:var(--color-info-50); color:var(--color-info-700); font-size:12px; line-height:1.45; margin-bottom:12px; }
++    .info-stack { max-width:none; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:28px; border-top:1px solid var(--border-secondary); }
++    .info-row { display:grid; grid-template-columns:150px minmax(0,1fr); gap:12px; padding:10px 0; border-bottom:1px solid var(--border-secondary); font-size:13px; min-width:0; }
++    .info-row.full-span { grid-column:1 / -1; }
++    .info-row.description-row { grid-template-columns:150px minmax(0,760px); gap:12px; max-width:960px; }
++    .info-row.description-row .info-value { max-width:760px; }
++    .info-label { color:var(--text-secondary); text-transform:none !important; letter-spacing:0; }
++    .info-value { color:var(--text-primary); font-weight:500; line-height:1.5; overflow-wrap:anywhere; }
++    .version-row { display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-bottom:1px solid var(--border-secondary); }
++    .version-row.clickable { cursor:pointer; border-radius:6px; padding-left:8px; padding-right:8px; }
++    .version-row.clickable:hover { background:var(--surface-secondary); }
++    .version-row:last-child { border-bottom:none; }
++    .version-icon { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:var(--surface-secondary); color:var(--text-secondary); }
++    .version-icon.current { background:var(--color-primary-600); color:var(--text-inverse); }
++    .version-title { font-size:13px; font-weight:600; color:var(--text-primary); }
++    .version-meta { font-size:11px; color:var(--text-secondary); margin-top:3px; }
++    .version-change { font-size:12px; color:var(--text-tertiary); margin-top:4px; line-height:1.55; }
++    .version-change strong { color:var(--text-secondary); font-weight:600; }
++    .dept-resolve-row { display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:12px; padding:10px 12px; border:1px solid var(--border-secondary); border-radius:8px; background:var(--surface-secondary); }
++    .resolve-filter-title { font-size:12px; font-weight:700; color:var(--text-primary); margin-bottom:8px; }
++    .resolve-filter-grid { display:grid; grid-template-columns:repeat(2,minmax(220px,1fr)); gap:12px; }
++    .condition-filter-note { margin:0 0 10px; color:var(--text-secondary); font-size:12px; font-style:italic; line-height:1.45; }
++    .condition-filter-card { border:1px solid var(--border-secondary); border-radius:8px; padding:10px 12px; background:var(--surface-primary); }
++    .condition-filter-card + .condition-filter-card { margin-top:10px; }
++    .condition-filter-card-title { margin-bottom:8px; color:var(--text-primary); font-size:12px; font-weight:700; }
++    .resolve-stack { display:flex; flex-direction:column; gap:4px; min-width:0; line-height:1.35; }
++    .resolve-stack div { min-height:18px; }
++    .resolve-tag { display:none; }
++    .position-config-cell { display:grid; gap:8px; min-width:0; }
++    .position-config-block { display:grid; gap:3px; }
++    .position-config-label { color:var(--text-secondary); font-size:11px; font-weight:600; }
++    .resolve-pair-stack { display:grid; gap:8px; min-width:0; }
++    .resolve-pair { display:grid; grid-template-columns:minmax(130px,1fr) minmax(110px,0.8fr); gap:10px; align-items:start; padding-bottom:8px; border-bottom:1px dashed var(--border-secondary); }
++    .resolve-pair:last-child { border-bottom:0; padding-bottom:0; }
++    .resolve-pair-position { color:var(--text-primary); font-weight:500; line-height:1.35; min-width:0; }
++    .resolve-pair-holder { color:var(--text-primary); line-height:1.35; min-width:0; }
++    .resolve-pair-holder.missing { color:var(--text-tertiary); }
++    .resolve-line-stack { display:grid; gap:6px; min-width:0; }
++    .resolve-line { color:var(--text-primary); line-height:1.35; white-space:normal; }
++    .resolve-line-position { font-weight:700; }
++    .resolve-line-holder { font-weight:400; margin-left:10px; }
++    .resolve-line.missing { color:var(--text-tertiary); }
++    .runtime-table-note { color:var(--color-info-700); display:block; font-size:11px; font-weight:600; line-height:1.35; margin:3px 0 0 10px; }
++    .version-action { margin-left:auto; align-self:center; }
++    .snapshot-backdrop { position:fixed; inset:0; background:rgba(15,23,42,.35); display:none; align-items:center; justify-content:center; padding:24px; z-index:1000; }
++    .snapshot-backdrop.open { display:flex; }
++    .snapshot-dialog { width:min(1120px,100%); max-height:90vh; background:var(--surface-primary); border-radius:8px; border:1px solid var(--border-secondary); box-shadow:0 18px 44px rgba(15,23,42,.22); overflow:hidden; display:flex; flex-direction:column; }
++    .snapshot-header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 16px; border-bottom:1px solid var(--border-secondary); }
++    .snapshot-title { font-size:15px; font-weight:600; color:var(--text-primary); }
++    .snapshot-body { padding:16px; overflow:auto; }
++    .snapshot-section { border:1px solid var(--border-secondary); border-radius:8px; background:var(--surface-primary); margin-bottom:12px; overflow:hidden; }
++    .snapshot-section-title { display:flex; align-items:center; gap:8px; padding:10px 12px; border-bottom:1px solid var(--border-secondary); font-size:13px; font-weight:600; color:var(--text-primary); }
++    .snapshot-section-body { padding:12px; }
++    .change-action { display:inline-flex; align-items:center; gap:6px; font-weight:600; }
++    .change-dot { width:8px; height:8px; border-radius:50%; display:inline-block; background:var(--color-warning-500); }
++    .change-dot.create { background:var(--color-success-500); }
++    .diff-stack { display:grid; gap:5px; }
++    .diff-field { display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; }
++    .diff-key { border:1px solid var(--color-primary-200); background:var(--color-primary-50); color:var(--color-primary-700); border-radius:4px; padding:1px 5px; font-family:monospace; }
++    .diff-old { border:1px solid var(--color-error-100); background:var(--color-error-50); color:var(--color-error-600); border-radius:4px; padding:1px 5px; text-decoration:line-through; }
++    .diff-new { border:1px solid var(--color-success-100); background:var(--color-success-50); color:var(--color-success-700); border-radius:4px; padding:1px 5px; }
++    @media (max-width: 640px) {
++      .info-stack { grid-template-columns:1fr; }
++      .info-row { grid-template-columns:1fr; gap:4px; }
++      .info-row.description-row { grid-template-columns:1fr; }
++      .resolve-filter-grid { grid-template-columns:1fr; }
++    }
++  </style>
++</head>
++<body>
++<div class="app-shell">
++  <aside class="sidebar" id="sidebar"></aside>
++  <div class="main-area">
++
++    <div data-pattern="page-header" data-variant="read"
++         data-title="Phê duyệt mua sắm TSCĐ"
++         data-record-id="#WI-001"
++         data-badge-status="active"
++         data-badge-title="Đang hiệu lực"
++         data-back-href="danh-sach-workitem.html"
++         data-primary-action="Chỉnh sửa"
++         data-primary-icon="edit"
++         data-primary-href="sua-workitem.html?id=WI-001"
++         data-secondary-actions='[{"title":"Clone","icon":"content_copy"}]'></div>
++
++    <div class="content-zone">
++      <sd-section title="Thông tin chung" icon="info" collapsible>
++        <div class="info-stack">
++          <div class="info-row">
++            <span class="info-label">Mã đầu việc</span>
++            <span class="info-value"><span class="mono-code">WI-001</span></span>
++          </div>
++          <div class="info-row">
++            <span class="info-label">Trạng thái</span>
++            <span class="info-value"><sd-badge color="success" icon="play_circle" title="Đang hiệu lực"></sd-badge></span>
++          </div>
++          <div class="info-row">
++            <span class="info-label">Cẩm nang</span>
++            <span class="info-value">MAG</span>
++          </div>
++          <div class="info-row">
++            <span class="info-label">Đầu việc cha</span>
++            <span class="info-value">Mua sắm tài sản</span>
++          </div>
++          <div class="info-row">
++            <span class="info-label">Client</span>
++            <span class="info-value">Tất cả Client</span>
++          </div>
++          <div class="info-row">
++            <span class="info-label">Hiệu lực</span>
++            <span class="info-value">01/01/2026 - </span>
++          </div>
++          <div class="info-row">
++            <span class="info-label">Tự ủy quyền</span>
++            <span class="info-value">Có</span>
++          </div>
++          <div class="info-row full-span description-row">
++            <span class="info-label">Mô tả</span>
++            <span class="info-value">Quy trình phê duyệt mua sắm tài sản cố định có giá trị từ 10 tỷ đồng trở lên, áp dụng cho các phòng ban thuộc Cẩm nang MAG.</span>
++          </div>
++        </div>
++      </sd-section>
++
++      <sd-section title="Người thực hiện" icon="groups" collapsible>
++        <div class="dept-resolve-row">
++          <div class="resolve-filter-block">
++            <div class="resolve-filter-title">Bộ điều kiện áp dụng</div>
++            <div class="condition-filter-card">
++              <div class="resolve-filter-grid">
++                <!-- Ô chọn điều kiện để xem luồng đã giải: sd-select (2026-10-14), nghe sd-change ở cuối trang. -->
++                <sd-select id="budget-condition-select" label="Giá trị ngân sách" hideInlineError
++                  items='[{"id":"condition1","name":"3 tỷ &lt; Giá trị ngân sách &lt; 5 tỷ"},{"id":"condition-mid","name":"5 tỷ ≤ Giá trị ngân sách &lt; 7 tỷ"},{"id":"condition2","name":"Giá trị ngân sách &gt; 7 tỷ"}]'></sd-select>
++                <sd-select id="contract-condition-select" label="Giá trị hợp đồng" hideInlineError
++                  items='[{"id":"lt5","name":"Dưới 5 tỷ"},{"id":"gte5","name":"Từ 5 tỷ trở lên"}]'></sd-select>
++                <sd-select id="contract-type-select" label="Loại hợp đồng" hideInlineError
++                  items='[{"id":"purchase","name":"Hợp đồng mua sắm"},{"id":"service","name":"Hợp đồng dịch vụ"}]'></sd-select>
++              </div>
++            </div>
++          </div>
++          <div class="resolve-filter-block">
++            <div class="resolve-filter-title">Bộ phận đề xuất</div>
++            <div class="resolve-filter-grid">
++              <sd-select id="division-resolve-select" label="Khối" hideInlineError
++                items='[{"id":"mag","name":"MAG"},{"id":"vh","name":"Khối Vận hành"},{"id":"tckt","name":"Khối TC-KT"}]'></sd-select>
++              <sd-select id="dept-resolve-select" label="Phòng ban" hideInlineError
++                items='[{"id":"ms","name":"P.Mua sắm"},{"id":"vh","name":"P.Vận hành"},{"id":"tc","name":"P.Tài chính"}]'></sd-select>
++            </div>
++          </div>
++        </div>
++        <div style="margin-bottom:14px;">
++          <!-- Bảng luồng đã giải: sd-table (2026-10-14). Cột / độ rộng ở RESOLVED_TABLE_COLUMNS trong JS;
++               ô "Cấu hình ghế" và "Kết quả resolve" nhiều dòng nên là cột raw. Tổ hợp điều kiện không có
++               luồng thì ẩn bảng, hiện câu báo bên dưới (sd-table chỉ có câu rỗng chung của catalog). -->
++          <sd-table id="resolved-dept-table" hide-inline-filter></sd-table>
++          <div id="resolved-dept-empty" class="hidden text-center text-black400 py-16">Không có luồng phê duyệt phù hợp với tổ hợp điều kiện đang chọn.</div>
++        </div>
++      </sd-section>
++
++      <sd-section title="Tài liệu và liên kết" icon="attachment" collapsible>
++        <sd-table
++          hide-inline-filter
++          columns='[
++            {"field":"name","title":"Tên","type":"string"},
++            {"field":"type","title":"Loại","type":"values","option":{"items":[{"id":"file","name":"File"},{"id":"url","name":"URL"}]}},
++            {"field":"validity","title":"Hiệu lực","type":"string"},
++            {"field":"status","title":"Trạng thái","type":"values","option":{"items":[{"id":"valid","name":"Còn hiệu lực"}]}}
++          ]'
++          data='[
++            {"name":"Quy định mua sắm TSCĐ.pdf","type":"file","validity":"01/01/2026 - 31/12/2026","status":"valid"},
++            {"name":"https://intranet.onemount.com/policy/tscd","type":"url","validity":"-","status":"valid"}
++          ]'
++        ></sd-table>
++      </sd-section>
++
++      <sd-section title="Lịch sử phiên bản" icon="history" collapsible>
++        <div class="version-row clickable" role="button" tabindex="0" onclick="openVersionSnapshot('v3')" onkeydown="onVersionKey(event,'v3')">
++          <div class="version-icon current"><span class="material-icons-outlined mi-md">edit</span></div>
++          <div>
++            <div class="version-title">v3 — Phiên bản hiện tại</div>
++            <div class="version-meta">15/01/2026 09:45 — Nguyễn Quản Trị</div>
++          </div>
++          <sd-button class="version-action" type="light" color="primary" size="sm" prefixIcon="visibility" title="Xem" onclick="event.stopPropagation(); openVersionSnapshot('v3')"></sd-button>
++        </div>
++        <div class="version-row clickable" role="button" tabindex="0" onclick="openVersionSnapshot('v2')" onkeydown="onVersionKey(event,'v2')">
++          <div class="version-icon"><span class="material-icons-outlined mi-md">history</span></div>
++          <div>
++            <div class="version-title">v2</div>
++            <div class="version-meta">10/01/2026 14:30 - 15/01/2026 09:44</div>
++          </div>
++          <sd-button class="version-action" type="light" color="primary" size="sm" prefixIcon="visibility" title="Xem" onclick="event.stopPropagation(); openVersionSnapshot('v2')"></sd-button>
++        </div>
++        <div class="version-row clickable" role="button" tabindex="0" onclick="openVersionSnapshot('v1')" onkeydown="onVersionKey(event,'v1')">
++          <div class="version-icon"><span class="material-icons-outlined mi-md">add</span></div>
++          <div>
++            <div class="version-title">v1</div>
++            <div class="version-meta">01/01/2026 10:00 - 10/01/2026 14:29</div>
++          </div>
++          <sd-button class="version-action" type="light" color="primary" size="sm" prefixIcon="visibility" title="Xem" onclick="event.stopPropagation(); openVersionSnapshot('v1')"></sd-button>
++        </div>
++      </sd-section>
++
++    </div>
++  </div>
++</div>
++
++<div class="snapshot-backdrop" id="versionSnapshot" aria-hidden="true">
++  <div class="snapshot-dialog" role="dialog" aria-modal="true" aria-labelledby="snapshotTitle">
++    <div class="snapshot-header">
++      <div>
++        <div class="snapshot-title" id="snapshotTitle">Phiên bản</div>
++        <div class="version-meta" id="snapshotMeta"></div>
++      </div>
++      <sd-button type="link" color="secondary" size="sm" prefixIcon="close" title="" aria-label="Thoát" onclick="closeVersionSnapshot()"></sd-button>
++    </div>
++    <div class="snapshot-body">
++      <div id="snapshotBody"></div>
++    </div>
++  </div>
++</div>
++
++<script src="../../design-system/sd-components/sd-components.js"></script>
++<script src="../../design-system/patterns/page-header.js"></script>
++<script src="../../design-system/patterns/filter-bar.js"></script>
++
++<script src="../../design-system/core/js/pattern-loader.js"></script>
++<script src="../../design-system/core/js/shell.js"></script>
++<script src="../../design-system/patterns/sidebar.js"></script>
++<script src="../shared-nav.js"></script>
++<script>
++  var resolvedByTierDept = {
++    tier1: {
++      label: 'Bộ điều kiện 1',
++      configSource: 'Nguyên tắc duyệt',
++      departments: {
++        ms: {
++          label: 'P.Mua sắm',
++          rows: [
++            ['Đề xuất', 'Nguyên tắc duyệt', 'Cấp 2', '-', 'Trưởng phòng Mua sắm', 'Nguyễn Văn A', '-'],
++            ['Thẩm định', 'Nguyên tắc duyệt', 'Cấp 3', '-', 'Kế toán trưởng', 'Trần Hoa B', 'Trong phạm vi'],
++            ['Phê duyệt', 'Nguyên tắc duyệt', '<div class="resolve-stack"><div>Cấp 1</div><div>Cấp 2</div></div>', '<div class="resolve-stack"><div>GĐ Khối TC-KT</div><div>CFO MAG</div></div>', '<div class="resolve-pair-stack"><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Giám đốc Khối Vận hành</div><div class="resolve-pair-holder">Lê Văn C</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Trưởng phòng Mua sắm</div><div class="resolve-pair-holder">Nguyễn Văn A</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>GĐ Khối TC-KT</div><div class="resolve-pair-holder">Nguyễn Tài Chính</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>CFO MAG</div><div class="resolve-pair-holder missing">-</div></div></div>', '', '-']
++          ]
++        },
++        vh: {
++          label: 'P.Vận hành',
++          rows: [
++            ['Đề xuất', 'Nguyên tắc duyệt', 'Cấp 2', '-', 'Trưởng phòng Vận hành', 'Hoàng Minh D', '-'],
++            ['Thẩm định', 'Nguyên tắc duyệt', 'Cấp 3', '-', 'Giám đốc Vận hành', '-', 'Trong phạm vi'],
++            ['Phê duyệt', 'Nguyên tắc duyệt', 'Cấp 1', '-', 'Giám đốc Khối Vận hành', 'Lê Văn C', '-']
++          ]
++        },
++        tc: {
++          label: 'P.Tài chính',
++          rows: [
++            ['Đề xuất', 'Nguyên tắc duyệt', 'Cấp 2', '-', 'Trưởng phòng Tài chính', 'Bùi Ngọc F', '-'],
++            ['Thẩm định', 'Nguyên tắc duyệt', 'Cấp 3', '-', 'Kế toán trưởng', 'Trần Hoa B', 'Trong phạm vi'],
++            ['Phê duyệt', 'Nguyên tắc duyệt', 'Cấp 1', '-', 'GĐ Khối TC-KT', 'Nguyễn Tài Chính', '-']
++          ]
++        }
++      }
++    },
++    tier2: {
++      label: 'Bộ điều kiện 2',
++      configSource: 'Tự cấu hình',
++      departments: {
++        ms: {
++          label: 'P.Mua sắm',
++          rows: [
++            ['Thẩm định', 'Tự cấu hình', 'Cấp 2', '-', 'Trưởng phòng Mua sắm', 'Nguyễn Văn A', 'Trong phạm vi'],
++            ['Phê duyệt', 'Tự cấu hình', '<div class="resolve-stack"><div>Cấp 1</div><div>Cấp 2</div></div>', '<div class="resolve-stack"><div>GĐ Khối TC-KT</div><div>CFO MAG</div></div>', '<div class="resolve-pair-stack"><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Giám đốc Khối Vận hành</div><div class="resolve-pair-holder">Lê Văn C</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Trưởng phòng Mua sắm</div><div class="resolve-pair-holder">Nguyễn Văn A</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>GĐ Khối TC-KT</div><div class="resolve-pair-holder">Nguyễn Tài Chính</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>CFO MAG</div><div class="resolve-pair-holder missing">-</div></div></div>', '', '-', '2/4 người', 'Giám đốc Khối Vận hành → Trưởng phòng Mua sắm → GĐ Khối TC-KT → CFO MAG']
++          ]
++        },
++        vh: {
++          label: 'P.Vận hành',
++          rows: [
++            ['Thẩm định', 'Tự cấu hình', 'Cấp 2', '-', 'Trưởng phòng Vận hành', 'Hoàng Minh D', 'Trong phạm vi'],
++            ['Phê duyệt', 'Tự cấu hình', '<div class="resolve-stack"><div>Cấp 1</div><div>Cấp 2</div></div>', '<div class="resolve-stack"><div>GĐ Khối TC-KT</div><div>CFO MAG</div></div>', '<div class="resolve-pair-stack"><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Giám đốc Khối Vận hành</div><div class="resolve-pair-holder">Lê Văn C</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Trưởng phòng Vận hành</div><div class="resolve-pair-holder">Hoàng Minh D</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>GĐ Khối TC-KT</div><div class="resolve-pair-holder">Nguyễn Tài Chính</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>CFO MAG</div><div class="resolve-pair-holder missing">-</div></div></div>', '', '-', '2/4 người', 'Giám đốc Khối Vận hành → Trưởng phòng Vận hành → GĐ Khối TC-KT → CFO MAG']
++          ]
++        },
++        tc: {
++          label: 'P.Tài chính',
++          rows: [
++            ['Thẩm định', 'Tự cấu hình', 'Cấp 2', '-', 'Trưởng phòng Tài chính', 'Bùi Ngọc F', 'Trong phạm vi'],
++            ['Phê duyệt', 'Tự cấu hình', '<div class="resolve-stack"><div>Cấp 1</div><div>Cấp 2</div></div>', '<div class="resolve-stack"><div>GĐ Khối TC-KT</div><div>CFO MAG</div></div>', '<div class="resolve-pair-stack"><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>GĐ Khối TC-KT</div><div class="resolve-pair-holder">Nguyễn Tài Chính</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Theo cấp</span>Trưởng phòng Tài chính</div><div class="resolve-pair-holder">Bùi Ngọc F</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>GĐ Khối TC-KT</div><div class="resolve-pair-holder">Nguyễn Tài Chính</div></div><div class="resolve-pair"><div class="resolve-pair-position"><span class="resolve-tag">Cố định</span>CFO MAG</div><div class="resolve-pair-holder missing">-</div></div></div>', '', '-', '2/4 người', 'GĐ Khối TC-KT → Trưởng phòng Tài chính → CFO MAG']
++          ]
++        }
++      }
++    }
++  };
++
++  function getActivityRuntimeConfig(action) {
++    var normalized = String(action || '').toLowerCase();
++    if (normalized.indexOf('phê duyệt') >= 0 || normalized.indexOf('phe duyet') >= 0) {
++      return ['2/3 người', 'Giám đốc Khối Vận hành → GĐ Khối TC-KT → CFO MAG'];
++    }
++    return ['Tất cả', 'Không theo thứ tự'];
++  }
++
++  function getActivityRuntimeValue(row, index) {
++    if (row && row.length > index && row[index]) return row[index];
++    return getActivityRuntimeConfig(row ? row[0] : '')[index - 7];
++  }
++
++  function renderPositionConfigCell(levels, fixedPositions) {
++    return '<div class="position-config-cell">' +
++      '<div class="position-config-block"><span class="position-config-label">Cấp ghế</span><div>' + (levels || '-') + '</div></div>' +
++      '<div class="position-config-block"><span class="position-config-label">Ghế cố định</span><div>' + (fixedPositions || '-') + '</div></div>' +
++    '</div>';
++  }
++
++  function extractResolveStackItems(html) {
++    var value = String(html || '').trim();
++    if (value.indexOf('resolve-stack') < 0) return [];
++    var host = document.createElement('div');
++    host.innerHTML = value;
++    return Array.prototype.slice.call(host.querySelectorAll('.resolve-stack > div')).map(function(item) {
++      return item.innerHTML || '-';
++    });
++  }
++
++  function stripResolveLabel(html) {
++    var host = document.createElement('div');
++    host.innerHTML = String(html || '-');
++    Array.prototype.slice.call(host.querySelectorAll('.resolve-tag')).forEach(function(tag) {
++      tag.remove();
++    });
++    return (host.textContent || '-').trim() || '-';
++  }
++
++  function escapeSnapshotText(value) {
++    return String(value || '-')
++      .replace(/&/g, '&amp;')
++      .replace(/</g, '&lt;')
++      .replace(/>/g, '&gt;')
++      .replace(/"/g, '&quot;')
++      .replace(/'/g, '&#39;');
++  }
++
++  function renderResolveLine(position, holder, runtimeNotes) {
++    var cleanPosition = stripResolveLabel(position);
++    var cleanHolder = stripResolveLabel(holder);
++    var isMissing = !cleanHolder || cleanHolder === '-';
++    var note = runtimeNotes && runtimeNotes[cleanHolder] ? '<span class="runtime-table-note">' + escapeSnapshotText(runtimeNotes[cleanHolder]) + '</span>' : '';
++    return '<div class="resolve-line' + (isMissing ? ' missing' : '') + '">' +
++      '<span class="resolve-line-position">' + escapeSnapshotText(cleanPosition) + '</span>' +
++      '<span class="resolve-line-holder">' + escapeSnapshotText(isMissing ? '-' : cleanHolder) + note + '</span>' +
++    '</div>';
++  }
++
++  function renderResolveHolderCell(resolveValue, holderValue, runtimeNotes) {
++    if (String(resolveValue || '').indexOf('resolve-pair-stack') >= 0) {
++      var host = document.createElement('div');
++      host.innerHTML = resolveValue;
++      var pairLines = Array.prototype.slice.call(host.querySelectorAll('.resolve-pair')).map(function(pair) {
++        return renderResolveLine(
++          pair.querySelector('.resolve-pair-position') ? pair.querySelector('.resolve-pair-position').innerHTML : '-',
++          pair.querySelector('.resolve-pair-holder') ? pair.querySelector('.resolve-pair-holder').innerHTML : '-',
++          runtimeNotes
++        );
++      });
++      return '<div class="resolve-line-stack">' + pairLines.join('') + '</div>';
++    }
++    var positions = extractResolveStackItems(resolveValue);
++    var holders = extractResolveStackItems(holderValue);
++    if (positions.length || holders.length) {
++      var size = Math.max(positions.length, holders.length);
++      var html = '';
++      for (var i = 0; i < size; i += 1) {
++        html += renderResolveLine(positions[i] || '-', holders[i] || '-', runtimeNotes);
++      }
++      return '<div class="resolve-line-stack">' + html + '</div>';
++    }
++    return '<div class="resolve-line-stack">' + renderResolveLine(resolveValue || '-', holderValue || '-', runtimeNotes) + '</div>';
++  }
++
++  function buildResolvedTableRow(row, runtimeNotes) {
++    return [
++      row[0],
++      // Ô nhiều dòng trong sd-table: py-8 để chữ không chạm vạch dòng (ô sd-table chỉ đệm ngang).
++      '<div class="py-8">' + renderPositionConfigCell(row[2], row[3]) + '</div>',
++      '<div class="py-8">' + renderResolveHolderCell(row[4], row[5], runtimeNotes) + '</div>',
++      getActivityRuntimeValue(row, 7),
++      getActivityRuntimeValue(row, 8),
++      row[6]
++    ];
++  }
++
++  function getRuntimeNoteMap(deptValue) {
++    var proposerMap = {
++      ms: 'Nguyễn Văn A',
++      vh: 'Hoàng Minh D',
++      tc: 'Bùi Ngọc F'
++    };
++    var approverMap = {
++      ms: 'Lê Văn C',
++      vh: 'Hoàng Minh D',
++      tc: 'Nguyễn Tài Chính'
++    };
++    var proposer = proposerMap[deptValue] || proposerMap.ms;
++    var approver = approverMap[deptValue] || approverMap.ms;
++    var notes = {};
++    notes[proposer] = 'Người thẩm định: Trần Hoa B - hoa.tran@onemount.com';
++    notes[approver] = 'Người được ủy quyền: Nguyễn Kim Anh - anh.nguyen23@onemount.com';
++    return notes;
++  }
++
++  // Cột bảng "Người thực hiện" (bảng luồng đã giải + bảng cùng tên trong ảnh chụp phiên bản).
++  var RESOLVED_TABLE_COLUMNS = [
++    { field:'c0', title:'Hoạt động', type:'raw', width:'88px' },
++    { field:'c1', title:'Cấu hình ghế', type:'raw', width:'210px' },
++    { field:'c2', title:'Kết quả resolve / Người giữ', type:'raw', width:'300px' },
++    { field:'c3', title:'Số người cần thực hiện', type:'raw', width:'130px' },
++    { field:'c4', title:'Thứ tự thực hiện', type:'raw', width:'180px' },
++    { field:'c5', title:'Ghi chú', type:'raw', width:'88px' }
++  ];
++
++  // Mảng ô (HTML) → dòng sd-table { c0, c1, … }.
++  function cellsToTableRow(cells) {
++    var row = {};
++    cells.forEach(function(cell, index) { row['c' + index] = cell == null ? '' : String(cell); });
++    return row;
++  }
++
++  function updateResolvedView() {
++    var conditionValue = document.getElementById('budget-condition-select').value || 'condition1';
++    var contractValue = document.getElementById('contract-condition-select').value || '';
++    var contractTypeValue = document.getElementById('contract-type-select').value || '';
++    var deptValue = document.getElementById('dept-resolve-select').value || 'ms';
++    var isInvalidCombination = contractValue === 'gte5' && contractTypeValue === 'purchase';
++    var tierValue = conditionValue === 'condition2' ? 'tier2' : 'tier1';
++    var tier = resolvedByTierDept[tierValue] || resolvedByTierDept.tier1;
++    var data = tier.departments[deptValue] || tier.departments.ms;
++    var table = document.getElementById('resolved-dept-table');
++    var empty = document.getElementById('resolved-dept-empty');
++    if (!table) return;
++    if (isInvalidCombination) {
++      table.style.display = 'none';
++      if (empty) empty.classList.remove('hidden');
++      return;
++    }
++    table.style.display = '';
++    if (empty) empty.classList.add('hidden');
++    var runtimeNotes = getRuntimeNoteMap(deptValue);
++    if (!table.hasAttribute('columns')) table.setAttribute('columns', JSON.stringify(RESOLVED_TABLE_COLUMNS));
++    table.setAttribute('data', JSON.stringify(data.rows.map(function (row) {
++      return cellsToTableRow(buildResolvedTableRow(row, runtimeNotes));
++    })));
++  }
++
++  ['budget-condition-select', 'contract-condition-select', 'contract-type-select', 'division-resolve-select', 'dept-resolve-select'].forEach(function(id) {
++    var select = document.getElementById(id);
++    if (select) select.addEventListener('sd-change', updateResolvedView);
++  });
++
++  var versionSnapshots = {
++    v2: {
++      title: 'v2 — Chi tiết đầu việc tại thời điểm lưu',
++      meta: '10/01/2026 14:30 — Trần Phụ Trách',
++      sections: [
++        {
++          type: 'info',
++          title: 'Thông tin chung',
++          rows: [
++            ['Mã đầu việc', '<span class="mono-code">WI-001</span>'],
++            ['Trạng thái', '<sd-badge color="success" icon="play_circle" title="Đang hiệu lực"></sd-badge>'],
++            ['Cẩm nang', 'MAG'],
++            ['Đầu việc cha', 'Mua sắm tài sản'],
++            ['Client', 'Tất cả Client'],
++            ['Hiệu lực', '01/01/2026 - '],
++            ['Tự ủy quyền', 'Có'],
++            ['Mô tả', 'Quy trình phê duyệt mua sắm tài sản cố định có giá trị từ 10 tỷ đồng trở lên.']
++          ]
++        },
++        {
++          type: 'table',
++          title: 'Bộ điều kiện',
++          headers: ['Bộ điều kiện', 'Điều kiện', 'Nguyên tắc duyệt'],
++          rows: [
++            ['Bộ điều kiện 1', '10 tỷ ≤ Giá trị ngân sách &lt; 15 tỷ', 'Rule-01 — Hoạt động Mua sắm Tiêu chuẩn'],
++            ['Bộ điều kiện 2', 'Giá trị ngân sách ≥ 15 tỷ', 'Rule-02 — Hoạt động BGĐ Cao cấp']
++          ]
++        },
++        {
++          type: 'table',
++          title: 'Người thực hiện',
++          headers: ['Hoạt động', 'Nguồn cấu hình', 'Cấp ghế', 'Ghế cố định', 'Kết quả resolve', 'Người giữ ghế', 'Ghi chú'],
++          rows: [
++            ['Đề xuất', 'Nguyên tắc duyệt', 'Cấp 2', '-', 'Trưởng phòng Mua sắm', 'Nguyễn Văn A', '-'],
++            ['Thẩm định', 'Nguyên tắc duyệt', 'Cấp 3', '-', 'Kế toán trưởng', 'Trần Hoa B', 'Trong phạm vi'],
++            ['Phê duyệt', 'Nguyên tắc duyệt', 'Cấp 1', 'GĐ Khối TC-KT, CFO MAG', '<div class="resolve-stack"><div><span class="resolve-tag">Cấp 1</span>Giám đốc Khối Vận hành</div><div><span class="resolve-tag">Cố định</span>GĐ Khối TC-KT</div><div><span class="resolve-tag">Cố định</span>CFO MAG</div></div>', '<div class="resolve-stack"><div>Lê Văn C</div><div>Nguyễn Tài Chính</div><div>-</div></div>', '-']
++          ]
++        },
++        {
++          type: 'table',
++          title: 'Tài liệu và liên kết',
++          headers: ['Tên', 'Loại', 'Hiệu lực'],
++          rows: [
++            ['Quy định mua sắm TSCĐ.pdf', 'File', '01/01/2026 - 31/12/2026']
++          ]
++        },
++      ]
++    },
++    v1: {
++      title: 'v1 — Chi tiết đầu việc tại thời điểm lưu',
++      meta: '01/01/2026 10:00 — Nguyễn Quản Trị',
++      sections: [
++        {
++          type: 'info',
++          title: 'Thông tin chung',
++          rows: [
++            ['Mã đầu việc', '<span class="mono-code">WI-001</span>'],
++            ['Trạng thái', '<sd-badge color="success" icon="play_circle" title="Đang hiệu lực"></sd-badge>'],
++            ['Cẩm nang', 'MAG'],
++            ['Đầu việc cha', 'Mua sắm tài sản'],
++            ['Client', 'Tất cả Client'],
++            ['Hiệu lực', '01/01/2026 - '],
++            ['Tự ủy quyền', 'Có'],
++            ['Mô tả', 'Quy trình phê duyệt mua sắm tài sản cố định.']
++          ]
++        },
++        {
++          type: 'table',
++          title: 'Bộ điều kiện',
++          headers: ['Bộ điều kiện', 'Điều kiện', 'Nguyên tắc duyệt'],
++          rows: [
++            ['Bộ điều kiện 1', 'Giá trị ngân sách từ 10 tỷ trở lên', 'Rule-01 — Hoạt động Mua sắm Tiêu chuẩn']
++          ]
++        },
++        {
++          type: 'table',
++          title: 'Người thực hiện',
++          headers: ['Hoạt động', 'Nguồn cấu hình', 'Cấp ghế', 'Ghế cố định', 'Kết quả resolve', 'Người giữ ghế', 'Ghi chú'],
++          rows: [
++            ['Đề xuất', 'Nguyên tắc duyệt', 'Cấp 2', '-', 'Trưởng phòng Mua sắm', 'Nguyễn Văn A', '-'],
++            ['Thẩm định', 'Nguyên tắc duyệt', 'Cấp 3', '-', 'Kế toán trưởng', 'Trần Hoa B', 'Trong phạm vi'],
++            ['Phê duyệt', 'Nguyên tắc duyệt', 'Cấp 1', '-', 'Giám đốc Khối Vận hành', 'Lê Văn C', '-']
++          ]
++        },
++        {
++          type: 'table',
++          title: 'Tài liệu và liên kết',
++          headers: ['Tên', 'Loại', 'Hiệu lực'],
++          rows: [
++            ['-', '-', '-']
++          ]
++        },
++      ]
++    }
++  };
++
++  versionSnapshots.v3 = {
++    title: 'v3 — Chi tiết đầu việc hiện tại',
++    meta: '15/01/2026 09:45 — Nguyễn Quản Trị',
++    sections: JSON.parse(JSON.stringify(versionSnapshots.v2.sections))
++  };
++  versionSnapshots.v3.sections[0].rows[7][1] = 'Quy trình phê duyệt mua sắm tài sản cố định theo từng ngưỡng giá trị.';
++
++  var versionChanges = {
++    v3: [
++      {
++        time: '15/01/2026 09:45',
++        actor: 'Nguyễn Quản Trị',
++        action: 'Tạo mới version',
++        diffs: [
++          { field: 'Mô tả', from: 'Quy trình mua sắm TSCĐ', to: 'Quy trình phê duyệt mua sắm tài sản cố định theo từng ngưỡng giá trị' },
++          { field: 'Tài liệu', from: '-', to: 'Thêm Quy định mua sắm TSCĐ.pdf và URL intranet chính sách TSCĐ' },
++          { field: 'Luồng duyệt', from: 'GĐ Khối Tài chính', to: 'GĐ Khối Tài chính + Kế toán trưởng' }
++        ]
++      }
++    ],
++    v2: [
++      {
++        time: '10/01/2026 14:30',
++        actor: 'Trần Phụ Trách',
++        action: 'Tạo mới version',
++        diffs: [
++          { field: 'Bộ điều kiện', from: '1 bộ điều kiện áp dụng mọi giá trị', to: '2 bộ điều kiện theo ngưỡng ngân sách' },
++          { field: 'Điều kiện 2', from: '-', to: 'Giá trị ngân sách từ 15 tỷ trở lên' },
++          { field: 'Nguyên tắc duyệt', from: '1 người Phê duyệt', to: 'Yêu cầu thêm cấp phê duyệt cuối' }
++        ]
++      },
++      {
++        time: '12/01/2026 09:20',
++        actor: 'Trần Phụ Trách',
++        action: 'Cập nhật trong version',
++        diffs: [
++          { field: 'Tên hiển thị', from: 'Phê duyệt mua sắm TSCĐ', to: 'Phê duyệt mua sắm Tài sản Cố định MAG 2026' }
++        ]
++      }
++    ],
++    v1: [
++      {
++        time: '01/01/2026 10:00',
++        actor: 'Nguyễn Quản Trị',
++        action: 'Tạo mới đầu việc',
++        diffs: [
++          { field: 'Đầu việc', from: '-', to: 'WI-001 - Phê duyệt mua sắm TSCĐ' },
++          { field: 'Hiệu lực', from: '-', to: '01/01/2026 -' }
++        ]
++      }
++    ]
++  };
++
++  function renderChangeDiffs(change) {
++    if (!change.diffs || !change.diffs.length) return '-';
++    return '<div class="diff-stack">' + change.diffs.map(function(diff) {
++      return '<div class="diff-field">' +
++        '<span class="diff-key">' + escapeSnapshotText(diff.field) + '</span>' +
++        '<span class="diff-old">' + escapeSnapshotText(diff.from) + '</span>' +
++        '<span>→</span>' +
++        '<span class="diff-new">' + escapeSnapshotText(diff.to) + '</span>' +
++      '</div>';
++    }).join('') + '</div>';
++  }
++
++  function renderVersionChangeHistory(version) {
++    var changes = versionChanges[version] || [];
++    if (!changes.length) {
++      return '<div class="snapshot-section"><div class="snapshot-section-body" style="color:var(--text-secondary);">Chưa có lịch sử thay đổi trong phiên bản này.</div></div>';
++    }
++    // Bảng lịch sử thay đổi: sd-table (2026-10-14); ô Hành động / Chi tiết thay đổi có markup nên là cột raw.
++    var columns = [
++      { field:'c0', title:'Thời gian', type:'raw' },
++      { field:'c1', title:'Người thực hiện', type:'raw' },
++      { field:'c2', title:'Hành động', type:'raw' },
++      { field:'c3', title:'Chi tiết thay đổi', type:'raw' }
++    ];
++    var rows = changes.map(function(change) {
++      var isCreate = String(change.action || '').toLowerCase().indexOf('tạo') >= 0;
++      return cellsToTableRow([
++        escapeSnapshotText(change.time),
++        escapeSnapshotText(change.actor),
++        '<span class="change-action"><span class="change-dot' + (isCreate ? ' create' : '') + '"></span>' + escapeSnapshotText(change.action) + '</span>',
++        '<div class="py-8">' + renderChangeDiffs(change) + '</div>'
++      ]);
++    });
++    return '<div class="snapshot-section">' +
++      '<div class="snapshot-section-title"><span class="material-icons-outlined mi-sm">manage_history</span>Lịch sử thay đổi</div>' +
++      '<div class="snapshot-section-body">' + renderSnapshotTableHtml(columns, rows, 'change-log-table') + '</div>' +
++    '</div>';
++  }
++
++  // sd-table dựng sẵn trong chuỗi HTML (hộp ảnh chụp phiên bản vẽ bằng innerHTML).
++  function renderSnapshotTableHtml(columns, rows, id) {
++    return '<sd-table hide-inline-filter' + (id ? ' data-snapshot-table="' + id + '"' : '') +
++      ' columns="' + escapeSnapshotText(JSON.stringify(columns)) + '"' +
++      ' data="' + escapeSnapshotText(JSON.stringify(rows)) + '"></sd-table>';
++  }
++
++  // Tab của hộp ảnh chụp phiên bản là sd-tab-group (2026-10-14): 'info' = tab 0, 'history' = tab 1.
++  function setSnapshotTab(tabName) {
++    var group = document.querySelector('#versionSnapshot sd-tab-group');
++    if (group) group.setAttribute('selectedIndex', tabName === 'history' ? '1' : '0');
++  }
++
++  function renderSnapshotSection(section) {
++    if (section.type === 'info') {
++      return '<div class="snapshot-section">' +
++        '<div class="snapshot-section-title"><span class="material-icons-outlined mi-sm">info</span>' + section.title + '</div>' +
++        '<div class="snapshot-section-body"><div class="info-stack">' +
++          section.rows.map(function (row) {
++            var fullClass = row[0] === 'Mô tả' ? ' full-span description-row' : '';
++            return '<div class="info-row' + fullClass + '"><span class="info-label">' + row[0] + '</span><span class="info-value">' + row[1] + '</span></div>';
++          }).join('') +
++        '</div></div>' +
++      '</div>';
++    }
++    var headers = section.headers;
++    var rows = section.rows;
++    var isActorTable = (section.title || '').toLowerCase().indexOf('người thực hiện') >= 0;
++    var columns = headers.map(function (header, index) { return { field:'c' + index, title:header, type:'raw' }; });
++    if (isActorTable && headers.length === 7) {
++      columns = RESOLVED_TABLE_COLUMNS.map(function (col, index) {
++        var copy = JSON.parse(JSON.stringify(col));
++        if (index === 0) copy.title = headers[0];
++        if (index === 5) copy.title = headers[6];
++        return copy;
++      });
++      rows = rows.map(function(row) {
++        return buildResolvedTableRow(row);
++      });
++    }
++    return '<div class="snapshot-section">' +
++      '<div class="snapshot-section-title"><span class="material-icons-outlined mi-sm">table_rows</span>' + section.title + '</div>' +
++      '<div class="snapshot-section-body">' + renderSnapshotTableHtml(columns, rows.map(cellsToTableRow)) + '</div>' +
++    '</div>';
++  }
++
++  function openVersionSnapshot(version) {
++    var data = versionSnapshots[version];
++    if (!data) return;
++    document.getElementById('snapshotTitle').textContent = data.title;
++    document.getElementById('snapshotMeta').textContent = data.meta;
++    document.getElementById('snapshotBody').innerHTML =
++      '<sd-tab-group variant="line" selectedIndex="0">' +
++        '<sd-tab label="Thông tin đầu việc"><div class="pt-12">' + data.sections.map(renderSnapshotSection).join('') + '</div></sd-tab>' +
++        '<sd-tab label="Lịch sử thay đổi"><div class="pt-12">' + renderVersionChangeHistory(version) + '</div></sd-tab>' +
++      '</sd-tab-group>';
++    var modal = document.getElementById('versionSnapshot');
++    modal.classList.add('open');
++    modal.setAttribute('aria-hidden', 'false');
++  }
++
++  function closeVersionSnapshot() {
++    var modal = document.getElementById('versionSnapshot');
++    modal.classList.remove('open');
++    modal.setAttribute('aria-hidden', 'true');
++  }
++
++  function onVersionKey(event, version) {
++    if (event.key === 'Enter' || event.key === ' ') {
++      event.preventDefault();
++      openVersionSnapshot(version);
++    }
++  }
++
++  function escapeDetailText(value) {
++    return String(value || '-')
++      .replace(/&/g, '&amp;')
++      .replace(/</g, '&lt;')
++      .replace(/>/g, '&gt;')
++      .replace(/"/g, '&quot;')
++      .replace(/'/g, '&#39;');
++  }
++
++  function initCategoryDetailMode() {
++    var params = new URLSearchParams(window.location.search || '');
++    if (params.get('type') !== 'category') return;
++
++    var id = params.get('id') || 'WI-CVG';
++    var categoryNames = {
++      'WI-001': 'Phê duyệt mua sắm Tài sản Cố định MAG 2026',
++      'WI-001-HE': 'Phê duyệt mua sắm TSCĐ — Phiên bản H&E',
++      'WI-001-MN': 'Phê duyệt mua sắm TSCĐ H&E Miền Bắc',
++      'WI-CVG': 'Các vấn đề chung',
++      'WI-CVG-CL': 'Chiến lược và điều chỉnh chiến lược chung',
++      'WI-CVG-CL-113': 'Tổ chức xây dựng bộ kế hoạch năm',
++      'WI-DTU': 'Tư vấn và đầu tư',
++      'WI-DTU-11': 'Chủ trương đầu tư dự án',
++      'WI-PLT': 'Pháp lí tuân thủ',
++      'WI-TCKT': 'Tài chính kế toán',
++      'WI-TCKT-11': 'Ngân sách và chi phí'
++    };
++    var title = categoryNames[id] || 'Đầu mục công việc';
++    document.title = title + ' — Cẩm nang Phân quyền';
++
++    var header = document.querySelector('[data-pattern="page-header"]');
++    if (header) {
++      header.setAttribute('data-title', title);
++      header.setAttribute('data-record-id', '#' + id);
++      header.setAttribute('data-primary-href', 'sua-workitem.html?id=' + encodeURIComponent(id) + '&type=category');
++    }
++
++    var infoStack = document.querySelector('.info-stack');
++    if (infoStack) {
++      infoStack.innerHTML =
++        '<div class="info-row"><span class="info-label">Mã đầu việc</span><span class="info-value"><span class="mono-code">' + escapeDetailText(id) + '</span></span></div>' +
++        '<div class="info-row"><span class="info-label">Loại đầu việc</span><span class="info-value">Đầu mục</span></div>' +
++        '<div class="info-row"><span class="info-label">Cẩm nang</span><span class="info-value">MAG</span></div>' +
++        '<div class="info-row"><span class="info-label">Đầu việc cha</span><span class="info-value">-</span></div>' +
++        '<div class="info-row"><span class="info-label">Tự ủy quyền</span><span class="info-value">Không</span></div>' +
++        '<div class="info-row full-span description-row"><span class="info-label">Mô tả</span><span class="info-value">Đầu mục dùng để gom nhóm các công việc con trong cây Cẩm nang. Không cấu hình hiệu lực, Bộ điều kiện, người thực hiện hoặc tài liệu riêng.</span></div>';
++    }
++
++    document.querySelectorAll('sd-section').forEach(function(section) {
++      var sectionTitle = section.getAttribute('title') || '';
++      if (sectionTitle === 'Điều kiện liên quan' || sectionTitle === 'Người thực hiện' || sectionTitle === 'Tài liệu và liên kết') {
++        section.style.display = 'none';
++      }
++    });
++  }
++
++  document.addEventListener('keydown', function (event) {
++    if (event.key === 'Escape') closeVersionSnapshot();
++  });
++
++  function routeEmbeddedEditAction() {
++    if (!document.documentElement.classList.contains('embedded-mode')) return;
++    var params = new URLSearchParams(window.location.search || '');
++    var editId = params.get('id') || 'WI-001';
++    var editHref = 'sua-workitem.html?id=' + encodeURIComponent(editId) + (params.get('type') === 'category' ? '&type=category' : '');
++    function route(event) {
++      if (event) {
++        event.preventDefault();
++        event.stopPropagation();
++      }
++      window.parent.postMessage({
++        type: 'aam-workitem-panel-navigate',
++        href: editHref
++      }, '*');
++    }
++    document.addEventListener('click', function(event) {
++      var trigger = event.target.closest('[href*="sua-workitem.html"], [onclick*="sua-workitem.html"]');
++      if (!trigger) return;
++      route(event);
++    }, true);
++    function bind() {
++      document.querySelectorAll('[href*="sua-workitem.html"], [onclick*="sua-workitem.html"]').forEach(function(action) {
++        if (action.dataset.embeddedEditBound === 'true') return;
++        action.dataset.embeddedEditBound = 'true';
++        action.addEventListener('click', route, true);
++      });
++    }
++    bind();
++    setTimeout(bind, 0);
++    setTimeout(bind, 100);
++  }
++
++  function openInitialVersionFromQuery() {
++    var params = new URLSearchParams(window.location.search || '');
++    var version = params.get('version');
++    if (version && versionSnapshots[version]) {
++      setTimeout(function() {
++        openVersionSnapshot(version);
++      }, 0);
++    }
++  }
++
++  initCategoryDetailMode();
++  updateResolvedView();
++  routeEmbeddedEditAction();
++  openInitialVersionFromQuery();
++</script>
++</body>
++</html>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/danh-sach-position.html b/prototypes/cam-nang-phan-quyen/danh-sach-position.html
+--- a/prototypes/cam-nang-phan-quyen/danh-sach-position.html	2026-10-14 11:10:03.121339049 +0000
++++ b/prototypes/cam-nang-phan-quyen/danh-sach-position.html	2026-10-14 11:32:33.517458559 +0000
+@@ -288,7 +288,7 @@
+           <div class="d-flex flex-column gap-4">
+             <span class="T12R text-black400">Trạng thái</span>
+             <span>
+-              <sd-badge id="stat-status" type="round" color="success" title="Đang áp dụng"></sd-badge>
++              <sd-badge id="stat-status" color="success" icon="play_circle" title="Đang áp dụng"></sd-badge>
+             </span>
+           </div>
+         </div>
+@@ -312,7 +312,7 @@
+                 <sd-section-item label="Head of org" id="info-head-org"></sd-section-item>
+                 <sd-section-item label="Nguồn dữ liệu" id="info-source">SAP HCM</sd-section-item>
+                 <sd-section-item label="Trạng thái" id="info-status">
+-                  <sd-badge type="round" color="success" title="Đang áp dụng"></sd-badge>
++                  <sd-badge color="success" icon="play_circle" title="Đang áp dụng"></sd-badge>
+                 </sd-section-item>
+                 <sd-section-item label="Mô tả" id="info-desc">Quản lý và giám sát các hoạt động kế toán của công ty</sd-section-item>
+               </sd-section>
+@@ -552,10 +552,14 @@
+       document.getElementById('stat-orgunit').textContent = row.orgUnit;
+ 
+       const statusBadge = document.getElementById('stat-status');
+-      const statusColors = { active: 'success', inactive: 'secondary' };
++      // badge trạng thái kiểu icon — màu / icon theo STATUS_MAP (2026-10-14)
++      const statusKeys = { active: 'active', inactive: 'deactivated' };
+       const statusLabels = { active: 'Đang áp dụng', inactive: 'Ngừng áp dụng' };
+-      statusBadge.setAttribute('color', statusColors[row.status] || 'secondary');
+-      statusBadge.setAttribute('title', statusLabels[row.status] || '-');
++      const sa = window.sdStatusBadgeAttrs(statusKeys[row.status] || 'unknown', statusLabels[row.status] || '-');
++      statusBadge.setAttribute('color', sa.color);
++      statusBadge.setAttribute('icon', sa.icon);
++      if (sa.fontSet) statusBadge.setAttribute('fontSet', sa.fontSet); else statusBadge.removeAttribute('fontSet');
++      statusBadge.setAttribute('title', sa.title);
+ 
+       setSectionItem('info-code', row.positionCode);
+       setSectionItem('info-name', row.positionName);
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/danh-sach-workitem.html b/prototypes/cam-nang-phan-quyen/danh-sach-workitem.html
+--- a/prototypes/cam-nang-phan-quyen/danh-sach-workitem.html	2026-10-14 11:10:03.122014890 +0000
++++ b/prototypes/cam-nang-phan-quyen/danh-sach-workitem.html	2026-10-14 11:31:42.472810159 +0000
+@@ -765,13 +765,17 @@
+     }
+ 
+     // ── Dòng của sd-table ─────────────────────────────────────────────
++    // Trạng thái → khoá STATUS_MAP (badge kiểu icon, 2026-10-14 — PD duyệt: Sắp hiệu lực info, Hết hiệu lực secondary).
++    // `color` giữ để chỗ khác của trang dùng; màu / icon của badge lấy từ STATUS_MAP qua `badgeKey`.
+     var WI_STATUS_ITEMS = [
+-      { id:'draft', name:'Nháp', color:'secondary' },
+-      { id:'effective', name:'Đang hiệu lực', color:'success' },
+-      { id:'upcoming', name:'Sắp hiệu lực', color:'warning' },
+-      { id:'expired', name:'Hết hiệu lực', color:'error' },
+-      { id:'unpublished', name:'Ngưng phát hành', color:'secondary' }
++      { id:'draft', name:'Nháp', color:'secondary', badgeKey:'draft' },
++      { id:'effective', name:'Đang hiệu lực', color:'success', badgeKey:'active' },
++      { id:'upcoming', name:'Sắp hiệu lực', color:'info', badgeKey:'upcoming' },
++      { id:'expired', name:'Hết hiệu lực', color:'secondary', badgeKey:'expired' },
++      { id:'unpublished', name:'Ngưng phát hành', color:'secondary', badgeKey:'unpublished' }
+     ];
++    // useBadge kiểu icon như thư viện: { type:'icon', color, icon, title } (ô bảng thư viện không nhận fontSet)
++    function wiStatusBadge(key, title) { var a = window.sdStatusBadgeAttrs(key, title); return { type:'icon', color:a.color, icon:a.icon, title:a.title }; }
+     var WI_SELF_DELEGATION_ITEMS = [
+       { id:'yes', name:'Có', color:'success' },
+       { id:'no', name:'Không', color:'secondary' }
+@@ -825,7 +829,7 @@
+           { field:'client', title:'Client', type:'values', width:'96px',
+             option:{ items:[{ id:'Tất cả', name:'Tất cả' }, { id:'VMP HN', name:'VMP HN' }, { id:'VMP HCM', name:'VMP HCM' }] } },
+           { field:'status', title:'Trạng thái', type:'values', width:'150px', option:{ items:WI_STATUS_ITEMS },
+-            useBadge:function(value) { var it = findWorkItemItem(WI_STATUS_ITEMS, value); return it ? { color:it.color, title:it.name } : null; } },
++            useBadge:function(value) { var it = findWorkItemItem(WI_STATUS_ITEMS, value); return it ? wiStatusBadge(it.badgeKey, it.name) : null; } },
+           { field:'hieuLuc', title:'Hiệu lực', type:'string', width:'150px' },
+           { field:'selfDelegation', title:'Tự ủy quyền', type:'values', width:'110px', option:{ items:WI_SELF_DELEGATION_ITEMS },
+             useBadge:function(value) { var it = findWorkItemItem(WI_SELF_DELEGATION_ITEMS, value); return it ? { color:it.color, title:it.name } : null; } }
+@@ -1149,7 +1153,7 @@
+       document.getElementById('import-error-btn').toggleAttribute('disabled', false);
+     }
+     // Bảng kiểm tra dòng của bản xem trước nhập: sd-table (2026-10-14), trạng thái dòng là sd-badge.
+-    var IMPORT_ROW_STATUS = { VALID:'success', WARNING:'warning', BLOCKED:'error' };
++    var IMPORT_ROW_STATUS = { VALID:'checked', WARNING:'warning', BLOCKED:'blocked' };   // → khoá STATUS_MAP (badge kiểu icon)
+     function fillImportPreviewTable() {
+       var table = document.getElementById('import-preview-table');
+       if (!table) return;
+@@ -1159,7 +1163,7 @@
+           { field:'code', title:'Mã đầu việc', type:'string', width:'130px' },
+           { field:'name', title:'Tên đầu việc', type:'string' },
+           { field:'status', title:'Trạng thái', type:'string', width:'120px',
+-            useBadge:function(value) { return { color:IMPORT_ROW_STATUS[value] || 'secondary', title:value }; } },
++            useBadge:function(value) { return wiStatusBadge(IMPORT_ROW_STATUS[value] || 'unknown', value); } },
+           { field:'note', title:'Ghi chú', type:'string' }
+         ]
+       };
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/lich-su-sync.html b/prototypes/cam-nang-phan-quyen/lich-su-sync.html
+--- a/prototypes/cam-nang-phan-quyen/lich-su-sync.html	2026-10-14 11:10:03.121283965 +0000
++++ b/prototypes/cam-nang-phan-quyen/lich-su-sync.html	2026-10-14 11:32:33.518023291 +0000
+@@ -166,7 +166,7 @@
+           <div class="d-flex flex-column gap-4">
+             <span class="T12R text-black400">Kết quả</span>
+             <span>
+-              <sd-badge id="stat-status" type="round" color="success" title="Thành công"></sd-badge>
++              <sd-badge id="stat-status" color="success" icon="check_circle" title="Thành công"></sd-badge>
+             </span>
+           </div>
+         </div>
+@@ -221,10 +221,13 @@
+       document.getElementById('stat-duration').textContent = row.duration;
+ 
+       const statusBadge = document.getElementById('stat-status');
+-      const statusColors = { success: 'success', partial: 'warning', error: 'error' };
++      // badge trạng thái kiểu icon — khoá STATUS_MAP success / partial / error (2026-10-14)
+       const statusNames = { success: 'Thành công', partial: 'Một phần', error: 'Thất bại' };
+-      statusBadge.setAttribute('color', statusColors[row.status] || 'secondary');
+-      statusBadge.setAttribute('title', statusNames[row.status] || row.status);
++      const sa = window.sdStatusBadgeAttrs(statusNames[row.status] ? row.status : 'unknown', statusNames[row.status] || row.status);
++      statusBadge.setAttribute('color', sa.color);
++      statusBadge.setAttribute('icon', sa.icon);
++      if (sa.fontSet) statusBadge.setAttribute('fontSet', sa.fontSet); else statusBadge.removeAttribute('fontSet');
++      statusBadge.setAttribute('title', sa.title);
+ 
+       syncDrawer.open();
+     }
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/quan-ly-cam-nang.html b/prototypes/cam-nang-phan-quyen/quan-ly-cam-nang.html
+--- a/prototypes/cam-nang-phan-quyen/quan-ly-cam-nang.html	2026-10-14 11:10:03.121036116 +0000
++++ b/prototypes/cam-nang-phan-quyen/quan-ly-cam-nang.html	2026-10-14 11:32:05.043559485 +0000
+@@ -93,8 +93,9 @@
+     .tree-node-icon.handbook { color: var(--color-primary-600); }
+     .tree-node-icon.workitem { color: var(--color-success-600); }
+     .tree-node-icon.workitem-draft { color: var(--color-neutral-500); }
+-    .tree-node-icon.workitem-upcoming { color: var(--color-warning-600); }
+-    .tree-node-icon.workitem-expired { color: var(--color-error-600); }
++    /* 2026-10-14 — màu trạng thái theo STATUS_MAP (PD duyệt): Sắp hiệu lực info, Hết hiệu lực xám (trước cam / đỏ) */
++    .tree-node-icon.workitem-upcoming { color: var(--color-info-600); }
++    .tree-node-icon.workitem-expired { color: var(--color-neutral-500); }
+     .tree-node-label {
+       flex: 1;
+       font-size: 14px;
+@@ -306,7 +307,11 @@
+     }
+ 
+     function getWorkItemStatusColor(status) {
+-      return ({ draft: 'neutral', effective: 'success', upcoming: 'warning', expired: 'error' })[status] || 'neutral';
++      return ({ draft: 'neutral', effective: 'success', upcoming: 'info', expired: 'neutral' })[status] || 'neutral';
++    }
++    /* Trạng thái → khoá STATUS_MAP: badge trạng thái kiểu icon (2026-10-14, quy ước kit — trước là round) */
++    function getWorkItemStatusKey(status) {
++      return ({ draft: 'draft', effective: 'active', upcoming: 'upcoming', expired: 'expired' })[status] || 'unknown';
+     }
+ 
+     // Giữ HTML thuần (2026-10-14): hàng cây tự vẽ (.tree-node). sd-tree của kit không có nhãn đếm /
+@@ -425,7 +430,7 @@
+       `;
+     }
+ 
+-    /* Bảng WorkItem của một cẩm nang: trạng thái vẽ bằng sd-badge round cùng màu với badge ở
++    /* Bảng WorkItem của một cẩm nang: trạng thái vẽ bằng sd-badge kiểu icon (STATUS_MAP) cùng màu với badge ở
+        panel chi tiết (useBadge của catalog); Xem / Sửa là option.commands. */
+     function wireWorkitemTable(table) {
+       if (!table) return;
+@@ -437,8 +442,9 @@
+           { field: 'status', title: 'Trạng thái', type: 'values',
+             option: { items: [{ id: 'draft', name: 'Nháp' }, { id: 'effective', name: 'Đang hiệu lực' }, { id: 'upcoming', name: 'Sắp hiệu lực' }, { id: 'expired', name: 'Hết hiệu lực' }] },
+             useBadge: function (value) {
+-              var c = getWorkItemStatusColor(value);
+-              return { type: 'round', color: c === 'neutral' ? 'secondary' : c, title: getWorkItemStatusLabel(value) };
++              /* kiểu icon như thư viện: { type:'icon', color, icon, title } — ô bảng thư viện không nhận fontSet */
++              var a = window.sdStatusBadgeAttrs(getWorkItemStatusKey(value), getWorkItemStatusLabel(value));
++              return { type: 'icon', color: a.color, icon: a.icon, title: a.title };
+             } }
+         ],
+         commands: [
+@@ -468,7 +474,7 @@
+         </div>
+         <div class="content-body">
+           <div class="flex gap-4 mb-24">
+-            <sd-badge type="round" color="${statusColor === 'neutral' ? 'secondary' : statusColor}" title="${statusLabel}"></sd-badge>
++            ${window.sdStatusBadge(getWorkItemStatusKey(workitem.status), statusLabel)}
+             <span class="fs-12 text-black400">${workitem.tierCount} Approval Tier</span>
+           </div>
+ 
+@@ -477,7 +483,7 @@
+             <sd-section-item label="Tên đầu việc">${workitem.name}</sd-section-item>
+             <sd-section-item label="Cẩm nang">${handbook.name} (${handbook.code})</sd-section-item>
+             <sd-section-item label="Trạng thái">
+-              <sd-badge type="round" color="${statusColor === 'neutral' ? 'secondary' : statusColor}" title="${statusLabel}"></sd-badge>
++              ${window.sdStatusBadge(getWorkItemStatusKey(workitem.status), statusLabel)}
+             </sd-section-item>
+           </sd-section>
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/uy-quyen-noi-bo.html b/prototypes/cam-nang-phan-quyen/uy-quyen-noi-bo.html
+--- a/prototypes/cam-nang-phan-quyen/uy-quyen-noi-bo.html	2026-10-14 11:10:03.119567532 +0000
++++ b/prototypes/cam-nang-phan-quyen/uy-quyen-noi-bo.html	2026-10-14 11:32:33.519605162 +0000
+@@ -733,7 +733,7 @@
+                       {"field":"delegateCell","title":"Người được ủy quyền","type":"raw","width":"168px"},
+                       {"field":"role","title":"Hoạt động","type":"values","width":"100px","option":{"items":[{"id":"Đề xuất","name":"Đề xuất"},{"id":"Thẩm định","name":"Thẩm định"},{"id":"Phê duyệt","name":"Phê duyệt"}]}},
+                       {"field":"period","title":"Hiệu lực","type":"string","width":"130px"},
+-                      {"field":"statusView","title":"Trạng thái","type":"status","width":"148px","option":{"items":[{"id":"active","name":"Đang hiệu lực"},{"id":"pending","name":"Sắp hiệu lực"},{"id":"waiting","name":"Chờ xác nhận"},{"id":"deactivated","name":"Hết hiệu lực"},{"id":"cancelled","name":"Đã hủy"}]}},
++                      {"field":"statusView","title":"Trạng thái","type":"status","width":"148px","option":{"items":[{"id":"active","name":"Đang hiệu lực"},{"id":"upcoming","name":"Sắp hiệu lực"},{"id":"waiting","name":"Chờ xác nhận"},{"id":"expired","name":"Hết hiệu lực"},{"id":"cancelled","name":"Đã hủy"}]}},
+                       {"field":"actionsCell","title":"Thao tác","type":"raw","width":"108px","noFilter":true}
+                     ]'></sd-table>
+                 </div>
+@@ -1038,7 +1038,7 @@
+         footer: 'active'
+       },
+       upcoming: {
+-        badge: sdStatusBadge('pending', 'Sắp hiệu lực'),
++        badge: sdStatusBadge('upcoming', 'Sắp hiệu lực'),
+         title: 'Lê Minh Quân → Trần Quốc Nam',
+         meta: 'Admin tạo theo Văn bản/Quyết định · Tạo lúc 01/06/2026 14:30',
+         period: '01/07/2026 - 31/07/2026',
+@@ -1101,7 +1101,7 @@
+         footer: 'acceptance'
+       },
+       expired: {
+-        badge: sdStatusBadge('deactivated', 'Hết hiệu lực'),
++        badge: sdStatusBadge('expired', 'Hết hiệu lực'),
+         title: 'Phạm Minh Châu → Đỗ Hoàng Linh',
+         meta: 'Tự ủy quyền · Tạo lúc 01/05/2026 08:45',
+         period: '01/05/2026 - 15/05/2026',
+@@ -1165,8 +1165,8 @@
+ 
+     /* Trạng thái nghiệp vụ → khoá STATUS_MAP của cột `status` (badge màu + icon theo catalog). */
+     var DELEGATION_STATUS_VIEW = {
+-      active: 'active', upcoming: 'pending', waiting: 'waiting',
+-      expired: 'deactivated', revoked: 'cancelled', denied: 'denied'
++      active: 'active', upcoming: 'upcoming', waiting: 'waiting',          // 2026-10-14: upcoming / expired có khoá riêng trong STATUS_MAP
++      expired: 'expired', revoked: 'cancelled', denied: 'denied'
+     };
+ 
+     function delegationPersonCell(name, email) {

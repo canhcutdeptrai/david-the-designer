@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-chip — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-chip"
+         data-subtitle="Gõ giá trị nhấn Enter/dấu phẩy để tạo chip, bấm X để xoá"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <!-- Normal -->
+        <!-- ── Theo Core UI Catalog #c-chip — rà soát 2026-10-12 ── -->
+        <sd-section title="Đã chọn" subtitle="chip có nút xoá; gõ rồi Enter hoặc dấu phẩy để thêm — 2 chip một hàng, ô nhập xuống hàng dưới">
+          <div style="width:420px"><sd-chip label="Email nhận thông báo" value="nguyen.van.a@fins.vn,tran.thi.b@fins.vn"></sd-chip></div>
+        </sd-section>
+
+        <sd-section title="Đang nhập thêm" subtitle="focus, chuỗi đang gõ trong ô — nhãn nổi màu primary">
+          <div style="width:420px"><sd-chip class="chip-cat-focus" label="Số hợp đồng tín dụng" max="5" value="HĐTD-2026/0158,HĐTD-2026/0172"></sd-chip></div>
+        </sd-section>
+
+        <sd-section title="Lỗi bắt buộc + touched · vượt max" subtitle="core.form.chip.*">
+          <div class="d-flex flex-column gap-16">
+            <div style="width:420px"><sd-chip class="chip-cat-touch" label="Email nhận thông báo" required></sd-chip></div>
+            <div style="width:420px"><sd-chip class="chip-cat-touch" label="Mã ngân hàng đối tác" max="3" value="VCB,BIDV,TCB,MB"></sd-chip></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Disabled" subtitle="chip không còn nút xoá">
+          <div style="width:420px"><sd-chip label="Mã ngân hàng đối tác" disabled value="VCB,BIDV"></sd-chip></div>
+        </sd-section>
+
+        <sd-section title="Chế độ xem" subtitle="viewed: sd-view in mảng giá trị (nối bằng dấu phẩy)">
+          <div class="d-flex"><sd-chip label="Số hợp đồng tín dụng" viewed value="HĐTD-2026/0158,HĐTD-2026/0172"></sd-chip></div>
+        </sd-section>
+
+        <sd-section title="Normal">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-chip label="Ngôn ngữ lập trình" placeholder="Nhập rồi Enter..." value="JavaScript,TypeScript"></sd-chip>
+            <sd-chip label="Framework" value="Angular,React,Vue"></sd-chip>
+            <sd-chip label="Không có giá trị" placeholder="Nhập tag..."></sd-chip>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            Gõ giá trị rồi nhấn <b>Enter</b> hoặc <b>dấu phẩy</b> để tạo chip; bấm icon <b>x</b> trên
+            chip để xoá. Giá trị trùng (so khớp chính xác) bị bỏ qua, không tạo chip thứ hai.
+          </p>
+        </sd-section>
+
+        <!-- Required -->
+        <sd-section title="Required">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-chip label="Email nhận thông báo" required></sd-chip>
+            <sd-chip label="Đã có giá trị" value="a@company.com" required></sd-chip>
+            <sd-chip label="Ẩn lỗi inline" required hideInlineError></sd-chip>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            Bỏ trống rồi bấm ra ngoài (blur) để thấy lỗi "Vui lòng nhập thông tin".
+            Ô thứ ba dùng <code>hideInlineError</code> — lỗi hiện qua icon đỏ + tooltip.
+          </p>
+        </sd-section>
+
+        <!-- Min / Max -->
+        <sd-section title="Giới hạn số lượng — min / max">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-chip label="Tối thiểu 2" min="2" value="a"></sd-chip>
+            <sd-chip label="Tối đa 3" max="3" value="a,b,c"></sd-chip>
+            <sd-chip label="Trong khoảng 1–3" min="1" max="3" value="a,b"></sd-chip>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            <code>min</code>/<code>max</code> <b>không chặn</b> thao tác thêm/xoá — vẫn xoá được xuống dưới
+            <code>min</code> hoặc thêm quá <code>max</code>, chỉ báo lỗi khi blur nếu số lượng ngoài khoảng
+            (đúng thư viện thật: đây là validator hiển thị, không phải rào chặn tương tác).
+          </p>
+        </sd-section>
+
+        <!-- Removable / addable -->
+        <sd-section title="Removable · Addable">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-chip label="Không xoá được" value="Cố định 1,Cố định 2" removable="false"></sd-chip>
+            <sd-chip label="Không thêm được" value="Chỉ xem" addable="false"></sd-chip>
+            <sd-chip label="Bình thường" value="Có thể xoá,Có thể thêm"></sd-chip>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            <code>addable="false"</code>: gõ rồi Enter vẫn xoá trắng ô nhập nhưng không tạo chip mới
+            (đúng hành vi thật, không phải lỗi).
+          </p>
+        </sd-section>
+
+        <!-- Sizes & disabled & viewed -->
+        <sd-section title="Kích thước · Disabled · Viewed">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-chip label="Size sm" size="sm" value="a,b"></sd-chip>
+            <sd-chip label="Size md (mặc định)" value="a,b"></sd-chip>
+          </div>
+          <div class="grid grid-cols-3 gap-24 mt-24">
+            <sd-chip label="Disabled — trống" disabled></sd-chip>
+            <sd-chip label="Disabled — có giá trị" value="a,b" disabled></sd-chip>
+            <sd-chip label="Viewed" value="a,b,c" viewed></sd-chip>
+          </div>
+        </sd-section>
+
+        <!-- Sự kiện -->
+        <sd-section title="Sự kiện sd-change">
+          <sd-chip id="chip-events" label="Danh sách sản phẩm" placeholder="Nhập tên sản phẩm..."></sd-chip>
+          <p class="fs-12 text-black400 mt-16 mb-0">Gần nhất: <span id="chip-event-output" class="text-black500">chưa có</span></p>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list mb-0 pl-0">
+                  <li>Nhập danh sách giá trị tự do: thẻ tag, danh sách email, ngôn ngữ, từ khoá</li>
+                  <li>Người dùng gõ rồi nhấn Enter hoặc dấu phẩy để tạo item, bấm X để xoá item</li>
+                  <li>Cần giới hạn số lượng: hỏi BA xác định min/max rõ ràng</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list mb-0 pl-0">
+                  <li>Chọn từ danh sách cố định — dùng multi-select hoặc checkbox group</li>
+                  <li>Chỉ hiển thị nhãn trạng thái tĩnh — dùng Badge</li>
+                  <li>Nhập một giá trị text dài duy nhất — dùng Input/Textarea</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Form đăng ký API: field 'Ngôn ngữ lập trình' là danh sách chip, người dùng gõ tên ngôn ngữ rồi nhấn Enter để thêm, bấm X để xoá, tối thiểu 1 và tối đa 5 ngôn ngữ."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-chip label="Ngôn ngữ lập trình" placeholder="Nhập rồi Enter..."
+  value="JavaScript,TypeScript,Angular" min="1" max="5"&gt;&lt;/sd-chip&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>label</td><td>string</td><td>-</td><td>Floating label</td></tr>
+                  <tr><td>placeholder</td><td>string</td><td>= label</td><td>Placeholder của ô nhập khi trống</td></tr>
+                  <tr><td>value</td><td>string (phân tách bằng dấu phẩy)</td><td>-</td><td>Danh sách chip. Property <code>.value</code> trả về mảng string, two-way. Bí danh: <code>model</code></td></tr>
+                  <tr><td>size</td><td><code>sm</code>, <code>md</code></td><td>md</td><td>Chiều cao field <span class="fs-12 text-black400">(catalog chỉ có hai cỡ; <code>lg</code> / <code>xs</code> cũ vẫn nhận nhưng hiển thị như <code>md</code>)</span></td></tr>
+                  <tr><td>required</td><td>boolean</td><td>false</td><td>Hiện dấu * + báo lỗi "Vui lòng nhập thông tin" khi danh sách rỗng lúc blur</td></tr>
+                  <tr><td>min</td><td>number</td><td>-</td><td>Số chip tối thiểu — <b>chỉ báo lỗi</b> khi blur nếu ít hơn, không chặn xoá</td></tr>
+                  <tr><td>max</td><td>number</td><td>-</td><td>Số chip tối đa — <b>chỉ báo lỗi</b> khi blur nếu nhiều hơn, không chặn thêm</td></tr>
+                  <tr><td>removable</td><td>boolean</td><td>true</td><td>Hiện/ẩn nút xoá (x) trên từng chip — ô <code>disabled</code> luôn không có nút xoá</td></tr>
+                  <tr><td>addable</td><td>boolean</td><td>true</td><td>Cho phép gõ thêm chip mới; <code>false</code> vẫn xoá trắng ô nhập khi Enter nhưng không tạo chip</td></tr>
+                  <tr><td>disabled</td><td>boolean</td><td>false</td><td>Vô hiệu hoá toàn bộ (nhập + xoá)</td></tr>
+                  <tr><td>viewed</td><td>boolean</td><td>false</td><td>Chế độ xem — text tĩnh, các giá trị nối bằng "," (không khoảng trắng, như catalog). <code>viewed="false"</code> là không xem</td></tr>
+                  <tr><td>hideInlineError</td><td>boolean</td><td>false</td><td>Ẩn dòng lỗi chữ, thay bằng icon đỏ + tooltip</td></tr>
+                  <tr><td>autoId</td><td>string</td><td>-</td><td>Sinh <code>data-autoId="forms-chip-{autoId}"</code> cho E2E</td></tr>
+                  <tr><td>name</td><td>string</td><td>-</td><td>Tên field (tương thích form) — chỉ lưu, không có tác dụng hiển thị</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Events</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Event</th><th>Detail</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>sd-change</td><td>{ value: string[] }</td><td>Khi thêm hoặc xoá chip thật sự đổi danh sách</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Methods</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Method</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>focus()</td><td>Focus vào ô nhập</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Lệch có chủ ý so với @sdcorejs/angular</p>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li><code>removable</code> thư viện thật nhận boolean HOẶC callback <code>(item) =&gt; boolean</code> (xoá được từng item khác nhau); kit chỉ nhận boolean qua HTML attribute.</li>
+                <li>Không mirror <code>appearance</code>, <code>floatLabel</code>, <code>form</code>, <code>hyperlink</code>, <code>viewed="inline"</code> — chi tiết Angular Material/Reactive Forms hoặc content-projection không áp dụng cho web component thuần.</li>
+                <li>Label dùng floating <code>.sd-label</code> (nổi lên trong field khi có giá trị/focus) — đúng convention mặc định của mọi input khác trong kit, dù thư viện thật render <code>&lt;sd-label&gt;</code> tĩnh phía trên box khi không set <code>appearance</code>.</li>
+              </ul>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+<script>
+  /* Mẫu catalog #c-chip: ô lỗi ở trạng thái touched */
+  document.querySelectorAll('.chip-cat-touch').forEach(function (el) { el._touched = true; el._render(); });
+  /* Mẫu catalog "Đang nhập thêm": trạng thái focus + chữ đang gõ, vẽ tĩnh (không lấy focus thật của trang) */
+  document.querySelectorAll('.chip-cat-focus').forEach(function (el) {
+    el._isFocused = true; el._render();
+    var inp = el.querySelector('input'); if (inp) inp.value = 'HĐTD-2026/02';
+  });
+</script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      showPanel(0);
+    }
+    initPreviewTabs();
+  })();
+
+  // Demo sự kiện chip
+  (function () {
+    var chip = document.getElementById('chip-events');
+    var out = document.getElementById('chip-event-output');
+    if (!chip || !out) return;
+    chip.addEventListener('sd-change', function (e) {
+      out.textContent = 'sd-change → [' + (e.detail.value || []).join(', ') + ']';
+    });
+  })();
+</script>
+
+</body>
+</html>

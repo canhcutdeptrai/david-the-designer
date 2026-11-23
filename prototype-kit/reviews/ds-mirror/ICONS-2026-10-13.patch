@@ -1,0 +1,1547 @@
+--- a/design-system/sd-components/sd-components.js
++++ b/design-system/sd-components/sd-components.js
+@@ -540,9 +540,7 @@
+           var pre = item.getAttribute('prefixIcon') || item.getAttribute('prefixicon');
+           var suf = item.getAttribute('suffixIcon') || item.getAttribute('suffixicon');
+           if (pre) {
+-            var ip = document.createElement('span');
+-            ip.className = 'sd-action-icon ' + fs;
+-            ip.textContent = pre;
++            var ip = sdMatIconEl(pre, 'sd-action-icon', fs);
+             btn.appendChild(ip);
+           }
+           var label = document.createElement('span');
+@@ -552,9 +550,7 @@
+           }
+           btn.appendChild(label);
+           if (suf) {
+-            var is = document.createElement('span');
+-            is.className = 'sd-action-icon ' + fs;
+-            is.textContent = suf;
++            var is = sdMatIconEl(suf, 'sd-action-icon', fs);
+             btn.appendChild(is);
+           }
+           btn.addEventListener('click', function (e) {
+@@ -646,15 +642,15 @@
+         // mat-spinner diameter 18 strokeWidth 2 — dựng bằng CSS, không inline SVG (Rule 4)
+         inner += '<span class="c-spinner" role="progressbar" aria-label="Đang xử lý"></span>';
+       } else if (showPrefix) {
+-        inner += '<span class="c-icon-prefix ' + esc(fontSet) + '">' + esc(prefixIcon) + '</span>';
++        inner += sdMatIconHtml(prefixIcon, 'c-icon-prefix', fontSet);
+       }
+       if (title) inner += '<span class="' + labelCls + '">' + esc(title) + '</span>';
+       inner += '<span class="' + labelCls + ' c-projected-label"' + (title ? ' hidden' : '') + '></span>';
+       if (showSuffix) {
+-        inner += '<span class="c-icon-suffix ' + esc(fontSet) + '">' + esc(suffixIcon) + '</span>';
++        inner += sdMatIconHtml(suffixIcon, 'c-icon-suffix', fontSet);
+       }
+       if (showIndicator) {
+-        inner += '<span class="c-action-indicator material-icons-outlined" aria-hidden="true">expand_more</span>';
++        inner += sdMatIconHtml('expand_more', 'c-icon-suffix c-action-indicator', 'material-icons-outlined');
+       }
+ 
+       var attrs = ' type="' + esc(htmlType) + '"' +
+@@ -1547,7 +1543,7 @@
+               (errorMsg ? ' data-error-message="' + escAttr(errorMsg) + '"' : '') + '>' +
+           '</div>' +
+           (showErrorIcon
+-            ? '<span class="material-icons-outlined sd-date-error-icon" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</span>'
++            ? '<mat-icon class="mat-icon sd-date-error-icon sd-error-icon material-icons" aria-hidden="true" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</mat-icon>'
+             : '') +
+         '</div>' +
+         (showErrorText ? '<div class="sd-error-text">' + esc(errorMsg) + '</div>' : '');
+@@ -1564,9 +1560,9 @@
+           (removable && !disabled
+             /* Icon ĐẶC `material-icons` — Builder chốt 2026-10-12 theo catalog
+                (`mat-icon.mat-mdc-chip-remove.material-icons` cancel). Ngoại lệ Rule 4. */
+-            ? '<span class="material-icons sd-chip-remove"' +
++            ? '<mat-icon class="mat-mdc-chip-remove mat-mdc-chip-trailing-icon mat-focus-indicator mdc-evolution-chip__icon mdc-evolution-chip__icon--trailing mdc-evolution-chip__action mat-mdc-chip-action mdc-evolution-chip__action--trailing mat-icon material-icons sd-chip-remove" matchipremove=""' +
+               ' role="button" tabindex="' + (disabled ? '-1' : '0') + '"' +
+-              ' aria-label="Xóa chip">cancel</span>'
++              ' aria-label="Xóa chip">cancel</mat-icon>'
+             : '') +
+           '</span>';
+       });
+@@ -1784,9 +1780,9 @@
+           (removable
+             /* Icon ĐẶC `material-icons` — Builder chốt 2026-10-12 theo catalog
+                (`mat-icon.mat-mdc-chip-remove.material-icons` cancel). Ngoại lệ Rule 4. */
+-            ? '<span class="material-icons sd-chip-remove"' +
++            ? '<mat-icon class="mat-mdc-chip-remove mat-mdc-chip-trailing-icon mat-focus-indicator mdc-evolution-chip__icon mdc-evolution-chip__icon--trailing mdc-evolution-chip__action mat-mdc-chip-action mdc-evolution-chip__action--trailing mat-icon material-icons sd-chip-remove" matchipremove=""' +
+               ' role="button" tabindex="' + (disabled ? '-1' : '0') + '"' +
+-              ' aria-label="Xóa ngày">cancel</span>'
++              ' aria-label="Xóa ngày">cancel</mat-icon>'
+             : '') +
+           '</span>';
+       });
+@@ -1847,7 +1843,7 @@
+              thì CÓ icon lịch, `sd-chip-calendar` thì không; ô vẫn mở lịch khi bấm
+              vì chính nó là `readonly` + con trỏ pointer. Rule 18 của AGENTS.md. */
+           (showErrorIcon
+-            ? '<span class="material-icons-outlined sd-date-error-icon" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</span>'
++            ? '<mat-icon class="mat-icon sd-date-error-icon sd-error-icon material-icons" aria-hidden="true" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</mat-icon>'
+             : '') +
+         '</div>' +
+         (showErrorText ? '<div class="sd-error-text">' + esc(errorMsg) + '</div>' : '') +
+@@ -1884,8 +1880,9 @@
+       var existingIcon = field.querySelector('.sd-date-error-icon');
+       if (showErrorIcon) {
+         if (!existingIcon) {
+-          existingIcon = document.createElement('span');
+-          existingIcon.className = 'material-icons-outlined sd-date-error-icon';
++          existingIcon = document.createElement('mat-icon');
++          existingIcon.className = 'mat-icon sd-error-icon material-icons sd-date-error-icon';
++          existingIcon.setAttribute('aria-hidden', 'true');
+           existingIcon.textContent = 'error';
+           field.appendChild(existingIcon);
+         }
+@@ -2260,9 +2257,10 @@
+       /* 'neutral' là màu cũ của kit, thư viện gọi là 'secondary'. Giữ class
+          c-neutral để những trang đang khai color="neutral" không gãy. */
+       var iconName = icon || 'fiber_manual_record';
+-      /* fontSet mặc định của SdIcon là 'material-icons-outlined'
+-         (DefaultSdIconSet trong @sdcorejs/angular/utilities/models). */
+-      var iconFont = fontSet || 'material-icons-outlined';
++      /* fontSet mặc định: catalog @sd-angular/core 19.0.10 vẽ icon badge bằng
++         `material-icons` (ĐẶC) — chỉ mẫu `fontSet="material-icons-outlined"` mới
++         nét viền. (Mặc định outlined cũ là của gói npm @sdcorejs/angular.) 2026-10-13. */
++      var iconFont = fontSet || 'material-icons';
+       var cCol = ' c-' + esc(color);
+       var cSize = ' c-' + esc(size);
+ 
+@@ -2614,20 +2612,20 @@
+          mép phải luôn hiện như bản trước của kit. Đã đổi cả markup lẫn CSS. */
+       var clearHtml = (this.clearable && value && !this.disabled && !this.readonlyMode)
+         ? '<button type="button" class="sd-clear-btn sd-hover" title="Xóa" aria-label="Xóa">' +
+-            '<span class="material-icons-outlined" aria-hidden="true">close</span></button>'
++            '<mat-icon class="mat-icon material-icons" aria-hidden="true">close</mat-icon></button>'
+         : '';
+ 
+       var errorIconHtml = showErrorIcon
+-        ? '<span class="material-icons-outlined sd-date-error-icon" data-sd-tooltip="' + escAttr(state.message) + '" data-sd-tooltip-position="above">error</span>'
++        ? '<mat-icon class="mat-icon sd-date-error-icon sd-error-icon material-icons" aria-hidden="true" data-sd-tooltip="' + escAttr(state.message) + '" data-sd-tooltip-position="above">error</mat-icon>'
+         : '';
+ 
+       /* helperText — catalog #c-input: KHÔNG phải dòng chữ dưới ô mà là icon
+          `info_outline` đứng sau chữ nhãn (cách 4px, cùng màu nhãn), nội dung hiện ở
+          tooltip khi rê chuột. Bản trước kit in dòng .sd-helper-text dưới khung. */
+       var hintHtml = this.helperText
+-        ? '<span class="material-icons-outlined sd-input-hint" aria-label="' + escAttr(this.helperText) + '"' +
++        ? '<mat-icon class="mat-icon sd-input-hint material-icons" aria-hidden="true" aria-label="' + escAttr(this.helperText) + '"' +
+           ' data-sd-tooltip="' + escAttr(this.helperText) + '" data-sd-tooltip-position="above"' +
+-          ' data-sd-tooltip-kind="mat">info_outline</span>'
++          ' data-sd-tooltip-kind="mat">info_outline</mat-icon>'
+         : '';
+       var labelHtml = this.label
+         ? '<label class="sd-label"><span class="sd-input-label-row"><span>' + esc(this.label) + '</span>' + hintHtml + '</span>' + reqHtml + '</label>'
+@@ -2638,7 +2636,7 @@
+         : '';
+ 
+       var suffixHtml = this.suffixIcon
+-        ? '<span class="material-icons-outlined sd-suffix-icon" aria-hidden="true">' + esc(this.suffixIcon) + '</span>'
++        ? '<mat-icon class="mat-icon sd-suffix-icon material-icons" aria-hidden="true">' + esc(this.suffixIcon) + '</mat-icon>'
+         : (this.suffix ? '<span class="T14R text-black400 sd-input-suffix-text">' + esc(this.suffix) + '</span>' : '');
+ 
+       /* Bộ đếm ký tự khi có maxlength — catalog `#c-input`:
+@@ -2691,7 +2689,7 @@
+         clr.className = 'sd-clear-btn sd-hover';
+         clr.title = 'Xóa';
+         clr.setAttribute('aria-label', 'Xóa');
+-        clr.innerHTML = '<span class="material-icons-outlined" aria-hidden="true">close</span>';
++        clr.innerHTML = '<mat-icon class="mat-icon material-icons" aria-hidden="true">close</mat-icon>';
+         var after = field.querySelector('.sd-date-error-icon') || input;
+         field.insertBefore(clr, after.nextSibling);
+         this._bindClear(clr);
+@@ -2711,8 +2709,9 @@
+       var icon = field.querySelector('.sd-date-error-icon');
+       if (showErrorIcon) {
+         if (!icon) {
+-          icon = document.createElement('span');
+-          icon.className = 'material-icons-outlined sd-date-error-icon';
++          icon = document.createElement('mat-icon');
++          icon.className = 'mat-icon sd-error-icon material-icons sd-date-error-icon';
++          icon.setAttribute('aria-hidden', 'true');
+           icon.textContent = 'error';
+           icon.setAttribute('data-sd-tooltip-position', 'above');
+           /* đứng ngay sau ô chữ, TRƯỚC nút × / hậu tố — cùng thứ tự lúc _render */
+@@ -3168,19 +3167,19 @@
+       var hasValueClass = (value || displayText) ? ' sd-has-value' : '';
+ 
+       var errorIconHtml = showErrorIcon
+-        ? '<span class="material-icons-outlined sd-date-error-icon" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</span>'
++        ? '<mat-icon class="mat-icon sd-date-error-icon sd-error-icon material-icons" aria-hidden="true" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</mat-icon>'
+         : '';
+ 
+       var clearHtml = (inline && this.clearable && displayText)
+-        ? '<span class="material-icons-outlined sd-select-clear" role="button" tabindex="0" aria-label="Xoá">close</span>'
++        ? '<mat-icon class="mat-icon sd-select-clear material-icons" role="button" tabindex="0" aria-label="Xoá">close</mat-icon>'
+         : '';
+       /* Nút xoá ở ô THƯỜNG — catalog #c-select: "có giá trị và không required:
+          icon mũi tên đổi thành nút xoá" (clearable mặc định true). Bản trước kit
+          chỉ có × ở biến thể inline. Rà soát 2026-10-12. */
+       var showClearBtn = !inline && this.clearable && !!displayText && !required && !disabled;
+       var arrowHtml = showClearBtn
+-        ? '<button type="button" class="sd-clear-btn" title="Xóa" aria-label="Xóa"><span class="material-icons-outlined">close</span></button>'
+-        : '<span class="material-icons-outlined sd-select-arrow" aria-hidden="true">keyboard_arrow_down</span>';
++        ? '<button type="button" class="sd-clear-btn" title="Xóa" aria-label="Xóa"><mat-icon class="mat-icon material-icons" aria-hidden="true">close</mat-icon></button>'
++        : '<mat-icon class="mat-icon sd-select-arrow cursor-pointer sd-suffix-icon material-icons" aria-hidden="true">keyboard_arrow_down</mat-icon>';
+ 
+       /* Ô tìm kiếm trong panel — catalog: "tự hiện khi danh sách > 10 phần tử
+          hoặc items là hàm tải từ server". Kit nhận items qua attribute nên chỉ
+@@ -3190,7 +3189,7 @@
+       var filterHtml = showFilter
+         ? '<div class="c-filter-input-container">' +
+             '<div class="filter-input-wrapper">' +
+-              '<span class="material-icons-outlined" aria-hidden="true">search</span>' +
++              '<mat-icon class="mat-icon material-icons" aria-hidden="true">search</mat-icon>' +
+               '<input class="c-search-input" type="text" autocomplete="off" ' +
+                 'aria-label="' + escAttr(SD_SELECT_TEXT.search) + '" ' +
+                 'value="' + escAttr(this._filterText || '') + '">' +
+@@ -3561,7 +3560,7 @@
+         (state.message ? ' data-error-message="' + escAttr(state.message) + '"' : '');
+ 
+       var errorIconHtml = showErrorIcon
+-        ? '<span class="material-icons-outlined sd-date-error-icon" data-sd-tooltip="' + escAttr(state.message) + '" data-sd-tooltip-position="above">error</span>'
++        ? '<mat-icon class="mat-icon sd-date-error-icon sd-error-icon material-icons" aria-hidden="true" data-sd-tooltip="' + escAttr(state.message) + '" data-sd-tooltip-position="above">error</mat-icon>'
+         : '';
+ 
+       var belowHtml = inline ? '' : showErrorText
+@@ -3917,7 +3916,7 @@
+             ' data-empty="' + (canonical ? 'false' : 'true') + '"' +
+             ' data-required="' + (required ? 'true' : 'false') + '">' +
+           (showErrorIcon
+-            ? '<span class="material-icons-outlined sd-date-error-icon" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</span>'
++            ? '<mat-icon class="mat-icon sd-date-error-icon sd-error-icon material-icons" aria-hidden="true" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</mat-icon>'
+             : '') +
+           /* catalog: `<button class="sd-clear-btn sd-hover">` (hiện khi rê chuột /
+              focus) + `<mat-icon class="cursor-pointer sd-suffix-icon">today</mat-icon>`.
+@@ -3926,11 +3925,11 @@
+              role=button + tabindex để bấm Tab tới được (Rule 9). */
+           (showClear
+             ? '<button type="button" class="sd-clear-btn sd-hover" title="' + escAttr(SD_DATE_TEXT.clear) + '" aria-label="' + escAttr(SD_DATE_TEXT.clear) + '">' +
+-              '<span class="material-icons-outlined" aria-hidden="true">close</span></button>'
++              '<mat-icon class="mat-icon material-icons" aria-hidden="true">close</mat-icon></button>'
+             : '') +
+-          '<span class="material-icons-outlined cursor-pointer sd-suffix-icon" role="button"' +
++          '<mat-icon class="mat-icon cursor-pointer sd-suffix-icon material-icons" role="button"' +
+             (disabled ? ' aria-disabled="true"' : ' tabindex="0"') +
+-            ' aria-label="' + escAttr(SD_DATE_TEXT.openPicker) + '">today</span>' +
++            ' aria-label="' + escAttr(SD_DATE_TEXT.openPicker) + '">today</mat-icon>' +
+         '</div>' +
+         (showErrorText ? '<div class="sd-error-text">' + esc(errorMsg) + '</div>'
+           : (helperText ? '<div class="sd-helper-text">' + esc(helperText) + '</div>' : '')) +
+@@ -4363,7 +4362,7 @@
+             ' data-empty="' + (canonical ? 'false' : 'true') + '"' +
+             ' data-required="' + (required ? 'true' : 'false') + '">' +
+           (showErrorIcon
+-            ? '<span class="material-icons-outlined sd-date-error-icon" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</span>'
++            ? '<mat-icon class="mat-icon sd-date-error-icon sd-error-icon material-icons" aria-hidden="true" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</mat-icon>'
+             : '') +
+           /* catalog: `<button class="sd-clear-btn sd-hover">` (hiện khi rê chuột /
+              focus) + `<span class="cursor-pointer sd-suffix-icon">` chứa SVG
+@@ -4371,7 +4370,7 @@
+              (`sd-date-clear-btn`, phải khai clearable) + nút icon `today`. */
+           (showClear
+             ? '<button type="button" class="sd-clear-btn sd-hover" title="' + escAttr(SD_DT_TEXT.clear) + '" aria-label="' + escAttr(SD_DT_TEXT.clear) + '">' +
+-              '<span class="material-icons-outlined" aria-hidden="true">close</span></button>'
++              '<mat-icon class="mat-icon material-icons" aria-hidden="true">close</mat-icon></button>'
+             : '') +
+           '<span class="cursor-pointer sd-suffix-icon" role="button"' + (disabled ? ' aria-disabled="true"' : ' tabindex="0"') +
+             ' aria-label="' + escAttr(SD_DT_TEXT.openPicker) + '">' + SD_DT_ICON_FIELD + '</span>' +
+@@ -4954,7 +4953,7 @@
+       // clear-btn/error-icon, đúng thứ tự matSuffix trong input-number.component.html thật.
+       /* catalog: <span class="T14R text-black400">VND</span> trong hàng suffix */
+       var suffixHtml = suffixIcon
+-        ? '<span class="material-icons-outlined sd-input-suffix-icon">' + esc(suffixIcon) + '</span>'
++        ? '<mat-icon class="mat-icon sd-input-suffix-icon sd-suffix-icon material-icons" aria-hidden="true">' + esc(suffixIcon) + '</mat-icon>'
+         : (suffixText ? '<span class="T14R text-black400 sd-input-suffix-text">' + esc(suffixText) + '</span>' : '');
+ 
+       this.innerHTML =
+@@ -4969,13 +4968,13 @@
+             ' data-empty="' + (val === null ? 'true' : 'false') + '"' +
+             ' data-required="' + (required ? 'true' : 'false') + '">' +
+           (showErrorIcon
+-            ? '<span class="material-icons-outlined sd-date-error-icon" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</span>'
++            ? '<mat-icon class="mat-icon sd-date-error-icon sd-error-icon material-icons" aria-hidden="true" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</mat-icon>'
+             : '') +
+           /* catalog: <button class="sd-clear-btn sd-hover"> — ẩn cho tới khi rê
+              chuột / focus; bản trước kit dùng nút xoá của sd-date luôn hiện. */
+           (showClear
+             ? '<button type="button" class="sd-clear-btn sd-hover" title="' + escAttr(SD_NUM_TEXT.clear) + '" aria-label="' + escAttr(SD_NUM_TEXT.clear) + '">' +
+-              '<span class="material-icons-outlined">close</span></button>'
++              '<mat-icon class="mat-icon material-icons" aria-hidden="true">close</mat-icon></button>'
+             : '') +
+           suffixHtml +
+         '</div>' +
+@@ -5555,14 +5554,14 @@
+         this._prevBtn.type = 'button';
+         this._prevBtn.className = 'sd-tab-pagination sd-tab-pagination--before';
+         this._prevBtn.setAttribute('aria-label', 'Cuộn tab sang trái');
+-        this._prevBtn.innerHTML = '<span class="material-icons-outlined">chevron_left</span>';
++        this._prevBtn.innerHTML = sdMatIconHtml('chevron_left');
+         this._prevBtn.addEventListener('click', function () { self._scrollStep(-1); });
+ 
+         this._nextBtn = document.createElement('button');
+         this._nextBtn.type = 'button';
+         this._nextBtn.className = 'sd-tab-pagination sd-tab-pagination--after';
+         this._nextBtn.setAttribute('aria-label', 'Cuộn tab sang phải');
+-        this._nextBtn.innerHTML = '<span class="material-icons-outlined">chevron_right</span>';
++        this._nextBtn.innerHTML = sdMatIconHtml('chevron_right');
+         this._nextBtn.addEventListener('click', function () { self._scrollStep(1); });
+ 
+         this._scrollViewport = document.createElement('div');
+@@ -5682,10 +5681,7 @@
+           labelWrap.className = 'sd-tab__label';
+ 
+           if (icon) {
+-            var iconEl = document.createElement('span');
+-            iconEl.className = 'material-icons-outlined sd-tab__icon';
+-            iconEl.textContent = icon;
+-            labelWrap.appendChild(iconEl);
++            labelWrap.appendChild(sdMatIconEl(icon, 'sd-tab__icon'));
+           }
+ 
+           var labelEl = document.createElement('span');
+@@ -5702,8 +5698,8 @@
+ 
+           var closeEl = null;
+           if (closable) {
+-            closeEl = document.createElement('span');
+-            closeEl.className = 'material-icons-outlined sd-tab__close';
++            closeEl = sdMatIconEl('close', 'sd-tab__close');
++            closeEl.removeAttribute('aria-hidden');
+             closeEl.setAttribute('role', 'button');
+             closeEl.setAttribute('tabindex', disabled ? '-1' : '0');
+             closeEl.setAttribute('aria-label', 'Đóng tab');
+@@ -6610,10 +6606,7 @@
+           link.setAttribute('aria-label', title);
+           if (prefix && key) link.setAttribute('data-autoid', prefix + '-' + key);
+           if (icon) {
+-            var iconEl = document.createElement('span');
+-            iconEl.className = 'material-icons-outlined mi-lg c-anchor-list-item-icon';
+-            iconEl.textContent = icon;
+-            link.appendChild(iconEl);
++            link.appendChild(sdMatIconEl(icon, 'c-anchor-list-item-icon mi-lg'));
+           }
+           var labelEl = document.createElement('div');
+           labelEl.className = 'c-anchor-list-item-text' + (ellipsis ? ' ellipsis' : '');
+@@ -7898,7 +7891,7 @@
+                 ' role="button" tabindex="0" aria-label="' + escAttr(sdUploadT('upload')) + '"' +
+                 ' style="width:' + pw + ';height:' + ph + ';"' +
+                 ' data-disabled="' + (disabled ? 'true' : 'false') + '">' +
+-                '<span class="material-icons-outlined c-upload">file_upload</span>' +
++                '<mat-icon role="img" class="mat-icon notranslate c-upload material-icons-outlined mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">file_upload</mat-icon>' +
+                 '</div>';
+       }
+ 
+@@ -7925,10 +7918,10 @@
+         }
+         html += '<div class="c-action">' +
+                 '<button type="button" class="c-zoom" aria-label="' + escAttr(sdUploadT('previewTitle')) + '">' +
+-                '<span class="material-icons-outlined">zoom_in</span></button></div>';
++                '<mat-icon role="img" class="mat-icon notranslate material-icons-outlined mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">zoom_in</mat-icon></button></div>';
+         if (!disabled) {
+           html += '<button type="button" class="c-btn-remove" aria-label="' + escAttr(sdUploadT('remove')) + '">' +
+-                  '<span class="material-icons-outlined">close</span></button>';
++                  '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">close</mat-icon></button>';
+         }
+         html += '</div></div></div>';
+       });
+@@ -7948,7 +7941,7 @@
+         }
+         if (!disabled) {
+           html += '<button type="button" class="c-close" aria-label="' + escAttr(sdUploadT('remove')) + '">' +
+-                  '<span class="material-icons-outlined">close</span></button>';
++                  '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">close</mat-icon></button>';
+         }
+         html += '</div>';
+       });
+@@ -8882,7 +8875,7 @@
+             var icon = isExpanded ? 'expand_less' : 'expand_more';
+             tbodyHtml += '<td class="c-td c-tree-toggle-cell">' +
+               '<button class="sd-tree-toggle" data-tree-key="' + escAttr(key) + '">' +
+-              '<span class="material-icons-outlined">' + icon + '</span>' +
++              '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true">' + icon + '</mat-icon>' +
+               '</button></td>';
+           } else {
+             tbodyHtml += '<td class="c-td c-tree-toggle-cell"></td>';
+@@ -8943,10 +8936,10 @@
+               '<div class="mat-mdc-paginator-range-actions">' +
+                 '<div aria-live="polite" class="mat-mdc-paginator-range-label"> ' + start + '-' + endItem + '/' + total + ' </div>' +
+                 '<button type="button" class="c-paginator-btn mat-mdc-paginator-navigation-previous" aria-label="Trang trước" aria-disabled="true" tabindex="-1">' +
+-                  '<span class="material-icons-outlined" aria-hidden="true">chevron_left</span></button>' +
++                  '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true">chevron_left</mat-icon></button>' +
+                 '<button type="button" class="c-paginator-btn mat-mdc-paginator-navigation-next" aria-label="Trang sau"' +
+                   (endItem >= total ? ' aria-disabled="true" tabindex="-1"' : '') + '>' +
+-                  '<span class="material-icons-outlined" aria-hidden="true">chevron_right</span></button>' +
++                  '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true">chevron_right</mat-icon></button>' +
+               '</div>' +
+             '</div></div></div>';
+         }
+@@ -9287,7 +9280,7 @@
+                 ' title="' + escAttr(actionTooltip) + '"' +
+                 ' style="' + commonStyle + '"' +
+                 ' onmouseover="' + hoverOn + '" onmouseout="' + hoverOff + '">' +
+-                '<span class="material-icons-outlined" style="font-size:16px;color:var(--sd-black400);">' + esc(actionIcon) + '</span>' +
++                '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true" style="font-size:16px;color:var(--sd-black400);">' + esc(actionIcon) + '</mat-icon>' +
+                 '</button></td>';
+             } else {
+               html += '<td class="c-td" style="width:48px;text-align:center;">' +
+@@ -9295,7 +9288,7 @@
+                 ' title="' + escAttr(actionTooltip) + '"' +
+                 ' style="' + commonStyle + '"' +
+                 ' onmouseover="' + hoverOn + '" onmouseout="' + hoverOff + '">' +
+-                '<span class="material-icons-outlined" style="font-size:16px;color:var(--sd-black400);">' + esc(actionIcon) + '</span>' +
++                '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true" style="font-size:16px;color:var(--sd-black400);">' + esc(actionIcon) + '</mat-icon>' +
+                 '</a></td>';
+             }
+           } else if (col.type === 'menu') {
+@@ -9320,13 +9313,13 @@
+               var dataAttrs = mi.href ? '' :
+                 ' data-menu-row="' + displayIdx + '" data-menu-col="' + escAttr(col.field) + '" data-menu-item="' + miIdx + '"';
+               return '<' + tag + ' class="c-table-menu-item' + colorClass + '"' + hrefAttr + dataAttrs + '>' +
+-                '<span class="material-icons-outlined">' + esc(mi.icon || 'circle') + '</span>' +
++                '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true">' + esc(mi.icon || 'circle') + '</mat-icon>' +
+                 '<span>' + esc(mi.label || '') + '</span></' + tag + '>';
+             }).join('');
+             html += '<td class="c-td" style="width:' + escAttr(menuWidth) + ';text-align:center;position:relative;">' +
+               '<button type="button" class="c-table-menu-btn" data-menu-target="' + menuId + '"' +
+               ' aria-label="Thao tác" aria-haspopup="true">' +
+-              '<span class="material-icons-outlined" style="font-size:16px;color:var(--sd-black400);">' + esc(menuIcon) + '</span>' +
++              '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true" style="font-size:16px;color:var(--sd-black400);">' + esc(menuIcon) + '</mat-icon>' +
+               '</button>' +
+               '<div class="c-table-menu-dropdown" id="' + menuId + '" role="menu">' + menuItemsHtml + '</div>' +
+               '</td>';
+@@ -9373,7 +9366,7 @@
+       var l = this._commandList(row, commands);
+       var btn = function (icon, title, attrs) {
+         return '<button type="button" class="c-command-btn" title="' + escAttr(title || '') + '" aria-label="' + escAttr(title || '') + '"' + attrs + '>' +
+-          '<span class="material-icons-outlined c-icon" aria-hidden="true">' + esc(icon || 'circle') + '</span></button>';
++          '<mat-icon class="mat-icon c-icon mat-secondary material-icons mat-ligature-font" aria-hidden="true">' + esc(icon || 'circle') + '</mat-icon></button>';
+       };
+       var html = '<td class="c-td c-command-cell c-sticky-col c-sticky-col--last" style="left:' + left + 'px;"><desktop-command>';
+       if (l.inline) html += btn(l.inline.icon, l.inline.title, ' data-cmd-row="' + displayIdx + '" data-cmd-key="' + escAttr(l.inline.key || l.inline.title || '') + '"');
+@@ -9381,11 +9374,11 @@
+         var menuId = 'sdtc-' + (this._menuUid = (this._menuUid || 0) + 1);
+         html += '<button type="button" class="c-command-btn c-table-menu-btn" title="Thao tác khác" aria-label="Thao tác khác"' +
+           ' aria-haspopup="menu" data-menu-target="' + menuId + '">' +
+-          '<span class="material-icons-outlined c-icon" aria-hidden="true">more_vert</span></button>';
++          '<mat-icon class="mat-icon c-icon mat-secondary material-icons mat-ligature-font" aria-hidden="true">more_vert</mat-icon></button>';
+         html += '<div class="c-table-menu-dropdown" id="' + menuId + '" role="menu">' + l.menu.map(function (c) {
+           return '<button type="button" role="menuitem" class="c-table-menu-item' + (c.color ? ' text-' + escAttr(c.color) : '') + '"' +
+             ' data-cmd-row="' + displayIdx + '" data-cmd-key="' + escAttr(c.key || c.title || '') + '">' +
+-            '<span class="material-icons-outlined">' + esc(c.icon || 'circle') + '</span><span>' + esc(c.title || '') + '</span></button>';
++            '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true">' + esc(c.icon || 'circle') + '</mat-icon><span>' + esc(c.title || '') + '</span></button>';
+         }).join('') + '</div>';
+       }
+       return html + '</desktop-command></td>';
+@@ -9664,7 +9657,7 @@
+         closeBtn.className = 'sd-side-drawer-close-btn';
+         closeBtn.setAttribute('aria-label', 'Đóng');
+         closeBtn.type = 'button';
+-        closeBtn.innerHTML = '<span class="material-icons-outlined" aria-hidden="true">close</span>';
++        closeBtn.innerHTML = '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">close</mat-icon>';
+         closeBtn.addEventListener('click', function () { self.close(); });
+         actions.appendChild(closeBtn);
+       }
+@@ -9910,7 +9903,7 @@
+             var closeBtn = document.createElement('button');
+             closeBtn.className = 'sd-modal-close-btn';
+             closeBtn.setAttribute('aria-label', 'Đóng');
+-            closeBtn.innerHTML = '<span class="material-icons-outlined">close</span>';
++            closeBtn.innerHTML = '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">close</mat-icon>';
+             closeBtn.addEventListener('click', function () { self.close(); });
+             hr.appendChild(closeBtn);
+           }
+@@ -10121,9 +10114,7 @@
+          catalog #c-inform. (Gói npm 22.2.12 bọc thêm ô tròn 32px; Builder chốt
+          2026-10-10 lấy catalog làm mốc, xem AGENTS.md.) */
+       var iconHtml = iconName
+-        ? '<span class="c-inform-icon c-material-icon ' + esc(fontSet) + '" aria-hidden="true">' +
+-            esc(iconName) +
+-          '</span>'
++        ? sdMatIconHtml(iconName, 'c-inform-icon c-material-icon', fontSet)
+         : '';
+ 
+       var bodyHtml = bodyInner
+@@ -10158,7 +10149,7 @@
+ 
+       var closeHtml = closable
+         ? '<button type="button" class="c-inform-close" aria-label="' + escAttr(SD_INFORM_TEXT.close) + '">' +
+-            '<span class="material-icons-outlined">close</span>' +
++            '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">close</mat-icon>' +
+           '</button>'
+         : '';
+ 
+@@ -10709,11 +10700,11 @@
+          gọi riêng (rà soát 2026-10-10). */
+       if (this._flagDefaultTrue('showClearAll', 'show-clear-all', 'showclearall') && (this._filters || []).length > 0) {
+         html += '<button type="button" class="c-clear-all" data-qb-role="clear-all" aria-label="Xoá hết bộ lọc" title="Xoá hết">' +
+-          '<span class="material-icons-outlined" aria-hidden="true">delete_sweep</span></button>';
++          '<mat-icon class="mat-icon material-icons-outlined" aria-hidden="true">delete_sweep</mat-icon></button>';
+       }
+       if (this._flag('show-saved-filters', 'showsavedfilters')) html += this._renderSavedTrigger();
+       html += '<button type="button" class="c-search-trigger" data-qb-role="apply-btn" aria-label="Tìm kiếm" title="Tìm">' +
+-        '<span class="material-icons-outlined" aria-hidden="true">search</span></button>';
++        '<mat-icon class="mat-icon material-icons-outlined" aria-hidden="true">search</mat-icon></button>';
+       html += '</div>';
+       html += '</div>';
+ 
+@@ -10762,7 +10753,7 @@
+ 
+     _renderSearch() {
+       return '<div class="c-search" data-qb-role="search-wrap">' +
+-        '<span class="material-icons-outlined c-search-icon" aria-hidden="true">search</span>' +
++        '<mat-icon class="mat-icon c-search-icon material-icons-outlined" aria-hidden="true">search</mat-icon>' +
+         '<input type="text" class="c-search-input" data-qb-role="search" value="' + escAttr(this._search) +
+         '" placeholder="Tìm kiếm..." aria-label="Tìm kiếm tự do">' +
+         '</div>' +
+@@ -10788,16 +10779,16 @@
+         (hasValue ? 'c-chip-active' : 'c-chip-inactive') + '"' +
+         ' data-qb-role="chip" data-qb-field="' + escAttr(f.field) + '"' +
+         ' aria-label="Chỉnh bộ lọc ' + escAttr(this._fieldLabel(field)) + '">' +
+-        '<span class="material-icons-outlined c-chip-icon" aria-hidden="true">' + esc(this._fieldIcon(field)) + '</span>' +
++        '<mat-icon class="mat-icon c-chip-icon material-icons-outlined" aria-hidden="true">' + esc(this._fieldIcon(field)) + '</mat-icon>' +
+         '<span class="c-chip-label">' + esc(this._fieldLabel(field)) + '</span>' +
+         opHtml +
+         (hasValue ? '<span class="c-chip-sep">:</span>' : '') +
+         valueHtml +
+-        '<span class="material-icons-outlined c-chip-chevron" aria-hidden="true">arrow_drop_down</span>' +
++        '<mat-icon class="mat-icon c-chip-chevron material-icons-outlined" aria-hidden="true">arrow_drop_down</mat-icon>' +
+         '<span role="button" tabindex="0" class="c-chip-remove" data-qb-role="chip-remove"' +
+         ' data-qb-field="' + escAttr(f.field) + '"' +
+         ' aria-label="Gỡ bộ lọc ' + escAttr(this._fieldLabel(field)) + '">' +
+-        '<span class="material-icons-outlined">close</span></span>' +
++        '<mat-icon class="mat-icon material-icons-outlined" aria-hidden="true">close</mat-icon></span>' +
+         '</div>';
+     }
+ 
+@@ -10921,7 +10912,7 @@
+         return '<button type="button" class="' + cls + '" data-qb-role="chip-remove"' +
+           ' data-qb-field="' + escAttr(f.field) + '"' +
+           ' aria-label="Gỡ bộ lọc ' + escAttr(label) + '">' +
+-          '<span class="material-icons-outlined" aria-hidden="true">close</span></button>';
++          '<mat-icon class="mat-icon material-icons-outlined" aria-hidden="true">close</mat-icon></button>';
+       };
+ 
+       /* Hình 1 — chip LÀ ô nhập, dùng cho field chữ/số có toán tử một giá trị. */
+@@ -10933,7 +10924,7 @@
+         return '<span class="c-seamless' + sizeCls + '" data-state="' + state + '"' +
+             ' data-qb-field="' + escAttr(f.field) + '">' +
+             '<span class="c-seamless__label">' +
+-              '<span class="material-icons-outlined c-seamless__icon" aria-hidden="true">' + esc(icon) + '</span>' +
++              '<mat-icon class="mat-icon c-seamless__icon material-icons-outlined" aria-hidden="true">' + esc(icon) + '</mat-icon>' +
+               '<span class="c-seamless__field">' + esc(label) + '</span>' +
+               '<span class="c-seamless__sep">:</span>' +
+             '</span>' +
+@@ -10964,7 +10955,7 @@
+         };
+         return '<div class="c-token' + (state === 'pending' ? ' c-token-building' : '') + '"' +
+             ' data-qb-field="' + escAttr(f.field) + '">' +
+-            '<span class="material-icons-outlined c-token-icon" aria-hidden="true">' + esc(icon) + '</span>' +
++            '<mat-icon class="mat-icon c-token-icon material-icons-outlined" aria-hidden="true">' + esc(icon) + '</mat-icon>' +
+             '<span class="c-token-field">' + esc(label) + '</span>' +
+             '<span class="c-token-value c-token-value-edit c-bool-toggle">' +
+               boolBtn('true', 'c-bool-true', ' Có ') + boolBtn('false', 'c-bool-false', ' Không ') +
+@@ -10984,7 +10975,7 @@
+         ? this._renderInlineValueSummary(f, field)
+         : this._renderValueControl(f, field, 'live');
+       return '<div class="c-token" data-qb-field="' + escAttr(f.field) + '">' +
+-          '<span class="material-icons-outlined c-token-icon" aria-hidden="true">' + esc(icon) + '</span>' +
++          '<mat-icon class="mat-icon c-token-icon material-icons-outlined" aria-hidden="true">' + esc(icon) + '</mat-icon>' +
+           '<span class="c-token-field">' + esc(label) + '</span>' +
+           (opHtml ? '<span class="c-token-op c-chip-operator">' + opHtml + '</span>'
+                   : '<span class="c-token-sep">:</span>') +
+@@ -11027,7 +11018,7 @@
+     _renderAddTrigger() {
+       /* Catalog: nút tròn VIỀN NÉT ĐỨT chỉ có dấu "+", không phải sd-button có chữ. */
+       return '<button type="button" class="c-add-filter" data-qb-role="add-trigger" aria-label="Thêm bộ lọc" title="Thêm bộ lọc">' +
+-        '<span class="material-icons-outlined" aria-hidden="true">add</span></button>';
++        '<mat-icon class="mat-icon material-icons-outlined" aria-hidden="true">add</mat-icon></button>';
+     }
+ 
+     _renderLogicToggle() {
+@@ -11041,7 +11032,7 @@
+ 
+     _renderSavedTrigger() {
+       return '<button type="button" class="c-saved-filters" data-qb-role="saved-trigger" aria-label="Bộ lọc đã lưu" title="Bộ lọc đã lưu">' +
+-        '<span class="material-icons-outlined" aria-hidden="true">bookmark_border</span></button>';
++        '<mat-icon class="mat-icon material-icons-outlined" aria-hidden="true">bookmark_border</mat-icon></button>';
+     }
+ 
+     _renderOperatorSelect(f, ops, mode) {
+@@ -11134,7 +11125,7 @@
+ 
+     _renderLazyControl(f, field, mode) {
+       return '<div class="qb-lazy-search">' +
+-        '<span class="material-icons-outlined c-search-icon" aria-hidden="true">search</span>' +
++        '<mat-icon class="mat-icon c-search-icon material-icons-outlined" aria-hidden="true">search</mat-icon>' +
+         '<input type="text" class="c-search-input" data-qb-role="lazy-search" data-qb-mode="' + mode + '"' +
+         ' data-qb-field="' + escAttr(f.field) + '" placeholder="Tìm kiếm...">' +
+         '</div>' +
+@@ -11193,7 +11184,7 @@
+       } else {
+         items.forEach(function (fd) {
+           html += '<button type="button" class="sd-dropdown-item" role="menuitem" data-qb-role="add-item" data-qb-field="' + escAttr(fd.key) + '">' +
+-            '<span class="material-icons-outlined qb-menu-icon" aria-hidden="true">' + esc(self._fieldIcon(fd)) + '</span>' +
++            '<mat-icon class="mat-icon qb-menu-icon c-field-item-icon material-icons-outlined" aria-hidden="true">' + esc(self._fieldIcon(fd)) + '</mat-icon>' +
+             '<span>' + esc(self._fieldLabel(fd)) + '</span></button>';
+         });
+       }
+@@ -11206,7 +11197,7 @@
+       var saved = this._getSaved() || [];
+       var html = '<div class="sd-dropdown-menu qb-menu qb-menu-saved" role="menu" aria-label="Bộ lọc đã lưu">';
+       html += '<button type="button" class="sd-dropdown-item" role="menuitem" data-qb-role="saved-save">' +
+-        '<span class="material-icons-outlined qb-menu-icon" aria-hidden="true">save</span>' +
++        '<mat-icon class="mat-icon qb-menu-icon c-field-item-icon material-icons-outlined" aria-hidden="true">save</mat-icon>' +
+         '<span>Lưu bộ lọc hiện tại</span></button>';
+       if (!saved.length) {
+         html += '<div class="qb-menu-empty T12R text-black400">Chưa có bộ lọc đã lưu</div>';
+@@ -11214,11 +11205,11 @@
+         saved.forEach(function (rec) {
+           html += '<div class="qb-saved-row">' +
+             '<button type="button" class="sd-dropdown-item qb-saved-item" role="menuitem" data-qb-role="saved-restore" data-qb-id="' + escAttr(rec.id) + '" title="Khôi phục">' +
+-            '<span class="material-icons-outlined qb-menu-icon" aria-hidden="true">filter_list</span>' +
++            '<mat-icon class="mat-icon qb-menu-icon c-field-item-icon material-icons-outlined" aria-hidden="true">filter_list</mat-icon>' +
+             '<span class="qb-saved-name">' + esc(rec.name) + '</span>' +
+             '<span class="qb-saved-count">' + ((rec.filters && rec.filters.length) || 0) + '</span></button>' +
+             '<button type="button" class="qb-saved-remove" data-qb-role="saved-remove" data-qb-id="' + escAttr(rec.id) + '" aria-label="Xoá ' + escAttr(rec.name) + '">' +
+-            '<span class="material-icons-outlined">close</span></button>' +
++            '<mat-icon class="mat-icon material-icons-outlined" aria-hidden="true">close</mat-icon></button>' +
+             '</div>';
+         });
+       }
+@@ -11232,7 +11223,7 @@
+       var ops = this._fieldOperators(field);
+       var html = '<div class="sd-dropdown-menu qb-popover" role="dialog" aria-label="Bộ lọc ' + escAttr(this._fieldLabel(field)) + '">';
+       html += '<div class="qb-popover-header">' +
+-        '<span class="material-icons-outlined qb-popover-icon" aria-hidden="true">' + esc(this._fieldIcon(field)) + '</span>' +
++        '<mat-icon class="mat-icon qb-popover-icon material-icons-outlined" aria-hidden="true">' + esc(this._fieldIcon(field)) + '</mat-icon>' +
+         '<span class="qb-popover-title">' + esc(this._fieldLabel(field)) + '</span>' +
+         '</div>';
+       if (ops && ops.length > 1) {
+@@ -12041,7 +12032,7 @@
+        `-index`, `-focus`) để _bind không phải đổi. */
+ 
+     _iconHtml(name) {
+-      return '<span class="material-icons-outlined" aria-hidden="true">' + esc(name) + '</span>';
++      return '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">' + esc(name) + '</mat-icon>';
+     }
+ 
+     _tbBtn(action, icon, label, opts) {
+@@ -12099,7 +12090,7 @@
+         : '';
+       return '<div class="sd-preview-header">' +
+           '<div class="sd-preview-header__left">' +
+-            '<span class="material-icons-outlined sd-preview-header__icon" aria-hidden="true">image</span>' +
++            '<mat-icon role="img" class="mat-icon notranslate sd-preview-header__icon material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">image</mat-icon>' +
+             '<div class="sd-preview-header__meta">' +
+               '<div class="sd-preview-header__name" title="' + escAttr(name) + '">' + esc(name) + '</div>' +
+               (sub ? '<div class="sd-preview-header__sub"> ' + esc(sub) + ' </div>' : '') +
+@@ -12634,7 +12625,7 @@
+        `disabled` kèm tooltip giải thích, đúng như bản trước. */
+ 
+     _pdfIcon(name) {
+-      return '<span class="material-icons-outlined" aria-hidden="true">' + esc(name) + '</span>';
++      return '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">' + esc(name) + '</mat-icon>';
+     }
+ 
+     _pdfIconBtn(action, icon, label, opts) {
+@@ -12690,7 +12681,7 @@
+     _searchbarHtml() {
+       if (this._sidebar !== 'search') return '';
+       return '<div class="sd-preview-pdf-searchbar" data-sd-tooltip="Tìm chữ cần pdf.js">' +
+-          '<span class="material-icons-outlined sd-preview-pdf-searchbar__icon" aria-hidden="true">search</span>' +
++          '<mat-icon role="img" class="mat-icon notranslate sd-preview-pdf-searchbar__icon material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">search</mat-icon>' +
+           '<input type="text" class="sd-preview-pdf-searchbar__input" aria-label="Tìm trong tài liệu" disabled>' +
+           '<span class="sd-preview-pdf-searchbar__counter">0/0</span>' +
+           '<span class="sd-preview-pdf-searchbar__divider"></span>' +
+@@ -13021,9 +13012,9 @@
+             /* Tooltip của icon gợi ý là `matTooltip` (KHÔNG phải sdTooltip):
+                bong bóng #424242, 12px/16px, rộng tối đa 200px, căn giữa, không
+                bóng đổ — kit bật kiểu đó bằng data-sd-tooltip-kind="mat". */
+-            ? '<span class="material-icons-outlined sd-label__hint" aria-hidden="true"' +
++            ? '<mat-icon role="img" class="mat-icon notranslate sd-label__hint mat-mdc-tooltip-trigger material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true"' +
+               ' data-sd-tooltip="' + escAttr(hint) + '" data-sd-tooltip-position="below"' +
+-              ' data-sd-tooltip-kind="mat">info_outline</span>'
++              ' data-sd-tooltip-kind="mat" data-mat-icon-type="font">info_outline</mat-icon>'
+             : '') +
+         '</div>' +
+         (this._bool('required') ? '<span class="text-error mb-2 T14M">*</span>' : '') +
+@@ -13250,7 +13241,7 @@
+           (this._bool('autofocus', false) ? ' autofocus' : '') + '>' +
+         (clearable
+           ? '<button type="button" class="sd-inline-text__clear" aria-label="Clear" tabindex="-1">' +
+-              '<span class="material-icons-outlined" aria-hidden="true">close</span>' +
++              '<mat-icon class="mat-icon material-icons" aria-hidden="true">close</mat-icon>' +
+             '</button>'
+           : '');
+ 
+@@ -13497,7 +13488,7 @@
+               '<sd-view>' + labelRow + valueRow + '</sd-view>' +
+               (this.clearable
+                 ? '<button type="button" class="sd-inline-clear" title="Xóa" aria-label="Xóa">' +
+-                    '<span class="material-icons-outlined" aria-hidden="true">close</span>' +
++                    '<mat-icon class="mat-icon material-icons" aria-hidden="true">close</mat-icon>' +
+                   '</button>'
+                 : '') +
+             '</span>';
+@@ -13539,8 +13530,8 @@
+       var reqHtml = required ? '<span class="sd-required">*</span>' : '';
+       var suffix = (displayText && this.clearable && !disabled)
+         ? '<button type="button" class="sd-clear-btn" title="Xóa" aria-label="Xóa">' +
+-            '<span class="material-icons-outlined" aria-hidden="true">close</span></button>'
+-        : '<span class="material-icons-outlined sd-suffix-icon" aria-hidden="true">search</span>';
++            '<mat-icon class="mat-icon material-icons" aria-hidden="true">close</mat-icon></button>'
++        : '<mat-icon class="mat-icon sd-suffix-icon cursor-pointer material-icons" aria-hidden="true">search</mat-icon>';
+ 
+       this.innerHTML =
+         '<div class="sd-form-field' + sizeClass + (disabled ? ' sd-disabled' : '') +
+@@ -13853,11 +13844,11 @@
+           (hasValue
+             ? '<button type="button" class="sd-range-clear-btn" title="' + escAttr(SD_DATE_RANGE_TEXT.clear) +
+               '" aria-label="' + escAttr(SD_DATE_RANGE_TEXT.clear) + '"' + (disabled ? ' disabled' : '') + '>' +
+-              '<span class="material-icons-outlined">cancel</span></button>'
++              '<mat-icon class="mat-icon cursor-pointer sd-suffix-icon material-icons" aria-hidden="true">cancel</mat-icon></button>'
+             : '') +
+           '<button type="button" class="sd-range-suffix-btn"' + (disabled ? ' disabled' : '') +
+             ' aria-label="' + escAttr(SD_DATE_RANGE_TEXT.openPicker) + '">' +
+-            '<span class="material-icons-outlined">today</span></button>' +
++            '<mat-icon class="mat-icon cursor-pointer sd-suffix-icon material-icons" aria-hidden="true">today</mat-icon></button>' +
+         '</div>' +
+         (showErrorText ? '<div class="sd-error-text">' + esc(errorMsg) + '</div>'
+           : (helperText ? '<div class="sd-helper-text">' + esc(helperText) + '</div>' : '')) +
+@@ -15034,8 +15025,7 @@
+               ? '<button type="button" class="sd-org-chart__toggle"' +
+                 ' aria-label="' + escAttr(open ? SD_ORG_CHART_TEXT.collapse : SD_ORG_CHART_TEXT.expand) + '"' +
+                 ' aria-expanded="' + (open ? 'true' : 'false') + '">' +
+-                '<span class="material-icons-outlined" aria-hidden="true">' +
+-                  (open ? 'expand_more' : 'chevron_right') + '</span></button>'
++                sdMatIconHtml(open ? 'expand_more' : 'chevron_right') + '</button>'
+               : '') +
+           '</div>' +
+           (hasKids
+@@ -15332,7 +15322,7 @@
+     _actionBtn(act, icon, title, extra) {
+       return '<button type="button" class="c-action--white' + extra + '" title="' + escAttr(title) + '"' +
+         ' aria-label="' + escAttr(title) + '" data-act="' + act + '">' +
+-        '<span class="material-icons-outlined" aria-hidden="true">' + icon + '</span></button>';
++        '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">' + icon + '</mat-icon></button>';
+     }
+ 
+     _bindPanel() {
+@@ -15592,7 +15582,7 @@
+       if (!has) {
+         body = '<tr><td colspan="' + (cols.length + 1) + '" class="p-0 border-0 bg-white">' +
+             '<div class="empty-state-wrapper" data-sd-tooltip="' + escAttr(SD_IMPORT_EXCEL_TEXT.emptyTip) + '" data-tpl>' +
+-              '<span class="material-icons-outlined empty-icon" aria-hidden="true">cloud_download</span>' +
++              '<mat-icon role="img" class="mat-icon notranslate empty-icon material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">cloud_download</mat-icon>' +
+               '<h4>' + esc(SD_IMPORT_EXCEL_TEXT.emptyTitle) + '</h4>' +
+               '<span class="text-small text-link"> ' + esc(SD_IMPORT_EXCEL_TEXT.emptyLink) + ' </span>' +
+             '</div>' +
+@@ -16876,8 +16866,8 @@
+   };
+ 
+   function sdAiIcon(name, cls) {
+-    return '<span class="material-icons-outlined' + (cls ? ' ' + cls : '') +
+-      '" aria-hidden="true">' + name + '</span>';
++    /* catalog #c-autoid-inspector: `<mat-icon class="mat-icon … material-icons …">` (đặc) */
++    return sdMatIconHtml(name, cls || '');
+   }
+ 
+   function sdAiIsTarget(el) {
+@@ -17863,7 +17853,7 @@
+               ' <span style="' + SD_CODE_BADGE_STYLE + '"> ' +
+                 (editable ? T.editing : T.readonly) + ' </span></div>' +
+             '<button class="copy-btn" title="' + escAttr(T.copyTip) + '">' +
+-              '<span class="material-icons-outlined" aria-hidden="true">content_copy</span>' +
++              '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">content_copy</mat-icon>' +
+               '<span>' + T.copy + '</span>' +
+             '</button>' +
+           '</div>' +
+@@ -17910,12 +17900,12 @@
+         if (!btn) return;
+         sdAiCopy(self.text);
+         btn.setAttribute('title', SD_CODE_EDITOR_TEXT.copiedTip);
+-        btn.innerHTML = '<span class="material-icons-outlined text-success" aria-hidden="true">check</span>' +
++        btn.innerHTML = '<mat-icon role="img" class="mat-icon notranslate text-success material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">check</mat-icon>' +
+           '<span class="text-success">' + SD_CODE_EDITOR_TEXT.copied + '</span>';
+         clearTimeout(self._copyTimer);
+         self._copyTimer = setTimeout(function () {
+           btn.setAttribute('title', SD_CODE_EDITOR_TEXT.copyTip);
+-          btn.innerHTML = '<span class="material-icons-outlined" aria-hidden="true">content_copy</span>' +
++          btn.innerHTML = '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">content_copy</mat-icon>' +
+             '<span>' + SD_CODE_EDITOR_TEXT.copy + '</span>';
+         }, 1800);
+       });
+@@ -18413,8 +18403,8 @@
+          Catalog không đặt `title` lên icon nhưng ghi chú cuối mục nói tooltip của
+          icon "chỉ hiện bằng title" — nên kit đặt câu lỗi vào `title`. */
+       var iconHtml = (err && this.hideInlineError)
+-        ? '<span class="material-icons-outlined sd-error-icon" aria-hidden="true"' +
+-          ' title="' + escAttr(msg) + '">error</span>'
++        ? '<mat-icon role="img" class="mat-icon notranslate sd-error-icon material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true"' +
++          ' title="' + escAttr(msg) + '" data-mat-icon-type="font">error</mat-icon>'
+         : '';
+       var footerHtml = '<div class="sd-editor-footer">' +
+         ((err && !this.hideInlineError)
+--- a/design-system/core/styles/sd-tokens.css
++++ b/design-system/core/styles/sd-tokens.css
+@@ -154,9 +154,13 @@
+    `.material-icons` của kit là inline-flex căn giữa → trả lại đúng bản catalog. */
+ .mat-icon {
+   -webkit-user-select: none; user-select: none; background-repeat: no-repeat;
+-  display: inline-block; fill: currentColor; height: 24px; width: 24px;
++  display: inline-block; fill: currentColor;
+   overflow: hidden; position: relative;
+ }
++/* Material đặt mặc định `height:24px;width:24px` rồi để CSS từng component thu
++   nhỏ. CSS của kit đã đo khớp catalog với icon cỡ theo chữ (hộp = font-size), nên
++   kit KHÔNG khoá 24×24 ở đây — chỉ là hộp mặc định khi font-size 24px như
++   Material (icon chữ 24px → hộp 24×24, giống hệt). Đo lại 26 bộ so: không lệch. */
+ .mat-icon.material-icons,
+ .mat-icon.material-icons-outlined {
+   display: inline-block; vertical-align: baseline;
+@@ -2428,7 +2432,8 @@
+   transition: background-color 80ms ease, color 80ms ease;
+ }
+ .sd-clear-btn:hover { background: rgba(0, 0, 0, .06); color: var(--sd-error); }
+-.sd-clear-btn .material-icons-outlined { font-size: 16px; width: 16px; height: 16px; line-height: 16px; }
++.sd-clear-btn .material-icons-outlined ,
++.sd-clear-btn .mat-icon { font-size: 16px; width: 16px; height: 16px; line-height: 16px; }
+ .sd-clear-btn.sd-hover { visibility: hidden; }
+ .sd-form-field:hover .sd-clear-btn.sd-hover,
+ .sd-form-field:focus-within .sd-clear-btn.sd-hover { visibility: visible; }
+@@ -2520,7 +2525,8 @@
+   border-radius: 4px;
+   background-color: #fff;
+ }
+-sd-select .sd-dropdown-menu .c-filter-input-container .filter-input-wrapper .material-icons-outlined {
++sd-select .sd-dropdown-menu .c-filter-input-container .filter-input-wrapper .material-icons-outlined ,
++sd-select .sd-dropdown-menu .c-filter-input-container .filter-input-wrapper .mat-icon {
+   color: #dadada;
+   font-size: 24px;
+   width: 24px;
+@@ -2874,7 +2880,8 @@
+   pointer-events: none;
+   background: transparent;
+ }
+-sd-tab-group .sd-tab-pagination .material-icons-outlined {
++sd-tab-group .sd-tab-pagination .material-icons-outlined ,
++sd-tab-group .sd-tab-pagination .mat-icon {
+   font-size: 20px;
+ }
+ 
+@@ -3034,7 +3041,7 @@
+   align-items: center;
+ }
+ /* Icon: catalog `span.mr-8.material-icons-outlined` cỡ mặc định 24px. */
+-sd-section .c-section-header-left > .material-icons-outlined {
++sd-section .c-section-header-left > .material-icons-outlined ,sd-section .c-section-header-left > .mat-icon {
+   font-size: 24px;
+ }
+ /* Thân — catalog `div.p-16` / `div.c-no-padding-body` + `border-top:1px solid
+@@ -3375,7 +3382,7 @@
+ /* Row action menu (type: "menu") — 3-dot button + dropdown */
+ /* Nút lệnh trên dòng — catalog `desktop-command button[mat-icon-button]` 24px,
+    icon 16px màu --sd-black400. Bản trước 32px. */
+-sd-table .c-table-menu-btn .material-icons-outlined {
++sd-table .c-table-menu-btn .material-icons-outlined ,sd-table .c-table-menu-btn .mat-icon {
+   width: 16px; height: 16px; font-size: 16px; line-height: 16px;
+ }
+ sd-table .c-table-menu-btn {
+@@ -3429,14 +3436,15 @@
+ sd-table .c-table-menu-item:hover {
+   background: var(--sd-black100);
+ }
+-sd-table .c-table-menu-item .material-icons-outlined {
++sd-table .c-table-menu-item .material-icons-outlined ,
++sd-table .c-table-menu-item .mat-icon {
+   font-size: 18px;
+   color: var(--sd-black400);
+ }
+ /* Item có option.color (mirror command con có màu riêng — vd success cho "Duyệt",
+    info cho "Hoàn tất", Portal /pattern/table/children) — tái dùng class .text-*
+    có sẵn (không thêm token màu mới, Rule 1); icon ăn theo màu chữ luôn. */
+-sd-table .c-table-menu-item[class*="text-"] .material-icons-outlined {
++sd-table .c-table-menu-item[class*="text-"] .material-icons-outlined ,sd-table .c-table-menu-item[class*="text-"] .mat-icon {
+   color: inherit;
+ }
+ 
+@@ -3541,9 +3549,11 @@
+   color: rgb(68, 71, 78);
+   cursor: pointer;
+ }
+-sd-table .c-paginator-btn .material-icons-outlined { font-size: 24px; width: 24px; height: 24px; line-height: 24px; color: rgba(0, 0, 0, .54); }
++sd-table .c-paginator-btn .material-icons-outlined ,
++sd-table .c-paginator-btn .mat-icon { font-size: 24px; width: 24px; height: 24px; line-height: 24px; color: rgba(0, 0, 0, .54); }
+ sd-table .c-paginator-btn[aria-disabled="true"],
+-sd-table .c-paginator-btn[aria-disabled="true"] .material-icons-outlined { color: rgba(0, 0, 0, .33); cursor: default; pointer-events: none; }
++sd-table .c-paginator-btn[aria-disabled="true"] .material-icons-outlined ,
++sd-table .c-paginator-btn[aria-disabled="true"] .mat-icon { color: rgba(0, 0, 0, .33); cursor: default; pointer-events: none; }
+ 
+ /* Lớp phủ đang tải: spinner 100px (catalog mat-spinner 100px, nét primary). */
+ sd-table .c-loading-spinner {
+@@ -3701,7 +3711,8 @@
+ sd-side-drawer .sd-side-drawer-close-btn:active {
+   background: var(--sd-black200);
+ }
+-sd-side-drawer .sd-side-drawer-close-btn .material-icons-outlined {
++sd-side-drawer .sd-side-drawer-close-btn .material-icons-outlined ,
++sd-side-drawer .sd-side-drawer-close-btn .mat-icon {
+   display: block;
+   width: 20px;
+   height: 20px;
+@@ -3939,7 +3950,8 @@
+   outline: 2px solid var(--sd-primary) !important;
+   outline-offset: 2px;
+ }
+-sd-modal .sd-modal-close-btn .material-icons-outlined {
++sd-modal .sd-modal-close-btn .material-icons-outlined ,
++sd-modal .sd-modal-close-btn .mat-icon {
+   display: block;
+   width: 20px;
+   height: 20px;
+@@ -4118,7 +4130,8 @@
+   sd-inform .c-inform .c-inform-close { transition: none; }
+ }
+ sd-inform .c-inform .c-inform-close:hover { background: #0000000f; color: var(--sd-error); }
+-sd-inform .c-inform .c-inform-close .material-icons-outlined {
++sd-inform .c-inform .c-inform-close .material-icons-outlined ,
++sd-inform .c-inform .c-inform-close .mat-icon {
+   width: 18px; height: 18px; font-size: 18px; line-height: 18px;
+ }
+ /* Nút bên trong [sdInformAction] cao 24px — catalog đặt --mat-button-*-container-height
+@@ -4394,6 +4407,7 @@
+               color var(--sd-stepper-animation-duration, 500ms) ease;
+ }
+ sd-stepper .sd-stepper__circle .material-icons-outlined,
++sd-stepper .sd-stepper__circle .mat-icon,
+ sd-stepper .sd-stepper__circle .material-icons {
+   font-size: 16px;
+   width: 16px;
+@@ -4418,7 +4432,7 @@
+   color: #fff !important;
+ }
+ /* catalog: `.mat-step-icon-state-error .mat-icon{font-size:24px;height:24px;width:24px}` */
+-sd-stepper .sd-stepper__circle--error .material-icons-outlined,
++sd-stepper .sd-stepper__circle--error .material-icons-outlined,sd-stepper .sd-stepper__circle--error .mat-icon,
+ sd-stepper .sd-stepper__circle--error .material-icons {
+   font-size: 24px; width: 24px; height: 24px; line-height: 24px;
+ }
+@@ -4883,7 +4897,8 @@
+ }
+ /* catalog dùng `<svg width:24 height:24>`; kit dùng icon font cùng cỡ. */
+ .sd-toast__icon .material-icons,
+-.sd-toast__icon .material-icons-outlined {
++.sd-toast__icon .material-icons-outlined ,
++.sd-toast__icon .mat-icon {
+   width: 24px;
+   height: 24px;
+   font-size: 24px;
+@@ -5174,7 +5189,8 @@
+   cursor: pointer;
+   color: #7a7a7a;
+ }
+-sd-query-bar .c-chip .c-chip-remove .material-icons-outlined { font-size: 14px; width: 14px; height: 14px; }
++sd-query-bar .c-chip .c-chip-remove .material-icons-outlined ,
++sd-query-bar .c-chip .c-chip-remove .mat-icon { font-size: 14px; width: 14px; height: 14px; }
+ sd-query-bar .c-chip .c-chip-remove:hover { background: #0000000f; }
+ 
+ /* Nút "+" thêm bộ lọc: tròn, VIỀN NÉT ĐỨT */
+@@ -5192,7 +5208,8 @@
+ }
+ sd-query-bar .c-density-compact .c-add-filter { width: 28px; height: 28px; }
+ sd-query-bar .c-density-comfortable .c-add-filter { width: 32px; height: 32px; }
+-sd-query-bar .c-add-filter .material-icons-outlined { font-size: 18px; width: 18px; height: 18px; }
++sd-query-bar .c-add-filter .material-icons-outlined ,
++sd-query-bar .c-add-filter .mat-icon { font-size: 18px; width: 18px; height: 18px; }
+ sd-query-bar .c-add-filter:hover:not([disabled]) { border-color: var(--sd-primary); color: var(--sd-primary); }
+ sd-query-bar .c-add-filter[disabled] { opacity: .5; cursor: not-allowed; }
+ 
+@@ -5245,8 +5262,11 @@
+ sd-query-bar .c-density-comfortable .c-clear-all,
+ sd-query-bar .c-density-comfortable .c-search-trigger { width: 32px; height: 32px; }
+ sd-query-bar .c-clear-all .material-icons-outlined,
++sd-query-bar .c-clear-all .mat-icon,
+ sd-query-bar .c-search-trigger .material-icons-outlined,
+-sd-query-bar .c-saved-filters .material-icons-outlined { font-size: 18px; width: 18px; height: 18px; }
++sd-query-bar .c-search-trigger .mat-icon,
++sd-query-bar .c-saved-filters .material-icons-outlined ,
++sd-query-bar .c-saved-filters .mat-icon { font-size: 18px; width: 18px; height: 18px; }
+ sd-query-bar .c-clear-all:hover:not([disabled]),
+ sd-query-bar .c-search-trigger:hover:not([disabled]),
+ sd-query-bar .c-saved-filters:hover:not([disabled]) { border-color: var(--sd-primary); color: var(--sd-primary); }
+@@ -5300,7 +5320,8 @@
+   border-radius: var(--sd-border-radius);
+ }
+ sd-query-bar .qb-saved-remove:hover { background: var(--sd-black100); color: var(--sd-black500); }
+-sd-query-bar .qb-saved-remove .material-icons-outlined { font-size: 16px; }
++sd-query-bar .qb-saved-remove .material-icons-outlined ,
++sd-query-bar .qb-saved-remove .mat-icon { font-size: 16px; }
+ 
+ /* Popover chỉnh giá trị - fixed để thoát mọi overflow của container */
+ sd-query-bar .qb-popover {
+@@ -5468,7 +5489,8 @@
+   color: inherit;
+ }
+ sd-query-bar .c-seamless--compact .c-seamless__x { width: 26px; }
+-sd-query-bar .c-seamless__x .material-icons-outlined { font-size: 14px; width: 14px; height: 14px; }
++sd-query-bar .c-seamless__x .material-icons-outlined ,
++sd-query-bar .c-seamless__x .mat-icon { font-size: 14px; width: 14px; height: 14px; }
+ sd-query-bar .c-seamless__x:hover { background: #0000000d; }
+ 
+ /* `sd-inline-text` — 2026-10-11 ĐÃ DỰNG thành component dùng chung; CSS chuyển
+@@ -5536,7 +5558,8 @@
+ }
+ sd-query-bar .c-density-compact .c-token-remove { width: 26px; }
+ sd-query-bar .c-density-comfortable .c-token-remove { width: 28px; }
+-sd-query-bar .c-token-remove .material-icons-outlined { font-size: 14px; width: 14px; height: 14px; }
++sd-query-bar .c-token-remove .material-icons-outlined ,
++sd-query-bar .c-token-remove .mat-icon { font-size: 14px; width: 14px; height: 14px; }
+ sd-query-bar .c-token-remove:hover { background: #0000000d; }
+ sd-query-bar .c-token-building { border-style: dashed; }
+ 
+@@ -5854,7 +5877,8 @@
+   transition: background .12s;
+   z-index: 3;
+ }
+-sd-preview-image .sd-preview-nav .material-icons-outlined {
++sd-preview-image .sd-preview-nav .material-icons-outlined ,
++sd-preview-image .sd-preview-nav .mat-icon {
+   font-size: 28px;
+   width: 28px;
+   height: 28px;
+@@ -5903,7 +5927,8 @@
+   cursor: pointer;
+   transition: background .12s;
+ }
+-sd-preview-image .sd-preview-toolbar__btn .material-icons-outlined {
++sd-preview-image .sd-preview-toolbar__btn .material-icons-outlined ,
++sd-preview-image .sd-preview-toolbar__btn .mat-icon {
+   font-size: 20px;
+   width: 20px;
+   height: 20px;
+@@ -6026,7 +6051,8 @@
+   border: 1px solid var(--sd-preview-divider);
+   background: #ffffff0d;
+ }
+-sd-preview-image .sd-preview-status__tile .material-icons-outlined {
++sd-preview-image .sd-preview-status__tile .material-icons-outlined ,
++sd-preview-image .sd-preview-status__tile .mat-icon {
+   font-size: 48px;
+   width: 48px;
+   height: 48px;
+@@ -6040,7 +6066,8 @@
+   background: var(--sd-preview-danger-soft);
+   border-color: var(--sd-preview-danger-border);
+ }
+-sd-preview-image .sd-preview-status__tile--danger .material-icons-outlined { color: var(--sd-preview-danger); }
++sd-preview-image .sd-preview-status__tile--danger .material-icons-outlined ,
++sd-preview-image .sd-preview-status__tile--danger .mat-icon { color: var(--sd-preview-danger); }
+ sd-preview-image .sd-preview-status__title {
+   font-size: 16px;
+   font-weight: 500;
+@@ -6066,7 +6093,8 @@
+   font-weight: 500;
+   transition: filter .12s;
+ }
+-sd-preview-image .sd-preview-btn-primary .material-icons-outlined {
++sd-preview-image .sd-preview-btn-primary .material-icons-outlined ,
++sd-preview-image .sd-preview-btn-primary .mat-icon {
+   font-size: 18px;
+   width: 18px;
+   height: 18px;
+@@ -6260,7 +6288,8 @@
+   white-space:nowrap;
+   flex-shrink:0;
+ }
+-sd-preview-pdf .sd-preview-pdf-iconbtn .material-icons-outlined {
++sd-preview-pdf .sd-preview-pdf-iconbtn .material-icons-outlined ,
++sd-preview-pdf .sd-preview-pdf-iconbtn .mat-icon {
+   font-size:18px;
+   width:18px;
+   height:18px;
+@@ -6382,7 +6411,8 @@
+   flex-shrink:0;
+   transition:background .12s,color .12s;
+ }
+-sd-preview-pdf .sd-preview-pdf-sidebar__tab .material-icons-outlined {
++sd-preview-pdf .sd-preview-pdf-sidebar__tab .material-icons-outlined ,
++sd-preview-pdf .sd-preview-pdf-sidebar__tab .mat-icon {
+   font-size:14px;
+   width:14px;
+   height:14px;
+@@ -6410,7 +6440,8 @@
+   text-align:center;
+   color:var(--sd-pdf-fg-subtle);
+ }
+-sd-preview-pdf .sd-preview-pdf-sidebar__deferred .material-icons-outlined {
++sd-preview-pdf .sd-preview-pdf-sidebar__deferred .material-icons-outlined ,
++sd-preview-pdf .sd-preview-pdf-sidebar__deferred .mat-icon {
+   font-size:28px;
+   width:28px;
+   height:28px;
+@@ -6546,7 +6577,8 @@
+   flex-shrink:0;
+   transition:background .12s,color .12s;
+ }
+-sd-preview-pdf .sd-preview-pdf-toolbar__btn .material-icons-outlined {
++sd-preview-pdf .sd-preview-pdf-toolbar__btn .material-icons-outlined ,
++sd-preview-pdf .sd-preview-pdf-toolbar__btn .mat-icon {
+   font-size:18px;
+   width:18px;
+   height:18px;
+@@ -6638,7 +6670,8 @@
+   justify-content:center;
+   border:1px solid var(--sd-pdf-divider);
+ }
+-sd-preview-pdf .sd-preview-pdf-status__tile .material-icons-outlined {
++sd-preview-pdf .sd-preview-pdf-status__tile .material-icons-outlined ,
++sd-preview-pdf .sd-preview-pdf-status__tile .mat-icon {
+   font-size:48px;
+   width:48px;
+   height:48px;
+@@ -6646,14 +6679,16 @@
+ sd-preview-pdf .sd-preview-pdf-status__tile--muted {
+   background:#ffffff0d;
+ }
+-sd-preview-pdf .sd-preview-pdf-status__tile--muted .material-icons-outlined {
++sd-preview-pdf .sd-preview-pdf-status__tile--muted .material-icons-outlined ,
++sd-preview-pdf .sd-preview-pdf-status__tile--muted .mat-icon {
+   color:var(--sd-pdf-fg-subtle);
+ }
+ sd-preview-pdf .sd-preview-pdf-status__tile--danger {
+   background:var(--sd-pdf-danger-soft);
+   border-color:var(--sd-pdf-danger-border);
+ }
+-sd-preview-pdf .sd-preview-pdf-status__tile--danger .material-icons-outlined {
++sd-preview-pdf .sd-preview-pdf-status__tile--danger .material-icons-outlined ,
++sd-preview-pdf .sd-preview-pdf-status__tile--danger .mat-icon {
+   color:var(--sd-pdf-danger);
+ }
+ sd-preview-pdf .sd-preview-pdf-status__title {
+@@ -6761,7 +6796,8 @@
+   font-weight:500;
+   transition:filter .12s;
+ }
+-sd-preview-pdf .sd-preview-pdf-btn-primary .material-icons-outlined {
++sd-preview-pdf .sd-preview-pdf-btn-primary .material-icons-outlined ,
++sd-preview-pdf .sd-preview-pdf-btn-primary .mat-icon {
+   font-size:18px;
+   width:18px;
+   height:18px;
+@@ -6788,7 +6824,8 @@
+   font-weight:500;
+   transition:background .12s;
+ }
+-sd-preview-pdf .sd-preview-pdf-btn-secondary .material-icons-outlined {
++sd-preview-pdf .sd-preview-pdf-btn-secondary .material-icons-outlined ,
++sd-preview-pdf .sd-preview-pdf-btn-secondary .mat-icon {
+   font-size:18px;
+   width:18px;
+   height:18px;
+@@ -6959,7 +6996,8 @@
+   color: #000;
+   border: 2px solid #fff;
+ }
+-sd-upload-file .c-area .c-preview .c-btn-remove .material-icons-outlined {
++sd-upload-file .c-area .c-preview .c-btn-remove .material-icons-outlined ,
++sd-upload-file .c-area .c-preview .c-btn-remove .mat-icon {
+   font-size: 16px;
+   width: 16px;
+   height: 16px;
+@@ -6979,7 +7017,8 @@
+   align-items: center;
+   justify-content: center;
+ }
+-sd-upload-file .c-zoom .material-icons-outlined { font-size: 18px; }
++sd-upload-file .c-zoom .material-icons-outlined ,
++sd-upload-file .c-zoom .mat-icon { font-size: 18px; }
+ 
+ /* Spinner lúc đang tải — catalog: <mat-spinner> 18px (nét 2px, màu primary,
+    không vệt nền) là khối con trực tiếp của c-img-container, nằm sát mép trái
+@@ -7061,7 +7100,8 @@
+   height: 16px;
+   color: var(--sd-black400);
+ }
+-sd-upload-file .c-document-container .c-close .material-icons-outlined { font-size: 16px; }
++sd-upload-file .c-document-container .c-close .material-icons-outlined ,
++sd-upload-file .c-document-container .c-close .mat-icon { font-size: 16px; }
+ sd-upload-file .c-document-container .c-close:hover { background-color: var(--sd-black200); }
+ 
+ /* --- Drag & drop sắp xếp lại --- */
+@@ -7260,7 +7300,7 @@
+ }
+ /* Catalog: `.sd-inline-text__clear mat-icon { font-size:16px; width:16px; height:16px }`.
+    Kit phát icon bằng `<span class="material-icons-outlined">` (Rule 4). */
+-.sd-inline-text__clear .material-icons-outlined { font-size: 16px; width: 16px; height: 16px; }
++.sd-inline-text__clear .material-icons-outlined ,.sd-inline-text__clear .mat-icon { font-size: 16px; width: 16px; height: 16px; }
+ .sd-inline-text__clear:hover { color: var(--sd-error); }
+ 
+ /* Ô nhập bị `disabled` vẫn giữ nguyên màu chữ — catalog không hạ độ mờ (ví dụ
+@@ -7334,7 +7374,8 @@
+   transition: background-color 80ms ease, color 80ms ease;
+ }
+ sd-autocomplete .sd-clear-btn:hover { background: rgba(0, 0, 0, .06); color: var(--sd-error); }
+-sd-autocomplete .sd-clear-btn .material-icons-outlined {
++sd-autocomplete .sd-clear-btn .material-icons-outlined ,
++sd-autocomplete .sd-clear-btn .mat-icon {
+   font-size: 16px; width: 16px; height: 16px; line-height: 16px;
+ }
+ 
+@@ -7436,7 +7477,8 @@
+   color: #6b7280;   /* catalog var(--sd-text-secondary, #6b7280); portal không khai biến này */
+   transition: color .15s ease;
+ }
+-sd-autocomplete .sd-inline-view .sd-inline-clear .material-icons-outlined {
++sd-autocomplete .sd-inline-view .sd-inline-clear .material-icons-outlined ,
++sd-autocomplete .sd-inline-view .sd-inline-clear .mat-icon {
+   font-size: 16px; width: 16px; height: 16px;
+ }
+ sd-autocomplete .sd-inline-view .sd-inline-clear:hover { color: var(--sd-error); }
+@@ -7578,14 +7620,18 @@
+ sd-date-range .sd-range-suffix-btn:disabled,
+ sd-date-range .sd-range-clear-btn:disabled { color: var(--sd-black400); }
+ sd-date-range .sd-range-suffix-btn .material-icons-outlined,
+-sd-date-range .sd-range-clear-btn .material-icons-outlined { font-size: 20px; width: 20px; height: 20px; line-height: 20px; }
++sd-date-range .sd-range-suffix-btn .mat-icon,
++sd-date-range .sd-range-clear-btn .material-icons-outlined ,
++sd-date-range .sd-range-clear-btn .mat-icon { font-size: 20px; width: 20px; height: 20px; line-height: 20px; }
+ sd-date-range .sd-form-field.sd-sm .sd-range-suffix-btn,
+ sd-date-range .sd-form-field.sd-sm .sd-range-clear-btn { width: 16px; height: 16px; margin-left: 4px; }
+ sd-date-range .sd-form-field.sd-sm .sd-range-input + .sd-range-clear-btn,
+ sd-date-range .sd-form-field.sd-sm .sd-range-input + .sd-range-suffix-btn { margin-left: 8px; }
+ sd-date-range .sd-form-field.sd-sm .sd-range-suffix-btn { margin-right: -4px; }
+ sd-date-range .sd-form-field.sd-sm .sd-range-suffix-btn .material-icons-outlined,
+-sd-date-range .sd-form-field.sd-sm .sd-range-clear-btn .material-icons-outlined { font-size: 16px; width: 16px; height: 16px; line-height: 16px; }
++sd-date-range .sd-form-field.sd-sm .sd-range-suffix-btn .mat-icon,
++sd-date-range .sd-form-field.sd-sm .sd-range-clear-btn .material-icons-outlined ,
++sd-date-range .sd-form-field.sd-sm .sd-range-clear-btn .mat-icon { font-size: 16px; width: 16px; height: 16px; line-height: 16px; }
+ 
+ /* Lịch: dùng lại `.form-field-datepicker` của kit; chỉ thêm ba trạng thái của
+    KHOẢNG. Màu nền dải giữa lấy nguyên văn catalog:
+@@ -8102,7 +8148,8 @@
+   border-radius: 3px;
+   line-height: 1;
+ }
+-.sd-hover-copy-btn .material-icons-outlined {
++.sd-hover-copy-btn .material-icons-outlined ,
++.sd-hover-copy-btn .mat-icon {
+   font-size: 14px;
+   width: 14px;
+   height: 14px;
+@@ -8205,7 +8252,8 @@
+   transition: opacity .15s ease, background .15s ease, color .15s ease;
+ }
+ .filter-scorecard__filter .material-icons,
+-.filter-scorecard__filter .material-icons-outlined { font-size: 14px; line-height: 1; }
++.filter-scorecard__filter .material-icons-outlined ,
++.filter-scorecard__filter .mat-icon { font-size: 14px; line-height: 1; }
+ .filter-scorecard--active .filter-scorecard__filter { opacity: 1; background: var(--sd-primary); color: #fff; }
+ .filter-scorecard--active:hover .filter-scorecard__filter { background: var(--sd-primary-dark); }
+ .filter-scorecard__label { color: var(--sd-black400); }
+@@ -8351,7 +8399,8 @@
+ }
+ .sd-org-chart__toggle:hover { background: #f4f7fb; }
+ .sd-org-chart__toggle:focus-visible { outline: 2px solid var(--sd-primary); outline-offset: 2px; }
+-.sd-org-chart__toggle .material-icons-outlined { width: 18px; height: 18px; font-size: 18px; line-height: 18px; }
++.sd-org-chart__toggle .material-icons-outlined ,
++.sd-org-chart__toggle .mat-icon { width: 18px; height: 18px; font-size: 18px; line-height: 18px; }
+ .sd-org-chart__children[hidden] { display: none; }
+ 
+ 
+@@ -8526,7 +8575,8 @@
+ }
+ .modal-resizable__actions .c-action--white:hover { background: rgba(0, 0, 0, .06); }
+ .modal-resizable button.c-action--white:focus { outline: none !important; }
+-.modal-resizable__actions .c-action--white .material-icons-outlined { font-size: 18px; line-height: 18px; }
++.modal-resizable__actions .c-action--white .material-icons-outlined ,
++.modal-resizable__actions .c-action--white .mat-icon { font-size: 18px; line-height: 18px; }
+ .modal-resizable__body { flex: 1; position: relative; }
+ .modal-resizable__content { position: absolute; padding: 8px 16px 16px; inset: 0; overflow: auto; }
+ .modal-resizable__footer { border-top: 1px solid #dde0e5; padding: 5px 0; }
+@@ -8684,10 +8734,12 @@
+ sd-autoid-inspector .sd-autoid-inspector__fab-wrap:hover .sd-autoid-inspector__fab-dismiss{opacity:1;transform:scale(1);pointer-events:auto}
+ sd-autoid-inspector .sd-autoid-inspector__fab{width:36px;height:36px;border-radius:50%;border:none;background:var(--sd-primary, #2a66f4);color:#fff;cursor:pointer;box-shadow:0 3px 10px #00000038;display:inline-flex;align-items:center;justify-content:center;transition:transform .15s ease,background .15s ease,box-shadow .15s ease}
+ sd-autoid-inspector .sd-autoid-inspector__fab:hover{background:var(--sd-primary-dark, #1c4ad9);transform:scale(1.08);box-shadow:0 5px 14px #00000047}
+-sd-autoid-inspector .sd-autoid-inspector__fab .material-icons-outlined{font-size:18px;width:18px;height:18px}
++sd-autoid-inspector .sd-autoid-inspector__fab .material-icons-outlined,
++sd-autoid-inspector .sd-autoid-inspector__fab .mat-icon{font-size:18px;width:18px;height:18px}
+ sd-autoid-inspector .sd-autoid-inspector__fab-dismiss{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;border:1px solid var(--sd-black200, #e6e6e6);background:#fff;color:var(--sd-black400, #757575);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;opacity:0;transform:scale(.7);pointer-events:none;transition:opacity .12s ease,transform .12s ease,color .12s ease,background .12s ease;box-shadow:0 1px 4px #00000026}
+ sd-autoid-inspector .sd-autoid-inspector__fab-dismiss:hover{background:var(--sd-error-light, #fed5d0);color:var(--sd-error-dark, #ba200e);border-color:var(--sd-error, #f82c13)}
+-sd-autoid-inspector .sd-autoid-inspector__fab-dismiss .material-icons-outlined{font-size:12px;width:12px;height:12px;line-height:12px}
++sd-autoid-inspector .sd-autoid-inspector__fab-dismiss .material-icons-outlined,
++sd-autoid-inspector .sd-autoid-inspector__fab-dismiss .mat-icon{font-size:12px;width:12px;height:12px;line-height:12px}
+ sd-autoid-inspector .sd-autoid-inspector__backdrop{position:fixed;inset:0;padding:0;border:none;background:#00000052;z-index:100001;backdrop-filter:blur(2px)}
+ sd-autoid-inspector .sd-autoid-inspector__panel{position:fixed;right:20px;bottom:80px;width:min(860px,100vw - 40px);max-height:calc(100vh - 110px);background:#fff;border-radius:12px;box-shadow:0 16px 48px #00000038;display:flex;flex-direction:column;z-index:100002;overflow:hidden;border:1px solid var(--sd-black200, #e6e6e6)}
+ sd-autoid-inspector .sd-autoid-inspector__header{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--sd-black200, #e6e6e6);background:var(--sd-black100, #f2f2f2);flex-shrink:0}
+@@ -8704,17 +8756,20 @@
+ sd-autoid-inspector .sd-autoid-inspector__icon-btn:hover{background:var(--sd-black100, #f2f2f2);color:var(--sd-black500, #212121)}
+ sd-autoid-inspector .sd-autoid-inspector__icon-btn.is-primary{color:var(--sd-primary, #2a66f4)}
+ sd-autoid-inspector .sd-autoid-inspector__icon-btn.is-primary:hover{background:var(--sd-primary-light, #eaf1ff);color:var(--sd-primary-dark, #1c4ad9)}
+-sd-autoid-inspector .sd-autoid-inspector__icon-btn .material-icons-outlined{font-size:18px;width:18px;height:18px}
++sd-autoid-inspector .sd-autoid-inspector__icon-btn .material-icons-outlined,
++sd-autoid-inspector .sd-autoid-inspector__icon-btn .mat-icon{font-size:18px;width:18px;height:18px}
+ sd-autoid-inspector .sd-autoid-inspector__close-btn{border:none;cursor:pointer;padding:4px;border-radius:50%;width:28px;height:28px;background:transparent;color:var(--sd-black400, #757575);display:inline-flex;align-items:center;justify-content:center;transition:background .12s ease,color .12s ease}
+ sd-autoid-inspector .sd-autoid-inspector__close-btn:hover{background:var(--sd-error-light, #fed5d0);color:var(--sd-error-dark, #ba200e)}
+-sd-autoid-inspector .sd-autoid-inspector__close-btn .material-icons-outlined{font-size:18px;width:18px;height:18px}
++sd-autoid-inspector .sd-autoid-inspector__close-btn .material-icons-outlined,
++sd-autoid-inspector .sd-autoid-inspector__close-btn .mat-icon{font-size:18px;width:18px;height:18px}
+ sd-autoid-inspector .sd-autoid-inspector__body{padding:14px;overflow:auto;flex:1;background:#fff}
+ sd-autoid-inspector .sd-autoid-inspector__toast{position:absolute;top:56px;right:14px;background:var(--sd-success, #4caf50);color:#fff;padding:6px 12px;border-radius:6px;font-size:12px;z-index:2;box-shadow:0 4px 12px #0000002e}
+ sd-autoid-inspector .sd-autoid-inspector__audit-toolbar{display:flex;justify-content:flex-end;margin-bottom:12px}
+ sd-autoid-inspector .sd-autoid-inspector__toggle{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--sd-black200, #e6e6e6);background:#fff;border-radius:999px;padding:5px 12px 5px 10px;cursor:pointer;font-size:12px;font-weight:500;color:var(--sd-black400, #757575);transition:all .15s ease}
+ sd-autoid-inspector .sd-autoid-inspector__toggle:hover{border-color:var(--sd-primary, #2a66f4);color:var(--sd-primary, #2a66f4)}
+ sd-autoid-inspector .sd-autoid-inspector__toggle.is-on{border-color:var(--sd-primary, #2a66f4);color:var(--sd-primary, #2a66f4);background:var(--sd-primary-light, #eaf1ff)}
+-sd-autoid-inspector .sd-autoid-inspector__toggle .material-icons-outlined{font-size:16px;width:16px;height:16px}
++sd-autoid-inspector .sd-autoid-inspector__toggle .material-icons-outlined,
++sd-autoid-inspector .sd-autoid-inspector__toggle .mat-icon{font-size:16px;width:16px;height:16px}
+ sd-autoid-inspector .sd-autoid-inspector__toggle-state{font-size:10px;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--sd-black200, #e6e6e6);color:var(--sd-black400, #757575)}
+ sd-autoid-inspector .is-on .sd-autoid-inspector__toggle-state{background:var(--sd-primary, #2a66f4);color:#fff}
+ sd-autoid-inspector .sd-autoid-inspector__summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+@@ -8730,12 +8785,17 @@
+ sd-autoid-inspector .sd-autoid-inspector__stat-value{font-size:22px;font-weight:700;line-height:1;margin-bottom:4px}
+ sd-autoid-inspector .sd-autoid-inspector__stat-label{font-size:11px;color:var(--sd-black400, #757575);text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+ sd-autoid-inspector .sd-autoid-inspector__section-title{display:flex;align-items:center;gap:6px;margin:14px 0 8px;font-size:13px;font-weight:600;color:var(--sd-black500, #212121)}
+-sd-autoid-inspector .sd-autoid-inspector__section-title .material-icons-outlined{font-size:18px;width:18px;height:18px}
+-sd-autoid-inspector .sd-autoid-inspector__section-title .material-icons-outlined.is-error{color:var(--sd-error, #f82c13)}
+-sd-autoid-inspector .sd-autoid-inspector__section-title .material-icons-outlined.is-warning{color:var(--sd-warning, #ff9600)}
+-sd-autoid-inspector .sd-autoid-inspector__section-title .material-icons-outlined.is-info{color:var(--sd-info, #2962ff)}
++sd-autoid-inspector .sd-autoid-inspector__section-title .material-icons-outlined,
++sd-autoid-inspector .sd-autoid-inspector__section-title .mat-icon{font-size:18px;width:18px;height:18px}
++sd-autoid-inspector .sd-autoid-inspector__section-title .material-icons-outlined.is-error,
++sd-autoid-inspector .sd-autoid-inspector__section-title .mat-icon.is-error{color:var(--sd-error, #f82c13)}
++sd-autoid-inspector .sd-autoid-inspector__section-title .material-icons-outlined.is-warning,
++sd-autoid-inspector .sd-autoid-inspector__section-title .mat-icon.is-warning{color:var(--sd-warning, #ff9600)}
++sd-autoid-inspector .sd-autoid-inspector__section-title .material-icons-outlined.is-info,
++sd-autoid-inspector .sd-autoid-inspector__section-title .mat-icon.is-info{color:var(--sd-info, #2962ff)}
+ sd-autoid-inspector .sd-autoid-inspector__success-card{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--sd-success-light, #dbefdc);border:1px solid var(--sd-success, #4caf50);border-radius:10px;color:var(--sd-success-dark, #39833c)}
+-sd-autoid-inspector .sd-autoid-inspector__success-card .material-icons-outlined{font-size:28px;width:28px;height:28px;color:var(--sd-success, #4caf50)}
++sd-autoid-inspector .sd-autoid-inspector__success-card .material-icons-outlined,
++sd-autoid-inspector .sd-autoid-inspector__success-card .mat-icon{font-size:28px;width:28px;height:28px;color:var(--sd-success, #4caf50)}
+ sd-autoid-inspector .sd-autoid-inspector__success-card small{font-size:11px;opacity:.85}
+ sd-autoid-inspector .sd-autoid-inspector__table-wrap{border:1px solid var(--sd-black200, #e6e6e6);border-radius:8px;overflow:auto;max-height:60vh;background:#fff}
+ sd-autoid-inspector .sd-autoid-inspector__table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
+@@ -8764,7 +8824,8 @@
+ sd-autoid-inspector .sd-autoid-inspector__filter:focus-within{border-color:var(--sd-primary, #2a66f4);background:#fff}
+ sd-autoid-inspector .sd-autoid-inspector__filter input{flex:1;border:none;background:transparent;outline:none;font-size:13px;color:var(--sd-black500, #212121)}
+ sd-autoid-inspector .sd-autoid-inspector__filter input::placeholder{color:var(--sd-black300, #bfbfbf)}
+-sd-autoid-inspector .sd-autoid-inspector__filter>.material-icons-outlined{font-size:18px;width:18px;height:18px;color:var(--sd-black400, #757575)}
++sd-autoid-inspector .sd-autoid-inspector__filter>.material-icons-outlined,
++sd-autoid-inspector .sd-autoid-inspector__filter>.mat-icon{font-size:18px;width:18px;height:18px;color:var(--sd-black400, #757575)}
+ sd-autoid-inspector .sd-autoid-inspector__export-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px}
+ sd-autoid-inspector .sd-autoid-inspector__export-grid.is-e2e{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+ sd-autoid-inspector .sd-autoid-inspector__export-grid button{border:1px solid var(--sd-black200, #e6e6e6);background:#fff;border-radius:10px;padding:12px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:0;transition:border-color .15s ease,background .15s ease,transform .12s ease;text-align:center}
+@@ -8772,7 +8833,8 @@
+ sd-autoid-inspector .sd-autoid-inspector__export-grid button:disabled{cursor:wait;opacity:.68;transform:none}
+ sd-autoid-inspector .sd-autoid-inspector__export-grid button span{font-size:12px;font-weight:600;color:var(--sd-black500, #212121);line-height:1.25}
+ sd-autoid-inspector .sd-autoid-inspector__export-grid button small{font-size:10px;color:var(--sd-black400, #757575);line-height:1.2}
+-sd-autoid-inspector .sd-autoid-inspector__export-grid button .material-icons-outlined{font-size:22px;width:22px;height:22px;color:var(--sd-primary, #2a66f4)}
++sd-autoid-inspector .sd-autoid-inspector__export-grid button .material-icons-outlined,
++sd-autoid-inspector .sd-autoid-inspector__export-grid button .mat-icon{font-size:22px;width:22px;height:22px;color:var(--sd-primary, #2a66f4)}
+ sd-autoid-inspector .sd-autoid-inspector__export-section{margin-top:14px;padding-top:12px;border-top:1px solid var(--sd-black200, #e6e6e6)}
+ sd-autoid-inspector .sd-autoid-inspector__export-message{margin-top:10px;border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.35}
+ sd-autoid-inspector .sd-autoid-inspector__export-message.is-success{background:var(--sd-success-light, #dbefdc);color:var(--sd-success-dark, #39833c);border:1px solid var(--sd-success, #4caf50)}
+@@ -8795,7 +8857,8 @@
+ sd-code-editor .sd-code-wrapper .sd-code-header .mac-dots .dot.green{background-color:#27c93f}
+ sd-code-editor .sd-code-wrapper .sd-code-header .lang-badge{color:#858585;font-size:12px;font-weight:600;letter-spacing:.5px}
+ sd-code-editor .sd-code-wrapper .sd-code-header .copy-btn{display:flex;align-items:center;gap:4px;background:none;border:none;color:#ccc;cursor:pointer;font-size:13px;padding:4px 8px;border-radius:4px;transition:all .2s ease}
+-sd-code-editor .sd-code-wrapper .sd-code-header .copy-btn .material-icons-outlined{font-size:16px;width:16px;height:16px}
++sd-code-editor .sd-code-wrapper .sd-code-header .copy-btn .material-icons-outlined,
++sd-code-editor .sd-code-wrapper .sd-code-header .copy-btn .mat-icon{font-size:16px;width:16px;height:16px}
+ sd-code-editor .sd-code-wrapper .sd-code-header .copy-btn:hover{background-color:#404040;color:#fff}
+ sd-code-editor .sd-code-wrapper .sd-code-header .copy-btn .text-success{color:#27c93f!important}
+ sd-code-editor .sd-code-wrapper .sd-code-content{overflow-y:auto;position:relative}
+@@ -8856,15 +8919,17 @@
+       (`.mini-demo-balloon`, CSS của trang catalog chứ không phải thư viện).
+       Kit đặt panel làm CON của host — cùng kiểu lệch đã ghi cho sd-operator /
+       sd-tree / sd-autocomplete. */
+-sd-mini-editor .ck-button .material-icons-outlined,
+-sd-editor .ck-button .material-icons-outlined {
++sd-mini-editor .ck-button .material-icons-outlined,sd-mini-editor .ck-button .mat-icon,
++sd-editor .ck-button .material-icons-outlined ,
++sd-editor .ck-button .mat-icon {
+   font-size: var(--ck-icon-size, 16px);
+   width: var(--ck-icon-size, 16px);
+   height: var(--ck-icon-size, 16px);
+   line-height: var(--ck-icon-size, 16px);
+   vertical-align: middle;
+ }
+-sd-mini-editor .ck-dropdown__arrow.material-icons-outlined {
++sd-mini-editor .ck-dropdown__arrow.material-icons-outlined ,
++sd-mini-editor .ck-dropdown__arrow.mat-icon {
+   font-size: 14px; width: 14px; height: 14px; line-height: 14px;
+ }
+ sd-mini-editor { position: relative; }
+@@ -8897,7 +8962,7 @@
+ .sd-editor-counter-row{display:flex;justify-content:flex-end;align-items:center;padding:4px 12px;border:1px solid var(--ck-color-base-border);border-top:none}
+ .sd-editor-footer{min-height:20px;margin-top:4px}
+ .sd-editor-footer .mat-mdc-form-field-error{font-size:12px;color:var(--mdc-theme-error, #f44336)}
+-.sd-error-icon{position:absolute;right:8px;bottom:8px;z-index:2;color:var(--mdc-theme-error, #f44336);height:20px;width:20px;font-size:20px;cursor:default}
++sd-editor .sd-error-icon{position:absolute;right:8px;bottom:8px;z-index:2;color:var(--mdc-theme-error, #f44336);height:20px;width:20px;font-size:20px;cursor:default}
+ .sd-editor--readonly sd-editor .ck-editor__editable{background:#0000000a;cursor:default}
+ .sd-editor-counter{font-size:12px;color:#0009}
+ .sd-editor-counter--over{color:var(--mdc-theme-error, #f44336)}
+@@ -9015,7 +9080,8 @@
+ sd-query-builder .qb-value-source{min-width:132px}
+ sd-query-builder .qb-compare-field{min-width:170px}
+ sd-query-builder .qb-opt{display:flex;align-items:center;gap:6px;min-width:0}
+-sd-query-builder .qb-opt .qb-opt-icon.material-icons-outlined{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;margin:0;font-size:18px;width:18px;height:18px;line-height:1;color:#667085}
++sd-query-builder .qb-opt .qb-opt-icon.material-icons-outlined,
++sd-query-builder .qb-opt .qb-opt-icon.mat-icon{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;margin:0;font-size:18px;width:18px;height:18px;line-height:1;color:#667085}
+ sd-query-builder .qb-opt .qb-opt-label{min-width:0}
+ sd-query-builder .qb-between{display:flex;align-items:center;gap:6px}
+ sd-query-builder .qb-dash{color:#98a2b3}
+--- a/design-system/core/styles/components.css
++++ b/design-system/core/styles/components.css
+@@ -1157,7 +1157,8 @@
+   color: rgba(0, 0, 0, .87);
+   padding: 6px;
+ }
+-.form-field-datepicker-nav .material-icons-outlined {
++.form-field-datepicker-nav .material-icons-outlined ,
++.form-field-datepicker-nav .mat-icon {
+   font-size: 24px;
+ }
+ 
+@@ -2480,7 +2481,7 @@
+ 
+ /* Icon filter_alt: catalog 24px (`.mi-xl`) màu `text-secondary`, cách nhãn 8px
+    bằng `.mr-8`. Bản trước là 16px màu --icon-default. */
+-.filter-bar-header-left .material-icons-outlined {
++.filter-bar-header-left .material-icons-outlined ,.filter-bar-header-left .mat-icon {
+   flex-shrink: 0;
+ }
+ 
+@@ -2962,7 +2963,8 @@
+   align-items: center;
+   gap: 4px;
+ }
+-.sd-etable .etable-filter-cell .material-icons-outlined {
++.sd-etable .etable-filter-cell .material-icons-outlined ,
++.sd-etable .etable-filter-cell .mat-icon {
+   font-size: 16px;
+   color: var(--text-tertiary);
+   flex-shrink: 0;
+@@ -3053,7 +3055,8 @@
+   transition: opacity .15s;
+ }
+ .sd-etable tbody tr:hover .etable-drag-handle { opacity: 1; }
+-.sd-etable .etable-drag-handle .material-icons-outlined { font-size: 16px; }
++.sd-etable .etable-drag-handle .material-icons-outlined ,
++.sd-etable .etable-drag-handle .mat-icon { font-size: 16px; }
+ 
+ .sd-etable .etable-add-row-btn {
+   display: inline-flex;
+@@ -3068,7 +3071,8 @@
+ }
+ .sd-etable tbody tr:hover .etable-add-row-btn { opacity: 1; }
+ .sd-etable .etable-add-row-btn:hover { background: var(--surface-tertiary); color: var(--color-primary-500); }
+-.sd-etable .etable-add-row-btn .material-icons-outlined { font-size: 16px; }
++.sd-etable .etable-add-row-btn .material-icons-outlined ,
++.sd-etable .etable-add-row-btn .mat-icon { font-size: 16px; }
+ 
+ /* ── Empty state ── */
+ .sd-etable .etable-empty {
+--- a/design-system/preview/components/badge.html
++++ b/design-system/preview/components/badge.html
+@@ -128,7 +128,7 @@
+             <code>tooltip</code> nối vào cơ chế tooltip chung của kit (<code>data-sd-tooltip</code>,
+             vị trí <code>above</code> như <code>matTooltipPosition</code> của thư viện), xuống dòng bằng
+             <code>\n</code>. <code>fontSet</code> đổi bộ icon; mặc định là
+-            <code>material-icons-outlined</code> đúng theo <code>DefaultSdIconSet</code>.
++            <code>material-icons</code> (đặc) đúng như catalog.
+             Badge có <code>onclick</code> thì nhận <code>role="button"</code>, <code>tabindex="0"</code>
+             và chạy bằng Enter / Space.
+           </p>
+@@ -693,7 +693,7 @@
+                   <tr><td><code>title</code></td><td>string | number</td><td>—</td><td>Chữ chính</td></tr>
+                   <tr><td><code>description</code></td><td>string</td><td>—</td><td>Chữ phụ. <strong>Chỉ hiện ở <code>icon</code> (T10R) và <code>tag</code> (T12R)</strong>, <code>round</code> bỏ qua</td></tr>
+                   <tr><td><code>icon</code></td><td>tên Material Icon</td><td><code>fiber_manual_record</code></td><td>Với <code>round</code>/<code>tag</code> không khai thì không vẽ icon; với <code>icon</code> luôn vẽ, mặc định là chấm tròn</td></tr>
+-                  <tr><td><code>fontSet</code></td><td><code>material-icons</code> | <code>material-icons-outlined</code> | …</td><td><code>material-icons-outlined</code></td><td>Theo <code>DefaultSdIconSet</code> của thư viện</td></tr>
++                  <tr><td><code>fontSet</code></td><td><code>material-icons</code> | <code>material-icons-outlined</code> | …</td><td><code>material-icons</code></td><td>Đặc, đúng catalog <code>#c-badge</code></td></tr>
+                   <tr><td><code>size</code></td><td><code>sm</code> | <code>md</code> | <code>lg</code></td><td><code>sm</code></td><td>Đổi cùng lúc cỡ icon (16/18/24) và cỡ chữ + padding của khung</td></tr>
+                   <tr><td><code>tooltip</code></td><td>string</td><td>—</td><td>Nối vào <code>data-sd-tooltip</code> của kit, vị trí <code>above</code>. Xuống dòng bằng <code>&amp;#10;</code></td></tr>
+                   <tr><td><code>status</code></td><td>khoá trong <code>STATUS_MAP</code></td><td>—</td><td><strong>Mở rộng riêng của kit</strong>, chỉ dùng với <code>type="status"</code></td></tr>
+--- a/design-system/components/sd-interactive.md
++++ b/design-system/components/sd-interactive.md
+@@ -358,7 +358,7 @@
+ | `title` | Chữ chính | — |
+ | `description` | Chữ phụ — **chỉ `icon` và `tag` hiện**, `round` bỏ qua | — |
+ | `icon` | Tên Material Icon | `fiber_manual_record` |
+-| `fontSet` | `material-icons`, `material-icons-outlined`, … | `material-icons-outlined` |
++| `fontSet` | `material-icons`, `material-icons-outlined`, … | `material-icons` (đặc — đúng catalog; trước 2026-10-13 kit để outlined theo gói npm) |
+ | `tooltip` | string, xuống dòng bằng `&#10;` | — |
+ | `status` | Khoá `STATUS_MAP` — **chỉ dùng với `type="status"`** | — |
+ 
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -126,7 +126,7 @@
+ 2. **Không dùng màu ngoài token** — mọi màu phải từ CSS variables
+ 3. **Không dùng font ngoài** Roboto + JetBrains Mono + Material Icons Outlined. **Mono font (`font-family-mono`) chỉ dùng cho dữ liệu dạng code** (JSON, API response, log...) — **không dùng cho** ID, mã, số tiền, datetime, hay bất kỳ business data nào. **Không hardcode `style="font-family:..."` trên element** — dùng CSS class
+ 4. **Không dùng inline SVG cho icon** — luôn dùng `<span class="material-icons-outlined mi-{size}">name</span>` (KHÔNG dùng `material-icons` filled)
+-   - **Ngoại lệ Builder đã chốt (dùng `material-icons` đặc, theo catalog):** icon của `bpm-kpi-card`, nút xoá `cancel` trên chip của `sd-chip` / `sd-chip-calendar` (2026-10-12), chevron thu gọn `expand_less`/`expand_more` của `sd-section` (2026-10-12, Builder: *"Không được khác Core UI catalog, làm giống y hệt"*), và icon đặc của `sd-tree` (mũi tên mở nhánh, icon dòng) cùng `sd-stepper` (ký hiệu `create`/`done` trong vòng tròn, icon cạnh nhãn bước) (2026-10-12, Builder: *"Chỗ khác catalog thì làm giống catalog đi"*). Các icon này dựng đúng thẻ `<mat-icon>` của catalog qua `sdMatIconHtml()` / `sdMatIconEl()` trong `sd-components.js`. Ngoài các chỗ này vẫn outlined — đừng tự mở rộng ngoại lệ.
++   - **Phạm vi:** Rule 4 áp cho icon AI tự viết trong HTML trang (prototype, pattern). **Icon bên trong component `sd-*` / `bpm-*` thì theo đúng catalog**: thẻ `<mat-icon>` với đủ lớp của catalog, đặc (`material-icons`) hay viền (`material-icons-outlined`) đúng như catalog vẽ — dựng qua `sdMatIconHtml()` / `sdMatIconEl()` trong `sd-components.js`. Builder chốt 2026-10-13: *"đổi một lượt cho cả kit → ok"* (trước đó từng chỗ: `bpm-kpi-card`, nút xoá chip, `sd-section`, `sd-tree`, `sd-stepper`). Đừng sửa ngược các icon đó về outlined.
+ 5. **Không thêm breadcrumb / topbar** — OMEU không dùng
+ 6. **Không dùng gradient, glassmorphism, decorative animations**
+ 7. **Không skip shell** — mọi trang phải có sidebar + page-header
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -8,6 +8,32 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — Icon trong mọi component: `<mat-icon>` đặc/viền đúng catalog (cả kit, một lượt)
++
++Builder: *„đổi một lượt cho cả kit → ok“*. Kiểm 40 mục catalog có icon, so từng glyph (thẻ · lớp ·
++font) giữa catalog và trang preview của kit, rồi đổi phần dựng icon của 30 component:
++
++- **Thẻ + lớp:** `<span class="material-icons-outlined">` → `<mat-icon …>` đúng dạng catalog của
++  mục đó — dạng đầy đủ (`mat-icon notranslate … mat-ligature-font mat-icon-no-color`, `role="img"`,
++  `data-mat-icon-type="font"`) hoặc dạng rút gọn (`mat-icon … material-icons`) như ô nhập của catalog;
++  thêm lớp vai trò của catalog (`sd-suffix-icon`, `cursor-pointer`, `sd-error-icon`, `c-icon-prefix`,
++  `c-inform-icon c-material-icon`, `mat-secondary`, `mat-mdc-chip-remove …`, `c-field-item-icon`…).
++- **Đặc thay viền** (catalog vẽ `material-icons`): tab (icon + ×), ô nhập/chọn/ngày/khoảng ngày/số/
++  autocomplete/inline-text (×, mũi tên, `today`, `cancel`, icon lỗi, gợi ý), bảng (👁, ⋮, menu),
++  upload (× ), side drawer / modal / modal-resizable (×), inform (×), anchor, org chart, preview
++  ảnh/PDF, label (gợi ý), import excel, autoid inspector, code editor, editor (icon lỗi), badge.
++- **Giữ viền** (catalog cũng viền): `sd-button` (theo `#c-button`), query bar, nút tải lên của upload.
++- **`sd-badge`: `fontSet` mặc định đổi `material-icons-outlined` → `material-icons`** (catalog chỉ vẽ
++  viền khi khai `fontSet="material-icons-outlined"`). Badge/history không khai `fontSet` nay icon đặc.
++- CSS: mọi luật trỏ `.material-icons-outlined` trong component có thêm vế `.mat-icon`; thêm style gốc
++  `.mat-icon` (không khoá 24×24 — xem chú thích); luật `.sd-error-icon` của editor thu về `sd-editor`.
++- AGENTS.md Rule 4: icon bên trong component theo catalog; Rule 4 còn áp cho HTML trang.
++
++Kiểm: 26 bộ so catalog chạy lại trước/sau — không chỗ nào lệch thêm, 4 chỗ khớp hơn (font gợi ý của
++`sd-label`, `sd-inline-text`, màu nút phân trang, gợi ý upload). Vị trí của **mọi icon trên 97 trang**
++trước/sau trùng nhau (trừ `fit_screen`: bản font đặc của catalog thiếu glyph này — catalog cũng vỡ y vậy;
++font Google trực tuyến có đủ). 0 lỗi JS.
++
+ ### Changed — `#c-section` lượt 3 + `#c-tree` + `#c-stepper`: icon `<mat-icon>` đặc như catalog, gỡ bí danh slot
+ 
+ Builder: *„Chỗ khác catalog thì làm giống catalog đi“*.
+--- a/_memory/known-gaps.md
++++ b/_memory/known-gaps.md
+@@ -25,6 +25,21 @@
+ | 2026-10-10 | Token màu | Thiếu bộ `--sd-*-contrast` (màu chữ hợp lệ trên nền từng màu). Hệ quả thấy được: chip `warning` của `sd-stepper` dùng chữ trắng trên nền vàng ≈ **2.4:1**, dưới ngưỡng WCAG AA 4.5:1 | Chạm vào bảng token gốc, ảnh hưởng mọi component dùng màu — cần một đợt riêng và phải đối chiếu lại giá trị thật của theme `portal-fins` |
+ | 2026-10-11 | Catalog | **12 mục catalog kit chưa dựng** — nhóm A (dựng được đầy đủ) đã đóng hết; còn B/C/D. Dòng cũ ghi "25 mục" là của lượt trước, giữ nguyên phần diễn giải bên dưới để hiểu lịch sử: **25 mục catalog kit chưa dựng** (2026-10-11 đã dựng **7**: `sd-label`, `sd-view`, `sd-inline-text`, `sd-autocomplete`, `sd-date-range`, `sd-tree`, `sd-quick-action` — **hết nhóm "đáng làm trước cho back-office"**). Trước đó là **32 mục** (rà soát lại cả 63 mục: kit dựng 27, thêm 4 mục catalog xếp là directive/service mà kit có tương đương). Nhóm đáng làm trước đã xong hết; 25 mục còn lại là soạn thảo/chart/dựng form động/hạ tầng | Là việc dựng mới, không phải vá lệch — chờ Builder xếp thứ tự ưu tiên. Danh sách đầy đủ theo nhóm ở `reviews/ds-mirror/CORE-CATALOG-GAP.md` (mục cập nhật 2026-10-11) |
+ 
++## Icon trong component — ĐÃ ĐỔI THEO CATALOG 2026-10-13 (cả kit)
++
++Mọi dòng "Rule 4 — kit dùng `material-icons-outlined`, catalog `mat-icon.material-icons`" ghi ở các mục
++component bên dưới (trước 2026-10-13) **đã xử lý**: icon trong component nay là `<mat-icon>` đặc/viền
++đúng catalog (CHANGELOG "Icon trong mọi component"). Chỉ còn:
++
++| Chỗ | Catalog | Kit | Vì sao |
++|---|---|---|---|
++| Icon nằm trong nút | nhiều chỗ `mat-icon` tự bấm được (`c-zoom`, `c-close` của upload, `today`…) | `mat-icon` nằm trong `<button>` (lớp vai trò ở nút) | Rule 9 — bấm Tab tới được. Lớp `c-zoom`/`c-close` để ở nút để CSS không áp hai lần |
++| `sd-button` trong mục khác | `#c-button`: viền; `#c-table` / `#c-modal` / `#c-side-drawer` / `#c-quick-action` / `#c-form-generic`: ĐẶC với cùng markup | viền | **Catalog tự mâu thuẫn**; kit theo mục của chính component (`#c-button`) |
++| Biến thể chữ của cùng một icon giữa các mục | `#c-table` dùng dạng `mat-ligature-font` cho ô lọc, `#c-select` dạng rút gọn | mỗi component theo mục của chính nó | Như trên |
++| Icon chỉ kit có | lịch (‹ ›), cuộn tab, phân trang / sắp xếp bảng: catalog vẽ bằng SVG / CSS | glyph font | Rule 4 (không inline SVG) — đã ghi từ trước |
++| Không có mẫu catalog | toast, hover-copy, toolbar editor (SVG của CKEditor), form-builder (`.msi`), data-state | giữ như cũ | Catalog không dựng icon ở các mục này |
++| `fit_screen` | font đặc của catalog thiếu glyph — demo cũng vỡ | cùng font, cùng vỡ khi offline | Font Google trực tuyến có glyph này |
++
+ ## `sd-table` — 5 chỗ CHỜ BUILDER QUYẾT, chốt từ đợt rà soát 2026-10-12
+ 
+ Đo trực tiếp bằng trình duyệt, kit đặt song song catalog. Năm chỗ dưới đây **cố ý

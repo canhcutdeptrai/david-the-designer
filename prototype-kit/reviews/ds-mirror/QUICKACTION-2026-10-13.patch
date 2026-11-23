@@ -1,0 +1,134 @@
+--- a/design-system/preview/components/quick-action.html
++++ b/design-system/preview/components/quick-action.html
+@@ -17,6 +17,17 @@
+   <link rel="stylesheet" href="../../core/styles/utilities.css">
+   <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+   <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
++  <style>
++    /* Nền ví dụ — chép khung `.vp` / `.rows` của trang catalog #c-quick-action. */
++    .qa-demo { position: relative; height: 340px; overflow: hidden; background: var(--sd-light); transform: translateZ(0); border-radius: 0 0 8px 8px; }
++    .qa-demo-page { padding: 24px; display: flex; flex-direction: column; gap: 12px; }
++    .qa-demo-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
++    .qa-demo-rows { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--sd-black200); border-radius: 8px; }
++    .qa-demo-rows > div { display: flex; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--sd-black200); }
++    .qa-demo-rows > div:last-child { border-bottom: 0; }
++    .qa-demo-rows > div.sel { background: var(--sd-primary-light); }
++    .qa-demo-rows span:first-child { width: 130px; flex: 0 0 auto; }
++  </style>
+ </head>
+ <body>
+ 
+@@ -32,24 +43,56 @@
+ 
+     <div class="content-zone">
+ 
+-      <sd-section title="Thông điệp + hành động">
+-        <p class="text-sm text-secondary mb-2">Hai slot <code>[sdMessage]</code> + <code>[sdAction]</code>. Thanh thật dùng <code>position:fixed; bottom:90px</code> nên nó neo ở đáy cửa sổ, không neo trong khung này.</p>
+-        <sd-button id="qa-toggle-1" type="light" color="primary" title="Bật / tắt [opened]"></sd-button>
+-        <sd-quick-action id="qa1" opened>
+-          <div sdMessage class="px-16">Đã chọn <b>3</b> hồ sơ đề xuất</div>
+-          <div sdAction class="d-flex align-items-center gap-8 p-8">
+-            <sd-button type="link" color="secondary" size="sm" title="Bỏ chọn"></sd-button>
+-            <sd-button type="fill" color="primary" size="sm" prefixIcon="check" title="Phê duyệt"></sd-button>
++      <!-- ── Theo Core UI Catalog #c-quick-action — rà soát 2026-10-13 ──
++           Khung `.qa-demo` (nền + danh sách hồ sơ + nút bật/tắt) là NỀN của ví dụ, không
++           thuộc component — y như khung `.vp` của catalog. Thanh thật là `position:fixed`;
++           `transform` trên khung biến khung thành mốc định vị để thanh nằm trong ảnh,
++           đúng cách catalog nhốt thanh bằng `absolute` (catalog tự ghi chú điều đó). -->
++      <sd-section title="Thông điệp + hành động" subTitle="opened = true, hai slot [sdMessage] + [sdAction]" noPaddingBody>
++        <div class="qa-demo">
++          <div class="qa-demo-page">
++            <div class="qa-demo-row">
++              <!-- outline: nút bật/tắt của chính ví dụ catalog (nền demo, không phải component) -->
++              <sd-button id="qa-toggle-1" type="outline" color="secondary" title="Bật / tắt [opened]"></sd-button>
++            </div>
++          <div class="qa-demo-rows T14R">
++            <div class="sel"><span class="T14M">HS-2026-0142</span><span>Kế hoạch Funding Q4/2026</span></div>
++            <div class="sel"><span class="T14M">HS-2026-0139</span><span>Dòng tiền tháng 10/2026</span></div>
++            <div class="sel"><span class="T14M">HS-2026-0131</span><span>Gia hạn hạn mức BIDV</span></div>
++            <div><span class="T14M">HS-2026-0127</span><span>Giải ngân KV-2026-0087</span></div>
+           </div>
+-        </sd-quick-action>
++          </div>
++          <sd-quick-action id="qa1" opened>
++            <div sdMessage class="px-16">Đã chọn <b>3</b> hồ sơ đề xuất</div>
++            <div sdAction class="d-flex align-items-center gap-8 p-8">
++              <sd-button type="link" color="secondary" title="Bỏ chọn"></sd-button>
++              <sd-button type="fill" color="primary" prefixIcon="check" title="Phê duyệt"></sd-button>
++            </div>
++          </sd-quick-action>
++        </div>
++      </sd-section>
++
++      <sd-section title="Chỉ thông điệp" subTitle="slot [sdAction] rỗng → vùng hành động ẩn, thêm padding-right 16px" noPaddingBody>
++        <div class="qa-demo">
++          <div class="qa-demo-page">
++            <div class="qa-demo-row">
++              <sd-button id="qa-toggle-2" type="outline" color="secondary" title="Bật / tắt [opened]"></sd-button>
++            </div>
++          <div class="qa-demo-rows T14R">
++            <div class="sel"><span class="T14M">HS-2026-0142</span><span>Kế hoạch Funding Q4/2026</span></div>
++            <div class="sel"><span class="T14M">HS-2026-0139</span><span>Dòng tiền tháng 10/2026</span></div>
++            <div class="sel"><span class="T14M">HS-2026-0131</span><span>Gia hạn hạn mức BIDV</span></div>
++            <div><span class="T14M">HS-2026-0127</span><span>Giải ngân KV-2026-0087</span></div>
++          </div>
++          </div>
++          <sd-quick-action id="qa2" opened>
++            <div sdMessage class="px-16 py-12">Đang đồng bộ 12 giao dịch dòng tiền từ ngân hàng…</div>
++          </sd-quick-action>
++        </div>
+       </sd-section>
+ 
+-      <sd-section title="Chỉ thông điệp">
+-        <p class="text-sm text-secondary mb-2">Slot <code>[sdAction]</code> rỗng → vùng hành động ẩn, thanh tự thêm <code>padding-right:16px</code> và bỏ <code>gap</code>.</p>
+-        <sd-button id="qa-toggle-2" type="light" color="primary" title="Bật / tắt [opened]"></sd-button>
+-        <sd-quick-action id="qa2">
+-          <div sdMessage class="px-16 py-12">Đang đồng bộ 12 giao dịch dòng tiền từ ngân hàng…</div>
+-        </sd-quick-action>
++      <sd-section title="Ghi chú">
++        <p class="T14R mb-0">Thanh dùng <code>position:fixed</code> (cách đáy 90px, giữa màn hình) trong app. Component không có padding cho phần thông điệp (chỉ <code>gap:16px</code>, và <code>padding-right:16px</code> khi không có hành động), nên trang tự thêm <code>px-16</code> / <code>p-8</code>. API: <code>opened</code> · <code>[sdMessage]</code> · <code>[sdAction]</code>.</p>
+       </sd-section>
+ 
+     </div>
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -8,6 +8,23 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Verified — `#c-quick-action`: `sd-quick-action` đã khớp catalog — chỉ dựng lại trang preview
++
++Builder: *„Tiếp tục phần Quick action“*. Đo 2 mẫu catalog (thông điệp + hành động · chỉ thông điệp)
++trong khung cùng cỡ: vỏ thanh (bóng, bo 8px, nền, `gap` 16px / `padding-right` 16px khi không có
++hành động, `z-index`), vị trí (giữa khung, cách đáy 90px), vùng thông điệp, vùng hành động, hai nút
++và chữ trong nút **trùng toạ độ**. Phép kit → catalog: API kit đúng ba mục `opened` · `[sdMessage]` ·
++`[sdAction]`, không thừa gì. Không sửa component.
++
++Chỉ hai chỗ khác, đều đã ghi: thanh là `position:fixed` (demo catalog nhốt bằng `absolute` và tự ghi
++chú "Thanh dùng `position:fixed` trong app"); icon `check` của `sd-button` trong demo catalog là
++đặc, mục `#c-button` thì viền (catalog tự mâu thuẫn — kit theo `#c-button`).
++
++Preview `quick-action.html` dựng lại theo đúng hai ví dụ catalog: khung nền + danh sách hồ sơ + nút
++bật/tắt `outline secondary` (nền của ví dụ), **cả hai thanh mở sẵn** như catalog, nút không khai
++`size` (mặc định `sm`). Trước đây hai thanh cùng neo đáy cửa sổ nên mở cả hai là đè nhau; nay khung
++có `transform` để thanh `fixed` nằm trong khung. 97 trang, 0 lỗi JS.
++
+ ### Changed — Icon trong mọi component: `<mat-icon>` đặc/viền đúng catalog (cả kit, một lượt)
+ 
+ Builder: *„đổi một lượt cho cả kit → ok“*. Kiểm 40 mục catalog có icon, so từng glyph (thẻ · lớp ·
+--- a/_memory/known-gaps.md
++++ b/_memory/known-gaps.md
+@@ -140,6 +140,13 @@
+ Đã gỡ (Rule 18): `autoId`, `expand()`, `collapse()`, `clearSelection()`, `selectedIds`, tooltip „Bỏ chọn“.
+ Đã thêm theo bảng API catalog: setter `selectedItems`, `tree`.
+ 
++## `sd-quick-action` — rà soát `#c-quick-action` 2026-10-13
++
++Trùng toạ độ cả hai mẫu, không sửa component. Chỉ còn hai chỗ đã ghi ở nơi khác: `position:fixed`
++(xem bảng "lệch có chủ ý" bên dưới — catalog tự ghi chú) và icon `check` đặc trong demo catalog so với
++`#c-button` viền (xem mục "Icon trong component"). Thuộc tính `data-qa` trên thanh của catalog là móc
++JS của trang demo (nút bật/tắt), không phải của component — kit không chép.
++
+ ## `sd-section` — rà soát `#c-section` 2026-10-12
+ 
+ Builder (cùng ngày): *"Không được khác Core UI catalog, làm giống y hệt"*, rồi *"Chỗ khác catalog thì

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-import-excel — Preview</title>
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-import-excel"
+         data-subtitle="Modal nhập dữ liệu từ file Excel — đọc file .xlsx thật (exceljs), kiểm tra từng ô rồi xem trước — đồng bộ Core UI #c-import-excel"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <sd-section data-catalog-section="c-import-excel" title="Mở modal, chưa có dữ liệu — bấm khung nét đứt để tải tệp mẫu">
+          <p class="fs-12 text-black400 mb-12">Chạy thật: khung nét đứt tải về <code>Mau_import_khoan_vay.xlsx</code>; điền dữ liệu từ dòng 3 rồi bấm <strong>Tải lên</strong> để đọc file, kiểm tra từng ô theo cấu hình cột và xem trước.</p>
+          <sd-button id="btn-ie1" type="fill" color="primary" prefixIcon="upload_file" title="Import Excel"></sd-button>
+          <sd-import-excel id="ie1"></sd-import-excel>
+        </sd-section>
+
+        <sd-section data-catalog-section="c-import-excel" title="Đã đọc file — dòng hợp lệ, cảnh báo, lỗi">
+          <p class="fs-12 text-black400 mb-12">Dữ liệu mẫu nạp bằng <code>setData()</code> (như vừa đọc từ file). Bấm các nút đếm để lọc; rê chuột ô đỏ để xem lỗi; còn dòng lỗi thì “Xác nhận &amp; Lưu” vô hiệu. “Tải về” xuất file Excel kèm cột Thông báo.</p>
+          <sd-button id="btn-ie2" type="fill" color="primary" prefixIcon="upload_file" title="Import Excel"></sd-button>
+          <sd-import-excel id="ie2"></sd-import-excel>
+        </sd-section>
+
+        <sd-section data-catalog-section="c-import-excel" title="Toàn bộ hợp lệ — sẵn sàng lưu">
+          <p class="fs-12 text-black400 mb-12">Cột kiểu <code>array</code> mở danh sách qua mat-menu. “Xác nhận &amp; Lưu” gọi <code>option.accept(items, { file })</code>.</p>
+          <sd-button id="btn-ie3" type="fill" color="primary" prefixIcon="upload_file" title="Import Excel"></sd-button>
+          <sd-import-excel id="ie3"></sd-import-excel>
+        </sd-section>
+
+        <sd-section title="Event log">
+          <pre class="ds-guide-code" id="ie-event-log">Chưa có sự kiện nào.</pre>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header"><span class="material-icons-outlined mi-16">check_circle</span> Dùng khi</div>
+                <ul class="ds-guide-list mb-0 pl-0">
+                  <li>Nhập hàng loạt bản ghi từ file Excel theo mẫu cố định (khoản vay, nhân sự, danh mục…)</li>
+                  <li>Cần người dùng xem trước và sửa file trước khi lưu — mỗi ô được kiểm tra (bắt buộc, số, ngày, danh sách giá trị, độ dài)</li>
+                  <li>Server kiểm tra thêm sau khi lưu và trả lỗi từng dòng (<code>setValidation</code>)</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header"><span class="material-icons-outlined mi-16">cancel</span> Không dùng khi</div>
+                <ul class="ds-guide-list mb-0 pl-0">
+                  <li>Chỉ đính kèm file để lưu trữ — dùng sd-upload-file</li>
+                  <li>Nhập vài dòng — dùng form hoặc bảng nhập tay</li>
+                </ul>
+              </div>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Hành vi cần biết</p>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li>File mẫu: dòng 1 là mã cột (đỏ nếu bắt buộc), dòng 2 là tên cột, dòng 3 là mô tả nếu có cột khai <code>description</code>; dữ liệu đọc từ dòng kế tiếp. Số thứ tự trong bảng là số dòng trong Excel.</li>
+                <li>Tối đa <code>limit</code> dòng (mặc định 1000); file rỗng / quá giới hạn → thông báo cảnh báo, không mở bảng.</li>
+                <li>Cảnh báo vẫn cho lưu; còn một dòng lỗi thì không. Đã bấm “Xác nhận &amp; Lưu” thì nút khoá tới lần tải file sau.</li>
+                <li>Bảng phân trang 50 dòng (mat-paginator, nhãn tiếng Anh “1 – 50 of 60” như catalog).</li>
+              </ul>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Nút Import Excel trên trang Danh sách khoản vay mở sd-import-excel tiêu đề 'Nhập danh sách khoản vay', tệp mẫu 'Mau_import_khoan_vay', các cột: Mã khoản vay (bắt buộc), Ngân hàng (chỉ VCB/BIDV/VietinBank/Techcombank/MB), Số tiền giải ngân (số, bắt buộc, ≥ 1), Ngày giải ngân (dd/MM/yyyy), Tài sản đảm bảo (danh sách, phân cách bằng ;). Mã đã tồn tại thì cảnh báo 'sẽ cập nhật thông tin'."</p>
+              </div>
+            </div>
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-button type="fill" color="primary" prefixIcon="upload_file" title="Import Excel"
+           onclick="document.getElementById('nhap-khoan-vay').open()"&gt;&lt;/sd-button&gt;
+&lt;sd-import-excel id="nhap-khoan-vay"&gt;&lt;/sd-import-excel&gt;
+
+&lt;script&gt;
+  var ie = document.getElementById('nhap-khoan-vay');
+  ie.option = {
+    title: 'Nhập danh sách khoản vay',
+    fileName: 'Mau_import_khoan_vay',
+    columns: [
+      { field: 'loanCode', title: 'Mã khoản vay', type: 'string', required: true, width: '150px' },
+      { field: 'bank', title: 'Ngân hàng', type: 'values', values: ['VCB', 'BIDV', 'MB'], checkValueInArray: true },
+      { field: 'amount', title: 'Số tiền giải ngân (VND)', type: 'number', required: true, min: 1 },
+      { field: 'date', title: 'Ngày giải ngân', type: 'date', format: 'dd/MM/yyyy' },
+      { field: 'collaterals', title: 'Tài sản đảm bảo', type: 'array', divideString: ';', unitString: 'tài sản' }
+    ],
+    validateItem: function (item, idx) { return { idx: idx }; },          // { idx, errorMessage?, warningMessage? }
+    accept: function (items, ctx) { /* gửi server; lỗi từng dòng → ie.setValidation([...]) */ }
+  };
+  ie.addEventListener('sd-closed', function () { /* tải lại danh sách */ });
+&lt;/script&gt;</pre>
+              </div>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">option</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Tên</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>title · fileName</td><td>Tiêu đề modal (mặc định "Nhập dữ liệu Excel") · tên file mẫu (mặc định "Template")</td></tr>
+                  <tr><td>columns</td><td>Cấu hình cột — xem bảng dưới</td></tr>
+                  <tr><td>transform(excelItems)</td><td>Đổi dữ liệu trước khi kiểm tra (đồng bộ hoặc Promise — nút Tải lên quay vòng xoay)</td></tr>
+                  <tr><td>validateItem(item, idx, items)</td><td>Chạy khi dòng qua hết luật cột; trả <code>{ idx, errorMessage?, warningMessage? }</code></td></tr>
+                  <tr><td>validateItems(items)</td><td>Chạy một lần khi không còn dòng lỗi; trả mảng như trên</td></tr>
+                  <tr><td>accept(items, { file })</td><td>"Xác nhận &amp; Lưu"</td></tr>
+                  <tr><td>limit · sheets</td><td>Số dòng tối đa (1000) · sheet phụ trong file mẫu <code>[{ name, headers: [{ value, display }], items }]</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cột</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>type</th><th>Kiểm tra / hiển thị</th></tr></thead>
+                <tbody>
+                  <tr><td>string</td><td>minlength · maxlength</td></tr>
+                  <tr><td>number</td><td>số hợp lệ · min · max; hiển thị kiểu vi-VN (1.250.000.000)</td></tr>
+                  <tr><td>bool</td><td>true / false / 1 / 0 → ô tích</td></tr>
+                  <tr><td>values</td><td>chuỗi hoặc số; <code>checkValueInArray</code> + <code>values</code> giới hạn danh sách</td></tr>
+                  <tr><td>date · datetime · time</td><td>theo <code>format</code> (dd/MM/yyyy, dd/MM/yyyy HH:mm…)</td></tr>
+                  <tr><td>array</td><td>tách theo <code>divideString</code>, hiện "N {unitString}" + nút mở danh sách</td></tr>
+                </tbody>
+              </table>
+              <p class="fs-12 text-black400 mt-8 mb-0">Chung: <code>required</code> · <code>defaultValue</code> · <code>width</code> (mặc định 300px) · <code>hidden</code> (bool / hàm) · <code>description</code> · <code>fill</code> / <code>fontColor</code> (màu ô tiêu đề trong file mẫu) · <code>transform(item, value)</code>.</p>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Method · Event</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Tên</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>open() · close()</td><td>Mở (xoá dữ liệu cũ) / đóng modal</td></tr>
+                  <tr><td>setValidation(list)</td><td>Thay toàn bộ lỗi / cảnh báo bằng kết quả server <code>[{ idx, errorMessage?, warningMessage? }]</code></td></tr>
+                  <tr><td>upload() · downloadTemplate() · export() · view('ALL'|'SUCCESS'|'WARNING'|'ERROR')</td><td>Như các nút trên giao diện</td></tr>
+                  <tr><td>setData(items)</td><td><strong>Kit thêm</strong> cho prototype: nạp mảng dữ liệu như vừa đọc từ file (không cần file thật)</td></tr>
+                  <tr><td>sd-closed</td><td>≙ <code>(sdClosed)</code> — modal đóng</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Đóng gói</p>
+              <p class="fs-12 text-black400 mb-0">exceljs 4.4.0 (đúng bản thư viện khai) ở <code>design-system/vendor/exceljs/exceljs.min.js</code> (~950 KB, MIT), tự nạp lần đầu tải mẫu / đọc file / xuất. Đổi chỗ: <code>window.SD_EXCELJS_BASE = '…/exceljs/'</code>.</p>
+            </div>
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+  </div>
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  (function () {
+    var pageHeader = document.querySelector('.main-area > .page-header');
+    var tabZone = pageHeader && pageHeader.querySelector('.page-tab-zone');
+    if (!tabZone) return;
+    var tabs = tabZone.querySelectorAll('.tab'), panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+    function showPanel(index) {
+      panels.forEach(function (p) { p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none'; });
+      tabs.forEach(function (t, i) { t.classList.toggle('active', i === index); });
+    }
+    tabs.forEach(function (tab, i) { tab.addEventListener('click', function () { showPanel(i); }); });
+    showPanel(0);
+  })();
+
+  (function () {
+    var log = document.getElementById('ie-event-log'), lines = [];
+    function push(s) { lines.push(s); if (lines.length > 10) lines.shift(); log.textContent = lines.join('\n'); }
+
+    var COLUMNS = [
+      { field: 'loanCode', title: 'Mã khoản vay', type: 'string', required: true, width: '150px' },
+      { field: 'bank', title: 'Ngân hàng', type: 'values', values: ['VCB', 'BIDV', 'VietinBank', 'Techcombank', 'MB'], checkValueInArray: true, width: '150px' },
+      { field: 'amount', title: 'Số tiền giải ngân (VND)', type: 'number', required: true, min: 1, width: '190px' },
+      { field: 'term', title: 'Kỳ hạn (tháng)', type: 'number', width: '130px' },
+      { field: 'date', title: 'Ngày giải ngân', type: 'date', format: 'dd/MM/yyyy', width: '140px' },
+      { field: 'rate', title: 'Lãi suất (%/năm)', type: 'number', width: '140px' },
+      { field: 'collaterals', title: 'Tài sản đảm bảo', type: 'array', divideString: ';', unitString: 'tài sản', width: '170px' }
+    ];
+    var EXISTED = ['FD-2026-0143'];
+    function option(title) {
+      return {
+        title: title, fileName: 'Mau_import_khoan_vay', columns: COLUMNS,
+        validateItem: function (item, idx) {
+          return EXISTED.indexOf(item.loanCode) >= 0
+            ? { idx: idx, warningMessage: 'Khoản vay ' + item.loanCode + ' đã tồn tại, hệ thống sẽ cập nhật thông tin' }
+            : { idx: idx };
+        },
+        accept: function (items, ctx) { push('accept — ' + items.length + ' dòng' + (ctx.file ? ' · file ' + ctx.file.name : '')); }
+      };
+    }
+    var ROWS = [
+      ['FD-2026-0141', 'VCB', 1250000000, 12, '15/10/2026', 6.8, 'QSDĐ số CT-01234 – 12 Lý Thái Tổ, Hoàn Kiếm;Tiền gửi kỳ hạn 12 tháng tại VCB'],
+      ['FD-2026-0142', 'BIDV', 3500000000, 24, '20/10/2026', 7.2, 'Nhà xưởng KCN Bắc Thăng Long;Dây chuyền sản xuất;Hàng tồn kho luân chuyển'],
+      ['FD-2026-0143', 'VietinBank', 850000000, 6, '01/11/2026', 6.5, 'Tiền gửi kỳ hạn 6 tháng tại VietinBank'],
+      ['FD-2026-0144', 'ACB Bank', 2000000000, 12, '05/11/2026', 7.0, null],
+      ['FD-2026-0145', 'Techcombank', 2000000000, 36, '05/11/2026', 7.5, 'QSDĐ số BT-00871 – Lô C5, KĐT Sala'],
+      ['FD-2026-0146', 'MB', '2,5 tỷ', 18, '10/11/2026', 6.9, null],
+      ['FD-2026-0147', 'VCB', 4200000000, 12, '31/11/2026', 6.8, 'Khoản phải thu HĐ 02/2026'],
+      ['FD-2026-0148', 'BIDV', 1800000000, 18, '12/11/2026', 7.1, 'Tiền gửi kỳ hạn 12 tháng tại BIDV'],
+      [null, 'MB', 600000000, 6, '15/11/2026', 6.4, null]
+    ];
+    function items(codes) {
+      return ROWS.filter(function (r) { return !codes || codes.indexOf(r[0]) >= 0; })
+        .map(function (r) { var o = {}; COLUMNS.forEach(function (c, i) { o[c.field] = r[i]; }); return o; });
+    }
+
+    var ie1 = document.getElementById('ie1'), ie2 = document.getElementById('ie2'), ie3 = document.getElementById('ie3');
+    ie1.option = option(undefined);
+    ie2.option = option('Nhập danh sách khoản vay');
+    ie3.option = option('Nhập danh sách khoản vay');
+    document.getElementById('btn-ie1').addEventListener('click', function () { ie1.open(); });
+    document.getElementById('btn-ie2').addEventListener('click', function () { ie2.open(); ie2.setData(items()); });
+    document.getElementById('btn-ie3').addEventListener('click', function () {
+      ie3.open(); ie3.setData(items(['FD-2026-0141', 'FD-2026-0142', 'FD-2026-0145', 'FD-2026-0148']));
+    });
+    document.addEventListener('sd-closed', function (e) {
+      if (e.target.closest && e.target.closest('sd-import-excel')) push('sd-closed #' + e.target.closest('sd-import-excel').id);
+    });
+  })();
+</script>
+</body>
+</html>

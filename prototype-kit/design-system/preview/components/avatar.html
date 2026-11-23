@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-avatar — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-avatar"
+         data-subtitle="Avatar circle — image hoặc initials từ tên"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0" data-catalog-section="c-avatar">
+        <!-- 4 ví dụ đúng thứ tự catalog #c-avatar; khung .av-* là của trang demo -->
+
+        <sd-section title="Chữ cái đầu từ tên — chữ đầu của từ đầu + từ cuối; màu nền băm từ chuỗi tên (19 màu cố định)">
+          <div class="av-stage">
+            <div class="av-person"><sd-avatar src="Nguyễn Văn An"></sd-avatar><div class="av-meta"><span class="T14M">Nguyễn Văn An</span><span class="T12R text-black400">Chuyên viên Funding</span></div></div>
+            <div class="av-person"><sd-avatar src="Trần Thị Bích Ngọc"></sd-avatar><div class="av-meta"><span class="T14M">Trần Thị Bích Ngọc</span><span class="T12R text-black400">Trưởng phòng Nguồn vốn</span></div></div>
+            <div class="av-person"><sd-avatar src="Lê Hoàng"></sd-avatar><div class="av-meta"><span class="T14M">Lê Hoàng</span><span class="T12R text-black400">Kế toán dòng tiền</span></div></div>
+            <div class="av-person"><sd-avatar src="Phạm Minh Đức"></sd-avatar><div class="av-meta"><span class="T14M">Phạm Minh Đức</span><span class="T12R text-black400">Giám đốc Tài chính</span></div></div>
+            <div class="av-person"><sd-avatar src="Võ Thanh Hà"></sd-avatar><div class="av-meta"><span class="T14M">Võ Thanh Hà</span><span class="T12R text-black400">Kiểm soát viên</span></div></div>
+            <div class="av-person"><sd-avatar src="Đặng Quốc Bảo"></sd-avatar><div class="av-meta"><span class="T14M">Đặng Quốc Bảo</span><span class="T12R text-black400">Chuyên viên Tín dụng</span></div></div>
+          </div>
+          <pre class="ds-guide-code mt-12">&lt;div class="d-flex align-items-center gap-8"&gt;
+  &lt;sd-avatar src="Nguyễn Văn An"&gt;&lt;/sd-avatar&gt;
+  &lt;div class="d-flex flex-column"&gt;
+    &lt;span class="T14M"&gt;Nguyễn Văn An&lt;/span&gt;
+    &lt;span class="T12R text-black400"&gt;Chuyên viên Funding&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+        </sd-section>
+
+        <sd-section title="size — mặc định 32px; cỡ chữ = size / 2.5">
+          <div class="av-stage av-sizes">
+            <sd-avatar src="Trần Thị Bích Ngọc" size="24"></sd-avatar>
+            <sd-avatar src="Trần Thị Bích Ngọc"></sd-avatar>
+            <sd-avatar src="Trần Thị Bích Ngọc" size="40"></sd-avatar>
+            <sd-avatar src="Trần Thị Bích Ngọc" size="56"></sd-avatar>
+            <sd-avatar src="Trần Thị Bích Ngọc" size="80"></sd-avatar>
+          </div>
+          <pre class="ds-guide-code mt-12">&lt;sd-avatar src="Trần Thị Bích Ngọc" size="24"&gt;&lt;/sd-avatar&gt;
+&lt;sd-avatar src="Trần Thị Bích Ngọc"&gt;&lt;/sd-avatar&gt;            &lt;!-- 32 --&gt;
+&lt;sd-avatar src="Trần Thị Bích Ngọc" size="80"&gt;&lt;/sd-avatar&gt;</pre>
+        </sd-section>
+
+        <sd-section title="Ảnh, ảnh lỗi, rỗng — nhận diện URL bằng ^(http|https|data:image|/)">
+          <div class="av-stage">
+            <div class="av-case"><sd-avatar src="data:image/svg+xml;utf8,&lt;svg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 64 64&#x27;&gt;&lt;rect width=&#x27;64&#x27; height=&#x27;64&#x27; fill=&#x27;%23d7c4ad&#x27;/&gt;&lt;circle cx=&#x27;32&#x27; cy=&#x27;25&#x27; r=&#x27;12&#x27; fill=&#x27;%23834111&#x27;/&gt;&lt;path d=&#x27;M10 64c3-14 12-20 22-20s19 6 22 20z&#x27; fill=&#x27;%23ae7129&#x27;/&gt;&lt;/svg&gt;" size="48"></sd-avatar><span class="T12R text-black400">URL / data:image → &lt;img&gt;</span></div>
+            <div class="av-case"><sd-avatar src="/assets/avatar/khong-ton-tai.png" size="48"></sd-avatar><span class="T12R text-black400">ảnh lỗi → chữ đầu của chính URL</span></div>
+            <div class="av-case"><sd-avatar size="48"></sd-avatar><span class="T12R text-black400">src rỗng → “?” nền #bdc3c7</span></div>
+          </div>
+          <pre class="ds-guide-code mt-12">&lt;sd-avatar src="https://…/anh.jpg" size="48"&gt;&lt;/sd-avatar&gt;                    &lt;!-- https://… hoặc data:image/… --&gt;
+&lt;sd-avatar src="/assets/avatar/khong-ton-tai.png" size="48"&gt;&lt;/sd-avatar&gt;   &lt;!-- (error) → fallback chữ --&gt;
+&lt;sd-avatar size="48"&gt;&lt;/sd-avatar&gt;</pre>
+        </sd-section>
+
+        <sd-section title="Thử với tên bất kỳ — tính lại màu và chữ đầu bằng cùng thuật toán của component">
+          <div class="av-stage">
+            <label class="av-try"><span class="T12R text-black400">Nhập họ tên</span><input type="text" id="av-try-input" value="Hoàng Thị Mai Anh" aria-label="Họ tên để tạo avatar"></label>
+            <div class="av-live"><sd-avatar id="av-try" src="Hoàng Thị Mai Anh" size="56"></sd-avatar></div>
+          </div>
+          <pre class="ds-guide-code mt-12">avatar.setAttribute('src', hoTen);   // ≙ [src]="fullName()"</pre>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Hiển thị avatar user trong sidebar, header, danh sách thành viên</li>
+                  <li>Đại diện hình ảnh cho đối tượng có tên (nhân viên, khách hàng)</li>
+                  <li>Comment/activity feed</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Icon minh họa chức năng (dùng Material Icon)</li>
+                  <li>Logo công ty/thương hiệu (dùng img thuần)</li>
+                  <li>Ảnh sản phẩm (dùng img thuần)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Cột Nhân viên phụ trách hiển thị avatar + tên. Sidebar hiển thị avatar người dùng đang đăng nhập."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-avatar src="Nguyễn Văn An"&gt;&lt;/sd-avatar&gt;
+&lt;sd-avatar src="Trần Thị Bích Ngọc" size="40"&gt;&lt;/sd-avatar&gt;
+&lt;sd-avatar src="/assets/photo.jpg" size="48"&gt;&lt;/sd-avatar&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>src</td><td>string</td><td>-</td><td>Vừa là URL ảnh vừa là tên. Khớp <code>^(http|https|data:image|/)</code> thì hiện ảnh, ngược lại sinh initials (tách theo dấu cách) + màu nền băm từ chuỗi. Ảnh tải lỗi → chữ đầu của chính chuỗi URL. Rỗng → <code>?</code> nền <code>#bdc3c7</code></td></tr>
+                  <tr><td>name</td><td>string</td><td>-</td><td><em>Riêng kit</em> — bí danh cũ của <code>src</code> (chỉ dùng khi không có <code>src</code>) cho các trang đã viết trước đây. Trang mới dùng <code>src</code></td></tr>
+                  <tr><td>size</td><td>number (px)</td><td>32</td><td>Cạnh hình vuông; cỡ chữ = size / 2.5</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+  /* khung demo của catalog #c-avatar (avatar.css .av-*) — chỉ của trang demo */
+  .av-stage { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
+  .av-person { display: flex; align-items: center; gap: 8px; min-width: 220px; }
+  .av-meta { display: flex; flex-direction: column; }
+  .av-sizes { align-items: center; }
+  .av-case { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 150px; text-align: center; }
+  .av-try { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+  .av-try input { font: inherit; font-size: 14px; padding: 6px 10px; border: 1px solid #d3d3d3; border-radius: 4px; background: #fff; color: #212121; width: 240px; max-width: 100%; }
+  .av-live { display: flex; align-items: center; min-height: 56px; }
+</style>
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      // Show first panel on load
+      showPanel(0);
+    }
+
+    // patterns:loaded already fired before this inline script runs,
+    // so call directly — DOM is ready at this point.
+    initPreviewTabs();
+  })();
+
+  // Demo "Thử với tên bất kỳ" — đổi src theo ô nhập
+  (function () {
+    var inp = document.getElementById('av-try-input'), av = document.getElementById('av-try');
+    if (inp && av) inp.addEventListener('input', function () { av.setAttribute('src', inp.value); });
+  })();
+</script>
+
+</body>
+</html>

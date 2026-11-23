@@ -1,0 +1,1813 @@
+# IMPORTEXCEL-2026-10-13 — sd-import-excel đọc / ghi Excel thật (exceljs), khớp catalog #c-import-excel + mã thư viện @sd-angular/core 19.0.10
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/IMPORTEXCEL-2026-10-13.patch
+# 9 file: AGENTS.md CHANGELOG.md known-gaps.md lessons.md export.md sd-data.md sd-tokens.css import-excel.html sd-components.js 
+# KHÔNG gồm thư mục mới design-system/vendor/exceljs/ (exceljs.min.js ~950 KB · LICENSE) — chép từ zip đầy đủ.
+
+diff -ruN a/AGENTS.md b/AGENTS.md
+--- a/AGENTS.md	2026-10-13 08:07:07.814914311 +0000
++++ b/AGENTS.md	2026-10-13 08:07:07.816827015 +0000
+@@ -193,7 +193,7 @@
+ │   ├── patterns/            ← Pattern definitions (page-header, filter-bar, data-table, sidebar)
+ │   ├── components/          ← Component docs (button.md, form.md, table.md...)
+ │   ├── preview/             ← Preview pages (patterns/ + components/)
+-│   ├── vendor/              ← Thư viện ngoài đóng gói sẵn, chạy offline (pdfjs/ cho sd-preview-pdf, ckeditor5/ cho sd-mini-editor — đúng bản Core UI dùng)
++│   ├── vendor/              ← Thư viện ngoài đóng gói sẵn, chạy offline (pdfjs/ cho sd-preview-pdf, ckeditor5/ cho sd-mini-editor, exceljs/ cho sd-import-excel — đúng bản Core UI dùng)
+ │   └── shell/               ← template.html
+ │
+ └── prototypes/            ← Builder output — generated pages
+diff -ruN a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-13 08:07:07.825732389 +0000
++++ b/CHANGELOG.md	2026-10-13 08:07:07.827780689 +0000
+@@ -8,6 +8,26 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `sd-import-excel` đọc / ghi Excel thật, khớp catalog `#c-import-excel` + mã thư viện
++
++Builder: *„Tiếp tục phần Import Excel `sd-import-excel`…“* — chọn **„Nhúng exceljs vào kit“**.
++
++- **exceljs 4.4.0** (đúng bản thư viện khai, MIT) ở `design-system/vendor/exceljs/`, tự nạp khi cần. Chạy thật:
++  khung nét đứt tải **tệp mẫu .xlsx** (dòng mã cột đỏ nếu bắt buộc, dòng tiêu đề xanh, dòng mô tả); **Tải lên**
++  đọc file người dùng chọn (.xlsx, ≤ 10 MB); **Tải về** xuất các dòng đang lọc kèm cột Thông báo.
++- **Logic theo mã thư viện:** luật kiểm từng cột (bắt buộc, độ dài, số + min/max, bool, danh sách giá trị,
++  ngày / giờ theo format, giá trị mặc định, cột ẩn), `transform` · `validateItem` · `validateItems` · `limit` ·
++  `sheets`, thông báo file rỗng / quá giới hạn, `setValidation`, khoá nút sau khi lưu, chuỗi vi nguyên văn.
++- **DOM theo catalog:** nút đếm KHÔNG có icon (bản cũ có — thư viện truyền `icon` không phải input), cột
++  Trạng thái chỉ khi có dữ liệu, ô `align-middle` + tooltip lỗi, giá trị số / ngày hiển thị kiểu vi-VN,
++  **mat-paginator** thật (50 dòng, "1 – 9 of 9"), **mat-menu** cho cột kiểu array, modal rộng mặc định 60vw.
++- CSS chép nguyên `import-excel.css` của catalog (utility, bảng, paginator, icon-button, menu).
++- Dùng chung: `sd-button` khoá có `disabled="true"`; nút dạng B có tooltip thêm `mat-mdc-tooltip-trigger`;
++  tooltip kiểu mat đa dòng căn trái; `sd-badge` thừa hưởng phông; phông nút `Roboto, sans-serif` (dự phòng offline).
++- So DOM + computed style 3 mẫu catalog: trùng; thử file thật 60 dòng (đọc · phân trang · lọc · xuất · lưu ·
++  đóng · mở lại · file rỗng · sai định dạng) PASS. Trang preview viết lại 3 tab + Event log. Docs `sd-data.md`,
++  `export.md`, `AGENTS.md`, `lessons.md`. Bản vá: `reviews/ds-mirror/IMPORTEXCEL-2026-10-13.patch` (không gồm vendor).
++
+ ### Changed — Chỉnh nốt các chỗ lệch catalog của `sd-button` (vòng xoay, nút trang demo, nút huỷ hộp xác nhận)
+ 
+ Builder: *„Chỉnh những cái lệch giống Catalog“*.
+diff -ruN a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-13 08:07:07.834251619 +0000
++++ b/_memory/known-gaps.md	2026-10-13 08:07:07.836124474 +0000
+@@ -277,6 +277,39 @@
+ | 6 cờ `primary` … `error` | bảng API catalog không liệt kê, nhưng **mã thư viện có** (input boolean, thắng `color`) | có | `audit-kit-extras` báo là thừa — không phải: theo mã thư viện |
+ | `type` / `dismissible` / `cta` / thân viết trong thẻ / `sd-inform-dismiss` | không có | vẫn nhận | Ngoại lệ 3 Rule 18 (38 chỗ trong kit dùng). Khai `type` thì icon theo lối cũ (chỉ hiện khi có `icon`) |
+ 
++## `sd-import-excel` — ĐỒNG BỘ 2026-10-13, exceljs thật (Builder: *„Nhúng exceljs vào kit“*)
++
++Nguồn đối chiếu: catalog `#c-import-excel` (3 mẫu + `js/components/import-excel.js`) + mã thư viện
++(`sd-angular-core-components-import-excel.mjs`, `sd-angular-core-services-excel.mjs`, `@sdcorejs/utils`
++BrowserUtilities / NumberUtilities / DateUtilities, chuỗi vi trong i18n). Kit dựng lại toàn bộ theo thư viện:
++đọc .xlsx thật (exceljs 4.4.0, `design-system/vendor/exceljs/`, MIT), tệp mẫu 3 dòng có tô màu như
++SdExcelService, luật kiểm từng cột (required · string min/max length · number min/max · bool · values +
++checkValueInArray · date/datetime/time theo format · defaultValue · hidden · transform), validateItem /
++validateItems / transform / limit / sheets, mat-paginator 50 dòng, mat-menu cột `array`, "Tải về" xuất file
++kèm cột Thông báo, setValidation, khoá nút sau khi accept. So DOM + computed style 3 mẫu: trùng (v1 · v2 · v3),
++tooltip lỗi đa dòng, panel menu trùng. Thử với file thật 60 dòng: đọc · đếm · phân trang · lọc · xuất · accept PASS.
++
++| Chỗ | Catalog / thư viện | Kit | Vì sao |
++|---|---|---|---|
++| Nút đếm có icon? | thư viện viết `icon="cached"` — KHÔNG phải input của sd-button → không có icon; catalog vẽ y vậy | y hệt (thuộc tính `icon` còn trên thẻ như DOM catalog) — **bản cũ của kit có icon (prefixIcon)** | Theo thư viện |
++| Tooltip hai nút đếm cảnh báo / lỗi | ghi ngược ("có lỗi" ↔ "có cảnh báo") | y hệt | Lỗi của mốc chuẩn, catalog tự ghi |
++| Nhãn paginator | "1 – 9 of 9" (MatPaginatorIntl tiếng Anh) | y hệt | Catalog tự ghi |
++| `div.ie-tpl-spinner[hidden]` | catalog giữ sẵn trong DOM (móc demo) | chỉ có khi đang tải mẫu (`@if (isDownloadTemplate)`) | Theo thư viện |
++| Lãi suất "7,0" | catalog gõ tay chuỗi | số 7.0 → "7" (NumberUtilities.toVN) | Theo thư viện; ô Excel chứa chữ "7,0" thì là lỗi "không phải số" |
++| Chiều cao bảng | catalog cố định 290px để chụp | 50vh như thư viện | Catalog tự ghi |
++| Tooltip | `data-tip` (móc demo catalog) | `data-sd-tooltip` + `kind="mat"` (cơ chế tooltip của kit) | Cùng hình matTooltip |
++| Panel menu cột `array` | catalog đặt trong khung demo | `body > .cdk-overlay-container` như CDK | Catalog tự ghi panel thật ở body |
++| Tên file mẫu / file xuất | thư viện truyền tên không đuôi (`Mau_import_khoan_vay`; xuất không có tên → `file_<id>`) | y hệt — trình duyệt tự thêm `.xlsx` theo MIME | Theo thư viện |
++| Phông nút / paginator | catalog `Roboto` (đóng gói phông sẵn) | `Roboto, sans-serif` | Kit nạp Roboto từ Google Fonts — mở offline không rơi về chữ có chân. Đổi ở `sd-button` (mọi nơi) |
++| `sd-badge` host | thư viện không khai display → inline | `sd-import-excel sd-badge{display:inline}`; ngoài ra kit giữ inline-block | Bỏ toàn cục thì xô lệch trang validation / read-page (đã thử) |
++| `setData(items)` | không có | có (prototype không cần file) | Rule 18 ngoại lệ 3 — API cũ của kit |
++| Sự kiện `sd-template-download` / `sd-upload` / `sd-download` / `sd-accept`, `counts` | không có | **gỡ** (nút nay chạy thật) | Rule 18; không trang nào dùng |
++| Export 1 file | — | phải inline `vendor/exceljs/exceljs.min.js` (~950 KB) | Ghi ở `ai-instructions/export.md` |
++
++Cùng đợt (dùng chung): `sd-button` khoá có `disabled="true"` như MatButton; dạng B có `mat-mdc-tooltip-trigger`
++khi nút có tooltip; tooltip kiểu `mat` đa dòng (cao > 24px) căn trái như `mdc-tooltip--multiline`; `sd-badge`
++không ép phông riêng (thừa hưởng như catalog).
++
+ ## `sd-mini-editor` — ĐỒNG BỘ 2026-10-13, CKEditor 5 thật (Builder: *„Nhúng CKEditor 5 vào kit“*)
+ 
+ Nguồn đối chiếu: catalog `#c-mini-editor` (5 mẫu) + **mã thư viện** `fesm2022/sd-angular-core-components-mini-editor.mjs`
+@@ -854,8 +887,8 @@
+ | Icon toán tử của `sd-operator` là **inline SVG** | 17 glyph riêng (hai gạch = bằng, mũi tên hai đầu = trong khoảng…) | Giữ nguyên SVG của catalog | Rule 4 của `AGENTS.md` cấm inline SVG cho **icon chọn theo tên**; đây là glyph của chính component — cùng ngoại lệ đã áp cho dấu tích `sd-checkbox` (2026-10-11) |
+ | ~~`editable` · `(editingChanged)` (sd-modal-resizable)~~ **ĐÃ DỰNG 2026-10-13** theo mã thư viện: `toggleEditable()` → `sd-editing-changed {editing}`; template thư viện cũng không có UI nào; ghi chú cũ giữ dưới đây | Bảng API có khai | **Không dựng** | Catalog chỉ nêu tên, không ví dụ, không markup nào mang trạng thái "đang sửa". Dựng là đoán (2026-10-11) |
+ | Tooltip hai nút đếm của `sd-import-excel` **ghi ngược nhau** | Catalog: nút **warning** chú thích *"Số dòng dữ liệu có lỗi"*, nút **error** chú thích *"Số dòng dữ liệu có cảnh báo"* | Kit chép **nguyên văn**, kể cả chỗ ngược | Gần như chắc chắn là nhầm trong catalog, nhưng sửa là cố ý lệch mốc chuẩn. **Chờ Builder quyết** (2026-10-11) |
+-| Đọc FILE EXCEL thật (sd-import-excel) | Đọc `.xlsx` người dùng chọn, tách sheet, map cột | **Không dựng** — kit mở `setData(rows)` để trang nạp dữ liệu đã đọc | Cần thư viện đọc Excel; kit là prototype tĩnh, AGENTS.md không cho thêm phụ thuộc. Toàn bộ màn xem trước + luật kiểm + trạng thái dòng thì dựng đủ (2026-10-11) |
+-| `option.sheets` · `option.transform` · `option.validateItems` · `option.limit` (sd-import-excel) | Bảng API có khai | **Không dựng** | Đều gắn với bước ĐỌC FILE vốn không dựng. `validateItem` (số ít) thì có ví dụ đầy đủ nên kit dựng (2026-10-11) |
++| **[ĐÃ THAY THẾ 2026-10-13 — xem mục `sd-import-excel`]** Đọc FILE EXCEL thật (sd-import-excel) | Đọc `.xlsx` người dùng chọn, tách sheet, map cột | **Không dựng** — kit mở `setData(rows)` để trang nạp dữ liệu đã đọc | Cần thư viện đọc Excel; kit là prototype tĩnh, AGENTS.md không cho thêm phụ thuộc. Toàn bộ màn xem trước + luật kiểm + trạng thái dòng thì dựng đủ (2026-10-11) |
++| **[ĐÃ THAY THẾ 2026-10-13 — xem mục `sd-import-excel`]** `option.sheets` · `option.transform` · `option.validateItems` · `option.limit` (sd-import-excel) | Bảng API có khai | **Không dựng** | Đều gắn với bước ĐỌC FILE vốn không dựng. `validateItem` (số ít) thì có ví dụ đầy đủ nên kit dựng (2026-10-11) |
+ | `.sd-table` / `.table-responsive` / `.empty-state-wrapper` của `sd-import-excel` | Catalog khai ở mức TOÀN CỤC trong section | Kit bó dưới `sd-import-excel` | `.sd-table` quá chung — kit đã có **thẻ** `<sd-table>` riêng. Để lớp cùng tên ở tầng toàn cục là mời lỗi (2026-10-11) |
+ | `.mr-2` = 2px · `.px-4` = 4px (sd-import-excel) | Thang utility của catalog | Khai đè **trong phạm vi** `sd-import-excel` | Kit đã có `.mr-2` = `var(--space-2)` = 8px và `.px-4` = 16px, đang dùng khắp nơi. Lặp lại đúng bẫy `.mb-2` của `sd-label` (2026-10-11) |
+ | Dialog **"Ngữ cảnh QC cho Robot Framework"** (sd-autoid-inspector) | Catalog có CSS `__context-backdrop` / `__context-dialog` / `__context-header` / `__context-form` / `__context-actions` + `@media(max-width:560px)` | **Không dựng**, và cũng **không chép CSS** | Chính ghi chú cuối mục catalog ghi *"dialog 'Ngữ cảnh QC cho Robot Framework' không dựng"* — có CSS mà không có markup mẫu thì dựng là đoán (2026-10-11) |
+diff -ruN a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-13 08:07:07.842413859 +0000
++++ b/_memory/lessons.md	2026-10-13 08:07:07.844185409 +0000
+@@ -1236,3 +1236,17 @@
+ 
+ → Thấy một biến `--mat-*` / `--sd-*` trong CSS catalog, đừng chép thành số đo. Đo `getBoundingClientRect` /
+ computed style ở catalog rồi mới viết luật.
++
++## `sd-modal` mặc định lazyLoadContent: giữ tham chiếu node TRƯỚC khi gắn modal (2026-10-13)
++
++`sd-import-excel` dựng `<sd-modal>` bằng innerHTML rồi `querySelector('[data-…]')` để lấy các vùng con →
++`null`: `sd-modal` (lazyLoadContent mặc định true) tháo hết nội dung khỏi cây cho tới lần mở đầu. → Dựng
++trong một `div` tạm, lấy tham chiếu từ đó, rồi mới `appendChild(modal)` vào host. Node giữ nguyên, sd-modal
++chỉ chuyển chỗ chúng.
++
++## Đổi `#c-x .a b` thành `tag .a b` có thể THUA luật nền hai lớp của kit (2026-10-13)
++
++`#c-import-excel .c-mat-menu mat-icon{vertical-align:middle}` (1,1,1) thắng mọi thứ ở catalog, nhưng bản kit
++`sd-import-excel .c-mat-menu mat-icon` (0,1,2) thua luật nền `.mat-icon.material-icons{vertical-align:baseline}`
++(0,2,0) → icon lệch 2.7px. → Sau khi chép CSS catalog, đo computed style; luật nào thua luật nền của kit thì
++thêm một lớp có sẵn trên phần tử (`mat-icon.mat-icon`) cho đủ điểm.
+diff -ruN a/ai-instructions/export.md b/ai-instructions/export.md
+--- a/ai-instructions/export.md	2026-10-13 08:07:07.850394597 +0000
++++ b/ai-instructions/export.md	2026-10-13 08:07:07.852059425 +0000
+@@ -76,6 +76,7 @@
+ - **Google Fonts + Material Icons** — giữ `<link>` external (cần internet, chấp nhận được)
+ - **Trang có `sd-preview-pdf`** — viewer cần pdf.js (`design-system/vendor/pdfjs/pdf.min.js` + `pdf.worker.min.js`, ~1,7 MB). Inline cả hai vào `<script>` TRƯỚC `sd-components.js` (viewer thấy sẵn `window.pdfjsLib` / `window.pdfjsWorker` thì không nạp lại), hoặc báo Builder file sẽ nặng thêm ~1,7 MB
+ - **Trang có `sd-mini-editor`** — editor là CKEditor 5 thật (`design-system/vendor/ckeditor5/ckeditor5.min.js`, ~1 MB). Inline nó vào `<script>` TRƯỚC `sd-components.js` (component thấy sẵn `window.SdCKEditor5` thì không nạp lại). CSS `core/styles/sd-ckeditor-styles.css` inline thành `<style id="sd-ckeditor-styles">` — có sẵn phần tử id đó thì component không chèn `<link>` nữa. Hoặc báo Builder file sẽ nặng thêm ~1,1 MB
++- **Trang có `sd-import-excel`** — đọc / ghi .xlsx cần exceljs (`design-system/vendor/exceljs/exceljs.min.js`, ~950 KB). Inline vào `<script>` TRƯỚC `sd-components.js` (component thấy sẵn `window.ExcelJS` thì không nạp lại), hoặc báo Builder file sẽ nặng thêm ~950 KB. Không inline thì màn xem trước (`setData`) vẫn chạy, chỉ Tải lên / tệp mẫu / Tải về không chạy
+ - **Multi-page** → dùng hash navigation: `#danh-sach`, `#chi-tiet` — mỗi page là 1 `<section>`, JS toggle visibility
+ - **UTF-8 encoding** — `<meta charset="UTF-8">` + ghi file với encoding UTF-8. Tuyệt đối không strip dấu tiếng Việt
+ 
+diff -ruN a/design-system/components/sd-data.md b/design-system/components/sd-data.md
+--- a/design-system/components/sd-data.md	2026-10-13 08:07:07.858209196 +0000
++++ b/design-system/components/sd-data.md	2026-10-13 08:07:07.859878232 +0000
+@@ -701,43 +701,49 @@
+ 
+ ---
+ 
+-## sd-import-excel — DỰNG MỚI 2026-10-11
++## sd-import-excel — ĐỒNG BỘ 2026-10-13 (đọc / ghi .xlsx thật)
+ 
+-Modal nhập dữ liệu từ Excel: bảng xem trước có trạng thái từng dòng, lọc theo
+-trạng thái, rồi xác nhận lưu.
++Modal nhập dữ liệu từ file Excel: tải tệp mẫu, đọc file người dùng chọn, kiểm tra từng ô theo cấu hình
++cột rồi xem trước với trạng thái hợp lệ / cảnh báo / lỗi trước khi lưu. Logic, chuỗi tiếng Việt và DOM
++theo mã thư viện `@sd-angular/core` 19.0.10 + catalog `#c-import-excel` (13 phép so DOM / computed style
++trùng). Đọc / ghi file bằng **exceljs 4.4.0** (đúng bản thư viện khai) ở `design-system/vendor/exceljs/`,
++tự nạp lần đầu dùng.
+ 
+ ```js
+ const ie = document.querySelector('sd-import-excel');
+ ie.option = {
+   title: 'Nhập danh sách khoản vay',
++  fileName: 'Mau_import_khoan_vay',
+   columns: [
+     { field: 'loanCode', title: 'Mã khoản vay', type: 'string', required: true, width: '150px' },
+-    { field: 'bank', title: 'Ngân hàng', type: 'values', values: ['VCB','BIDV'], width: '150px' },
++    { field: 'bank', title: 'Ngân hàng', type: 'values', values: ['VCB','BIDV'], checkValueInArray: true, width: '150px' },
+     { field: 'amount', title: 'Số tiền', type: 'number', required: true, min: 1, width: '190px' },
++    { field: 'date', title: 'Ngày giải ngân', type: 'date', format: 'dd/MM/yyyy' },
+     { field: 'collaterals', title: 'Tài sản đảm bảo', type: 'array', divideString: ';', unitString: 'tài sản' }
+   ],
+   validateItem: (item, idx) => existed(item.loanCode)
+     ? { idx, warningMessage: `Khoản vay ${item.loanCode} đã tồn tại…` } : { idx },
+-  accept: items => api.import(items)
++  accept: (items, { file }) => api.import(items, file)
+ };
+ ie.open();
+ ```
+ 
+ | Phương thức | Ý nghĩa |
+ |---|---|
+-| `open()` · `close()` | Mở / đóng modal |
+-| `setData(rows)` | Nạp dữ liệu đã đọc. Mỗi dòng `{ data, status, message?, errors? }` |
+-| `setValidation(list)` | Server trả lỗi từng dòng: `[{ idx, errorMessage?, warningMessage? }]` |
+-| `counts` | `{ success, warning, error }` |
+-
+-Sự kiện: `sd-template-download` (bấm khung nét đứt) · `sd-upload` · `sd-download`
+-· `sd-accept` (`{ items }`) · `sd-closed`.
+-
+-Nút **"Xác nhận & Lưu"** chỉ bật khi `(success || warning) && !error`.
+-
+-> **Đọc file `.xlsx` thật thì KHÔNG dựng** — cần thư viện ngoài, kit là prototype
+-> tĩnh. Trang tự đọc file rồi gọi `setData()`. Toàn bộ màn xem trước, luật kiểm
+-> và trạng thái dòng thì dựng đủ theo catalog.
++| `open()` · `close()` | Mở (xoá dữ liệu cũ) / đóng modal |
++| `upload()` · `downloadTemplate()` · `export()` | Như nút Tải lên / khung nét đứt / Tải về |
++| `view('ALL'\|'SUCCESS'\|'WARNING'\|'ERROR')` | Lọc như các nút đếm |
++| `setValidation(list)` | Thay lỗi / cảnh báo bằng kết quả server `[{ idx, errorMessage?, warningMessage? }]` |
++| `setData(items)` | **Kit thêm** cho prototype: nạp mảng dữ liệu như vừa đọc từ file (không cần file thật); dạng cũ `{ data, status, message, errors }` vẫn nhận |
++
++Sự kiện: `sd-closed` ≙ `(sdClosed)`. Option: `title` · `fileName` · `columns` · `transform` · `validateItem` ·
++`validateItems` · `accept` · `limit` (1000) · `sheets`. Cột: `type` string · number · bool · values · date ·
++datetime · time · array; `required` · `defaultValue` · `minlength`/`maxlength` · `min`/`max` · `values` +
++`checkValueInArray` · `format` · `divideString`/`unitString` · `width` (300px) · `hidden` · `description` ·
++`fill`/`fontColor` · `transform`.
++
++Nút **"Xác nhận & Lưu"** bật khi có dòng hợp lệ / cảnh báo và không còn dòng lỗi, khoá lại sau khi bấm.
++Bảng phân trang 50 dòng (mat-paginator, nhãn tiếng Anh như catalog).
+ 
+ Preview: [components/import-excel.html](../preview/components/import-excel.html)
+ 
+diff -ruN a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-13 08:07:07.866038666 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-13 08:07:07.868268295 +0000
+@@ -320,8 +320,9 @@
+   border-radius: var(--sd-border-radius);
+   cursor: pointer;
+   /* catalog: `font-family: var(--mat-button-*-label-text-font, var(--mat-sys-label-large-font))`,
+-     `--mat-sys-label-large-font: Roboto` → computed `Roboto` ở MỌI mục (đo 2026-10-13). */
+-  font-family: Roboto;
++     `--mat-sys-label-large-font: Roboto` → computed `Roboto` ở MỌI mục (đo 2026-10-13). Catalog tự đóng gói
++     phông Roboto; kit nạp từ Google Fonts nên thêm `sans-serif` dự phòng — mở offline không rơi về chữ có chân. */
++  font-family: Roboto, sans-serif;
+   /* TRỌNG SỐ CHỮ CỦA NÚT — 500, không phải 400. Đọc kỹ trước khi "sửa cho nhất quán".
+      Catalog khai trọng số ở tầng Material:
+          .mat-mdc-button / .mat-mdc-unelevated-button / .mat-mdc-outlined-button {
+@@ -1291,7 +1292,11 @@
+        nào cho nó (đã kiểm cả bundle 22.2.12, không rule nào) — kit giữ y vậy.
+      - c-neutral là màu cũ của kit, không có trong Color của thư viện; giữ
+        làm bí danh của secondary cho các trang đang khai color="neutral". */
++/* host: thư viện không khai display (catalog đo: inline trong #c-import-excel / #c-table, block khi là
++   phần tử flex). Kit giữ inline-block toàn cục vì các trang pattern dựa vào lề dọc của thẻ (đổi là xô
++   lệch validation / read-page — thử 2026-10-13); riêng `sd-import-excel` theo catalog: inline. */
+ sd-badge { display: inline-block; }
++sd-import-excel sd-badge { display: inline; }
+ 
+ /* Tiện ích sd-core mà template badge dùng — bọc trong sd-badge để không
+    đụng vào namespace utility chung của kit. */
+@@ -1305,7 +1310,7 @@
+   display: inline-block;
+   text-align: center;
+   overflow-wrap: break-word;
+-  font-family: var(--sd-font-family);
++  /* catalog không khai font — thừa hưởng chữ của vật chứa (2026-10-13) */
+ }
+ sd-badge .c-badge.c-badge--has-icon { display: inline-flex; align-items: center; gap: 4px; }
+ sd-badge .c-badge .c-material-icon {
+@@ -4882,6 +4887,8 @@
+   overflow-wrap: anywhere;
+   pointer-events: none;
+ }
++/* `.mdc-tooltip--multiline .mat-mdc-tooltip-surface{text-align:left}` (catalog #c-import-excel) */
++.sd-tooltip.sd-tooltip--mat.sd-tooltip--multiline { text-align: left; }
+ .sd-tooltip.sd-tooltip--mat.sd-tooltip-visible {
+   animation: sd-mat-tooltip-show 150ms cubic-bezier(0, 0, .2, 1) forwards;
+ }
+@@ -7917,133 +7924,116 @@
+ 
+ 
+ /* ══════════════════════════════════════════════════════════
+-   sd-import-excel — DỰNG MỚI 2026-10-11 theo `#c-import-excel`.
+-
+-   Catalog: "Modal nhập dữ liệu từ file Excel: tải tệp mẫu, đọc file người dùng
+-   chọn, kiểm tra từng ô theo cấu hình cột (bắt buộc, số, ngày, danh sách giá
+-   trị, độ dài…) rồi hiển thị bảng xem trước với trạng thái hợp lệ / cảnh báo /
+-   lỗi trước khi xác nhận lưu."
+-
+-   CSS chép nguyên văn phần RIÊNG của mục. Hai chỗ kit thu hẹp phạm vi:
+-   catalog khai `.sd-table`, `.table-responsive`, `.empty-state-wrapper`,
+-   `.c-sticky-left`, `.c-ellipsis` ở mức TOÀN CỤC trong section của nó; kit bó
+-   lại dưới `sd-import-excel` vì `.sd-table` là tên quá chung — kit đã có THẺ
+-   `<sd-table>` riêng, để lớp cùng tên ở tầng toàn cục là mời lỗi.
+-
+-   Khung modal thì dùng lại `sd-modal` của kit (`.sd-modal-root`,
+-   `.sd-modal-close-btn` — kit đã mirror từ `#c-modal`), không chép lại.
++   sd-import-excel — ĐỒNG BỘ 2026-10-13 theo catalog `#c-import-excel` (css/components/import-excel.css)
++   + styles của SdImportExcel (thư viện). Chép nguyên thứ tự catalog, `#c-import-excel X` → `sd-import-excel X`;
++   panel mat-menu (cột kiểu array) nằm ở `body > .cdk-overlay-container` → bộ chọn
++   `:is(sd-import-excel, :where(.cdk-overlay-pane:has(> .mat-mdc-menu-panel > .mat-mdc-menu-content > .px-3.py-2)))`.
++   Bỏ phần của trang demo (`.vp`, `.ov-body`, `.vp-reopen`, `.ie-menu-pane`, chiều cao bảng cố định 290px để chụp —
++   thư viện là 50vh) và phần đã có ở component khác (sd-modal, sd-button, sd-badge, tooltip, vòng xoay).
+    ══════════════════════════════════════════════════════════ */
+ sd-import-excel { display: contents; }
+-sd-import-excel .table-responsive {
+-  position: relative;
+-  min-height: 50vh;
+-  height: 50vh;
+-  overflow: auto;
+-  border: 1px solid #dee2e6;
+-}
+-sd-import-excel .sd-table {
+-  width: 100%;
+-  border-collapse: collapse;
+-  margin-bottom: 0;
+-  font-size: 14px;
+-}
+-sd-import-excel .sd-table thead th {
+-  position: sticky;
+-  top: 0;
+-  background-color: #f8f9fa;
+-  border-bottom: 2px solid #dee2e6;
+-  border-top: 1px solid #dee2e6;
+-  padding: 8px 6px;
+-  white-space: nowrap;
+-  z-index: 10;
+-  font-weight: 600;
+-  text-align: inherit;
+-}
+-sd-import-excel .sd-table thead th.c-sticky-left { z-index: 20; }
+-sd-import-excel .sd-table tbody td { vertical-align: middle; padding: 6px; border-top: 1px solid #dee2e6; }
+-sd-import-excel .sd-table tbody tr:nth-of-type(odd) { background-color: #0000000a; }
+-sd-import-excel .sd-table tbody tr:nth-of-type(2n) { background-color: #fff; }
+-sd-import-excel .sd-table tbody tr:hover,
+-sd-import-excel .sd-table tbody tr:hover .c-sticky-left { background-color: #ececec; }
+-sd-import-excel .sd-table tbody tr:nth-of-type(odd) .c-sticky-left { background-color: #f2f2f2; }
+-sd-import-excel .sd-table tbody tr:nth-of-type(2n) .c-sticky-left { background-color: #fff; }
+-sd-import-excel .c-sticky-left {
+-  position: sticky;
+-  left: 0;
+-  border-right: 1px solid #dee2e6 !important;
+-  border-left: none !important;
+-  z-index: 5;
+-}
+-/* Khung nét đứt "chưa có dữ liệu" — bấm để tải tệp mẫu */
+-sd-import-excel .empty-state-wrapper {
+-  height: 100%;
+-  min-height: 40vh;
+-  display: flex;
+-  flex-direction: column;
+-  align-items: center;
+-  justify-content: center;
+-  cursor: pointer;
+-  background-color: #f8f9fa;
+-  border: 2px dashed #cbd5e0;
+-  border-radius: 8px;
+-  margin: 16px;
+-  transition: all .2s ease-in-out;
+-  color: #6c757d;
+-}
+-sd-import-excel .empty-state-wrapper:hover { background-color: #e3f2fd; border-color: #2196f3; color: #1976d2; }
+-sd-import-excel .empty-state-wrapper:hover .empty-icon { transform: scale(1.1); color: #1976d2; }
+-sd-import-excel .empty-state-wrapper:hover .text-link { text-decoration: underline; }
+-sd-import-excel .empty-state-wrapper .empty-icon {
+-  font-size: 64px;
+-  height: 64px;
+-  width: 64px;
+-  margin-bottom: 16px;
+-  color: #a0aec0;
+-  transition: transform .2s;
+-}
+-sd-import-excel .empty-state-wrapper h4 { font-size: 1em; margin-top: 0; font-weight: 500; margin-bottom: 4px; }
+-sd-import-excel .c-ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; padding: 0 4px; }
++:is(sd-import-excel, :where(.cdk-overlay-pane:has(> .mat-mdc-menu-panel > .mat-mdc-menu-content > .px-3.py-2))){--mat-icon-button-state-layer-size:36px;--mat-icon-button-icon-size:24px;--mat-icon-button-container-shape:50%;--mat-icon-button-icon-color:inherit;--mat-icon-button-touch-target-display:none;--mat-icon-button-state-layer-color:rgba(0,0,0,.87);--mat-icon-button-hover-state-layer-opacity:.04;--mat-icon-button-disabled-icon-color:rgba(0,0,0,.38)}
++:is(sd-import-excel, :where(.cdk-overlay-pane:has(> .mat-mdc-menu-panel > .mat-mdc-menu-content > .px-3.py-2))){--mat-paginator-container-size:40px;--mat-paginator-container-text-color:rgba(0,0,0,.87);--mat-paginator-container-background-color:white;--mat-paginator-enabled-icon-color:rgba(0,0,0,.54);--mat-paginator-disabled-icon-color:rgba(0,0,0,.38);--mat-paginator-touch-target-display:none;--mat-menu-container-shape:4px;--mat-menu-container-color:white;--mat-menu-container-elevation-shadow:0px 5px 5px -3px rgba(0,0,0,.2),0px 8px 10px 1px rgba(0,0,0,.14),0px 3px 14px 2px rgba(0,0,0,.12)}
++sd-import-excel .d-flex{display:flex!important}
++sd-import-excel .flex-column{flex-direction:column!important}
++sd-import-excel .flex-shrink-0{flex-shrink:0!important}
++sd-import-excel .align-items-center{align-items:center!important}
++sd-import-excel .align-items-start{align-items:flex-start!important}
++sd-import-excel .justify-content-end{justify-content:flex-end!important}
++sd-import-excel .justify-content-between{justify-content:space-between!important}
++sd-import-excel .justify-content-center{justify-content:center!important}
++sd-import-excel .justify-content-start{justify-content:flex-start!important}
++sd-import-excel .ml-auto{margin-left:auto!important}
++sd-import-excel .ml-8{margin-left:8px!important}
++sd-import-excel .mr-8{margin-right:8px!important}
++sd-import-excel .mr-4{margin-right:4px!important}
++sd-import-excel .mr-2{margin-right:2px!important}
++sd-import-excel .mb-0{margin-bottom:0!important}
++sd-import-excel .mb-2{margin-bottom:2px!important}
++sd-import-excel .mb-12{margin-bottom:12px!important}
++sd-import-excel .mt-3{margin-top:3px!important}
++sd-import-excel .p-0{padding:0!important}
++sd-import-excel .p-8{padding:8px!important}
++sd-import-excel .p-16{padding:16px!important}
++sd-import-excel .px-16{padding-left:16px!important;padding-right:16px!important}
++sd-import-excel .px-4{padding-left:4px!important;padding-right:4px!important}
++:is(sd-import-excel, :where(.cdk-overlay-pane:has(> .mat-mdc-menu-panel > .mat-mdc-menu-content > .px-3.py-2))) .px-3{padding-left:3px!important;padding-right:3px!important}
++:is(sd-import-excel, :where(.cdk-overlay-pane:has(> .mat-mdc-menu-panel > .mat-mdc-menu-content > .px-3.py-2))) .py-2{padding-top:2px!important;padding-bottom:2px!important}
++sd-import-excel .overflow-auto{overflow:auto!important}
++sd-import-excel .w-full{width:100%!important}
++sd-import-excel .border{border:1px solid var(--sd-black200)!important}
++sd-import-excel .border-0{border:0!important}
++sd-import-excel .border-top{border-top:1px solid var(--sd-black200)!important}
++:is(sd-import-excel, :where(.cdk-overlay-pane:has(> .mat-mdc-menu-panel > .mat-mdc-menu-content > .px-3.py-2))) .border-bottom{border-bottom:1px solid var(--sd-black200)!important}
++sd-import-excel .bg-white{background:#fff!important}
++sd-import-excel .bg-warning-light{background:var(--sd-warning-light)!important}
++sd-import-excel .bg-error-light{background:var(--sd-error-light)!important}
++sd-import-excel .text-center{text-align:center!important}
++:is(sd-import-excel, :where(.cdk-overlay-pane:has(> .mat-mdc-menu-panel > .mat-mdc-menu-content > .px-3.py-2))) .text-wrap{white-space:normal!important}
++sd-import-excel .align-middle{vertical-align:middle!important}
++sd-import-excel .text-success{color:var(--sd-success)!important}
++sd-import-excel .text-error{color:var(--sd-error)!important}
++sd-import-excel .text-black400{color:var(--sd-black400)!important}
++sd-import-excel .T18M{font-size:18px;font-weight:500;line-height:28px}
++sd-import-excel .T14M{font-size:14px;font-weight:500;line-height:20px}
++sd-import-excel .T14R{font-size:14px;font-weight:400;line-height:20px}
++sd-import-excel .T12R{font-size:12px!important;font-weight:400;line-height:16px}
++sd-import-excel a{color:#007bff;text-decoration:none;background-color:transparent}
++sd-import-excel a:hover{text-decoration:underline}
++sd-import-excel img{vertical-align:middle;border-style:none}
++sd-import-excel .table-responsive{position:relative;min-height:50vh;height:50vh;overflow:auto;border:1px solid #dee2e6}
++sd-import-excel .sd-table{width:100%;border-collapse:collapse;margin-bottom:0;font-size:14px}
++sd-import-excel .sd-table thead th{position:sticky;top:0;background-color:#f8f9fa;border-bottom:2px solid #dee2e6;border-top:1px solid #dee2e6;padding:8px 6px;white-space:nowrap;z-index:10;font-weight:600;text-align:inherit}
++sd-import-excel .sd-table thead th.c-sticky-left{z-index:20}
++sd-import-excel .sd-table tbody td{vertical-align:middle;padding:6px;border-top:1px solid #dee2e6}
++sd-import-excel .sd-table tbody tr:nth-of-type(odd){background-color:#0000000a}
++sd-import-excel .sd-table tbody tr:nth-of-type(2n){background-color:#fff}
++sd-import-excel .sd-table tbody tr:hover,sd-import-excel .sd-table tbody tr:hover .c-sticky-left{background-color:#ececec}
++sd-import-excel .sd-table tbody tr:nth-of-type(odd) .c-sticky-left{background-color:#f2f2f2}
++sd-import-excel .sd-table tbody tr:nth-of-type(2n) .c-sticky-left{background-color:#fff}
++sd-import-excel .c-sticky-left{position:sticky;left:0;border-right:1px solid #dee2e6!important;border-left:none!important;z-index:5}
++sd-import-excel .empty-state-wrapper{height:100%;min-height:40vh;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background-color:#f8f9fa;border:2px dashed #cbd5e0;border-radius:8px;margin:16px;transition:all .2s ease-in-out;color:#6c757d}
++sd-import-excel .empty-state-wrapper:hover{background-color:#e3f2fd;border-color:#2196f3;color:#1976d2}
++sd-import-excel .empty-state-wrapper:hover .empty-icon{transform:scale(1.1);color:#1976d2}
++sd-import-excel .empty-state-wrapper:hover .text-link{text-decoration:underline}
++sd-import-excel .empty-state-wrapper .empty-icon{font-size:64px;height:64px;width:64px;margin-bottom:16px;color:#a0aec0;transition:transform .2s}
++sd-import-excel .empty-state-wrapper h4{font-size:1em;margin-top:0;font-weight:500;margin-bottom:4px}
++sd-import-excel .c-ellipsis{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;padding:0 4px}
++sd-import-excel .mat-mdc-paginator{display:block;-webkit-font-smoothing:antialiased;color:var(--mat-paginator-container-text-color);background-color:var(--mat-paginator-container-background-color);font-family:var(--mat-paginator-container-text-font,var(--mat-sys-body-small-font));line-height:var(--mat-paginator-container-text-line-height,var(--mat-sys-body-small-line-height));font-size:var(--mat-paginator-container-text-size,var(--mat-sys-body-small-size));font-weight:var(--mat-paginator-container-text-weight,var(--mat-sys-body-small-weight));letter-spacing:var(--mat-paginator-container-text-tracking,var(--mat-sys-body-small-tracking))}
++sd-import-excel .mat-mdc-paginator-outer-container{display:flex}
++sd-import-excel .mat-mdc-paginator-container{display:flex;align-items:center;justify-content:flex-end;padding:0 8px;flex-wrap:wrap;width:100%;min-height:var(--mat-paginator-container-size,56px)}
++sd-import-excel .mat-mdc-paginator-range-label{margin:0 32px 0 24px}
++sd-import-excel .mat-mdc-paginator-range-actions{display:flex;align-items:center}
++sd-import-excel .mat-mdc-paginator-icon{display:inline-block;width:28px;fill:var(--mat-paginator-enabled-icon-color)}
++sd-import-excel .mat-mdc-icon-button[aria-disabled] .mat-mdc-paginator-icon{fill:var(--mat-paginator-disabled-icon-color)}
++sd-import-excel .mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:var(--mat-icon-button-container-shape,50%);flex-shrink:0;text-align:center;width:var(--mat-icon-button-state-layer-size,40px);height:var(--mat-icon-button-state-layer-size,40px);padding:calc(calc(var(--mat-icon-button-state-layer-size,40px) - var(--mat-icon-button-icon-size,24px))/2);font-size:var(--mat-icon-button-icon-size,24px);color:var(--mat-icon-button-icon-color);-webkit-tap-highlight-color:rgba(0,0,0,0)}
++sd-import-excel .mat-mdc-icon-button .mat-mdc-button-persistent-ripple,sd-import-excel .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}
++sd-import-excel .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0;background-color:var(--mat-icon-button-state-layer-color)}
++sd-import-excel .mat-mdc-icon-button .mat-icon{z-index:1;position:relative}
++sd-import-excel .mat-mdc-icon-button .mat-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit}
++sd-import-excel .mat-mdc-icon-button:hover>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-hover-state-layer-opacity)}
++sd-import-excel .mat-mdc-icon-button[disabled],sd-import-excel .mat-mdc-icon-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-icon-button-disabled-icon-color)}
++sd-import-excel .mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}
++sd-import-excel .mat-mdc-icon-button img,sd-import-excel .mat-mdc-icon-button svg{width:var(--mat-icon-button-icon-size,24px);height:var(--mat-icon-button-icon-size,24px);vertical-align:baseline}
++sd-import-excel .c-mat-menu{border:none;min-width:unset;padding:0 8px}
++/* + `.mat-icon`: thắng luật nền `.mat-icon.material-icons{vertical-align:baseline}` của kit như `#c-import-excel` thắng ở catalog */
++sd-import-excel .c-mat-menu mat-icon.mat-icon{font-size:18px;width:18px;height:18px;line-height:18px;vertical-align:middle}
++:is(sd-import-excel, :where(.cdk-overlay-pane:has(> .mat-mdc-menu-panel > .mat-mdc-menu-content > .px-3.py-2))) .mat-mdc-menu-panel{min-width:112px;max-width:280px;overflow:auto;box-sizing:border-box;outline:0;border-radius:var(--mat-menu-container-shape);background-color:var(--mat-menu-container-color);box-shadow:var(--mat-menu-container-elevation-shadow)}
++:is(sd-import-excel, :where(.cdk-overlay-pane:has(> .mat-mdc-menu-panel > .mat-mdc-menu-content > .px-3.py-2))) .mat-mdc-menu-content{margin:0;padding:8px 0;outline:0;-webkit-font-smoothing:antialiased;flex:1;white-space:normal;font-family:var(--mat-sys-label-large-font);line-height:var(--mat-sys-label-large-line-height);font-size:var(--mat-sys-label-large-size);letter-spacing:var(--mat-sys-label-large-tracking);font-weight:var(--mat-sys-label-large-weight)}
++/* hai luật catalog xếp chung nhóm nút — áp cả cho mat-icon-button của mat-paginator / cột array */
++sd-import-excel .mat-mdc-button-base .mat-icon{min-height:fit-content;flex-shrink:0}
++sd-import-excel .mat-mdc-button-touch-target{display:none}
++/* panel mat-menu (CDK overlay) */
++.cdk-overlay-pane:has(> .mat-mdc-menu-panel > .mat-mdc-menu-content > .px-3.py-2){position:absolute;z-index:1000;display:flex;max-width:100%;box-sizing:border-box;pointer-events:auto}
++:where(.cdk-overlay-pane:has(> .mat-mdc-menu-panel > .mat-mdc-menu-content > .px-3.py-2)){--mat-sys-label-large-font:Roboto;--mat-sys-label-large-line-height:1.25rem;--mat-sys-label-large-size:0.875rem;--mat-sys-label-large-tracking:0.006rem;--mat-sys-label-large-weight:500;font-family:Roboto,"Helvetica Neue",Arial,sans-serif;font-size:14px;line-height:1.5;color:#212529}
++/* mat-paginator dùng phông body-small (catalog khai toàn cục trên html) */
++sd-import-excel{--mat-sys-body-small-font:Roboto, sans-serif;--mat-sys-body-small-line-height:1rem;--mat-sys-body-small-size:0.75rem;--mat-sys-body-small-tracking:0.025rem;--mat-sys-body-small-weight:400}
++/* reboot catalog `.sd-scope button{border-radius:0;font-family:inherit}` — điểm thấp nhất */
++:where(sd-import-excel) button{border-radius:0;font-family:inherit}
+ @media (prefers-reduced-motion: reduce) {
+   sd-import-excel .empty-state-wrapper,
+   sd-import-excel .empty-state-wrapper .empty-icon { transition: none; }
+ }
+-/* Chân bảng: catalog dùng `mat-paginator`; kit chỉ giữ dòng đếm "1 – N of N"
+-   (phần nút điều hướng của Material không thuộc component này). */
+-sd-import-excel .sd-ie-range-label { margin: 0 32px 0 24px; color: rgba(0, 0, 0, .87); font-size: 12px; }
+-/* `.sd-box` / `.sd-box-body` / `.sd-box-footer` là khung bao của catalog
+-   (`border rounded`), kit chưa có — khai tại chỗ, bó trong component. */
+-sd-import-excel .sd-box { border: 1px solid var(--sd-black200); border-radius: var(--sd-border-radius); }
+-sd-import-excel .sd-box-body { padding: 0; }
+-sd-import-excel .sd-box-footer {
+-  min-height: 40px;
+-  display: flex;
+-  align-items: center;
+-  justify-content: flex-end;
+-  padding: 0 8px;
+-  border-top: 1px solid var(--sd-black200);
+-}
+-
+-
+-/* Utility của catalog dùng trong markup `sd-import-excel`, THU HẸP phạm vi vào
+-   component. Hai lý do, cả hai đã dẫm phải trước đó (xem `.mb-2` của sd-label):
+-
+-   1. Kit đã có `.mr-2` = `var(--space-2)` = **8px** và `.px-4` = **16px**, trong
+-      khi catalog khai `.mr-2` = **2px** và `.px-4` = **4px**. Đổi toàn cục là vỡ
+-      mọi trang đang dùng thang cũ.
+-   2. Mấy lớp còn lại (`bg-error-light`, `text-wrap`, `text-link`, `mb-12`,
+-      `border-0`, `bg-white`…) kit chưa có; khai toàn cục thì lại thêm một bộ
+-      tiện ích thứ hai cạnh `utilities.css`, dễ lẫn. */
+-sd-import-excel .mr-2 { margin-right: 2px !important; }
+-sd-import-excel .mr-4 { margin-right: 4px !important; }
+-sd-import-excel .px-4 { padding-left: 4px !important; padding-right: 4px !important; }
+-sd-import-excel .mb-12 { margin-bottom: 12px !important; }
+-sd-import-excel .border-0 { border: 0 !important; }
+-sd-import-excel .bg-white { background: #fff !important; }
+-sd-import-excel .bg-warning-light { background: var(--sd-warning-light) !important; }
+-sd-import-excel .bg-error-light { background: var(--sd-error-light) !important; }
+-sd-import-excel .text-wrap { white-space: normal !important; }
+-sd-import-excel .text-small { font-size: 12px; }
+-sd-import-excel .text-link { color: inherit; }
+ 
+ 
+ /* ===================================================================
+diff -ruN a/design-system/preview/components/import-excel.html b/design-system/preview/components/import-excel.html
+--- a/design-system/preview/components/import-excel.html	2026-10-13 08:07:07.874821252 +0000
++++ b/design-system/preview/components/import-excel.html	2026-10-13 08:07:07.876375954 +0000
+@@ -17,67 +17,249 @@
+   <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+ </head>
+ <body>
++
+ <div class="app-shell">
+   <aside class="sidebar" id="sidebar"></aside>
++
+   <div class="main-area">
++
+     <div data-pattern="page-header" data-variant="browse"
+          data-title="sd-import-excel"
+-         data-subtitle="Modal nhập dữ liệu từ Excel — kiểm tra từng ô rồi xem trước trước khi lưu"></div>
++         data-subtitle="Modal nhập dữ liệu từ file Excel — đọc file .xlsx thật (exceljs), kiểm tra từng ô rồi xem trước — đồng bộ Core UI #c-import-excel"
++         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
++
+     <div class="content-zone">
+ 
+-      <sd-section data-catalog-section="c-import-excel" title="Chưa có dữ liệu">
+-        <p class="text-sm text-secondary mb-2">Bấm khung nét đứt để tải tệp mẫu. Nút “Xác nhận &amp; Lưu” đang vô hiệu.</p>
+-        <sd-button type="fill" color="primary" prefixIcon="upload_file" title="Import Excel"
+-                   onclick="document.getElementById('ie1').open()"></sd-button>
+-        <sd-import-excel id="ie1"></sd-import-excel>
+-      </sd-section>
+-
+-      <sd-section data-catalog-section="c-import-excel" title="Đã đọc file — dòng hợp lệ, cảnh báo, lỗi">
+-        <p class="text-sm text-secondary mb-2">Bấm các nút đếm để lọc theo trạng thái; rê chuột vào ô đỏ để xem lỗi. Có dòng lỗi thì nút “Xác nhận &amp; Lưu” vẫn vô hiệu.</p>
+-        <sd-button type="fill" color="primary" prefixIcon="upload_file" title="Import Excel (có dữ liệu)"
+-                   onclick="document.getElementById('ie2').open()"></sd-button>
+-        <sd-import-excel id="ie2"></sd-import-excel>
+-      </sd-section>
++      <!-- ── Tab: Preview ──────────────────────────────────── -->
++      <div class="tab-panel" data-tab-panel="0">
++
++        <sd-section data-catalog-section="c-import-excel" title="Mở modal, chưa có dữ liệu — bấm khung nét đứt để tải tệp mẫu">
++          <p class="text-sm text-secondary mb-3">Chạy thật: khung nét đứt tải về <code>Mau_import_khoan_vay.xlsx</code>; điền dữ liệu từ dòng 3 rồi bấm <strong>Tải lên</strong> để đọc file, kiểm tra từng ô theo cấu hình cột và xem trước.</p>
++          <sd-button id="btn-ie1" type="fill" color="primary" prefixIcon="upload_file" title="Import Excel"></sd-button>
++          <sd-import-excel id="ie1"></sd-import-excel>
++        </sd-section>
++
++        <sd-section data-catalog-section="c-import-excel" title="Đã đọc file — dòng hợp lệ, cảnh báo, lỗi">
++          <p class="text-sm text-secondary mb-3">Dữ liệu mẫu nạp bằng <code>setData()</code> (như vừa đọc từ file). Bấm các nút đếm để lọc; rê chuột ô đỏ để xem lỗi; còn dòng lỗi thì “Xác nhận &amp; Lưu” vô hiệu. “Tải về” xuất file Excel kèm cột Thông báo.</p>
++          <sd-button id="btn-ie2" type="fill" color="primary" prefixIcon="upload_file" title="Import Excel"></sd-button>
++          <sd-import-excel id="ie2"></sd-import-excel>
++        </sd-section>
++
++        <sd-section data-catalog-section="c-import-excel" title="Toàn bộ hợp lệ — sẵn sàng lưu">
++          <p class="text-sm text-secondary mb-3">Cột kiểu <code>array</code> mở danh sách qua mat-menu. “Xác nhận &amp; Lưu” gọi <code>option.accept(items, { file })</code>.</p>
++          <sd-button id="btn-ie3" type="fill" color="primary" prefixIcon="upload_file" title="Import Excel"></sd-button>
++          <sd-import-excel id="ie3"></sd-import-excel>
++        </sd-section>
++
++        <sd-section title="Event log">
++          <pre class="ds-guide-code" id="ie-event-log">Chưa có sự kiện nào.</pre>
++        </sd-section>
++
++      </div><!-- /tab-panel: Preview -->
++
++      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
++      <div class="tab-panel" data-tab-panel="1" style="display:none">
++        <sd-section title="Hướng dẫn BA / PO">
++          <div class="ds-guide">
++            <div class="ds-guide-do-dont">
++              <div class="ds-guide-do">
++                <div class="ds-guide-box-header"><span class="material-icons-outlined mi-16">check_circle</span> Dùng khi</div>
++                <ul class="ds-guide-list">
++                  <li>Nhập hàng loạt bản ghi từ file Excel theo mẫu cố định (khoản vay, nhân sự, danh mục…)</li>
++                  <li>Cần người dùng xem trước và sửa file trước khi lưu — mỗi ô được kiểm tra (bắt buộc, số, ngày, danh sách giá trị, độ dài)</li>
++                  <li>Server kiểm tra thêm sau khi lưu và trả lỗi từng dòng (<code>setValidation</code>)</li>
++                </ul>
++              </div>
++              <div class="ds-guide-dont">
++                <div class="ds-guide-box-header"><span class="material-icons-outlined mi-16">cancel</span> Không dùng khi</div>
++                <ul class="ds-guide-list">
++                  <li>Chỉ đính kèm file để lưu trữ — dùng sd-upload-file</li>
++                  <li>Nhập vài dòng — dùng form hoặc bảng nhập tay</li>
++                </ul>
++              </div>
++            </div>
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Hành vi cần biết</p>
++              <ul class="ds-guide-list">
++                <li>File mẫu: dòng 1 là mã cột (đỏ nếu bắt buộc), dòng 2 là tên cột, dòng 3 là mô tả nếu có cột khai <code>description</code>; dữ liệu đọc từ dòng kế tiếp. Số thứ tự trong bảng là số dòng trong Excel.</li>
++                <li>Tối đa <code>limit</code> dòng (mặc định 1000); file rỗng / quá giới hạn → thông báo cảnh báo, không mở bảng.</li>
++                <li>Cảnh báo vẫn cho lưu; còn một dòng lỗi thì không. Đã bấm “Xác nhận &amp; Lưu” thì nút khoá tới lần tải file sau.</li>
++                <li>Bảng phân trang 50 dòng (mat-paginator, nhãn tiếng Anh “1 – 50 of 60” như catalog).</li>
++              </ul>
++            </div>
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
++              <div class="ds-guide-prd">
++                <p>"Nút Import Excel trên trang Danh sách khoản vay mở sd-import-excel tiêu đề 'Nhập danh sách khoản vay', tệp mẫu 'Mau_import_khoan_vay', các cột: Mã khoản vay (bắt buộc), Ngân hàng (chỉ VCB/BIDV/VietinBank/Techcombank/MB), Số tiền giải ngân (số, bắt buộc, ≥ 1), Ngày giải ngân (dd/MM/yyyy), Tài sản đảm bảo (danh sách, phân cách bằng ;). Mã đã tồn tại thì cảnh báo 'sẽ cập nhật thông tin'."</p>
++              </div>
++            </div>
++          </div>
++        </sd-section>
++      </div><!-- /tab-panel: BA/PO -->
++
++      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
++      <div class="tab-panel" data-tab-panel="2" style="display:none">
++        <sd-section title="Hướng dẫn Dev">
++          <div class="ds-guide">
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Cú pháp</p>
++              <div class="ds-guide-code-wrap">
++                <div class="ds-guide-code-bar">
++                  <span class="ds-guide-code-lang">HTML</span>
++                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
++                </div>
++                <pre class="ds-guide-code">&lt;sd-button type="fill" color="primary" prefixIcon="upload_file" title="Import Excel"
++           onclick="document.getElementById('nhap-khoan-vay').open()"&gt;&lt;/sd-button&gt;
++&lt;sd-import-excel id="nhap-khoan-vay"&gt;&lt;/sd-import-excel&gt;
++
++&lt;script&gt;
++  var ie = document.getElementById('nhap-khoan-vay');
++  ie.option = {
++    title: 'Nhập danh sách khoản vay',
++    fileName: 'Mau_import_khoan_vay',
++    columns: [
++      { field: 'loanCode', title: 'Mã khoản vay', type: 'string', required: true, width: '150px' },
++      { field: 'bank', title: 'Ngân hàng', type: 'values', values: ['VCB', 'BIDV', 'MB'], checkValueInArray: true },
++      { field: 'amount', title: 'Số tiền giải ngân (VND)', type: 'number', required: true, min: 1 },
++      { field: 'date', title: 'Ngày giải ngân', type: 'date', format: 'dd/MM/yyyy' },
++      { field: 'collaterals', title: 'Tài sản đảm bảo', type: 'array', divideString: ';', unitString: 'tài sản' }
++    ],
++    validateItem: function (item, idx) { return { idx: idx }; },          // { idx, errorMessage?, warningMessage? }
++    accept: function (items, ctx) { /* gửi server; lỗi từng dòng → ie.setValidation([...]) */ }
++  };
++  ie.addEventListener('sd-closed', function () { /* tải lại danh sách */ });
++&lt;/script&gt;</pre>
++              </div>
++            </div>
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">option</p>
++              <table class="ds-guide-table">
++                <thead><tr><th>Tên</th><th>Mô tả</th></tr></thead>
++                <tbody>
++                  <tr><td>title · fileName</td><td>Tiêu đề modal (mặc định "Nhập dữ liệu Excel") · tên file mẫu (mặc định "Template")</td></tr>
++                  <tr><td>columns</td><td>Cấu hình cột — xem bảng dưới</td></tr>
++                  <tr><td>transform(excelItems)</td><td>Đổi dữ liệu trước khi kiểm tra (đồng bộ hoặc Promise — nút Tải lên quay vòng xoay)</td></tr>
++                  <tr><td>validateItem(item, idx, items)</td><td>Chạy khi dòng qua hết luật cột; trả <code>{ idx, errorMessage?, warningMessage? }</code></td></tr>
++                  <tr><td>validateItems(items)</td><td>Chạy một lần khi không còn dòng lỗi; trả mảng như trên</td></tr>
++                  <tr><td>accept(items, { file })</td><td>"Xác nhận &amp; Lưu"</td></tr>
++                  <tr><td>limit · sheets</td><td>Số dòng tối đa (1000) · sheet phụ trong file mẫu <code>[{ name, headers: [{ value, display }], items }]</code></td></tr>
++                </tbody>
++              </table>
++            </div>
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Cột</p>
++              <table class="ds-guide-table">
++                <thead><tr><th>type</th><th>Kiểm tra / hiển thị</th></tr></thead>
++                <tbody>
++                  <tr><td>string</td><td>minlength · maxlength</td></tr>
++                  <tr><td>number</td><td>số hợp lệ · min · max; hiển thị kiểu vi-VN (1.250.000.000)</td></tr>
++                  <tr><td>bool</td><td>true / false / 1 / 0 → ô tích</td></tr>
++                  <tr><td>values</td><td>chuỗi hoặc số; <code>checkValueInArray</code> + <code>values</code> giới hạn danh sách</td></tr>
++                  <tr><td>date · datetime · time</td><td>theo <code>format</code> (dd/MM/yyyy, dd/MM/yyyy HH:mm…)</td></tr>
++                  <tr><td>array</td><td>tách theo <code>divideString</code>, hiện "N {unitString}" + nút mở danh sách</td></tr>
++                </tbody>
++              </table>
++              <p class="text-sm text-secondary mt-2">Chung: <code>required</code> · <code>defaultValue</code> · <code>width</code> (mặc định 300px) · <code>hidden</code> (bool / hàm) · <code>description</code> · <code>fill</code> / <code>fontColor</code> (màu ô tiêu đề trong file mẫu) · <code>transform(item, value)</code>.</p>
++            </div>
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Method · Event</p>
++              <table class="ds-guide-table">
++                <thead><tr><th>Tên</th><th>Mô tả</th></tr></thead>
++                <tbody>
++                  <tr><td>open() · close()</td><td>Mở (xoá dữ liệu cũ) / đóng modal</td></tr>
++                  <tr><td>setValidation(list)</td><td>Thay toàn bộ lỗi / cảnh báo bằng kết quả server <code>[{ idx, errorMessage?, warningMessage? }]</code></td></tr>
++                  <tr><td>upload() · downloadTemplate() · export() · view('ALL'|'SUCCESS'|'WARNING'|'ERROR')</td><td>Như các nút trên giao diện</td></tr>
++                  <tr><td>setData(items)</td><td><strong>Kit thêm</strong> cho prototype: nạp mảng dữ liệu như vừa đọc từ file (không cần file thật)</td></tr>
++                  <tr><td>sd-closed</td><td>≙ <code>(sdClosed)</code> — modal đóng</td></tr>
++                </tbody>
++              </table>
++            </div>
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Đóng gói</p>
++              <p class="text-sm text-secondary">exceljs 4.4.0 (đúng bản thư viện khai) ở <code>design-system/vendor/exceljs/exceljs.min.js</code> (~950 KB, MIT), tự nạp lần đầu tải mẫu / đọc file / xuất. Đổi chỗ: <code>window.SD_EXCELJS_BASE = '…/exceljs/'</code>.</p>
++            </div>
++          </div>
++        </sd-section>
++      </div><!-- /tab-panel: Dev -->
+ 
+     </div>
+   </div>
+ </div>
++
+ <script src="../../sd-components/sd-components.js"></script>
+ <script src="../../patterns/page-header.js"></script>
+ <script src="../../patterns/sidebar.js"></script>
+ <script src="../../core/js/pattern-loader.js"></script>
+ <script src="../../core/js/shell.js"></script>
+ <script src="../shared-nav.js"></script>
++
+ <script>
+   (function () {
++    var pageHeader = document.querySelector('.main-area > .page-header');
++    var tabZone = pageHeader && pageHeader.querySelector('.page-tab-zone');
++    if (!tabZone) return;
++    var tabs = tabZone.querySelectorAll('.tab'), panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
++    function showPanel(index) {
++      panels.forEach(function (p) { p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none'; });
++      tabs.forEach(function (t, i) { t.classList.toggle('active', i === index); });
++    }
++    tabs.forEach(function (tab, i) { tab.addEventListener('click', function () { showPanel(i); }); });
++    showPanel(0);
++  })();
++
++  (function () {
++    var log = document.getElementById('ie-event-log'), lines = [];
++    function push(s) { lines.push(s); if (lines.length > 10) lines.shift(); log.textContent = lines.join('\n'); }
++
+     var COLUMNS = [
+-      { field: 'loanCode',    title: 'Mã khoản vay',          type: 'string', required: true, width: '150px' },
+-      { field: 'bank',        title: 'Ngân hàng',             type: 'values', values: ['VCB','BIDV','VietinBank','Techcombank','MB'], width: '150px' },
+-      { field: 'amount',      title: 'Số tiền giải ngân (VND)', type: 'number', required: true, min: 1, width: '190px' },
+-      { field: 'term',        title: 'Kỳ hạn (tháng)',        type: 'number', width: '130px' },
+-      { field: 'date',        title: 'Ngày giải ngân',        type: 'date', format: 'dd/MM/yyyy', width: '140px' },
+-      { field: 'rate',        title: 'Lãi suất (%/năm)',      type: 'number', width: '140px' },
+-      { field: 'collaterals', title: 'Tài sản đảm bảo',       type: 'array', divideString: ';', unitString: 'tài sản', width: '170px' }
++      { field: 'loanCode', title: 'Mã khoản vay', type: 'string', required: true, width: '150px' },
++      { field: 'bank', title: 'Ngân hàng', type: 'values', values: ['VCB', 'BIDV', 'VietinBank', 'Techcombank', 'MB'], checkValueInArray: true, width: '150px' },
++      { field: 'amount', title: 'Số tiền giải ngân (VND)', type: 'number', required: true, min: 1, width: '190px' },
++      { field: 'term', title: 'Kỳ hạn (tháng)', type: 'number', width: '130px' },
++      { field: 'date', title: 'Ngày giải ngân', type: 'date', format: 'dd/MM/yyyy', width: '140px' },
++      { field: 'rate', title: 'Lãi suất (%/năm)', type: 'number', width: '140px' },
++      { field: 'collaterals', title: 'Tài sản đảm bảo', type: 'array', divideString: ';', unitString: 'tài sản', width: '170px' }
++    ];
++    var EXISTED = ['FD-2026-0143'];
++    function option(title) {
++      return {
++        title: title, fileName: 'Mau_import_khoan_vay', columns: COLUMNS,
++        validateItem: function (item, idx) {
++          return EXISTED.indexOf(item.loanCode) >= 0
++            ? { idx: idx, warningMessage: 'Khoản vay ' + item.loanCode + ' đã tồn tại, hệ thống sẽ cập nhật thông tin' }
++            : { idx: idx };
++        },
++        accept: function (items, ctx) { push('accept — ' + items.length + ' dòng' + (ctx.file ? ' · file ' + ctx.file.name : '')); }
++      };
++    }
++    var ROWS = [
++      ['FD-2026-0141', 'VCB', 1250000000, 12, '15/10/2026', 6.8, 'QSDĐ số CT-01234 – 12 Lý Thái Tổ, Hoàn Kiếm;Tiền gửi kỳ hạn 12 tháng tại VCB'],
++      ['FD-2026-0142', 'BIDV', 3500000000, 24, '20/10/2026', 7.2, 'Nhà xưởng KCN Bắc Thăng Long;Dây chuyền sản xuất;Hàng tồn kho luân chuyển'],
++      ['FD-2026-0143', 'VietinBank', 850000000, 6, '01/11/2026', 6.5, 'Tiền gửi kỳ hạn 6 tháng tại VietinBank'],
++      ['FD-2026-0144', 'ACB Bank', 2000000000, 12, '05/11/2026', 7.0, null],
++      ['FD-2026-0145', 'Techcombank', 2000000000, 36, '05/11/2026', 7.5, 'QSDĐ số BT-00871 – Lô C5, KĐT Sala'],
++      ['FD-2026-0146', 'MB', '2,5 tỷ', 18, '10/11/2026', 6.9, null],
++      ['FD-2026-0147', 'VCB', 4200000000, 12, '31/11/2026', 6.8, 'Khoản phải thu HĐ 02/2026'],
++      ['FD-2026-0148', 'BIDV', 1800000000, 18, '12/11/2026', 7.1, 'Tiền gửi kỳ hạn 12 tháng tại BIDV'],
++      [null, 'MB', 600000000, 6, '15/11/2026', 6.4, null]
+     ];
+-    var OPTION = { title: 'Nhập danh sách khoản vay', columns: COLUMNS };
+-    document.getElementById('ie1').option = OPTION;
++    function items(codes) {
++      return ROWS.filter(function (r) { return !codes || codes.indexOf(r[0]) >= 0; })
++        .map(function (r) { var o = {}; COLUMNS.forEach(function (c, i) { o[c.field] = r[i]; }); return o; });
++    }
+ 
+-    var ie2 = document.getElementById('ie2');
+-    ie2.option = OPTION;
+-    ie2.setData([
+-      { status: 'success', message: 'Hợp lệ',
+-        data: { loanCode: 'KV-2026-0201', bank: 'VCB', amount: '120.000.000.000', term: '12', date: '05/01/2026', rate: '6,20', collaterals: 'TS-01;TS-02' } },
+-      { status: 'success', message: 'Hợp lệ',
+-        data: { loanCode: 'KV-2026-0202', bank: 'BIDV', amount: '85.500.000.000', term: '6', date: '12/02/2026', rate: '6,45', collaterals: 'TS-07' } },
+-      { status: 'warning', message: 'Khoản vay KV-2026-0203 đã tồn tại, hệ thống sẽ cập nhật thông tin',
+-        data: { loanCode: 'KV-2026-0203', bank: 'Techcombank', amount: '200.000.000.000', term: '24', date: '20/03/2026', rate: '6,10', collaterals: 'TS-11;TS-12;TS-13' } },
+-      { status: 'error', message: 'Ngân hàng không nằm trong danh sách cho phép',
+-        errors: { bank: 'Giá trị phải thuộc: VCB, BIDV, VietinBank, Techcombank, MB' },
+-        data: { loanCode: 'KV-2026-0204', bank: 'Sacombank', amount: '64.750.000.000', term: '18', date: '02/04/2026', rate: '6,30', collaterals: 'TS-21' } },
+-      { status: 'error', message: 'Thiếu số tiền giải ngân',
+-        errors: { amount: 'Vui lòng nhập thông tin' },
+-        data: { loanCode: 'KV-2026-0205', bank: 'MB', amount: '', term: '36', date: '15/05/2026', rate: '6,55', collaterals: '' } }
+-    ]);
++    var ie1 = document.getElementById('ie1'), ie2 = document.getElementById('ie2'), ie3 = document.getElementById('ie3');
++    ie1.option = option(undefined);
++    ie2.option = option('Nhập danh sách khoản vay');
++    ie3.option = option('Nhập danh sách khoản vay');
++    document.getElementById('btn-ie1').addEventListener('click', function () { ie1.open(); });
++    document.getElementById('btn-ie2').addEventListener('click', function () { ie2.open(); ie2.setData(items()); });
++    document.getElementById('btn-ie3').addEventListener('click', function () {
++      ie3.open(); ie3.setData(items(['FD-2026-0141', 'FD-2026-0142', 'FD-2026-0145', 'FD-2026-0148']));
++    });
++    document.addEventListener('sd-closed', function (e) {
++      if (e.target.closest && e.target.closest('sd-import-excel')) push('sd-closed #' + e.target.closest('sd-import-excel').id);
++    });
+   })();
+ </script>
+ </body>
+diff -ruN a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-13 08:07:07.882605155 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-13 08:07:07.884992675 +0000
+@@ -161,7 +161,8 @@
+     var disC = dis ? 'c-disabled mat-mdc-button-disabled' : '';
+     var ctx = sdButtonCtx(btn), parts;
+     if (ctx === 'A') parts = ['c-button', cType, 'mdc-button', mod, kind, 'mat-mdc-button-base', mColor, cSize, sq, disC, blk];
+-    else if (ctx === 'B') parts = ['c-button', cType, 'mdc-button', mod, kind, mColor, 'mat-mdc-button-base', cSize, sq, disC, blk];
++    else if (ctx === 'B') parts = ['c-button', cType, 'mdc-button', mod, kind, mColor, 'mat-mdc-button-base', cSize, sq, disC, blk,
++      btn.hasAttribute('data-sd-tooltip') ? 'mat-mdc-tooltip-trigger' : ''];   // #c-import-excel: nút có tooltip
+     else if (ctx === 'T' || ctx === 'F') parts = ['mdc-button', 'mat-mdc-button-base', kind, mColor, 'c-button', cType, sq, cSize, disC, blk];
+     else if (ctx === 'S') parts = ['mdc-button', 'mat-mdc-button-base', 'c-button', cType, mod, kind, mColor, cSize, sq, disC, blk];
+     else if (ctx === 'N') parts = ['mdc-button', 'mat-mdc-button-base', 'c-button', cType, cSize, mod, kind, mColor, 'mat-mdc-tooltip-trigger', sq, disC, blk];
+@@ -249,7 +250,8 @@
+     button: "<mat-spinner role=\"progressbar\" tabindex=\"-1\" mode=\"indeterminate\" diameter=\"18\" strokewidth=\"2\" class=\"mat-mdc-progress-spinner mdc-circular-progress c-spinner mat-primary mdc-circular-progress--indeterminate\" style=\"width: 18px; height: 18px; --mat-progress-spinner-size: 18px; --mat-progress-spinner-active-indicator-width: 18px;\" aria-valuemin=\"0\" aria-valuemax=\"100\"><div aria-hidden=\"true\" class=\"mdc-circular-progress__determinate-container\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__determinate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" class=\"mdc-circular-progress__determinate-circle\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray: 25.132741228718345px; stroke-width: 11.11111111111111%;\"></circle></svg></div><div aria-hidden=\"true\" class=\"mdc-circular-progress__indeterminate-container\"><div class=\"mdc-circular-progress__spinner-layer\"><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-left\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray: 25.132741228718345px; stroke-dashoffset: 12.566370614359172px; stroke-width: 11.11111111111111%;\"></circle></svg></div><div class=\"mdc-circular-progress__gap-patch\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray: 25.132741228718345px; stroke-dashoffset: 12.566370614359172px; stroke-width: 11.11111111111111%;\"></circle></svg></div><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-right\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray: 25.132741228718345px; stroke-dashoffset: 12.566370614359172px; stroke-width: 11.11111111111111%;\"></circle></svg></div></div></div></mat-spinner>",
+     upload: "<mat-spinner role=\"progressbar\" mode=\"indeterminate\" tabindex=\"-1\" class=\"mat-mdc-progress-spinner mdc-circular-progress mat-primary mdc-circular-progress--indeterminate\" style=\"width:18px;height:18px;--mat-progress-spinner-size:18px;--mat-progress-spinner-active-indicator-width:18px\"><div class=\"mdc-circular-progress__determinate-container\" aria-hidden=\"true\"></div><div class=\"mdc-circular-progress__indeterminate-container\" aria-hidden=\"true\"><div class=\"mdc-circular-progress__spinner-layer\"><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-left\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray:25.1327px;stroke-dashoffset:12.5664px;stroke-width:11.1111%\"></circle></svg></div><div class=\"mdc-circular-progress__gap-patch\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray:25.1327px;stroke-dashoffset:12.5664px;stroke-width:11.1111%\"></circle></svg></div><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-right\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray:25.1327px;stroke-dashoffset:12.5664px;stroke-width:11.1111%\"></circle></svg></div></div></div></mat-spinner>",
+     table: "<mat-spinner role=\"progressbar\" tabindex=\"-1\" mode=\"indeterminate\" class=\"mat-mdc-progress-spinner mdc-circular-progress mat-primary mdc-circular-progress--indeterminate\" style=\"width: 100px; height: 100px; --mat-progress-spinner-size: 100px; --mat-progress-spinner-active-indicator-width: 100px;\"><div aria-hidden=\"true\" class=\"mdc-circular-progress__determinate-container\"></div><div aria-hidden=\"true\" class=\"mdc-circular-progress__indeterminate-container\"><div class=\"mdc-circular-progress__spinner-layer\"><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-left\"><svg viewBox=\"0 0 100 100\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"45\" style=\"stroke-dasharray: 282.743px; stroke-dashoffset: 141.372px; stroke-width: 10%;\"></circle></svg></div><div class=\"mdc-circular-progress__gap-patch\"><svg viewBox=\"0 0 100 100\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"45\" style=\"stroke-dasharray: 282.743px; stroke-dashoffset: 141.372px; stroke-width: 10%;\"></circle></svg></div><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-right\"><svg viewBox=\"0 0 100 100\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"45\" style=\"stroke-dasharray: 282.743px; stroke-dashoffset: 141.372px; stroke-width: 10%;\"></circle></svg></div></div></div></mat-spinner>",
+-    tree: "<mat-progress-spinner role=\"progressbar\" tabindex=\"-1\" mode=\"indeterminate\" class=\"mat-mdc-progress-spinner mdc-circular-progress--indeterminate mat-primary\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: 16px; height: 16px; --mat-progress-spinner-size: 16px; --mat-progress-spinner-active-indicator-width: 16px;\"><div aria-hidden=\"true\" class=\"mdc-circular-progress__determinate-container\"></div><div aria-hidden=\"true\" class=\"mdc-circular-progress__indeterminate-container\"><div class=\"mdc-circular-progress__spinner-layer\"><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-left\"><svg viewBox=\"0 0 7.6 7.6\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"3\" style=\"stroke-dasharray: 18.850px; stroke-dashoffset: 9.425px; stroke-width: 10%;\"></circle></svg></div><div class=\"mdc-circular-progress__gap-patch\"><svg viewBox=\"0 0 7.6 7.6\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"3\" style=\"stroke-dasharray: 18.850px; stroke-dashoffset: 9.425px; stroke-width: 10%;\"></circle></svg></div><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-right\"><svg viewBox=\"0 0 7.6 7.6\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"3\" style=\"stroke-dasharray: 18.850px; stroke-dashoffset: 9.425px; stroke-width: 10%;\"></circle></svg></div></div></div></mat-progress-spinner>"
++    tree: "<mat-progress-spinner role=\"progressbar\" tabindex=\"-1\" mode=\"indeterminate\" class=\"mat-mdc-progress-spinner mdc-circular-progress--indeterminate mat-primary\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: 16px; height: 16px; --mat-progress-spinner-size: 16px; --mat-progress-spinner-active-indicator-width: 16px;\"><div aria-hidden=\"true\" class=\"mdc-circular-progress__determinate-container\"></div><div aria-hidden=\"true\" class=\"mdc-circular-progress__indeterminate-container\"><div class=\"mdc-circular-progress__spinner-layer\"><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-left\"><svg viewBox=\"0 0 7.6 7.6\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"3\" style=\"stroke-dasharray: 18.850px; stroke-dashoffset: 9.425px; stroke-width: 10%;\"></circle></svg></div><div class=\"mdc-circular-progress__gap-patch\"><svg viewBox=\"0 0 7.6 7.6\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"3\" style=\"stroke-dasharray: 18.850px; stroke-dashoffset: 9.425px; stroke-width: 10%;\"></circle></svg></div><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-right\"><svg viewBox=\"0 0 7.6 7.6\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"3\" style=\"stroke-dasharray: 18.850px; stroke-dashoffset: 9.425px; stroke-width: 10%;\"></circle></svg></div></div></div></mat-progress-spinner>",
++    excel: "<mat-spinner role=\"progressbar\" mode=\"indeterminate\" tabindex=\"-1\" class=\"mat-mdc-progress-spinner mdc-circular-progress mat-primary mdc-circular-progress--indeterminate\" style=\"width:24px;height:24px;--mat-progress-spinner-size:24px;--mat-progress-spinner-active-indicator-width:24px\"><div class=\"mdc-circular-progress__determinate-container\" aria-hidden=\"true\"></div><div class=\"mdc-circular-progress__indeterminate-container\" aria-hidden=\"true\"><div class=\"mdc-circular-progress__spinner-layer\"><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-left\"><svg viewBox=\"0 0 16.4 16.4\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"7\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray:43.9823px;stroke-dashoffset:21.9911px;stroke-width:10%\"></circle></svg></div><div class=\"mdc-circular-progress__gap-patch\"><svg viewBox=\"0 0 16.4 16.4\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"7\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray:43.9823px;stroke-dashoffset:21.9911px;stroke-width:10%\"></circle></svg></div><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-right\"><svg viewBox=\"0 0 16.4 16.4\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"7\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray:43.9823px;stroke-dashoffset:21.9911px;stroke-width:10%\"></circle></svg></div></div></div></mat-spinner>"
+   };
+   function escAttr(s) {
+     /* Ép về chuỗi trước: `sd-form-render` truyền cả số (`maxSize: 10`,
+@@ -853,7 +855,7 @@
+       }
+ 
+       var attrs = ' type="' + esc(htmlType) + '"' +
+-        (disabled ? ' disabled' : '') +
++        (disabled ? ' disabled="true"' : '') +   // MatButton [attr.disabled] = "true" (catalog)
+         ' data-disabled="' + (disabled ? 'true' : 'false') + '"' +
+         ' data-loading="' + (loading ? 'true' : 'false') + '"' +
+         (width ? ' style="width:' + escAttr(width) + '"' : '') +
+@@ -16919,269 +16921,755 @@
+ 
+ 
+   /* ══════════════════════════════════════════════════════════
+-     sd-import-excel — DỰNG MỚI 2026-10-11 theo `#c-import-excel`.
+-
+-     Catalog: "Modal nhập dữ liệu từ file Excel: tải tệp mẫu, đọc file người
+-     dùng chọn, kiểm tra từng ô theo cấu hình cột (bắt buộc, số, ngày, danh sách
+-     giá trị, độ dài…) rồi hiển thị bảng xem trước với trạng thái hợp lệ / cảnh
+-     báo / lỗi trước khi xác nhận lưu."
+-
+-     API: `[option]` (`columns`, `accept`, `validateItem`, `validateItems`,
+-     `transform`, `limit`, `sheets`), `(sdClosed)`, `open()`, `close()`,
+-     `setValidation()`.
+-
+-     Cấu hình cột (nguyên văn ví dụ catalog):
+-       { field, title, type: 'string'|'number'|'date'|'values'|'array',
+-         required?, min?, max?, format?, values?, divideString?, unitString?, width? }
+-
+-     Thanh đếm trên bảng (`.mb-12`) — bốn nút, lấy thẳng từ script của catalog:
+-       "Xem tất cả"  outline secondary  icon cached   data-view="ALL"
+-       {n success}   light   success    icon done     tooltip "Số dòng dữ liệu hợp lệ"
+-       {n warning}   light   warning    icon warning  tooltip "Số dòng dữ liệu có lỗi"
+-       {n error}     light   error      icon error    tooltip "Số dòng dữ liệu có cảnh báo"
+-
+-     ⚠ Hai tooltip cuối CATALOG GHI NGƯỢC NHAU (nút warning chú thích "có lỗi",
+-     nút error chú thích "có cảnh báo"). Kit chép nguyên văn và ghi vào
+-     `_memory/known-gaps.md` — sửa là lệch catalog.
+-
+-     Nút "Xác nhận & Lưu" chỉ bật khi `(success || warning) && !error` — đúng
+-     điều kiện trong script catalog.
+-
+-     CHƯA DỰNG: đọc FILE EXCEL thật (cần thư viện ngoài, kit là prototype tĩnh).
+-     `setData()` của kit nhận thẳng mảng dữ liệu để dựng đúng màn xem trước.
++     sd-import-excel (#c-import-excel) — ĐỒNG BỘ 2026-10-13 theo catalog + mã thư viện
++     (`@sd-angular/core` 19.0.10 `fesm2022/sd-angular-core-components-import-excel.mjs`,
++     `sd-angular-core-services-excel.mjs`). Builder chọn "Nhúng exceljs vào kit": đọc / ghi
++     .xlsx THẬT bằng exceljs 4.4.0 (đúng bản thư viện khai) — `design-system/vendor/exceljs/
++     exceljs.min.js` (bản dist chính thức, global `ExcelJS`), tự nạp khi cần.
++
++     API (thư viện): `option` (property JS) { title, fileName, columns, accept, validateItem,
++       validateItems, transform, limit, sheets } · open() · close() · setValidation(list) ·
++       upload() · downloadTemplate() · export() · view(showing) · sự kiện `sd-closed` ≙ (sdClosed).
++     Cột: { field, title, type 'string'|'number'|'bool'|'values'|'date'|'datetime'|'time'|'array',
++       required, defaultValue, minlength, maxlength, min, max, values, checkValueInArray, format,
++       divideString, unitString, width, hidden, description, fill, fontColor, transform }.
++     Kit thêm (Rule 18 ngoại lệ 3, markup cũ): `setData(items)` — nạp thẳng mảng dữ liệu như vừa đọc
++       từ file (prototype không cần file thật); dạng cũ `{ data, status, message, errors }` vẫn nhận.
+      ══════════════════════════════════════════════════════════ */
++  /* chuỗi vi của thư viện (core.component.import-excel.* · core.excel.*) */
+   var SD_IMPORT_EXCEL_TEXT = {
+-    title: 'Nhập dữ liệu Excel',
+-    emptyTitle: 'Chưa có dữ liệu tải lên',
+-    emptyLink: 'Nhấn vào đây để tải tệp mẫu',
+-    emptyTip: 'Nhấn để tải tệp mẫu về máy',
+-    upload: 'Tải lên',
+-    download: 'Tải về',
+-    accept: 'Xác nhận & Lưu',
+-    viewAll: 'Xem tất cả',
+-    status: 'Trạng thái',
+-    /* Nguyên văn catalog — hai chuỗi cuối ghi ngược nhau, xem chú thích trên */
+-    tipSuccess: 'Số dòng dữ liệu hợp lệ',
+-    tipWarning: 'Số dòng dữ liệu có lỗi',
+-    tipError: 'Số dòng dữ liệu có cảnh báo'
++    title: 'Nhập dữ liệu Excel', seeAll: 'Xem tất cả', validRows: 'Số dòng dữ liệu hợp lệ',
++    errorRows: 'Số dòng dữ liệu có lỗi', warningRows: 'Số dòng dữ liệu có cảnh báo', status: 'Trạng thái',
++    validData: 'Dữ liệu hợp lệ', downloadTemplateTooltip: 'Nhấn để tải tệp mẫu về máy',
++    noDataUpload: 'Chưa có dữ liệu tải lên', clickHereTemplate: 'Nhấn vào đây để tải tệp mẫu',
++    upload: 'Tải lên', download: 'Tải về', confirmSave: 'Xác nhận & Lưu',
++    noDataInFile: 'Tệp tin không có dữ liệu', rowLimit: 'Giới hạn tải lên {limit} dòng',
++    required: 'Dữ liệu bắt buộc', minLength: 'Độ dài chuỗi tối thiểu: {min}', maxLength: 'Độ dài chuỗi tối đa: {max}',
++    notANumber: '{value} không phải số hợp lệ', belowMin: '{value} không thỏa giá trị tối thiểu: {min}',
++    aboveMax: '{value} không thỏa giá trị tối đa: {max}', invalidBool: 'Vui lòng nhập giá trị hợp lệ true, false, 1, 0',
++    invalidValue: 'Giá trị {value} không hợp lệ', valueNotInList: 'Giá trị {value} không thuộc danh sách cho phép [{list}]',
++    invalidDateFormat: 'Ngày {value} không đúng định dạng {format}', genericError: 'Có lỗi xảy ra',
++    messageColumn: 'Thông báo', success: 'Thành công',
++    cannotReadFile: 'Không đọc được nội dung file', noSheet: 'File Excel không có sheet dữ liệu',
++    uploadInvalidFormat: '[{name}] File tải lên không đúng định dạng. Vui lòng chọn lại',
++    uploadInvalidSize: '[{name}] Kích thước file không hợp lệ. Vui lòng chọn một file khác'
+   };
++  function sdIeT(key, p) {
++    var s = SD_IMPORT_EXCEL_TEXT[key] || key;
++    if (p) Object.keys(p).forEach(function (k) { s = s.split('{' + k + '}').join(p[k]); });
++    return s;
++  }
+ 
+-  class SdImportExcel extends HTMLElement {
+-    static get observedAttributes() { return ['autoid', 'autoId']; }
+-    constructor() { super(); this._rows = []; this._view = 'ALL'; }
+-    connectedCallback() { this._render(); this._bind(); }
+-
+-    set option(v) { this._option = v || {}; if (this.isConnected) this._render(); }
+-    get option() { return this._option || {}; }
+-    get columns() { return this.option.columns || []; }
++  /* ── exceljs (nạp lười) ── */
++  var sdExcelPromise = null;
++  function sdExcelLoad() {
++    if (window.ExcelJS && window.ExcelJS.Workbook) return Promise.resolve(window.ExcelJS);
++    if (sdExcelPromise) return sdExcelPromise;
++    var base = window.SD_EXCELJS_BASE ||
++      (sdScriptSrc ? new URL('../vendor/exceljs/', sdScriptSrc).href : 'design-system/vendor/exceljs/');
++    if (base.slice(-1) !== '/') base += '/';
++    sdExcelPromise = new Promise(function (resolve, reject) {
++      var sc = document.createElement('script');
++      sc.src = base + 'exceljs.min.js';
++      sc.onload = function () { window.ExcelJS ? resolve(window.ExcelJS) : reject(new Error('ExcelJS chưa sẵn sàng')); };
++      sc.onerror = function () { reject(new Error('Không nạp được ' + sc.src)); };
++      document.head.appendChild(sc);
++    });
++    sdExcelPromise.catch(function () { sdExcelPromise = null; });
++    return sdExcelPromise;
++  }
+ 
+-    /* Kit nhận dữ liệu đã đọc sẵn: mỗi dòng
+-       { data: {field: value}, status: 'success'|'warning'|'error',
+-         message?: string, errors?: { field: 'câu lỗi' } } */
+-    setData(rows) {
+-      this._rows = Array.isArray(rows) ? rows : [];
+-      this._applyValidation();
+-      this._render();
+-    }
+-    /* `setValidation()` của catalog: server trả lỗi từng dòng sau khi accept */
+-    setValidation(list) {
+-      var byIdx = {};
+-      (list || []).forEach(function (v) { byIdx[v.idx] = v; });
+-      this._rows.forEach(function (r, i) {
+-        var v = byIdx[i];
+-        if (!v) return;
+-        if (v.errorMessage) { r.status = 'error'; r.message = v.errorMessage; }
+-        else if (v.warningMessage) { r.status = 'warning'; r.message = v.warningMessage; }
++  /* ── @sdcorejs/utils (NumberUtilities · DateUtilities · BrowserUtilities) — nguyên văn ── */
++  var sdUtil = {
++    toVN: function (value) {
++      value = (value == null ? '' : value).toString().replace(/,/g, '');
++      if (!value) return null;
++      var val = +value;
++      return !Number.isNaN(val) ? val.toLocaleString('vi-VN', { maximumFractionDigits: 10 }) : null;
++    },
++    isNumber: function (value) {
++      if (value === undefined || value === null || value === '') return false;
++      return !Number.isNaN(+value);
++    },
++    isDate: function (value) {
++      if (value === undefined || value === null || value === '') return false;
++      if (typeof value === 'string') {
++        if (value.length < 8) return false;
++        var d1 = value.substring(0, 10), d2 = value.substring(0, 9), d3 = value.substring(0, 8);
++        var r1 = /^(0[1-9]|[1-9]|1[0-2])(-|\/)(0[1-9]|[1-9]|[12][0-9]|3[01])(-|\/)(\d{4})$/;
++        var r2 = /^(\d{4})(-|\/)(0[1-9]|[1-9]|1[0-2])(-|\/)(0[1-9]|[1-9]|[12][0-9]|3[01])$/;
++        var ok = r1.test(d1) || r2.test(d1) || r1.test(d2) || r2.test(d2) || r1.test(d3) || r2.test(d3);
++        return ok ? !isNaN(new Date(value).getTime()) : false;
++      }
++      return !isNaN(new Date(value).getTime());
++    },
++    toFormat: function (value, format) {
++      if (!sdUtil.isDate(value)) return '';
++      var date = new Date(value), map = {};
++      var tz = new Intl.DateTimeFormat().resolvedOptions().timeZone;
++      new Intl.DateTimeFormat('en-GB', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
++        .formatToParts(date).forEach(function (p) { if (['year', 'month', 'day', 'hour', 'minute', 'second'].indexOf(p.type) >= 0) map[p.type] = p.value; });
++      return format.replace('yyyy', map.year || '').replace('MM', map.month || '').replace('dd', map.day || '')
++        .replace('HH', map.hour || '').replace('mm', map.minute || '').replace('ss', map.second || '');
++    },
++    parseFrom: function (value, format) {
++      if (!value || !format) return null;
++      value = value.toString();
++      var dmy = format.indexOf('dd') >= 0 && format.indexOf('MM') >= 0 && format.indexOf('yyyy') >= 0;
++      var hms = format.indexOf('HH') >= 0 || format.indexOf('mm') >= 0 || format.indexOf('ss') >= 0;
++      var str = '';
++      if (dmy) {
++        var dd = value.substr(format.indexOf('dd'), 2), MM = value.substr(format.indexOf('MM'), 2), yyyy = value.substr(format.indexOf('yyyy'), 4);
++        if (+yyyy > 0 && +MM > 0 && +dd > 0) str += MM + '/' + dd + '/' + yyyy; else return null;
++      } else {
++        var t = new Date();
++        str += String(t.getMonth() + 1).padStart(2, '0') + '/' + String(t.getDate()).padStart(2, '0') + '/' + t.getFullYear();
++      }
++      if (hms) {
++        var HH = format.indexOf('HH') >= 0 ? value.substr(format.indexOf('HH'), 2) : '00';
++        var mi = format.indexOf('mm') >= 0 ? value.substr(format.indexOf('mm'), 2) : '00';
++        var ss = format.indexOf('ss') >= 0 ? value.substr(format.indexOf('ss'), 2) : '00';
++        str += ' ' + (HH || '00') + ':' + (mi || '00') + ':' + (ss || '00');
++      }
++      return sdUtil.isDate(str) ? new Date(str) : null;
++    },
++    downloadBlob: function (blob, fileName) {
++      try {
++        var url = window.URL.createObjectURL(blob), link = document.createElement('a');
++        if (link.download !== undefined) {
++          link.download = fileName || ('file_' + new Date().getTime().toString(36) + Math.random().toString(36).substring(2, 7));
++          link.href = url; link.style.visibility = 'hidden';
++          document.body.appendChild(link); link.click();
++          window.URL.revokeObjectURL(url); link.remove();
++        }
++      } catch (e) { console.error('BlobToSaveAs error', e); }
++    },
++    upload: function (option) {
++      var uploadId = 'U1e09c1c0-b647-437e-995e-d7a1a1b60550';
++      return new Promise(function (resolve, reject) {
++        var body = document.body;
++        if (!body) { resolve(null); return; }
++        var old = document.getElementById(uploadId);
++        if (old) old.remove();
++        var el = document.createElement('input');
++        el.setAttribute('id', uploadId); el.setAttribute('type', 'file'); el.style.display = 'none';
++        body.appendChild(el);
++        el.addEventListener('change', function (evt) {
++          try {
++            var file = evt.target.files.item(0);
++            if (file) {
++              var dot = file.name.lastIndexOf('.');
++              if (dot === -1) throw new Error(sdIeT('uploadInvalidFormat', { name: file.name }));
++              var ext = file.name.substring(dot + 1);
++              if (option && option.extensions && option.extensions.length && !option.extensions.some(function (e) { return e.toLowerCase() === ext.toLowerCase(); }))
++                throw new Error(sdIeT('uploadInvalidFormat', { name: file.name }));
++              if (option && option.maxSizeInMb > 0 && option.maxSizeInMb * 1024 * 1024 < file.size)
++                throw new Error(sdIeT('uploadInvalidSize', { name: file.name }));
++              resolve(file);
++            }
++          } catch (err) { reject(err); }
++        });
++        el.click();
+       });
+-      this._render();
+     }
++  };
+ 
+-    /* `validateItem` của catalog chạy cho TỪNG dòng, trả
+-       `{ idx, errorMessage? , warningMessage? }`. */
+-    _applyValidation() {
+-      var fn = this.option.validateItem;
+-      if (typeof fn !== 'function') return;
+-      this._rows.forEach(function (r, i) {
+-        var res = fn(r.data || {}, i) || {};
+-        if (res.errorMessage) { r.status = 'error'; r.message = res.errorMessage; }
+-        else if (res.warningMessage) { r.status = 'warning'; r.message = res.warningMessage; }
++  /* ── SdExcelService (thư viện, dùng nội bộ — catalog không có mục riêng) ── */
++  var SD_EXCEL_BORDER = { bottom: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } };
++  var SD_EXCEL_STYLE = {
++    field: { border: SD_EXCEL_BORDER, alignment: { vertical: 'middle', horizontal: 'center', wrapText: true }, font: { bold: true, size: 11, color: { argb: '000000' } }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FAFAFA' } } },
++    title: { border: SD_EXCEL_BORDER, alignment: { vertical: 'middle', horizontal: 'center', wrapText: true }, font: { bold: true, size: 11, color: { argb: 'FFFFFF' } }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '143180' } } },
++    required: { border: SD_EXCEL_BORDER, alignment: { vertical: 'middle', horizontal: 'center', wrapText: true }, font: { italic: true, size: 11, color: { argb: 'FFFFFF' } }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1744' } } },
++    description: { border: SD_EXCEL_BORDER, alignment: { wrapText: true }, font: { italic: true, size: 9, color: { argb: '000000' } }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'CFD8DC' } } },
++    cell: { alignment: { vertical: 'middle', wrapText: true } }
++  };
++  function sdExcelColWidth(column) {
++    var w = 120;
++    if (column.width && /px$/.test(column.width)) w = +column.width.replace('px', '');
++    return w / 7 || 20;
++  }
++  function sdExcelAddSheets(workbook, sheets) {
++    (sheets || []).forEach(function (sheet) {
++      if (!(sheet.name && Array.isArray(sheet.items) && Array.isArray(sheet.headers))) return;
++      var ns = workbook.addWorksheet(sheet.name);
++      sheet.headers.forEach(function (h, i) {
++        ns.getColumn(i + 1).width = 30;
++        ns.getCell(1, i + 1).style = SD_EXCEL_STYLE.title; ns.getCell(1, i + 1).value = h.value;
++        ns.getCell(2, i + 1).style = SD_EXCEL_STYLE.title; ns.getCell(2, i + 1).value = h.display || h.value;
++      });
++      sheet.items.forEach(function (item, i1) {
++        sheet.headers.forEach(function (h, i2) { ns.getCell(3 + i1, 1 + i2).value = item[h.value]; ns.getCell(3 + i1, 1 + i2).style = SD_EXCEL_STYLE.cell; });
++      });
++    });
++  }
++  function sdExcelCellValue(v) {
++    if (v && typeof v === 'object') {
++      if ('richText' in v) return v.richText.map(function (t) { return t.text; }).join('');
++      if ('text' in v) return v.text;
++      if ('result' in v) return v.result;
++    }
++    return v;
++  }
++  var SD_XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
++  var sdExcel = {
++    generateTemplate: function (template) {
++      var columns = template.columns;
++      if (!Array.isArray(columns)) return Promise.reject(new Error('Excel template columns must be an array'));
++      for (var i = 0; i < columns.length; i++) {
++        if (!columns[i].field) return Promise.reject(new Error('Column ' + (i + 1) + ': Field is required'));
++        if (!columns[i].title) return Promise.reject(new Error('Column ' + (i + 1) + ': Title is required'));
++      }
++      var hasDescription = columns.some(function (c) { return c.description; });
++      return sdExcelLoad().then(function (X) {
++        var wb = new X.Workbook(), sh = wb.addWorksheet('template');
++        columns.forEach(function (column, index) {
++          var cf = sh.getCell(1, index + 1), ct = sh.getCell(2, index + 1), cd = sh.getCell(3, index + 1);
++          sh.getColumn(index + 1).width = sdExcelColWidth(column);
++          cf.style = column.required ? SD_EXCEL_STYLE.required : SD_EXCEL_STYLE.field;
++          var ts = SD_EXCEL_STYLE.title;
++          ct.style = { border: ts.border, alignment: ts.alignment,
++            font: { bold: true, size: 11, color: { argb: column.fontColor || ts.font.color.argb } },
++            fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: column.fill || '143180' } } };
++          cf.value = column.field; ct.value = column.title;
++          if (hasDescription) { cd.style = SD_EXCEL_STYLE.description; cd.value = column.description || ''; }
++        });
++        sdExcelAddSheets(wb, template.sheets);
++        return wb.xlsx.writeBuffer().then(function (buf) { sdUtil.downloadBlob(new Blob([buf], { type: SD_XLSX_MIME }), template.fileName); });
++      });
++    },
++    export: function (option) {
++      var columns = option.columns, items = option.items, hasDescription = false;
++      for (var i = 0; i < columns.length; i++) {
++        if (!columns[i].field) return Promise.reject(new Error('Column ' + (i + 1) + ': Field is required'));
++        if (!columns[i].title) return Promise.reject(new Error('Column ' + (i + 1) + ': Title is required'));
++        if (columns[i].description) hasDescription = true;
++      }
++      return sdExcelLoad().then(function (X) {
++        var wb = new X.Workbook(), sh = wb.addWorksheet('data');
++        columns.forEach(function (column, index) {
++          sh.getColumn(index + 1).width = sdExcelColWidth(column);
++          sh.getCell(1, index + 1).style = SD_EXCEL_STYLE.field;
++          sh.getCell(2, index + 1).style = column.required ? SD_EXCEL_STYLE.required : SD_EXCEL_STYLE.title;
++          sh.getCell(1, index + 1).value = column.field; sh.getCell(2, index + 1).value = column.title;
++          if (hasDescription) { sh.getCell(3, index + 1).style = SD_EXCEL_STYLE.description; sh.getCell(3, index + 1).value = column.description || ''; }
++        });
++        sdExcelAddSheets(wb, option.sheets);
++        var fromRow = hasDescription ? 4 : 3;
++        items.forEach(function (e, i1) {
++          columns.forEach(function (column, i2) {
++            var cell = sh.getCell(fromRow + i1, 1 + i2);
++            if (typeof e[column.field] === 'number') { cell.value = +e[column.field]; cell.numFmt = '#'; }
++            else cell.value = e[column.field];
++            cell.style = { alignment: SD_EXCEL_STYLE.cell.alignment };
++          });
++        });
++        return wb.xlsx.writeBuffer().then(function (buf) { sdUtil.downloadBlob(new Blob([buf], { type: SD_XLSX_MIME }), option.fileName); });
++      });
++    },
++    upload: function () {
++      return sdUtil.upload({ extensions: ['xlsx'], maxSizeInMb: 10 }).then(function (file) {
++        if (!file) return { items: [], file: null };
++        return sdExcel.parse(file);
++      });
++    },
++    parse: function (file) {
++      return new Promise(function (resolve, reject) {
++        var reader = new FileReader();
++        reader.onload = function (e) {
++          var buffer = e.target && e.target.result;
++          if (!buffer) { reject(new Error(sdIeT('cannotReadFile'))); return; }
++          sdExcelLoad().then(function (X) {
++            var wb = new X.Workbook();
++            return wb.xlsx.load(buffer).then(function () {
++              var sheet = wb.worksheets[0];
++              if (!sheet) throw new Error(sdIeT('noSheet'));
++              var items = [], headerMap = {};
++              sheet.getRow(1).eachCell(function (cell, col) {
++                var v = sdExcelCellValue(cell.value);
++                if (v) headerMap[col] = String(v).trim();
++              });
++              sheet.eachRow(function (row, rowIndex) {
++                if (rowIndex <= 1 || !row.hasValues) return;
++                var item = {};
++                Object.keys(headerMap).forEach(function (k) {
++                  var v = sdExcelCellValue(row.getCell(Number(k)).value);
++                  if (typeof v === 'string') v = v.trim();
++                  if (v === '' || v === undefined) v = null;
++                  else if (v === 'SET_NULL') v = null;
++                  else if (v === 'SET_EMPTY') v = '';
++                  item[headerMap[k]] = v;
++                });
++                if (Object.keys(item).length > 0) items.push(item);
++              });
++              resolve({ items: items, file: file });
++            });
++          }).catch(reject);
++        };
++        reader.onerror = function () { reject(new Error(sdIeT('cannotReadFile'))); };
++        reader.readAsArrayBuffer(file);
+       });
+     }
++  };
+ 
+-    get counts() {
+-      var c = { success: 0, warning: 0, error: 0 };
+-      this._rows.forEach(function (r) { if (c[r.status] !== undefined) c[r.status]++; });
+-      return c;
++  /* ── mat-paginator (MatPaginatorIntl tiếng Anh — catalog: "1 – 9 of 9") ── */
++  var SD_PAGINATOR_ICON = {
++    first: 'M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z',
++    previous: 'M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z',
++    next: 'M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z',
++    last: 'M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z'
++  };
++  var SD_PAGINATOR_LABEL = { first: 'First page', previous: 'Previous page', next: 'Next page', last: 'Last page' };
++  function sdPaginatorRange(page, size, length) {
++    if (length === 0 || size === 0) return '0 of ' + length;
++    length = Math.max(length, 0);
++    var start = page * size, end = start < length ? Math.min(start + size, length) : start + size;
++    return (start + 1) + ' – ' + end + ' of ' + length;
++  }
++  function sdPaginatorBtn(kind, disabled) {
++    return '<button mat-icon-button type="button" class="mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-tooltip-trigger mat-mdc-paginator-navigation-' + kind +
++      (disabled ? ' mat-mdc-button-disabled-interactive' : '') + ' mat-unthemed' + (disabled ? ' mat-mdc-button-disabled' : '') + '"' +
++      ' aria-label="' + SD_PAGINATOR_LABEL[kind] + '"' + (disabled ? ' aria-disabled="true" tabindex="-1"' : '') +
++      ' data-sd-tooltip="' + SD_PAGINATOR_LABEL[kind] + '" data-sd-tooltip-kind="mat" data-page="' + kind + '">' +
++      '<span class="mat-mdc-button-persistent-ripple mdc-icon-button__ripple"></span>' +
++      '<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true" class="mat-mdc-paginator-icon"><path d="' + SD_PAGINATOR_ICON[kind] + '"></path></svg>' +
++      '<span class="mat-focus-indicator"></span><span class="mat-mdc-button-touch-target"></span></button>';
++  }
++
++  class SdImportExcel extends HTMLElement {
++    static get observedAttributes() { return ['autoid', 'autoId']; }
++    constructor() {
++      super();
++      this.excelItems = []; this.filteredItems = []; this.viewItems = [];
++      this.numberOfSuccess = 0; this.numberOfError = 0; this.numberOfWarning = 0;
++      this.showing = 'ALL'; this.hasDescription = false; this.file = null;
++      this.uploading = false; this.isUploaded = false; this.isDownloadTemplate = false;
++      this._pageIndex = 0; this._pageSize = 50;      // MatPaginator mặc định pageSize 50
++      this._menus = {};
+     }
++    connectedCallback() { if (this._option) this._build(); }
++    attributeChangedCallback() { if (this._built) sdSyncAutoId(this, 'import-excel-'); }
+ 
+-    open() {
+-      var m = this.querySelector('sd-modal');
+-      if (m && typeof m.open === 'function') m.open();
++    set option(v) { this._option = v || null; if (this.isConnected && this._option) { this._build(); this._renderAll(); } }
++    get option() { return this._option || null; }
++
++    /* ── API thư viện ── */
++    open() { this._reset(); if (this._built) { this._renderAll(); this._modal.open(); } }
++    close() { if (this._modal) this._modal.close(); }
++    view(showing) { this.showing = showing || 'ALL'; this._pageIndex = 0; this._reload(); this._renderAll(); }
++    setValidation(validations) {
++      var items = this.excelItems;
++      items.forEach(function (e) { e.meta.errorMessages = []; e.meta.warningMessages = []; });
++      if (Array.isArray(validations)) validations.forEach(function (v) {
++        if (v.errorMessage) items[v.idx].meta.errorMessages = [v.errorMessage];
++        if (v.warningMessage) items[v.idx].meta.warningMessages = [v.warningMessage];
++      });
++      this._reload(); this._renderAll();
++    }
++    accept() {
++      var fn = this.option && this.option.accept;
++      if (typeof fn === 'function') fn(this.excelItems.map(function (e) { return e.data; }), { file: this.file });
++      this.isUploaded = true;
++      this._renderFooter();
++    }
++    upload() {
++      var self = this;
++      return sdExcel.upload().then(function (res) {
++        if (!res.file) return;
++        return self._ingest(res.items, res.file, true);
++      }).catch(function (err) { self._notifyError(err); });
++    }
++    /* kit: nạp dữ liệu không qua file — mảng object theo `field` (như dòng đọc từ Excel, không có 2
++       dòng tiêu đề). Dạng cũ `{ data, status, message, errors }` vẫn nhận. */
++    setData(items) {
++      items = Array.isArray(items) ? items : [];
++      var legacy = items.length && items[0] && items[0].data && items[0].status;
++      var self = this;
++      return this._ingest(legacy ? items.map(function (r) { return Object.assign({}, r.data); }) : items, null, false).then(function () {
++        if (!legacy) return;
++        items.forEach(function (r, i) {
++          var it = self.excelItems[i]; if (!it) return;
++          Object.keys(r.errors || {}).forEach(function (f) { it.meta.error[f] = r.errors[f]; });
++          if (r.status === 'error' && !it.meta.errorMessages.length) it.meta.errorMessages.push(r.message || '');
++          if (r.status === 'warning' && !it.meta.warningMessages.length) it.meta.warningMessages.push(r.message || '');
++        });
++        self._reload(); self._renderAll();
++      });
+     }
+-    /* `sd-modal` của kit tự bắn `sd-closed` và sự kiện đó NỔI BỌT qua
+-       `sd-import-excel`, nên không bắn thêm lần nữa (sẽ thành hai lần). */
+-    close() {
+-      var m = this.querySelector('sd-modal');
+-      if (m && typeof m.close === 'function') m.close();
++    downloadTemplate() {
++      var self = this, opt = this.option || {}, sheets = [];
++      var jobs = (Array.isArray(opt.sheets) ? opt.sheets : []).map(function (sheet) {
++        if (!(sheet.name && sheet.items && sheet.headers)) return Promise.resolve();
++        return Promise.resolve(Array.isArray(sheet.items) ? sheet.items : sheet.items()).then(function (items) {
++          sheets.push({ name: sheet.name, items: items, headers: sheet.headers });
++        });
++      });
++      return Promise.all(jobs).then(function () {
++        var cols = (opt.columns || []).filter(self._colVisible).map(function (c) {
++          return { field: c.field, title: c.title, width: c.width, required: c.required, description: c.description, fontColor: c.fontColor, fill: c.fill };
++        });
++        self.isDownloadTemplate = true; self._renderBody();
++        return sdExcel.generateTemplate({ fileName: opt.fileName || 'Template', columns: cols, sheets: sheets });
++      }).finally(function () { self.isDownloadTemplate = false; self._renderBody(); });
++    }
++    export() {
++      var self = this, opt = this.option || {};
++      this._loading(true);
++      var columns = [{ field: 'sdMessage', title: sdIeT('messageColumn'), width: '250px', required: false }]
++        .concat((opt.columns || []).filter(this._colVisible));
++      return sdExcel.export({
++        columns: columns,
++        items: this.filteredItems.map(function (e) {
++          var r = {};
++          columns.forEach(function (c) { r[c.field] = e.meta.origin ? e.meta.origin[c.field] : undefined; });
++          r.sdMessage = (e.meta.errorMessages.join(', ') || e.meta.warningMessages.join(', ') || sdIeT('success'))
++            .replace(/<strong>/g, '').replace(/<\/strong>/g, '').replace(/<br>/g, '\n');
++          return r;
++        })
++      }).finally(function () { self._loading(false); });
++    }
++
++    /* ── nội bộ (theo thư viện) ── */
++    _colVisible(column) {
++      if (column.hidden === undefined) return true;
++      if (typeof column.hidden === 'boolean') return !column.hidden;
++      if (typeof column.hidden === 'function') return !column.hidden();
++      return false;
+     }
+-
+-    _cellText(col, value) {
+-      if (value === null || value === undefined || value === '') return '';
+-      /* `type:'array'` — catalog hiện "N {unitString}" thay vì liệt kê */
+-      if (col.type === 'array') {
+-        var n = String(value).split(col.divideString || ';').filter(Boolean).length;
+-        return n + ' ' + (col.unitString || '');
++    _reset() {
++      this.excelItems = []; this.filteredItems = []; this.viewItems = [];
++      this.numberOfSuccess = 0; this.numberOfError = 0; this.numberOfWarning = 0; this.showing = 'ALL';
++    }
++    _loading(on) { if (window.SdLoadingService) { if (on) window.SdLoadingService.start(); else window.SdLoadingService.stop(); } }
++    _notifyError(err) {
++      if (window.SdNotifyService) window.SdNotifyService.error((err && err.message) || String(err));
++      else console.error(err);
++    }
++    _ingest(items, file, fromFile) {
++      var self = this, opt = this.option || {};
++      this.hasDescription = (opt.columns || []).some(function (e) { return !!e.description; });
++      if (fromFile) items.splice(0, this.hasDescription ? 2 : 1);
++      if (!items.length) {
++        if (window.SdNotifyService) window.SdNotifyService.warning(sdIeT('noDataInFile'));
++        return Promise.resolve();
+       }
+-      return String(value);
+-    }
+-
+-    _countBtn(view, title, color, icon, tip) {
+-      return '<sd-button class="mr-2" data-view="' + view + '" type="light" color="' + color +
+-        '" size="sm" prefixIcon="' + icon + '" title="' + escAttr(title) + '"' +
+-        (tip ? ' tooltip="' + escAttr(tip) + '"' : '') + '></sd-button>';
++      var limit = opt.limit || 1000;
++      if (items.length > limit) {
++        if (window.SdNotifyService) window.SdNotifyService.warning(sdIeT('rowLimit', { limit: limit }));
++        return Promise.resolve();
++      }
++      this._reset();
++      this.excelItems = items.map(function (data, idx) {
++        return { data: data, meta: { excelIndex: idx + (self.hasDescription ? 4 : 3), origin: Object.assign({}, data),
++          error: {}, warning: {}, errorMessages: [], warningMessages: [] } };
++      });
++      var p = Promise.resolve();
++      if (opt.transform) {
++        var mapped = opt.transform(this.excelItems);
++        if (mapped && typeof mapped.then === 'function') {
++          this.uploading = true; this._renderFooter();
++          p = mapped.then(function (r) { self.excelItems = r; }).finally(function () { self.uploading = false; self._renderFooter(); });
++        } else this.excelItems = mapped || this.excelItems;
++      }
++      return p.then(function () {
++        self.file = file;
++        self._loading(true);
++        return Promise.all(self.excelItems.map(function (it, idx) { return self._validate(it, idx); }));
++      }).then(function () {
++        if (!self.excelItems.some(self._isError) && opt.validateItems) {
++          return Promise.resolve(opt.validateItems(self.excelItems.map(function (e) { return e.data; }))).then(function (results) {
++            (results || []).filter(function (r) { return r.idx >= 0; }).forEach(function (r) {
++              if (r && r.errorMessage) self.excelItems[r.idx].meta.errorMessages.push(r.errorMessage);
++              if (r && r.warningMessage) self.excelItems[r.idx].meta.warningMessages.push(r.warningMessage);
++            });
++          });
++        }
++      }).then(function () {
++        self._pageIndex = 0; self._reload(); self._renderAll();
++        self.isUploaded = false; self._renderFooter();
++      }).catch(function (err) { self._notifyError(err); }).finally(function () { self._loading(false); });
++    }
++    _isError(it) { return !!it.meta.errorMessages.length; }
++    _isWarning(it) { return !!it.meta.warningMessages.length && !it.meta.errorMessages.length; }
++    _isSuccess(it) { return !it.meta.errorMessages.length && !it.meta.warningMessages.length; }
++    _validDate(format, value) {
++      if ((value && value.length) !== (format && format.length)) return false;
++      return /^(?:(?:31(\/|-|\.)(?:0?[13578]|1[02]))\1|(?:(?:29|30)(\/|-|\.)(?:0?[13-9]|1[0-2])\2))(?:(?:1[6-9]|[2-9]\d)?\d{2})$|^(?:29(\/|-|\.)0?2\3(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\d|2[0-8])(\/|-|\.)(?:(?:0?[1-9])|(?:1[0-2]))\4(?:(?:1[6-9]|[2-9]\d)?\d{2})$/.test(value);
++    }
++    _validTime(format, value) { return (value && value.length) === (format && format.length); }
++    _validDateTime(format, value) {
++      if ((value && value.length) !== (format && format.length)) return false;
++      var p = (value || '').split(' ');
++      if (p.length !== 2 || !this._validDate('dd/MM/yyyy', p[0])) return false;
++      return /^(0[0-9]|1[0-9]|2[0-3])(\:)(0[0-9]|[0-5][0-9])$/.test(p[1]);
++    }
++    _validate(excelItem, idx) {
++      var self = this, opt = this.option || {}, item = excelItem.data, error = excelItem.meta.error, msgs = excelItem.meta.errorMessages;
++      var cols = (opt.columns || []).slice();
++      function fail(column, text) { error[column.field] = text; msgs.push('<strong>[' + (column.title || column.field) + ']</strong> ' + text); }
++      function step(i) {
++        if (i >= cols.length) return Promise.resolve();
++        var column = cols[i];
++        if (!self._colVisible(column)) return step(i + 1);
++        return Promise.resolve().then(function () {
++          var f = column.field;
++          if (column.defaultValue !== undefined) item[f] = item[f] != null ? item[f] : column.defaultValue;
++          else if (column.required && !item[f] && item[f] !== 0) { fail(column, sdIeT('required')); return 'next'; }
++          if (column.type === 'string') {
++            var sv = (item[f] || '').toString();
++            if (column.minlength !== undefined && sv.length < column.minlength) { fail(column, sdIeT('minLength', { min: column.minlength })); return 'next'; }
++            if (column.maxlength !== undefined && sv.length > column.maxlength) { fail(column, sdIeT('maxLength', { max: column.maxlength })); return 'next'; }
++            item[f] = sv;
++          } else if (column.type === 'number') {
++            if (item[f]) {
++              var nv = +item[f];
++              if (!sdUtil.isNumber(item[f])) { fail(column, sdIeT('notANumber', { value: item[f] })); return 'next'; }
++              item[f] = nv;
++            }
++            if (!item[f] && item[f] !== 0) item[f] = undefined;
++            if (column.min !== undefined && item[f] < column.min) { fail(column, sdIeT('belowMin', { value: item[f], min: column.min })); return 'next'; }
++            if (column.max !== undefined && item[f] > column.max) { fail(column, sdIeT('aboveMax', { value: item[f], max: column.max })); return 'next'; }
++          } else if (column.type === 'bool') {
++            var bs = item[f] != null ? item[f].toString().toLowerCase().trim() : null;
++            if (item[f] === 0 || item[f] === '0' || item[f] === false || bs === 'false') item[f] = false;
++            else if (item[f] === 1 || item[f] === '1' || item[f] === true || bs === 'true') item[f] = true;
++            else if (item[f] === '') item[f] = undefined;
++            if (typeof item[f] !== 'boolean' && item[f] !== undefined && item[f] !== null) fail(column, sdIeT('invalidBool'));
++          } else if (column.type === 'values') {
++            if (item[f] && typeof item[f] !== 'number' && typeof item[f] !== 'string') { fail(column, sdIeT('invalidValue', { value: item[f] })); return 'next'; }
++            if (column.checkValueInArray && item[f] && !column.values.some(function (e) { return e.toString() === item[f].toString(); })) {
++              fail(column, sdIeT('valueNotInList', { value: item[f], list: column.values.join() })); return 'next';
++            }
++          } else if (column.type === 'date' || column.type === 'datetime' || column.type === 'time') {
++            var val = item[f], fmt = column.format;
++            if (val instanceof Date) { item[f] = val.toISOString(); return 'next'; }
++            var bad = function () { fail(column, sdIeT('invalidDateFormat', { value: val != null ? val : '', format: fmt || '' })); return 'next'; };
++            if (fmt && item[f]) {
++              if (typeof val !== 'string') return bad();
++              if (column.type === 'date' && !self._validDate(fmt, val)) return bad();
++              if (column.type === 'time' && !self._validTime(fmt, val)) return bad();
++              if (column.type === 'datetime' && !self._validDateTime(fmt, val)) return bad();
++              item[f] = sdUtil.parseFrom(val, fmt);
++            }
++            if (item[f] && !sdUtil.isDate(item[f])) return bad();
++          }
++          if (!msgs.length && opt.validateItem) {
++            return Promise.resolve(opt.validateItem(item, idx, self.excelItems.map(function (e) { return e.data; }))).then(function (v) {
++              v = v || {};
++              if (v.errorMessage) excelItem.meta.errorMessages.push(v.errorMessage);
++              if (v.warningMessage) excelItem.meta.warningMessages.push(v.warningMessage);
++            });
++          }
++        }).catch(function (ex) {
++          fail(column, String((ex && (ex.message || ex.error)) || ex || sdIeT('genericError')));
++        }).then(function () { return step(i + 1); });
++      }
++      return step(0);
++    }
++    _reload() {
++      var s = this.showing, self = this;
++      this.filteredItems = this.excelItems.filter(function (it) {
++        if (s === 'SUCCESS') return self._isSuccess(it);
++        if (s === 'WARNING') return self._isWarning(it);
++        if (s === 'ERROR') return self._isError(it);
++        return true;
++      });
++      var a = this._pageIndex * this._pageSize, b = a + this._pageSize;
++      this.viewItems = this.filteredItems.filter(function (it, i) { return i >= a && i < b; });
++      this.numberOfSuccess = this.excelItems.filter(this._isSuccess).length;
++      this.numberOfError = this.excelItems.filter(this._isError).length;
++      this.numberOfWarning = this.excelItems.filter(this._isWarning).length;
++    }
++    /* ColumnTransformPipe (async) */
++    _cellValue(item, column) {
++      var value = item.data[column.field];
++      if (item.meta.error[column.field]) {
++        var o = item.meta.origin[column.field];
++        return Promise.resolve(o != null ? o : (value != null ? value : ''));
++      }
++      if (column.transform) return Promise.resolve(column.transform(item.data, value)).then(function (r) { return r != null ? r : ''; });
++      var r;
++      switch (column.type) {
++        case 'number': r = sdUtil.toVN(value); break;
++        case 'bool': r = typeof value === 'boolean' ? '<div class="text-center"><input type="checkbox" ' + (value ? 'checked' : '') + ' disabled></div>' : ''; break;
++        case 'date': r = sdUtil.toFormat(value, column.format || 'dd/MM/yyyy'); break;
++        case 'datetime': r = sdUtil.toFormat(value, column.format || 'dd/MM/yyyy HH:mm'); break;
++        default: r = value;
++      }
++      return Promise.resolve(r != null ? r : '');
+     }
+ 
+-    _render() {
++    /* ── dựng DOM (template thư viện) ── */
++    _build() {
++      if (this._built) return;
++      this._built = true;
+       var self = this;
+-      var modal = this.querySelector('sd-modal');
+-      var wasOpen = !!(modal && modal.classList.contains('sd-modal-active'));
+-      var cols = this.columns;
+-      var rows = this._rows;
+-      var has = rows.length > 0;
+-      var c = this.counts;
+-      var title = this.option.title || SD_IMPORT_EXCEL_TEXT.title;
+-
+-      var toolbar = has
+-        ? '<div class="d-flex">' +
+-            '<sd-button class="mr-2" data-view="ALL" type="outline" color="secondary" size="sm"' +
+-              ' prefixIcon="cached" title="' + escAttr(SD_IMPORT_EXCEL_TEXT.viewAll) + '"></sd-button>' +
+-            this._countBtn('SUCCESS', String(c.success), 'success', 'done', SD_IMPORT_EXCEL_TEXT.tipSuccess) +
+-            this._countBtn('WARNING', String(c.warning), 'warning', 'warning', SD_IMPORT_EXCEL_TEXT.tipWarning) +
+-            this._countBtn('ERROR', String(c.error), 'error', 'error', SD_IMPORT_EXCEL_TEXT.tipError) +
+-          '</div>'
+-        : '';
+-
+-      var head = '<tr><th class="text-center c-sticky-left" style="width: 50px">#</th>' +
+-        (has ? '<th class="text-center" style="min-width: 250px; width: 250px">' + esc(SD_IMPORT_EXCEL_TEXT.status) + '</th>' : '') +
+-        cols.map(function (col) {
+-          var w = col.width ? ' style="min-width: ' + escAttr(col.width) + '; width: ' + escAttr(col.width) + ';"' : '';
+-          return '<th data-sd-tooltip="' + escAttr(col.title || '') + '"' + w + '>' +
+-            '<span class="c-ellipsis"> ' + esc(col.title || '') + ' </span></th>';
+-        }).join('') + '</tr>';
+-
+-      var body;
+-      if (!has) {
+-        body = '<tr><td colspan="' + (cols.length + 1) + '" class="p-0 border-0 bg-white">' +
+-            '<div class="empty-state-wrapper" data-sd-tooltip="' + escAttr(SD_IMPORT_EXCEL_TEXT.emptyTip) + '" data-tpl>' +
+-              '<mat-icon role="img" class="mat-icon notranslate empty-icon material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">cloud_download</mat-icon>' +
+-              '<h4>' + esc(SD_IMPORT_EXCEL_TEXT.emptyTitle) + '</h4>' +
+-              '<span class="text-small text-link"> ' + esc(SD_IMPORT_EXCEL_TEXT.emptyLink) + ' </span>' +
+-            '</div>' +
+-          '</td></tr>';
+-      } else {
+-        body = rows.map(function (r, i) {
+-          var st = r.status || 'success';
+-          var hidden = (self._view !== 'ALL' && self._view !== st.toUpperCase());
+-          return '<tr data-status="' + st.toUpperCase() + '"' + (hidden ? ' hidden' : '') + '>' +
+-              '<td class="text-center c-sticky-left px-4">' +
+-                '<sd-badge type="tag" color="' + escAttr(st) + '" title="' + (i + 1) + '"></sd-badge>' +
+-              '</td>' +
+-              '<td style="min-width: 250px; width: 250px"><div class="text-wrap">' + esc(r.message || '') + '</div></td>' +
+-              cols.map(function (col) {
+-                var err = (r.errors || {})[col.field];
+-                var cls = err ? ' class="bg-error-light"' : (st === 'warning' ? ' class="bg-warning-light"' : '');
+-                return '<td' + cls + (err ? ' data-sd-tooltip="' + escAttr(err) + '"' : '') + '>' +
+-                  '<div class="text-wrap">' + esc(self._cellText(col, (r.data || {})[col.field])) + '</div></td>';
+-              }).join('') +
+-            '</tr>';
+-        }).join('');
+-      }
+-
+-      /* Nút "Xác nhận & Lưu" chỉ bật khi có dòng dùng được và KHÔNG còn lỗi */
+-      var canAccept = (c.success || c.warning) && !c.error;
+-      var range = has ? ' 1 – ' + rows.length + ' of ' + rows.length + ' ' : ' 0 of 0 ';
+-
+-      this.innerHTML =
+-        '<sd-modal title="' + escAttr(title) + '" width="1100px">' +
+-          '<div class="d-flex align-items-center mb-12" style="min-height: 32px">' + toolbar + '</div>' +
+-          '<div class="sd-box">' +
+-            '<div class="sd-box-body">' +
+-              '<div class="table-responsive"><table class="sd-table">' +
+-                '<thead>' + head + '</thead><tbody>' + body + '</tbody>' +
+-              '</table></div>' +
+-            '</div>' +
+-            '<div class="sd-box-footer"><span class="sd-ie-range-label">' + esc(range) + '</span></div>' +
++      /* sd-modal lazyLoadContent (mặc định) tháo nội dung khỏi cây tới lúc mở → giữ THAM CHIẾU node
++         trước khi gắn modal vào trang */
++      var tmp = document.createElement('div');
++      tmp.innerHTML =
++        '<sd-modal title="' + escAttr(this._title()) + '">' +
++          '<div class="d-flex align-items-center mb-12" style="min-height: 32px" data-ie="toolbar"></div>' +
++          '<div class="sd-box border rounded">' +
++            '<div class="sd-box-body p-0"><div class="table-responsive"><table class="sd-table">' +
++              '<thead><tr data-ie="head"></tr></thead><tbody data-ie="body"></tbody>' +
++            '</table></div></div>' +
++            '<div class="sd-box-footer border-top"><div class="d-flex align-items-center justify-content-end" data-ie="paginator"></div></div>' +
+           '</div>' +
+-          /* footer đúng template thư viện (và DOM catalog #c-import-excel): nút Tải lên là
+-             [sdFooterLeft] màu info, cụm nút còn lại là `<div class="d-flex align-items-center" sdFooter>`
+-             (sd-modal chiếu [sdFooter] vào `.ml-auto` bên phải). 2026-10-13 cùng đợt sd-modal. */
+-          '<sd-button sdFooterLeft data-upload type="light" color="info" size="sm"' +
+-            ' prefixIcon="file_upload" title="' + escAttr(SD_IMPORT_EXCEL_TEXT.upload) + '"></sd-button>' +
+-            '<div class="d-flex align-items-center" sdFooter>' +
+-              (has
+-                ? '<sd-button class="mr-4" data-download type="outline" color="success" size="sm"' +
+-                  ' prefixIcon="get_app" title="' + escAttr(SD_IMPORT_EXCEL_TEXT.download) + '"></sd-button>'
+-                : '') +
+-              '<sd-button data-accept type="fill" color="primary" size="sm"' +
+-                (canAccept ? '' : ' disabled') +
+-                ' title="' + escAttr(SD_IMPORT_EXCEL_TEXT.accept) + '"></sd-button>' +
+-            '</div>' +
++          '<sd-button sdFooterLeft data-ie="upload" prefixIcon="file_upload" title="' + escAttr(sdIeT('upload')) + '" size="sm" color="info"></sd-button>' +
++          '<div class="d-flex align-items-center" sdFooter data-ie="footer"></div>' +
+         '</sd-modal>';
+-
++      this._modal = tmp.firstElementChild;
++      ['toolbar', 'head', 'body', 'paginator', 'upload', 'footer'].forEach(function (k) { self['_' + k] = tmp.querySelector('[data-ie="' + k + '"]'); });
++      ['toolbar', 'head', 'body', 'paginator', 'footer'].forEach(function (k) { self['_' + k].removeAttribute('data-ie'); });
++      this._upload.removeAttribute('data-ie');
++      this.textContent = '';
++      this.appendChild(this._modal);
++      this._modal.addEventListener('click', function (e) { self._onClick(e); });
++      this._upload.addEventListener('click', function () { if (!self.uploading) self.upload(); });
+       sdSyncAutoId(this, 'import-excel-');
+-
+-      /* `sd-modal` của kit chỉ dựng cây DOM khi `open()`; nội dung slot nằm
+-         trong JS cho tới lúc đó. Nên mỗi lần `_render()` mà modal ĐANG MỞ thì
+-         phải mở lại, không thì bảng biến mất giữa chừng. Cùng loại bẫy với
+-         `_openState` của sd-date-range — đã dẫm lại 2026-10-11. */
+-      if (wasOpen) this.open();
+     }
+-
+-    /* Lọc theo trạng thái thì CHỈ bật/tắt `hidden` trên từng dòng, không dựng
+-       lại cả modal — vẽ lại là đóng modal và mất luôn vị trí cuộn. */
+-    _applyView() {
+-      var v = this._view;
+-      [].forEach.call(this.querySelectorAll('tbody tr[data-status]'), function (tr) {
+-        var hit = (v === 'ALL' || v === tr.getAttribute('data-status'));
+-        if (hit) tr.removeAttribute('hidden'); else tr.setAttribute('hidden', '');
+-      });
++    _title() { return (this.option && this.option.title) || sdIeT('title'); }
++    _renderAll() {
++      if (!this._built) return;
++      if (this._modal.title !== this._title()) this._modal.title = this._title();
++      this._renderToolbar(); this._renderHead(); this._renderBody(); this._renderPaginator(); this._renderFooter();
++    }
++    _renderToolbar() {
++      if (!this.excelItems.length) { this._toolbar.innerHTML = ''; return; }
++      /* `icon="…"` KHÔNG phải input của sd-button → không có icon (catalog ghi rõ); giữ thuộc tính như DOM catalog */
++      this._toolbar.innerHTML = '<div class="d-flex">' +
++        '<sd-button class="mr-2" icon="cached" data-view="ALL" title="' + escAttr(sdIeT('seeAll')) + '" size="sm" type="outline"></sd-button>' +
++        '<sd-button class="mr-2" icon="done" data-view="SUCCESS" title="' + this.numberOfSuccess + '" tooltip="' + escAttr(sdIeT('validRows')) + '" size="sm" color="success"></sd-button>' +
++        '<sd-button class="mr-2" icon="warning" data-view="WARNING" title="' + this.numberOfWarning + '" tooltip="' + escAttr(sdIeT('errorRows')) + '" size="sm" color="warning"></sd-button>' +
++        '<sd-button icon="error" data-view="ERROR" title="' + this.numberOfError + '" color="error" tooltip="' + escAttr(sdIeT('warningRows')) + '" size="sm"></sd-button>' +
++        '</div>';
+     }
+-
+-    _bind() {
+-      var self = this;
+-      if (this._bound) return;
+-      this._bound = true;
+-
+-      this.addEventListener('click', function (e) {
+-        var v = e.target.closest('[data-view]');
+-        if (v) {
+-          self._view = v.getAttribute('data-view');
+-          self._applyView();
+-          return;
+-        }
+-        if (e.target.closest('[data-tpl]')) {
+-          self.dispatchEvent(new CustomEvent('sd-template-download', { bubbles: true }));
+-          return;
+-        }
+-        if (e.target.closest('[data-upload]')) {
+-          self.dispatchEvent(new CustomEvent('sd-upload', { bubbles: true }));
+-          return;
+-        }
+-        if (e.target.closest('[data-download]')) {
+-          self.dispatchEvent(new CustomEvent('sd-download', { bubbles: true }));
+-          return;
+-        }
+-        var acc = e.target.closest('[data-accept]');
+-        if (acc) {
+-          if (acc.hasAttribute('disabled')) return;
+-          var items = self._rows.map(function (r) { return r.data || {}; });
+-          var fn = self.option.accept;
+-          if (typeof fn === 'function') fn(items);
+-          self.dispatchEvent(new CustomEvent('sd-accept', { bubbles: true, detail: { items: items } }));
+-        }
++    _renderHead() {
++      var self = this, cols = (this.option.columns || []).filter(this._colVisible);
++      this._head.innerHTML = '<th class="text-center c-sticky-left" style="width: 50px">#</th>' +
++        (this.filteredItems.length ? '<th class="text-center" style="min-width: 250px; width: 250px">' + esc(sdIeT('status')) + '</th>' : '') +
++        cols.map(function (c) {
++          var w = c.width || '300px';
++          return '<th class="mat-mdc-tooltip-trigger" data-sd-tooltip="' + escAttr(c.title || '') + '" data-sd-tooltip-kind="mat"' +
++            ' style="min-width: ' + escAttr(w) + '; width: ' + escAttr(w) + ';"><span class="c-ellipsis"> ' + esc(c.title || '') + ' </span></th>';
++        }).join('');
++    }
++    _renderBody() {
++      var self = this, opt = this.option || {}, cols = (opt.columns || []).filter(this._colVisible);
++      var token = (this._bodyToken = (this._bodyToken || 0) + 1);
++      this._closeMenu();
++      if (!this.viewItems.length) {
++        this._tbody().innerHTML = '<tr><td colspan="' + ((opt.columns || []).length + 2) + '" class="p-0 border-0 bg-white">' +
++          '<div class="empty-state-wrapper mat-mdc-tooltip-trigger" data-sd-tooltip="' + escAttr(sdIeT('downloadTemplateTooltip')) + '" data-sd-tooltip-kind="mat" aria-hidden="true" data-ie-tpl>' +
++          sdMatIconHtml('cloud_download', 'empty-icon', 'material-icons').replace('class="empty-icon mat-icon notranslate', 'class="mat-icon notranslate empty-icon') +
++          '<h4>' + esc(sdIeT('noDataUpload')) + '</h4>' +
++          '<span class="text-small text-link"> ' + esc(sdIeT('clickHereTemplate')) + ' </span>' +
++          (this.isDownloadTemplate ? '<div class="mt-3">' + SD_MAT_SPINNER.excel + '</div>' : '') +
++          '</div></td></tr>';
++        return;
++      }
++      var items = this.viewItems;
++      Promise.all(items.map(function (it) {
++        return Promise.all(cols.map(function (c) { return c.type === 'array' ? Promise.resolve(null) : self._cellValue(it, c); }));
++      })).then(function (vals) {
++        if (token !== self._bodyToken) return;
++        self._menus = {};
++        self._tbody().innerHTML = items.map(function (it, ri) {
++          var m = it.meta, st = m.errorMessages.length ? 'error' : (m.warningMessages.length ? 'warning' : 'success');
++          var msg = m.errorMessages[0] || m.warningMessages[0] || ("<span class='text-success'>" + esc(sdIeT('validData')) + '</span>');
++          return '<tr><td class="text-center c-sticky-left px-4"><sd-badge type="tag" title="' + m.excelIndex + '" ' + st + '></sd-badge></td>' +
++            '<td style="min-width: 250px; width: 250px"><div class="text-wrap">' + msg + '</div></td>' +
++            cols.map(function (c, ci) {
++              var f = c.field, er = m.error[f], wa = m.warning[f], tip = er || wa;
++              var cls = 'align-middle' + (wa && !er ? ' bg-warning-light' : '') + (er ? ' bg-error-light' : '') + (tip ? ' mat-mdc-tooltip-trigger' : '');
++              var inner;
++              if (c.type !== 'array') inner = '<span>' + String(vals[ri][ci]) + '</span>';
++              else {
++                var raw = it.data[f], arr = raw != null ? String(raw).split(c.divideString) : null, n = arr ? arr.length : 0;
++                var key = ri + '-' + ci;
++                if (n) self._menus[key] = arr;
++                inner = '<div class="d-flex align-items-center justify-content-between"><span>' + n + ' ' + esc(c.unitString || '') + '</span>' +
++                  (n ? '<button mat-icon-button type="button" class="mdc-icon-button mat-mdc-icon-button mat-mdc-button-base c-mat-menu mat-unthemed" aria-haspopup="menu" aria-expanded="false"' +
++                    ' style="width: 24px; height: 24px; line-height: 24px" data-ie-menu="' + key + '"><span class="mat-mdc-button-persistent-ripple mdc-icon-button__ripple"></span>' +
++                    '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font" style="font-size: 18px">open_in_new</mat-icon>' +
++                    '<span class="mat-focus-indicator"></span><span class="mat-mdc-button-touch-target"></span></button>' : '') + '</div>';
++              }
++              return '<td class="' + cls + '"' + (tip ? ' data-sd-tooltip="' + escAttr(tip) + '" data-sd-tooltip-kind="mat" data-sd-tooltip-position="above"' : '') +
++                ' style="min-width: ' + escAttr(c.width || '300px') + ';"><div class="c-ellipsis">' + inner + '</div></td>';
++            }).join('') + '</tr>';
++        }).join('');
+       });
++    }
++    _tbody() { return this._body; }
++    _renderPaginator() {
++      var len = this.filteredItems.length || 0, size = this._pageSize, page = this._pageIndex;
++      var pages = Math.ceil(len / size), hasPrev = page >= 1 && size !== 0, hasNext = page < pages - 1 && size !== 0;
++      this._paginator.innerHTML = '<mat-paginator class="mat-mdc-paginator" role="group"><div class="mat-mdc-paginator-outer-container"><div class="mat-mdc-paginator-container">' +
++        '<div class="mat-mdc-paginator-range-actions"><div aria-live="polite" class="mat-mdc-paginator-range-label"> ' + sdPaginatorRange(page, size, len) + ' </div>' +
++        sdPaginatorBtn('first', !hasPrev) + sdPaginatorBtn('previous', !hasPrev) + sdPaginatorBtn('next', !hasNext) + sdPaginatorBtn('last', !hasNext) +
++        '</div></div></div></mat-paginator>';
++    }
++    _renderFooter() {
++      if (!this._built) return;
++      if (this.uploading) this._upload.setAttribute('loading', ''); else this._upload.removeAttribute('loading');
++      var disabled = (this.numberOfSuccess === 0 && this.numberOfWarning === 0) || this.numberOfError > 0 || this.isUploaded;
++      this._footer.innerHTML =
++        (this.filteredItems.length ? '<sd-button class="mr-4" data-ie-export prefixIcon="get_app" title="' + escAttr(sdIeT('download')) + '" size="sm" color="success" type="outline"></sd-button>' : '') +
++        '<sd-button data-ie-accept title="' + escAttr(sdIeT('confirmSave')) + '"' + (disabled ? ' disabled' : '') + ' color="primary" type="fill" size="sm"></sd-button>';
++    }
+ 
++    _onClick(e) {
++      var t = e.target;
++      var v = t.closest('[data-view]');
++      if (v && this._toolbar.contains(v)) { this.view(v.getAttribute('data-view')); return; }
++      if (t.closest('[data-ie-tpl]')) { this.downloadTemplate().catch(this._notifyError); return; }
++      if (t.closest('[data-ie-export]')) { this.export().catch(this._notifyError); return; }
++      var acc = t.closest('[data-ie-accept]');
++      if (acc) { if (!acc.hasAttribute('disabled')) this.accept(); return; }
++      var pg = t.closest('[data-page]');
++      if (pg && this._paginator.contains(pg)) { if (pg.getAttribute('aria-disabled') !== 'true') this._page(pg.getAttribute('data-page')); return; }
++      var mb = t.closest('[data-ie-menu]');
++      if (mb) { e.stopPropagation(); this._toggleMenu(mb); }
++    }
++    _page(kind) {
++      var pages = Math.ceil((this.filteredItems.length || 0) / this._pageSize);
++      if (kind === 'first') this._pageIndex = 0;
++      else if (kind === 'previous') this._pageIndex = Math.max(0, this._pageIndex - 1);
++      else if (kind === 'next') this._pageIndex = Math.min(pages - 1, this._pageIndex + 1);
++      else if (kind === 'last') this._pageIndex = Math.max(0, pages - 1);
++      this._reload(); this._renderBody(); this._renderPaginator();
++    }
++    /* mat-menu của cột kiểu array — panel trong `body > .cdk-overlay-container` (overlay CDK) */
++    _toggleMenu(btn) {
++      if (this._menuBtn === btn) { this._closeMenu(); return; }
++      this._closeMenu();
++      var arr = this._menus[btn.getAttribute('data-ie-menu')] || [], self = this;
++      var pane = document.createElement('div');
++      pane.className = 'cdk-overlay-pane';
++      pane.innerHTML = '<div class="mat-mdc-menu-panel" role="menu" tabindex="-1"><div class="mat-mdc-menu-content">' +
++        '<div class="px-3 py-2" style="max-width: 300px; max-height: 250px; overflow: auto" aria-hidden="true">' +
++        arr.map(function (x) { return '<div class="border-bottom py-2 text-wrap">' + x + '</div>'; }).join('') +
++        '</div></div></div>';
++      pane.addEventListener('click', function (e) { e.stopPropagation(); });
++      sdOverlayContainer().appendChild(pane);
++      this._menuPane = pane; this._menuBtn = btn;
++      btn.setAttribute('aria-expanded', 'true');
++      var r = btn.getBoundingClientRect(), panel = pane.firstElementChild, pw = panel.offsetWidth, ph = panel.offsetHeight;
++      var vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
++      var below = r.bottom + ph <= vh || r.top - ph < 0, after = r.left + pw <= vw || r.right - pw < 0;
++      panel.classList.add('mat-menu-' + (after ? 'after' : 'before'), 'mat-menu-' + (below ? 'below' : 'above'));
++      pane.style.top = (below ? r.bottom : r.top - ph) + 'px';
++      pane.style.left = (after ? r.left : r.right - pw) + 'px';
++      this._menuOff = function (ev) { if (!pane.contains(ev.target) && ev.target !== btn && !btn.contains(ev.target)) self._closeMenu(); };
++      this._menuKey = function (ev) { if (ev.key === 'Escape') self._closeMenu(); };
++      setTimeout(function () { document.addEventListener('click', self._menuOff, true); document.addEventListener('keydown', self._menuKey, true); });
++    }
++    _closeMenu() {
++      if (this._menuPane) { this._menuPane.remove(); this._menuPane = null; }
++      if (this._menuBtn) { this._menuBtn.setAttribute('aria-expanded', 'false'); this._menuBtn = null; }
++      if (this._menuOff) { document.removeEventListener('click', this._menuOff, true); document.removeEventListener('keydown', this._menuKey, true); this._menuOff = null; }
+     }
++    disconnectedCallback() { this._closeMenu(); }
+   }
+   customElements.define('sd-import-excel', SdImportExcel);
+ 
+@@ -17515,6 +18003,9 @@
+       node.classList.toggle('sd-tooltip--mat', target.getAttribute('data-sd-tooltip-kind') === 'mat');
+       node.style.visibility = 'hidden';
+       node.classList.add('sd-tooltip-visible');
++      /* MatTooltip `_isTooltipMultiline`: cao hơn 24px → `mdc-tooltip--multiline` (chữ căn trái) */
++      node.classList.remove('sd-tooltip--multiline');
++      if (node.classList.contains('sd-tooltip--mat') && node.getBoundingClientRect().height > 24) node.classList.add('sd-tooltip--multiline');
+       sdTooltipPosition(target, node);
+       node.style.visibility = '';
+       target.setAttribute('aria-describedby', node.id);

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-input-number — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-input-number"
+         data-subtitle="Nhập số có phân cách hàng nghìn, giới hạn thập phân, kiểm min/max"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <!-- ══ Mirror catalog #c-input-number — 5 biến thể, cùng nội dung. Khung
+             280px bằng inline style chỉ để giữ bề ngang như catalog. ══ -->
+        <sd-section title="Mặc định và có giá trị" subtitle="format portal 1.234.567,89: chấm phân cách nghìn, phẩy thập phân">
+          <div class="d-flex flex-wrap gap-16">
+            <div style="width:280px"><sd-input-number label="Hạn mức tín dụng"></sd-input-number></div>
+            <div style="width:280px"><sd-input-number label="Hạn mức tín dụng" value="250000000000"></sd-input-number></div>
+            <div style="width:280px"><sd-input-number label="Lãi suất (%/năm)" precision="2" type="positive" value="7.25"></sd-input-number></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Hậu tố (sdSuffixDef)" subtitle="kit: attribute suffix — đang gõ: số được định dạng lại theo từng phím">
+          <div class="d-flex flex-wrap gap-16">
+            <div style="width:280px"><sd-input-number label="Số tiền giải ngân" placeholder="Nhập số tiền" value="1500000000" suffix="VND"></sd-input-number></div>
+            <div style="width:280px"><sd-input-number label="Số tiền giải ngân" placeholder="Nhập số tiền" suffix="VND"></sd-input-number></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Bắt buộc và lỗi min / max" subtitle="chuỗi lỗi core.form.input-number.*">
+          <div class="d-flex flex-wrap gap-16">
+            <div style="width:280px"><sd-input-number class="num-cat-touch" label="Số tiền đề xuất" required></sd-input-number></div>
+            <div style="width:280px"><sd-input-number class="num-cat-touch" label="Tỷ lệ tài trợ (%)" min="0" max="100" value="120"></sd-input-number></div>
+            <div style="width:280px"><sd-input-number class="num-cat-touch" label="Kỳ hạn vay (tháng)" min="1" precision="0" value="0"></sd-input-number></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Disabled, readonly, hideInlineError">
+          <div class="d-flex flex-wrap gap-16">
+            <div style="width:280px"><sd-input-number label="Dư nợ hiện tại" disabled value="48600000000"></sd-input-number></div>
+            <div style="width:280px"><sd-input-number label="Phí trả nợ trước hạn (%)" readonly value="1.5"></sd-input-number></div>
+            <div style="width:280px"><sd-input-number class="num-cat-touch" label="Số tiền đề xuất" required hideInlineError></sd-input-number></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Chế độ xem: viewed và viewed='inline'" subtitle="viewed hiển thị qua pipe sdFormatNumber; inline là sd-inline-text sửa được">
+          <div class="d-flex flex-wrap gap-16 align-items-center">
+            <div style="width:280px"><sd-input-number label="Hạn mức được duyệt" viewed value="250000000000"></sd-input-number></div>
+            <sd-input-number label="Số tiền" viewed="inline" value="1500000000"></sd-input-number>
+          </div>
+        </sd-section>
+
+        <!-- Normal -->
+        <sd-section title="Normal">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-input-number label="Số lượng" placeholder="Nhập số..."></sd-input-number>
+            <sd-input-number label="Giá bán" value="1500000"></sd-input-number>
+            <sd-input-number label="Tổng tiền" value="2500000" viewed></sd-input-number>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            Gõ số sẽ tự chèn dấu phân cách hàng nghìn theo <code>format</code> (mặc định
+            <code>1.234.567,89</code> — chấm nghìn, phẩy thập phân, giống Core UI). Dán
+            (paste) số có định dạng khác cũng được nhận diện lại.
+          </p>
+        </sd-section>
+
+        <!-- Required -->
+        <sd-section title="Required">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-input-number label="Số lượng" required></sd-input-number>
+            <sd-input-number label="Số lượng (đã có giá trị)" value="10" required></sd-input-number>
+            <sd-input-number label="Số lượng — ẩn lỗi inline" required hideInlineError></sd-input-number>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            Bỏ trống rồi blur ra field bên cạnh để thấy lỗi "Vui lòng nhập thông tin".
+            Ô thứ ba dùng <code>hideInlineError</code> — lỗi hiện qua icon đỏ + tooltip.
+          </p>
+        </sd-section>
+
+        <!-- Min / Max -->
+        <sd-section title="Giới hạn giá trị — min / max">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-input-number label="Tối thiểu 10" min="10" placeholder="≥ 10"></sd-input-number>
+            <sd-input-number label="Từ 10 đến 100" min="10" max="100" value="50"></sd-input-number>
+            <sd-input-number label="Ngoài khoảng — báo lỗi" min="10" max="100" value="500"></sd-input-number>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            Blur ra khỏi ô thứ ba để thấy lỗi "Giá trị không được lớn hơn 100".
+          </p>
+        </sd-section>
+
+        <!-- Precision -->
+        <sd-section title="Precision — số chữ số thập phân được gõ">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-input-number label="Mặc định (precision=3)" value="3.14159"></sd-input-number>
+            <sd-input-number label="Số nguyên (precision=0)" value="42" precision="0"></sd-input-number>
+            <sd-input-number label="2 chữ số (precision=2)" value="99.99" precision="2"></sd-input-number>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            <code>precision</code> chỉ giới hạn <b>số chữ số thập phân được phép gõ thêm</b> —
+            không làm tròn hay đệm số 0 vào giá trị đã có sẵn (ô đầu vẫn hiện đủ
+            <code>3,14159</code> dù mặc định là 3).
+          </p>
+        </sd-section>
+
+        <!-- Format & type -->
+        <sd-section title="Format · Type (âm/dương)">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-input-number label="Format quốc tế" value="1234567.89" format="1,234,567.89"></sd-input-number>
+            <sd-input-number label="Chỉ số dương" value="100" type="positive"></sd-input-number>
+            <sd-input-number label="Chỉ số âm" value="-50" type="negative"></sd-input-number>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            <code>format="1,234,567.89"</code> đổi sang chấm thập phân/phẩy nghìn kiểu quốc tế;
+            mặc định vẫn là <code>1.234.567,89</code> kiểu VN.
+          </p>
+        </sd-section>
+
+        <!-- Suffix -->
+        <sd-section title="Suffix — đơn vị / icon cuối field">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-input-number label="Giá bán" value="1500000" suffix="VNĐ"></sd-input-number>
+            <sd-input-number label="Tỷ lệ" value="15" suffix="%"></sd-input-number>
+            <sd-input-number label="Icon suffix" value="500000" suffixIcon="payments"></sd-input-number>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            Mirror <code>&lt;ng-template sdSuffixDef&gt;</code> của thư viện thật — dùng
+            <code>suffix</code> (text) hoặc <code>suffixIcon</code> (icon), luôn nằm bên phải
+            cùng, sau cả nút xoá/icon lỗi nếu có.
+          </p>
+        </sd-section>
+
+        <!-- helperText / readonly -->
+        <sd-section title="Nút xoá · helperText · readonly">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-input-number label="Rê chuột để thấy nút ×" value="12345"></sd-input-number>
+            <sd-input-number label="Có ghi chú" helperText="Đơn vị: VNĐ"></sd-input-number>
+            <sd-input-number label="Readonly" value="99999" readonly></sd-input-number>
+          </div>
+        </sd-section>
+
+        <!-- Sizes & disabled -->
+        <sd-section title="Kích thước &amp; Disabled">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-input-number label="Size sm" size="sm" value="1000"></sd-input-number>
+            <sd-input-number label="Size md (mặc định)" value="1000"></sd-input-number>
+            <sd-input-number label="Size sm — trống" size="sm"></sd-input-number>
+          </div>
+          <div class="grid grid-cols-3 gap-24 mt-24">
+            <sd-input-number label="Disabled — trống" disabled></sd-input-number>
+            <sd-input-number label="Disabled — có giá trị" value="500000" disabled></sd-input-number>
+            <sd-input-number label="Viewed" value="750000" viewed></sd-input-number>
+          </div>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list mb-0 pl-0">
+                  <li>Nhập số tiền (VNĐ, USD...)</li>
+                  <li>Nhập số lượng, khối lượng, tỷ lệ phần trăm</li>
+                  <li>Bất kỳ trường số cần format phân cách nghìn</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list mb-0 pl-0">
+                  <li>Nhập mã định danh dạng số (ID, barcode — dùng sd-input)</li>
+                  <li>Nhập số điện thoại (dùng sd-input)</li>
+                  <li>Selector số bằng nút +/- (chưa có component)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Ô Đơn giá (bắt buộc, format nghìn, min 0) và Số lượng (số nguyên, min 1, max 999)."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-input-number label="Đơn giá" value="150000" required&gt;&lt;/sd-input-number&gt;
+&lt;sd-input-number label="Tỷ lệ" value="3.5" precision="1"&gt;&lt;/sd-input-number&gt;
+&lt;sd-input-number label="Giá bán" value="1500000" suffix="VNĐ"&gt;&lt;/sd-input-number&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>label</td><td>string</td><td>-</td><td>Floating label</td></tr>
+                  <tr><td>placeholder</td><td>string</td><td>= label</td><td>Placeholder khi trống</td></tr>
+                  <tr><td>value</td><td>number (dấu chấm cho thập phân)</td><td>-</td><td>Model thô — hiển thị lại theo <code>format</code>. Bí danh: <code>model</code></td></tr>
+                  <tr><td>format</td><td><code>1.234.567,89</code> hoặc <code>1,234,567.89</code></td><td><code>1.234.567,89</code></td><td>Kiểu phân cách nghìn/thập phân khi hiển thị — mirror mặc định thật của Core UI (portal-config)</td></tr>
+                  <tr><td>precision</td><td>number</td><td>3</td><td>Số chữ số thập phân <b>được phép gõ thêm</b> — không làm tròn/đệm giá trị đã có sẵn</td></tr>
+                  <tr><td>type</td><td><code>positive</code>, <code>negative</code></td><td>-</td><td>Giới hạn chỉ cho gõ số dương hoặc âm; để trống thì cho cả hai</td></tr>
+                  <tr><td>min</td><td>number</td><td>-</td><td>Giá trị nhỏ nhất — báo lỗi khi blur nếu vi phạm</td></tr>
+                  <tr><td>max</td><td>number</td><td>-</td><td>Giá trị lớn nhất</td></tr>
+                  <tr><td>required</td><td>boolean</td><td>false</td><td>Hiện dấu * + báo lỗi khi trống lúc blur</td></tr>
+                  <tr><td>disabled</td><td>boolean</td><td>false</td><td>Vô hiệu hoá input</td></tr>
+                  <tr><td>readonly</td><td>boolean</td><td>false</td><td>Chỉ đọc — vẫn focus/copy được, không sửa</td></tr>
+                  <tr><td>viewed</td><td>boolean | <code>inline</code></td><td>false</td><td>Chế độ xem — text tĩnh, format đầy đủ. <code>viewed="inline"</code>: text tĩnh, bấm vào để sửa tại chỗ (<code>sd-inline-text</code>), blur thì lưu</td></tr>
+                  <tr><td>size</td><td><code>sm</code>, <code>md</code></td><td>md</td><td>Chiều cao field: md 43.5px, sm 32px (catalog chỉ có hai cỡ; <code>lg</code> cũ quy về md)</td></tr>
+                  <tr><td>clearable</td><td>—</td><td>—</td><td><b>Không có trong catalog.</b> Nút × luôn có ở ô có giá trị, hiện khi rê chuột/focus (ẩn nếu disabled/readonly). Markup cũ có <code>clearable</code> vẫn chạy — thuộc tính bị bỏ qua</td></tr>
+                  <tr><td>helperText</td><td>string</td><td>-</td><td>Icon <code>info_outline</code> sau chữ nhãn, gợi ý hiện ở <code>title</code> (đúng catalog #c-input)</td></tr>
+                  <tr><td>hideInlineError</td><td>boolean</td><td>false</td><td>Ẩn dòng lỗi chữ, thay bằng icon đỏ + tooltip</td></tr>
+                  <tr><td>suffix</td><td>string</td><td>-</td><td>Text hiện cuối field (đơn vị: "VNĐ", "%"...) — mirror <code>&lt;ng-template sdSuffixDef&gt;</code></td></tr>
+                  <tr><td>suffixIcon</td><td>string</td><td>-</td><td>Icon hiện cuối field thay cho <code>suffix</code> text (vd "payments")</td></tr>
+                  <tr><td>autoId</td><td>string</td><td>-</td><td>Sinh <code>data-autoId="forms-input-number-{autoId}"</code></td></tr>
+                  <tr><td>name</td><td>string</td><td>-</td><td>Tên field (tương thích form)</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Events</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Event</th><th>Detail</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>sd-change</td><td>{ value: number \| null }</td><td>Khi model thật sự đổi (blur đã parse được số hợp lệ, hoặc xoá)</td></tr>
+                  <tr><td>sd-focus</td><td>-</td><td>Khi input được focus</td></tr>
+                  <tr><td>sd-cleared</td><td>-</td><td>Khi bấm nút xoá</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Methods</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Method</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>focus() / blur()</td><td>Focus / bỏ focus input</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Lệch có chủ ý so với @sdcorejs/angular</p>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li><code>helperText</code> hiện thành dòng chữ dưới field (thư viện thật đặt icon info cạnh label + <code>matTooltip</code>); <code>hideInlineError</code> dùng <code>data-sd-tooltip</code> chung của kit thay <code>matTooltip</code>.</li>
+                <li>Không mirror <code>appearance</code>, <code>floatLabel</code>, <code>form</code>, <code>validator</code> (custom async validator), <code>inlineError</code>, <code>viewed="inline"</code>, <code>blurOnEnter</code>, <code>sdFocusForceBlur</code> — chi tiết Angular Material/Reactive Forms không áp dụng cho web component thuần.</li>
+                <li><code>format</code> mặc định <code>1.234.567,89</code> — không phải "lệch mặc định" mà mirror đúng cấu hình thật của Core UI demo app (<code>portal-config.ts</code>: <code>numberFormat: '1.234.567,89'</code>), không dùng fallback quốc tế của bản thư viện trần.</li>
+                <li>Thư viện thật nhận suffix qua content projection <code>&lt;ng-template sdSuffixDef&gt;</code> (chèn được bất kỳ markup nào — icon, text, cả template phức tạp). Kit vanilla JS không có content projection nên rút gọn thành 2 attribute tĩnh <code>suffix</code>/<code>suffixIcon</code>, đúng 2 kiểu duy nhất mà trang demo chính thức của Core UI minh hoạ (text đơn vị hoặc icon).</li>
+              </ul>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      // Show first panel on load
+      showPanel(0);
+    }
+
+    // patterns:loaded already fired before this inline script runs,
+    // so call directly — DOM is ready at this point.
+    initPreviewTabs();
+  })();
+
+  // Khối catalog: các ô lỗi hiện như đã chạm
+  (function () {
+    document.querySelectorAll('.num-cat-touch').forEach(function (el) { el._touched = true; el._render(); });
+  })();
+</script>
+
+</body>
+</html>

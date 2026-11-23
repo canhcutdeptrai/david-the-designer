@@ -1,0 +1,25 @@
+/* Anchor — #c-anchor */
+/* @sd-angular/core sd-anchor / anchor-nav — styles nguyên văn */
+#c-anchor sd-anchor .c-anchor-vertical{position:relative;display:flex;height:100%;width:100%;gap:16px;overflow-y:auto}
+#c-anchor sd-anchor .c-anchor-vertical.c-stop-scroll-propagation{overscroll-behavior:contain}
+#c-anchor sd-anchor .c-anchor-vertical>.c-anchor-content{flex:1 1 auto;min-width:0}
+#c-anchor sd-anchor .c-anchor-vertical>.c-anchor-list{flex:0 0 auto;position:sticky;top:0;right:6px}
+#c-anchor anchor-nav .c-anchor-list{height:100%;display:flex;flex-direction:column}
+#c-anchor anchor-nav .c-anchor-list .c-anchor-list-item{border-left:2px solid var(--sd-secondary-light);color:var(--sd-black500);padding:.5rem 1.5rem;cursor:pointer;display:flex;align-items:center;gap:.5rem;min-width:0;overflow:hidden}
+#c-anchor anchor-nav .c-anchor-list .c-anchor-list-item .c-anchor-list-item-icon{flex:0 0 auto}
+#c-anchor anchor-nav .c-anchor-list .c-anchor-list-item .c-anchor-list-item-text{flex:1 1 0;min-width:0;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
+#c-anchor anchor-nav .c-anchor-list .c-anchor-list-item .c-anchor-list-item-text.ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#c-anchor anchor-nav .c-anchor-list .c-anchor-list-item.active{border-left:2px solid var(--anchor-active-color, var(--sd-primary));color:var(--anchor-active-color, var(--sd-primary));font-weight:700}
+#c-anchor anchor-nav .c-anchor-list .c-anchor-list-item.active .c-anchor-list-item-icon{color:var(--anchor-active-color, var(--sd-primary))}
+#c-anchor anchor-nav .c-anchor-list .c-anchor-list-item:not(.active){border-left:2px solid var(--sd-secondary-light);font-weight:400}
+/* sd-core reboot: section { display: block } */
+#c-anchor sd-anchor-item section{display:block}
+#c-anchor .T16M{font-size:16px;font-weight:500;line-height:24px}
+#c-anchor .T14M{font-size:14px;font-weight:500;line-height:20px}
+#c-anchor .T14R{font-size:14px;font-weight:400;line-height:20px}
+#c-anchor .text-black400{color:var(--sd-black400)!important}
+/* nội dung mẫu bên trong sd-anchor-item */
+#c-anchor .an-card{background:#fff;border-radius:8px;padding:16px;margin-bottom:16px;min-height:220px;box-shadow:0 1px 2px #2f31361a}
+#c-anchor .an-title{margin-bottom:8px}
+#c-anchor .an-row{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #f2f2f2}
+#c-anchor .an-row>span:first-child{width:180px;flex:0 0 auto}

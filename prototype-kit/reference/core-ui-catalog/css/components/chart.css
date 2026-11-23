@@ -1,0 +1,4 @@
+/* Chart — #c-chart */
+#c-chart .chart-demo-box{display:block;background:#fff;padding:16px;border:1px solid var(--sd-black200);border-radius:8px}
+#c-chart .chart-demo-row{display:flex;flex-wrap:wrap;gap:16px}
+#c-chart .chart-demo-row > .chart-demo-box{flex:1 1 280px;max-width:420px}

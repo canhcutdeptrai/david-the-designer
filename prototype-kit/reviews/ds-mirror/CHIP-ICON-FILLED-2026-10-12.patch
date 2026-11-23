@@ -1,0 +1,72 @@
+--- a/design-system/sd-components/sd-components.js
++++ b/design-system/sd-components/sd-components.js
+@@ -1551,7 +1551,9 @@
+           '<span class="sd-chip-label">' + esc(String(v)) + '</span>' +
+           /* catalog #c-chip "Disabled — chip không còn nút xoá" (2026-10-12) */
+           (removable && !disabled
+-            ? '<span class="material-icons-outlined mi-16 sd-chip-remove"' +
++            /* Icon ĐẶC `material-icons` — Builder chốt 2026-10-12 theo catalog
++               (`mat-icon.mat-mdc-chip-remove.material-icons` cancel). Ngoại lệ Rule 4. */
++            ? '<span class="material-icons sd-chip-remove"' +
+               ' role="button" tabindex="' + (disabled ? '-1' : '0') + '"' +
+               ' aria-label="Xóa chip">cancel</span>'
+             : '') +
+@@ -1769,7 +1771,9 @@
+         html += '<span class="sd-chip">' +
+           '<span class="sd-chip-label">' + esc(self._formatDisplay(v)) + '</span>' +
+           (removable
+-            ? '<span class="material-icons-outlined mi-16 sd-chip-remove"' +
++            /* Icon ĐẶC `material-icons` — Builder chốt 2026-10-12 theo catalog
++               (`mat-icon.mat-mdc-chip-remove.material-icons` cancel). Ngoại lệ Rule 4. */
++            ? '<span class="material-icons sd-chip-remove"' +
+               ' role="button" tabindex="' + (disabled ? '-1' : '0') + '"' +
+               ' aria-label="Xóa ngày">cancel</span>'
+             : '') +
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -126,6 +126,7 @@
+ 2. **Không dùng màu ngoài token** — mọi màu phải từ CSS variables
+ 3. **Không dùng font ngoài** Roboto + JetBrains Mono + Material Icons Outlined. **Mono font (`font-family-mono`) chỉ dùng cho dữ liệu dạng code** (JSON, API response, log...) — **không dùng cho** ID, mã, số tiền, datetime, hay bất kỳ business data nào. **Không hardcode `style="font-family:..."` trên element** — dùng CSS class
+ 4. **Không dùng inline SVG cho icon** — luôn dùng `<span class="material-icons-outlined mi-{size}">name</span>` (KHÔNG dùng `material-icons` filled)
++   - **Ngoại lệ Builder đã chốt (dùng `material-icons` đặc, theo catalog):** icon của `bpm-kpi-card`, và nút xoá `cancel` trên chip của `sd-chip` / `sd-chip-calendar` (2026-10-12). Ngoài các chỗ này vẫn outlined — đừng tự mở rộng ngoại lệ.
+ 5. **Không thêm breadcrumb / topbar** — OMEU không dùng
+ 6. **Không dùng gradient, glassmorphism, decorative animations**
+ 7. **Không skip shell** — mọi trang phải có sidebar + page-header
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -8,6 +8,15 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — nút xoá trên chip (`sd-chip`, `sd-chip-calendar`) dùng icon ĐẶC
++
++Builder: *"icon close trong chip và chip calendar dùng dạng icon filled"*. Đổi nút xoá
++`cancel` từ `material-icons-outlined` (vòng tròn rỗng) sang `material-icons` (vòng tròn
++đặc) — đúng `mat-icon.mat-mdc-chip-remove.material-icons` của catalog `#c-chip` /
++`#c-chip-calendar`. Cỡ 18px, màu, độ mờ .54 và vị trí giữ nguyên. Ghi thành ngoại lệ
++Rule 4 trong `AGENTS.md` (cùng nhóm với icon của `bpm-kpi-card`). Font `Material Icons`
++đã có sẵn trong `shell/template.html` và các trang preview.
++
+ ### Changed — `#c-chip`: `sd-chip` khớp catalog — khung 74px, chip đúng bề ngang, disabled không có nút xoá
+ 
+ Builder: *"Tiếp tục phần Chip"*. Đo 6 ô mẫu của catalog (2 chip · đang gõ · lỗi bắt buộc ·
+--- a/_memory/known-gaps.md
++++ b/_memory/known-gaps.md
+@@ -114,7 +114,7 @@
+ 
+ | Chỗ | Catalog | Kit | Vì sao |
+ |---|---|---|---|
+-| Icon × trên chip | `mat-icon.material-icons` `cancel` (đặc) | `material-icons-outlined` | Rule 4 |
++| ~~Icon × trên chip~~ **ĐÃ ĐỔI 2026-10-12** | `mat-icon.material-icons` `cancel` (đặc) | `material-icons` đặc như catalog | Builder chốt dùng icon filled — ngoại lệ Rule 4 ghi trong AGENTS.md |
+ | `[(model)]` | mảng | attribute `value` nối bằng dấu phẩy + property mảng | Ngoại lệ 2 |
+ | Ô nhập ở hàng chip (disabled) | cao 32px (giãn theo hàng) | 24px | Ô trong suốt, không thấy được |
+ | Cỡ sm / lg | catalog không có ví dụ | giữ đệm dọc cũ; chiều ngang theo md | Không có số đo |
+@@ -125,7 +125,7 @@
+ 
+ | Chỗ | Catalog | Kit | Vì sao |
+ |---|---|---|---|
+-| Icon × trên chip | `mat-icon.material-icons` `cancel` (đặc) | `material-icons-outlined` | Rule 4 |
++| ~~Icon × trên chip~~ **ĐÃ ĐỔI 2026-10-12** | `mat-icon.material-icons` `cancel` (đặc) | `material-icons` đặc như catalog | Builder chốt dùng icon filled — ngoại lệ Rule 4 ghi trong AGENTS.md |
+ | Cỡ sm / lg | catalog không có ví dụ | giữ đệm dọc cũ (3 / 7px); chiều ngang theo md | Không có số đo để mirror |
+ | `[(model)]` | mảng `['2026/10/05', …]` | attribute `value` nối bằng dấu phẩy + property `.value` mảng | Ngoại lệ 2 — HTML không truyền được mảng |
+ | Bề ngang ô nhập khi khung rỗng | 380px (danh sách không giãn quá 100%) | 388px | Ô nhập trong suốt — không thấy được |

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-checkbox — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-checkbox"
+         data-subtitle="Mirror SdCheckbox &mdash; color (6), size (sm/md/lg), viewed (true/inline), inlineError, disabled"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <!-- ── Theo Core UI Catalog #c-checkbox — rà soát 2026-10-12 ── -->
+        <sd-section title="Trạng thái chọn" subtitle="chưa chọn · đã chọn — bấm để đổi">
+          <div class="d-flex flex-wrap gap-16">
+            <sd-checkbox label="Giao dịch trung gian"></sd-checkbox>
+            <sd-checkbox label="Đã đối chiếu sổ phụ ngân hàng" checked></sd-checkbox>
+          </div>
+        </sd-section>
+
+        <sd-section title="Disabled" subtitle="chưa tick · đã tick — override của portal: nhãn giữ màu, ô chưa tick nền --sd-light, viền --sd-black300">
+          <div class="d-flex flex-wrap gap-16">
+            <sd-checkbox label="Giao dịch trung gian" disabled></sd-checkbox>
+            <sd-checkbox label="Giao dịch trung gian" disabled checked></sd-checkbox>
+          </div>
+        </sd-section>
+
+        <sd-section title="Màu" subtitle="color: primary · secondary · info · success · warning · error">
+          <div class="d-flex flex-wrap gap-16">
+            <sd-checkbox label="primary" color="primary" checked></sd-checkbox>
+            <sd-checkbox label="secondary" color="secondary" checked></sd-checkbox>
+            <sd-checkbox label="info" color="info" checked></sd-checkbox>
+            <sd-checkbox label="success" color="success" checked></sd-checkbox>
+            <sd-checkbox label="warning" color="warning" checked></sd-checkbox>
+            <sd-checkbox label="error" color="error" checked></sd-checkbox>
+          </div>
+        </sd-section>
+
+        <sd-section title="Lỗi inline" subtitle="inlineError, hiện sau khi control bị touched — ô tích không đổi viền">
+          <sd-checkbox class="cb-cat-touch" label="Tôi xác nhận thông tin hồ sơ phê duyệt là chính xác" inlineError="Vui lòng xác nhận trước khi trình duyệt"></sd-checkbox>
+        </sd-section>
+
+        <sd-section title="Chế độ xem" subtitle="viewed: nhãn + Có / Không (core.form.checkbox.*)">
+          <div class="d-flex flex-wrap gap-16">
+            <sd-checkbox label="Giao dịch trung gian" viewed checked></sd-checkbox>
+            <sd-checkbox label="Đã đối chiếu sổ phụ" viewed></sd-checkbox>
+          </div>
+        </sd-section>
+
+        <sd-section title="States">
+          <p class="fs-12 text-black400 mb-12">Chưa chọn / Đã chọn</p>
+          <div class="flex gap-4 align-items-center flex-wrap mb-16">
+            <sd-checkbox label="Chưa chọn"></sd-checkbox>
+            <sd-checkbox label="Đã chọn" checked></sd-checkbox>
+          </div>
+
+          <p class="fs-12 text-black400 mb-12">
+            Rê chuột vào ô để thấy <strong>lớp state layer tròn mờ</strong> phía sau — đặc trưng của
+            mat-checkbox. Khi chưa tích, hover chỉ làm <strong>đậm viền</strong> chứ không đổ nền.
+          </p>
+
+          <p class="fs-12 text-black400 mb-12 mt-16">Disabled</p>
+          <div class="flex gap-4 align-items-center flex-wrap">
+            <sd-checkbox label="Disabled — chưa chọn" disabled></sd-checkbox>
+            <sd-checkbox label="Disabled — đã chọn" checked disabled></sd-checkbox>
+          </div>
+
+        </sd-section>
+
+        <sd-section title="Color — 6 giá trị (mặc định primary)">
+          <p class="fs-12 text-black400 mb-12">
+            Đúng thư viện thật: <code>color</code> CHỈ đổi màu ô đã tích (và vòng focus bàn phím),
+            viền lúc chưa tích giữ nguyên ở mọi màu.
+          </p>
+          <div class="flex gap-4 align-items-center flex-wrap mb-16">
+            <sd-checkbox label="primary" checked></sd-checkbox>
+            <sd-checkbox label="secondary" color="secondary" checked></sd-checkbox>
+            <sd-checkbox label="info" color="info" checked></sd-checkbox>
+            <sd-checkbox label="success" color="success" checked></sd-checkbox>
+            <sd-checkbox label="warning" color="warning" checked></sd-checkbox>
+            <sd-checkbox label="error" color="error" checked></sd-checkbox>
+          </div>
+          <p class="fs-12 text-black400 mb-12">Cùng bộ màu nhưng chưa tích — viền giống hệt nhau</p>
+          <div class="flex gap-4 align-items-center flex-wrap">
+            <sd-checkbox label="primary"></sd-checkbox>
+            <sd-checkbox label="secondary" color="secondary"></sd-checkbox>
+            <sd-checkbox label="info" color="info"></sd-checkbox>
+            <sd-checkbox label="success" color="success"></sd-checkbox>
+            <sd-checkbox label="warning" color="warning"></sd-checkbox>
+            <sd-checkbox label="error" color="error"></sd-checkbox>
+          </div>
+        </sd-section>
+
+        <sd-section title="inlineError — chuỗi lỗi hiển thị dưới checkbox">
+          <p class="fs-12 text-black400 mb-12">
+            <strong>Click vào ô để thấy lỗi hiện ra.</strong> Đúng thư viện thật: lỗi chỉ hiện sau khi
+            control đã bị chạm (<code>formControl.touched</code>), nên lúc mới tải trang chưa thấy gì —
+            giống cách sd-input của kit cũng chỉ báo lỗi sau khi người dùng tương tác.
+          </p>
+          <div class="flex gap-4 align-items-center flex-wrap">
+            <sd-checkbox label="Bắt buộc đồng ý điều khoản" inlineError="Vui lòng đồng ý để tiếp tục"></sd-checkbox>
+          </div>
+        </sd-section>
+
+        <sd-section title="viewed — chế độ xem">
+          <p class="fs-12 text-black400 mb-12">
+            <code>viewed</code> chuyển sang khối xem tĩnh, giá trị đọc là
+            <strong>&ldquo;Có&rdquo; / &ldquo;Không&rdquo;</strong> (<code>core.form.checkbox.checked/unchecked</code>).
+          </p>
+          <div class="flex gap-16 items-start flex-wrap">
+            <sd-checkbox label="Đồng ý điều khoản" viewed checked></sd-checkbox>
+            <sd-checkbox label="Nhận thông báo" viewed></sd-checkbox>
+          </div>
+        </sd-section>
+
+        <sd-section title="Checkbox Group (vertical)">
+          <p class="fs-12 text-black400 mb-12">Khoảng cách giữa các item = group-gap token (16px)</p>
+          <div class="flex flex-col gap-4">
+            <sd-checkbox name="channel" label="Email" checked></sd-checkbox>
+            <sd-checkbox name="channel" label="SMS"></sd-checkbox>
+            <sd-checkbox name="channel" label="Push notification"></sd-checkbox>
+          </div>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Cho phép chọn nhiều lựa chọn độc lập (đa lựa chọn) trong form hoặc filter</li>
+                  <li>Đồng ý điều khoản, xác nhận một hành động đơn lẻ (single checkbox)</li>
+                  <li>Chọn tất cả / chọn hàng loạt trong bảng dữ liệu — dùng cột <code>selectable</code> của <code>sd-table</code>, không tự dựng bằng sd-checkbox</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Chỉ được chọn 1 trong nhiều lựa chọn — dùng Radio</li>
+                  <li>Bật/tắt một cài đặt hệ thống ngay lập tức — dùng Switch/Toggle</li>
+                  <li>Trigger một hành động (không phải trạng thái) — dùng Button</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Checkbox 'Đồng ý điều khoản sử dụng' — bắt buộc chọn, báo lỗi nếu bỏ trống khi Gửi. Nhóm checkbox 'Kênh nhận thông báo' gồm Email/SMS/Push, cho phép chọn nhiều."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-checkbox label="Nhận thông báo qua email"&gt;&lt;/sd-checkbox&gt;
+&lt;sd-checkbox label="Đã duyệt" color="success" checked&gt;&lt;/sd-checkbox&gt;
+&lt;sd-checkbox label="Đồng ý điều khoản" inlineError="Vui lòng đồng ý để tiếp tục"&gt;&lt;/sd-checkbox&gt;
+&lt;sd-checkbox label="Đồng ý điều khoản" viewed="true" checked&gt;&lt;/sd-checkbox&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>label</td><td>string</td><td>-</td><td>Label text bên phải control</td></tr>
+                  <tr><td>color</td><td>primary | secondary | info | success | warning | error</td><td>primary</td><td>Màu ô khi ĐÃ TÍCH (và vòng focus) — chưa tích thì mọi màu giống nhau</td></tr>
+                  <tr><td>checked</td><td>boolean</td><td>false</td><td>Bí danh của <code>model</code> bên Angular — trạng thái đã chọn</td></tr>
+                  <tr><td>disabled</td><td>boolean</td><td>false</td><td>Vô hiệu hoá (<code>disabled="false"</code> = KHÔNG khoá, đúng booleanAttribute)</td></tr>
+                  <tr><td>viewed</td><td>boolean</td><td>false</td><td>Khối xem tĩnh ("Có"/"Không"). <code>viewed="false"</code> = không xem</td></tr>
+                  <tr><td>inlineError</td><td>string</td><td>''</td><td>Chuỗi lỗi dưới checkbox — chỉ hiện SAU KHI người dùng chạm vào ô (touched)</td></tr>
+                  <tr><td>autoId</td><td>string</td><td>-</td><td>Sinh <code>data-autoid="forms-checkbox-{autoId}"</code> trên input — dùng cho automation test</td></tr>
+                  <tr><td>name</td><td>string</td><td>-</td><td>Tên form control</td></tr>
+                </tbody>
+              </table>
+              <p class="fs-12 text-black400 mt-12 mb-0">
+                Thư viện thật còn input thứ 10 là <code>form</code> (<code>ɵSdFormControlParent</code>) —
+                thuần Angular Reactive Forms, không có nghĩa trong HTML tĩnh nên kit không mirror.
+              </p>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Đã gỡ 2026-10-12 — catalog không có (markup cũ vẫn chạy, thuộc tính bị bỏ qua)</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Ghi chú</th></tr></thead>
+                <tbody>
+                  <tr><td>size</td><td>Catalog chỉ có một cỡ (ô 18px, vùng bấm 28px)</td></tr>
+                  <tr><td>viewed="inline"</td><td>Catalog <code>[viewed]</code> là boolean — "inline" nay coi như xem tĩnh</td></tr>
+                  <tr><td>indeterminate</td><td>Ô "chọn một phần" của catalog là <code>mat-checkbox</code> thuần, không phải sd-checkbox; <code>sd-table</code> tự dựng ô chọn tất cả</td></tr>
+                  <tr><td>helperText</td><td>SdCheckbox chỉ có label</td></tr>
+                  <tr><td>error</td><td>Dùng <code>inlineError</code> (chuỗi)</td></tr>
+                  <tr><td>value</td><td><b>Giữ</b> — attribute HTML (giá trị gửi đi khi tích), sd-query-builder dùng</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Events</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Event</th><th>detail</th><th>Khi nào fire</th></tr></thead>
+                <tbody>
+                  <tr><td>sd-change</td><td>{ checked: boolean, value: string }</td><td>Khi user click để đổi trạng thái — gộp cả <code>modelChange</code> và <code>sdChange</code> của thư viện thật</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      showPanel(0);
+    }
+    initPreviewTabs();
+  })();
+
+  /* Mẫu catalog #c-checkbox: ô lỗi ở trạng thái touched */
+  document.querySelectorAll('.cb-cat-touch').forEach(function (el) { el._touched = true; el._render(); el._bind(); });
+</script>
+
+</body>
+</html>

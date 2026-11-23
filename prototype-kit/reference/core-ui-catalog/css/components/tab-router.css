@@ -1,0 +1,103 @@
+/* Tab router — #c-tab-router */
+/* sd-tab-router-outlet / -nav / -item (bundle) */
+#c-tab-router sd-tab-router-outlet{display:flex;flex-direction:column;width:100%;min-height:0;height:100vh}
+#c-tab-router sd-tab-router-outlet .sd-loading{max-width:100%;max-height:100%}
+#c-tab-router .tab-router__list{flex:1;min-height:0}
+#c-tab-router .tab-router__disabled-outlet{flex:1;width:100%;min-height:0;overflow:auto}
+#c-tab-router .tab-router__pane{display:none;position:relative;height:100%;width:100%}
+#c-tab-router .tab-router__pane.active{display:block}
+#c-tab-router .tab-router__content{position:absolute;inset:0;overflow:auto;height:100%;width:100%}
+#c-tab-router .tab-router__nav{background:#f9f9f9;overflow:hidden}
+#c-tab-router .tab-router__nav--compact .tab-router__name{display:none}
+#c-tab-router .tab-router__nav--compact .tab-router__icon{margin:0!important}
+#c-tab-router .tab-router__nav--compact .tab-router__item--active{min-width:240px}
+#c-tab-router .tab-router__nav--compact .tab-router__item--active .tab-router__icon{margin-right:8px!important}
+#c-tab-router .tab-router__nav--compact .tab-router__item--active .tab-router__name{display:-webkit-box}
+#c-tab-router sd-tab-router-item{display:block;overflow:hidden;position:relative;flex:1 1 64px;max-width:240px}
+#c-tab-router sd-tab-router-item:after{content:"";position:absolute;right:0;top:0;bottom:0;height:16px;width:1px;background:#dde0e5;margin:auto}
+#c-tab-router sd-tab-router-item:last-child:after{content:none}
+#c-tab-router sd-tab-router-item .tab-router__item sd-badge .c-badge-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:184px}
+#c-tab-router .flex-1{flex:1}
+#c-tab-router .tab-router__icon{background-color:#5c6bc0;width:16px;height:16px;line-height:16px;text-align:center;font-size:10px;color:#fff;border-radius:2px;text-transform:uppercase}
+#c-tab-router .tab-router__icon .mat-icon{height:10px;width:10px;font-size:10px}
+#c-tab-router .tab-router__close{color:#757575;outline:none;border:0;background:none;border-radius:50%;height:16px;width:16px}
+#c-tab-router .tab-router__close:hover{background-color:#0000001f}
+#c-tab-router .tab-router__close .mat-icon{font-size:12px;height:12px;width:12px}
+#c-tab-router .tab-router__item{background:#f2f3f4;padding:8px;color:inherit;text-decoration:none;font-size:12px;line-height:16px;overflow:hidden}
+#c-tab-router .tab-router__item:hover{background-color:#fff}
+#c-tab-router .tab-router__name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#c-tab-router .tab-router__item--active{border-radius:8px 8px 0 0;background-color:#fff}
+/* sd-badge (bundle, đã bỏ khối utility màu) */
+#c-tab-router .c-badge{border-radius:20px;padding:2px 10px;display:inline-block;text-align:center;overflow-wrap:break-word}
+#c-tab-router .c-badge.c-badge--has-icon{display:inline-flex;align-items:center;gap:4px}
+#c-tab-router .c-badge .c-material-icon{padding:0}
+#c-tab-router .c-badge .c-material-icon.c-sm{font-size:16px;width:16px;height:16px;line-height:16px}
+#c-tab-router .c-badge .c-material-icon.c-md{font-size:18px;width:18px;height:18px;line-height:18px}
+#c-tab-router .c-badge .c-material-icon.c-lg{font-size:24px;width:24px;height:24px;line-height:24px}
+#c-tab-router .c-badge.c-badge--sm:not(.c-badge--tag){padding:2px 10px}
+#c-tab-router .c-badge.c-badge--md:not(.c-badge--tag){padding:4px 12px}
+#c-tab-router .c-badge.c-badge--lg:not(.c-badge--tag){padding:6px 16px}
+#c-tab-router .c-badge.c-badge--sm .c-badge-title{font-size:14px}
+#c-tab-router .c-badge.c-badge--md .c-badge-title{font-size:16px}
+#c-tab-router .c-badge.c-badge--lg .c-badge-title{font-size:18px}
+#c-tab-router .c-badge.c-badge--sm .c-badge-description{font-size:12px}
+#c-tab-router .c-badge.c-badge--md .c-badge-description{font-size:13px}
+#c-tab-router .c-badge.c-badge--lg .c-badge-description{font-size:14px}
+#c-tab-router .c-badge.c-primary{background:var(--sd-primary-light);color:var(--sd-primary)}
+#c-tab-router .c-badge.c-primary.c-badge--tag{border:1px solid var(--sd-primary)}
+#c-tab-router .c-badge.c-secondary{background:var(--sd-secondary-light);color:var(--sd-secondary)}
+#c-tab-router .c-badge.c-secondary.c-badge--tag{border:1px solid var(--sd-secondary)}
+#c-tab-router .c-badge.c-info{background:var(--sd-info-light);color:var(--sd-info)}
+#c-tab-router .c-badge.c-info.c-badge--tag{border:1px solid var(--sd-info)}
+#c-tab-router .c-badge.c-warning{background:var(--sd-warning-light);color:var(--sd-warning)}
+#c-tab-router .c-badge.c-warning.c-badge--tag{border:1px solid var(--sd-warning)}
+#c-tab-router .c-badge.c-success{background:var(--sd-success-light);color:var(--sd-success)}
+#c-tab-router .c-badge.c-success.c-badge--tag{border:1px solid var(--sd-success)}
+#c-tab-router .c-badge.c-error{background:var(--sd-error-light);color:var(--sd-error)}
+#c-tab-router .c-badge.c-error.c-badge--tag{border:1px solid var(--sd-error)}
+#c-tab-router .c-badge.c-badge--tag{border-radius:4px;padding:1px 7px}
+#c-tab-router .c-badge.c-badge--tag.c-badge--sm{padding:1px 7px}
+#c-tab-router .c-badge.c-badge--tag.c-badge--md{padding:2px 10px}
+#c-tab-router .c-badge.c-badge--tag.c-badge--lg{padding:4px 12px}
+#c-tab-router .c-badge-icon{min-width:50px}
+#c-tab-router .c-badge-icon .c-material-icon{border-radius:50%;padding:2px 2px 2px 0}
+#c-tab-router .c-badge-icon .c-material-icon.c-sm{width:20px;height:20px;font-size:16px}
+#c-tab-router .c-badge-icon .c-material-icon.c-md{width:22px;height:22px;font-size:18px}
+#c-tab-router .c-badge-icon .c-material-icon.c-lg{width:28px;height:28px;font-size:24px}
+#c-tab-router .c-badge-icon .c-material-icon.c-primary{color:var(--sd-primary)}
+#c-tab-router .c-badge-icon .c-material-icon.c-secondary{color:var(--sd-secondary)}
+#c-tab-router .c-badge-icon .c-material-icon.c-black400{color:var(--sd-black400)}
+#c-tab-router .c-badge-icon .c-material-icon.c-info{color:var(--sd-info)}
+#c-tab-router .c-badge-icon .c-material-icon.c-success{color:var(--sd-success)}
+#c-tab-router .c-badge-icon .c-material-icon.c-error{color:var(--sd-error)}
+#c-tab-router .c-badge-icon .c-material-icon.c-warning{color:var(--sd-warning)}
+#c-tab-router .c-badge-description{color:var(--sd-black400)}
+#c-tab-router .sd-multiline-tooltip{white-space:pre-line}
+
+/* MatIcon + utility/reboot toàn cục của sd-core.scss dùng trong template */
+#c-tab-router mat-icon{color:var(--mat-icon-color, inherit)}
+#c-tab-router .mat-icon.mat-ligature-font[fontIcon]::before{content:attr(fontIcon)}
+#c-tab-router .d-flex{display:flex !important}
+#c-tab-router .d-none{display:none !important}
+#c-tab-router .align-items-center{align-items:center !important}
+#c-tab-router .justify-content-center{justify-content:center !important}
+#c-tab-router .flex-nowrap{flex-wrap:nowrap !important}
+#c-tab-router .flex-column{flex-direction:column !important}
+#c-tab-router .gap-8{gap:8px !important}
+#c-tab-router .ml-auto{margin-left:auto !important}
+#c-tab-router .mr-4{margin-right:4px !important}
+#c-tab-router .p-0{padding:0 !important}
+#c-tab-router .T14R{font-size:14px;font-weight:400;line-height:20px}
+#c-tab-router sd-tab-router-outlet a{color:#007bff;text-decoration:none;background-color:transparent}
+#c-tab-router sd-tab-router-outlet button{border-radius:0;margin:0;font-family:inherit;font-size:inherit;line-height:inherit;overflow:visible;text-transform:none}
+#c-tab-router sd-tab-router-outlet button:not(:disabled){cursor:pointer}
+#c-tab-router sd-tab-router-outlet{color:#212529;line-height:1.5}
+/* Trang mẫu trong pane (consumer) */
+#c-tab-router .demo-page{padding:16px;display:flex;flex-direction:column;gap:12px;background:#fff;min-height:100%}
+#c-tab-router .demo-page h3{margin:0;font-size:16px;font-weight:500}
+#c-tab-router .demo-page p{margin:0;color:#757575}
+#c-tab-router .demo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+#c-tab-router .demo-card{border:1px solid #e6e6e6;border-radius:8px;padding:12px}
+#c-tab-router .demo-card span{display:block;font-size:12px;color:#757575}
+#c-tab-router .demo-card b{font-size:16px;font-weight:500}
+#c-tab-router .demo-frame{width:100%;border:1px solid #e6e6e6;border-radius:8px;overflow:hidden;background:#ebeced}

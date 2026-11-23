@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Page Layout — Enterprise Portal</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="edit"
+         data-title="Tạo mới [Record Type]"
+         data-primary-action="Gửi duyệt"
+         data-has-draft="true"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+      <div class="form-page-wrapper">
+
+        <!-- ====== SECTION 1 — Thông tin chung ====== -->
+        <sd-section title="Thông tin chung" collapsible>
+
+          <div class="form-sub-group">
+            <div class="form-sub-group-label">Thông tin chung</div>
+            <div class="form-sub-group-content">
+              <div class="form-grid-4">
+                <div class="form-field-group">
+                  <sd-select label="Loại chương trình" placeholder="Chọn..."
+                    items='[{"id":"km","name":"Khuyến mãi"},{"id":"ck","name":"Chiết khấu"},{"id":"td","name":"Tích điểm"}]'>
+                  </sd-select>
+                </div>
+                <div class="form-field-group">
+                  <sd-select label="Phạm vi" placeholder="Chọn..."
+                    items='[{"id":"tq","name":"Toàn quốc"},{"id":"kv","name":"Khu vực"},{"id":"ch","name":"Cửa hàng"}]'>
+                  </sd-select>
+                </div>
+                <div class="form-field-group">
+                  <sd-select label="Trạng thái" placeholder="Chọn..."
+                    items='[{"id":"nhap","name":"Nháp"},{"id":"cho","name":"Chờ duyệt"},{"id":"hd","name":"Hoạt động"}]'>
+                  </sd-select>
+                </div>
+                <div class="form-field-group">
+                  <sd-date label="Ngày bắt đầu"></sd-date>
+                </div>
+              </div>
+
+              <div class="form-grid-4">
+                <div class="form-field-group col-span-2">
+                  <sd-select label="Nhà cung cấp" placeholder="Chọn..."
+                    items='[{"id":"ncc-a","name":"NCC A - Công ty ABC"},{"id":"ncc-b","name":"NCC B - Công ty XYZ"}]'>
+                  </sd-select>
+                </div>
+                <div class="form-field-group">
+                  <sd-select label="Kênh bán" placeholder="Chọn..."
+                    items='[{"id":"online","name":"Online"},{"id":"offline","name":"Offline"},{"id":"tat-ca","name":"Tất cả"}]'>
+                  </sd-select>
+                </div>
+                <div class="form-field-group">
+                  <sd-select label="Đối tượng" placeholder="Chọn..."
+                    items='[{"id":"kl","name":"Khách lẻ"},{"id":"dl","name":"Đại lý"}]'>
+                  </sd-select>
+                  <span class="form-field-error-text">Vui lòng chọn đối tượng</span>
+                </div>
+              </div>
+
+              <div class="form-grid-4">
+                <div class="form-field-group col-span-4">
+                  <sd-input label="Mô tả chương trình" placeholder="Nhập mô tả..."></sd-input>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-sub-group">
+            <div class="form-sub-group-label">Tài liệu đính kèm</div>
+            <div class="form-sub-group-content">
+              <sd-upload-file label="Tải lên tệp tin" maxSize="10" max="10"></sd-upload-file>
+              <span class="form-field-hint">Định dạng: pdf, docx, xlsx, png, jpg, jpeg và tối đa 10MB</span>
+            </div>
+          </div>
+
+        </sd-section>
+
+
+        <!-- ====== SECTION 2 — Điều kiện áp dụng ====== -->
+        <sd-section title="Điều kiện áp dụng" collapsible>
+
+            <!-- Chiết khấu -->
+            <div class="form-sub-group">
+              <div class="form-sub-group-label">Chiết khấu</div>
+              <div class="form-sub-group-content">
+                <div class="form-grid-4">
+                  <div class="form-field-group">
+                    <sd-select id="discount-type-sd" label="Loại chiết khấu" value="phan-tram"
+                      items='[{"id":"phan-tram","name":"Phần trăm (%)"},{"id":"so-tien-co-dinh","name":"Số tiền cố định"}]'>
+                    </sd-select>
+                  </div>
+                  <div class="form-field-group" id="discount-value-group">
+                    <sd-input-number id="discount-value" label="Giá trị" suffix="%" precision="0"></sd-input-number>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center flex-wrap gap-24 mt-8">
+                  <sd-checkbox label="Áp dụng cho đơn đầu tiên" checked></sd-checkbox>
+                  <sd-radio value="cong-don" items='[{"id":"cong-don","name":"Cộng dồn"},{"id":"khong-cong-don","name":"Không cộng dồn"}]'></sd-radio>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cấu hình điều kiện -->
+            <div class="form-sub-group">
+              <div class="form-sub-group-label">Cấu hình điều kiện</div>
+              <div class="form-sub-group-content">
+                <!-- Bảng điều kiện nhiều dòng: sd-table addable (catalog #c-table) — dropdown của sd-select nổi trong overlay,
+                     bỏ khoá cuộn của khung để lịch sd-date không bị cắt. -->
+                <style>
+                  /* Host sd-table cũng `overflow:auto` (sd-tokens.css, từ 2026-10-12) → mở cả host để lịch sd-date ở dòng cuối không bị cắt;
+                     mở rồi thì bo lại 2 góc trên của hàng tiêu đề cho khớp khung bảng trong section (8px − viền 1px). */
+                  #condition-table,
+                  #condition-table .c-container,
+                  #condition-table .c-table { overflow: visible; }
+                  #condition-table thead th:first-child { border-top-left-radius: 7px; }
+                  #condition-table thead th:last-child { border-top-right-radius: 7px; }
+                </style>
+                <sd-table id="condition-table"
+                  hide-inline-filter
+                  addable add-label="Thêm điều kiện"
+                  columns='[
+                    {"field":"_param","title":"Parameter","type":"raw","width":"220px"},
+                    {"field":"_op","title":"Operator","type":"raw","width":"140px"},
+                    {"field":"_val","title":"Value","type":"raw"},
+                    {"field":"_del","title":"","type":"raw","width":"48px"}
+                  ]'
+                  data='[]'
+                ></sd-table>
+              </div>
+            </div>
+
+        </sd-section>
+
+        <!-- ══════════════════════════════════════════════════════════
+             Pattern: Repeatable Transaction Cards
+             Dung khi form co N items dong nhat (lenh chuyen tien, batch items,
+             dong hop dong) — moi item la 1 sd-section danh so ngay trong title, actions rieng,
+             và có thể có sub-sections đối xứng (Bên chuyển / Bên nhận).
+             ══════════════════════════════════════════════════════════ -->
+
+        <div style="padding: var(--space-5) 0 var(--space-3);">
+          <h2 style="font-size: 16px; font-weight: 600; color: var(--text-primary); margin: 0; line-height: 24px;">
+            Danh sách giao dịch (2)
+          </h2>
+        </div>
+
+        <!-- Transaction Card #1 — expanded, filled -->
+        <sd-section title="1. Masterise Homes &rarr; Nhà thầu Coteccons"
+                    subtitle="H2H &middot; 5.000.000.000 VND &middot; CF: CF_OUT_001"
+                    collapsible>
+          <div class="d-flex align-items-center gap-8" sdHeaderRight>
+            <sd-badge color="info" icon="help_outline" fontSet="material-icons-outlined" title="Nháp"></sd-badge>
+            <div class="c-header-divider"></div>
+            <sd-button type="light" color="primary" size="sm" prefixIcon="content_copy" title="Nhân bản"></sd-button>
+            <sd-button type="light" color="primary" size="sm" prefixIcon="delete_outline" title="Xóa"></sd-button>
+            <div class="c-header-divider"></div>
+            <sd-button type="light" color="primary" size="sm" prefixIcon="save" title="Lưu nháp"></sd-button>
+            <sd-button type="light" color="primary" size="sm" title="Gửi kiểm tra"></sd-button>
+          </div>
+
+          <div class="form-grid-4">
+            <div class="form-field-group">
+              <sd-select label="Hình thức" value="h2h"
+                items='[{"id":"h2h","name":"H2H (Tự động)"},{"id":"ib","name":"IB (Internet Banking)"}]'
+              ></sd-select>
+            </div>
+            <div class="form-field-group">
+              <sd-select label="Mục đích giao dịch" value="tt"
+                items='[{"id":"tt","name":"Thanh toán hợp đồng nhà thầu"},{"id":"cv","name":"Cho vay nội bộ"}]'
+              ></sd-select>
+            </div>
+            <div class="form-field-group">
+              <sd-input-number label="Số tiền (VND)" value="5000000000"></sd-input-number>
+            </div>
+            <div class="form-field-group">
+              <sd-select label="Người kiểm duyệt" value="a"
+                items='[{"id":"a","name":"Kế toán A - Phòng TC"},{"id":"b","name":"Nguyễn Thị Hoa"}]'
+              ></sd-select>
+            </div>
+          </div>
+
+          <div class="form-sections-2col" style="margin-top: var(--space-6);">
+            <sd-section title="Bên chuyển" icon="call_made" iconColor="primary">
+              <div class="form-field-group" style="margin-bottom: var(--space-6);">
+                <sd-select label="Khách hàng" value="v001"
+                  items='[{"id":"v001","name":"V001 - Masterise Homes (Nội bộ)"}]'
+                ></sd-select>
+              </div>
+              <div class="form-field-group" style="margin-bottom: var(--space-6);">
+                <sd-select label="Số TK ngân hàng nguồn" placeholder="Chọn..."
+                  items='[{"id":"tcb","name":"TCB - 19033345678 (VND)"}]'
+                ></sd-select>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-field-group">
+                  <sd-select label="Mã dòng tiền (CF)" value="cf-out-001"
+                    items='[{"id":"cf-out-001","name":"CF_OUT_001"}]'
+                  ></sd-select>
+                </div>
+                <div class="form-field-group">
+                  <sd-select label="TK hạch toán" value="331"
+                    items='[{"id":"331","name":"331 - Phải trả NB"}]'
+                  ></sd-select>
+                </div>
+              </div>
+            </sd-section>
+            <sd-section title="Bên nhận" icon="call_received" iconColor="primary">
+              <div class="form-field-group" style="margin-bottom: var(--space-6);">
+                <sd-select label="Khách hàng" value="v009"
+                  items='[{"id":"v009","name":"V009 - Coteccons (Ngoại hệ thống)"}]'
+                ></sd-select>
+              </div>
+              <div class="form-field-group" style="margin-bottom: var(--space-6);">
+                <sd-select label="Số TK ngân hàng đích" placeholder="Chọn..."
+                  items='[{"id":"vcb","name":"VCB - 00110089765 (VND)"}]'
+                ></sd-select>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-field-group">
+                  <sd-select label="Mã dòng tiền (CF)" value="cf-in-001"
+                    items='[{"id":"cf-in-001","name":"CF_IN_001"}]'
+                  ></sd-select>
+                </div>
+                <div class="form-field-group">
+                  <sd-select label="TK hạch toán" value="131"
+                    items='[{"id":"131","name":"131 - Phải thu KH"}]'
+                  ></sd-select>
+                </div>
+              </div>
+            </sd-section>
+          </div>
+        </sd-section>
+
+        <!-- Transaction Card #2 — collapsed -->
+        <sd-section title="2. MIK Group &rarr; Ngân hàng Techcombank"
+                    subtitle="IB &middot; 2.000.000.000 VND &middot; CF: CF_OUT_012"
+                    collapsible collapsed>
+          <div class="d-flex align-items-center gap-8" sdHeaderRight>
+            <sd-badge color="info" icon="help_outline" fontSet="material-icons-outlined" title="Nháp"></sd-badge>
+            <div class="c-header-divider"></div>
+            <sd-button type="light" color="primary" size="sm" prefixIcon="content_copy" title="Nhân bản"></sd-button>
+            <sd-button type="light" color="primary" size="sm" prefixIcon="delete_outline" title="Xóa"></sd-button>
+            <div class="c-header-divider"></div>
+            <sd-button type="light" color="primary" size="sm" prefixIcon="save" title="Lưu nháp"></sd-button>
+            <sd-button type="light" color="primary" size="sm" title="Gửi kiểm tra"></sd-button>
+          </div>
+          <p class="mb-0">Nội dung card khi expand...</p>
+        </sd-section>
+
+        <!-- Footer: Add more -->
+        <div style="padding: var(--space-4) 0; border-top: 1px solid var(--border-secondary); margin-top: var(--space-2);">
+          <sd-button type="light" color="primary" prefixIcon="add" title="Thêm giao dịch"></sd-button>
+        </div>
+
+      </div>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+      <sd-section title="Hướng dẫn BA / PO">
+        <div class="ds-guide">
+
+          <div class="ds-guide-do-dont">
+            <div class="ds-guide-do">
+              <div class="ds-guide-box-header">
+                <span class="material-icons-outlined mi-16">check_circle</span>
+                Dùng khi
+              </div>
+              <ul class="ds-guide-list">
+                <li>Tạo mới một record (tạo đơn hàng, thêm sản phẩm, thêm nhân viên)</li>
+                <li>Form nhiều fields hoặc nhiều sections</li>
+                <li>Cần trang riêng vì form quá phức tạp cho drawer</li>
+              </ul>
+            </div>
+            <div class="ds-guide-dont">
+              <div class="ds-guide-box-header">
+                <span class="material-icons-outlined mi-16">cancel</span>
+                Không dùng khi
+              </div>
+              <ul class="ds-guide-list">
+                <li>Sửa record đã có (dùng Edit page)</li>
+                <li>Form đơn giản 3–5 fields (có thể dùng side drawer)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+            <div class="ds-guide-prd">
+              <p class="mb-0">"Trang Tạo đơn hàng gồm section Thông tin đơn hàng (người đặt, địa chỉ giao, ghi chú) và section Danh sách sản phẩm (thêm/xóa hàng). Footer có nút Bỏ qua và Gửi duyệt."</p>
+            </div>
+          </div>
+
+        </div>
+      </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+      <sd-section title="Hướng dẫn Dev">
+        <div class="ds-guide">
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Cú pháp</p>
+            <div class="ds-guide-code-wrap">
+              <div class="ds-guide-code-bar">
+                <span class="ds-guide-code-lang">HTML</span>
+                <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+              </div>
+              <pre class="ds-guide-code">&lt;div data-pattern="page-header" data-variant="add"
+     data-title="Tạo Đơn hàng mới"
+     data-cancel-label="Bỏ qua"
+     data-submit-label="Gửi duyệt"&gt;&lt;/div&gt;
+&lt;sd-section title="Thông tin đơn hàng"&gt;
+  &lt;!-- form fields --&gt;
+&lt;/sd-section&gt;</pre>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Attributes</p>
+            <table class="ds-guide-table">
+              <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+              <tbody>
+                <tr><td>data-variant</td><td>add</td><td>-</td><td>Variant của page-header</td></tr>
+                <tr><td>data-title</td><td>string</td><td>-</td><td>Tiêu đề trang</td></tr>
+                <tr><td>data-cancel-label</td><td>string</td><td>Bỏ qua</td><td>Label nút hủy</td></tr>
+                <tr><td>data-submit-label</td><td>string</td><td>Lưu</td><td>Label nút submit</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+// Chiết khấu: đổi đơn vị của ô "Giá trị" theo loại
+(function () {
+  var t = document.getElementById('discount-type-sd'), v = document.getElementById('discount-value');
+  if (t && v) t.addEventListener('sd-change', function (e) { v.setAttribute('suffix', e.detail.value === 'so-tien-co-dinh' ? 'VND' : '%'); });
+})();
+</script>
+<script>
+// ── Bảng "Cấu hình điều kiện" = sd-table addable + cột raw (như preview/patterns/table.html).
+//    Bản trước tự dựng <table class="inline-table"> + dropdown/ô nhập HTML thuần (đổi 2026-10-14).
+(function () {
+  var PARAMS = [
+    { id: 'so_luong',    name: 'Số lượng',         type: 'number' },
+    { id: 'gia_tri_don', name: 'Giá trị đơn hàng', type: 'vnd' },
+    { id: 'nhom_hang',   name: 'Nhóm hàng',        type: 'list', opts: [{ id: 'nhom_a', name: 'Nhóm A' }, { id: 'nhom_b', name: 'Nhóm B' }, { id: 'nhom_c', name: 'Nhóm C' }] },
+    { id: 'khu_vuc',     name: 'Khu vực',          type: 'list', opts: [{ id: 'mien_bac', name: 'Miền Bắc' }, { id: 'mien_trung', name: 'Miền Trung' }, { id: 'mien_nam', name: 'Miền Nam' }] },
+    { id: 'ngay_dat',    name: 'Ngày đặt hàng',    type: 'date' }
+  ];
+  var CMP_OPS = [
+    { id: '=', name: '=' }, { id: '!=', name: '!=' }, { id: '>', name: '>' }, { id: '<', name: '<' },
+    { id: '>=', name: '>=' }, { id: '<=', name: '<=' }, { id: 'between', name: 'between' }
+  ];
+  var LIST_OPS = [{ id: '=', name: '=' }, { id: '!=', name: '!=' }];
+  var rows = [{ param: '', op: '' }];
+
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;'); }
+  function def(id) { for (var i = 0; i < PARAMS.length; i++) if (PARAMS[i].id === id) return PARAMS[i]; return null; }
+  function val(v) { return v == null || v === '' ? '' : ' value="' + esc(v) + '"'; }
+
+  function paramCell(i, r) {
+    var items = PARAMS.map(function (p) { return { id: p.id, name: p.name }; });
+    return '<sd-select size="sm" placeholder="Chọn" items=\'' + esc(JSON.stringify(items)) + '\'' + val(r.param) + ' data-cond="param" data-row="' + i + '"></sd-select>';
+  }
+  function opCell(i, r, d) {
+    if (!d) return '<sd-select size="sm" placeholder="Chọn" disabled></sd-select>';
+    var ops = d.type === 'list' ? LIST_OPS : CMP_OPS;
+    return '<sd-select size="sm" placeholder="Chọn" items=\'' + esc(JSON.stringify(ops)) + '\'' + val(r.op) + ' data-cond="op" data-row="' + i + '"></sd-select>';
+  }
+  function field(d, i, key, v, ph) {
+    var a = ' size="sm" data-cond="' + key + '" data-row="' + i + '"' + val(v);
+    if (d.type === 'list') return '<sd-select placeholder="Chọn" items=\'' + esc(JSON.stringify(d.opts)) + '\'' + a + '></sd-select>';
+    if (d.type === 'date') return '<sd-date placeholder="' + (ph || 'dd/MM/yyyy') + '"' + a + '></sd-date>';
+    if (d.type === 'vnd') return '<sd-input-number placeholder="' + (ph || 'Giá trị') + '" suffix="VND" precision="0"' + a + '></sd-input-number>';
+    return '<sd-input-number placeholder="' + (ph || 'Nhập giá trị') + '" precision="0"' + a + '></sd-input-number>';
+  }
+  function valueCell(i, r, d) {
+    if (!d || !r.op) return '<sd-input size="sm" placeholder="Nhập giá trị" disabled></sd-input>';
+    if (r.op === 'between') {
+      return '<div class="d-flex align-items-center gap-8">' +
+        '<div class="flex-1">' + field(d, i, 'val', r.val, d.type === 'date' ? 'Từ ngày' : 'Min') + '</div>' +
+        '<span>–</span>' +
+        '<div class="flex-1">' + field(d, i, 'val2', r.val2, d.type === 'date' ? 'Đến ngày' : 'Max') + '</div></div>';
+    }
+    return field(d, i, 'val', r.val);
+  }
+  function delCell(i) {
+    return '<sd-button type="link" color="secondary" size="sm" prefixIcon="close" aria-label="Xoá dòng" data-cond-del="' + i + '"></sd-button>';
+  }
+  function render() {
+    var data = rows.map(function (r, i) {
+      var d = def(r.param);
+      return { _param: paramCell(i, r), _op: opCell(i, r, d), _val: valueCell(i, r, d), _del: delCell(i) };
+    });
+    document.getElementById('condition-table').setAttribute('data', JSON.stringify(data));
+  }
+
+  var table = document.getElementById('condition-table');
+  if (!table) return;
+  table.addEventListener('sd-table-add-row', function () { rows.push({ param: '', op: '' }); render(); });
+  table.addEventListener('sd-change', function (e) {
+    var key = e.target.getAttribute && e.target.getAttribute('data-cond');
+    if (!key) return;
+    var r = rows[parseInt(e.target.getAttribute('data-row'), 10)];
+    if (!r) return;
+    var v = e.detail && e.detail.value !== undefined ? e.detail.value : e.target.value;
+    if (key === 'param') {
+      if (v === r.param) return;              // render lại tự bắn — bỏ qua
+      r.param = v; r.op = ''; r.val = r.val2 = ''; render();
+    } else if (key === 'op') {
+      if (v === r.op) return;
+      var wasBetween = r.op === 'between';
+      r.op = v; if (wasBetween !== (v === 'between')) { r.val2 = ''; render(); } else render();
+    } else {
+      r[key] = v;                             // ô giá trị: chỉ ghi nhận, không dựng lại
+    }
+  });
+  table.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-cond-del]');
+    if (!b) return;
+    rows.splice(parseInt(b.getAttribute('data-cond-del'), 10), 1);
+    render();
+  });
+  render();
+})();
+</script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      // Show first panel on load
+      showPanel(0);
+    }
+
+    // patterns:loaded already fired before this inline script runs,
+    // so call directly — DOM is ready at this point.
+    initPreviewTabs();
+  })();
+</script>
+
+</body>
+</html>

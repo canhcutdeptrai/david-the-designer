@@ -1,0 +1,66 @@
+--- /tmp/components.bak.ef	2026-10-12 10:43:29.025074435 +0000
++++ design-system/core/styles/components.css	2026-10-12 10:43:29.048739509 +0000
+@@ -2742,29 +2742,31 @@
+ 
+ /* ─ Body: catalog `p-16` + `border-top: 1px solid #e6e6e6`.
+      Bản trước còn `align-items: flex-end` để xếp nút "Tìm kiếm" — nút đó đã gỡ
+-     (catalog không có), nên body nay chỉ còn đúng cái lưới. */
++     (catalog không có), nên body nay chỉ còn đúng cái lưới.
++     Rà soát lần 2 (2026-10-12): gỡ `max-height:500px` + `overflow:hidden` +
++     transition. Catalog không có hiệu ứng trượt nào (Rule 6 cũng cấm), còn
++     `max-height` cắt mất hàng ô lọc thứ 7 trở đi khi bộ lọc dài. */
+ .filter-bar-body {
+   padding: 16px;
+   border-top: 1px solid var(--sd-black200);
+   background: transparent;
+-  overflow: hidden;
+-  max-height: 500px;
+-  opacity: 1;
+-  transition: max-height var(--duration-slow) var(--ease-default),
+-              opacity var(--duration-normal) var(--ease-default),
+-              padding var(--duration-slow) var(--ease-default);
+ }
+ 
+ /* ─ Lưới ô lọc: catalog dùng `.row.mx-0 { row-gap:16px }` với cột
+      `col-lg-3 col-md-3 col-sm-6 px-8` → 4 cột từ 768px, 2 cột từ 576px,
+-     1 cột dưới đó. `px-8` hai bên cộng lại thành khe ngang 16px.
+-     Bản trước kit cố định `repeat(6, 1fr)` ở MỌI bề ngang — sáu cột là số kit
+-     tự đặt, catalog không có breakpoint nào ra 6 cột. */
++     1 cột dưới đó. Bản trước kit cố định `repeat(6, 1fr)` ở MỌI bề ngang.
++     Rà soát lần 2 (2026-10-12): `px-8` của mỗi cột vừa tạo khe 16px GIỮA hai
++     cột vừa để lề 8px ở HAI MÉP NGOÀI (`mx-0` không bù lại). Bản lần 1 chỉ có
++     khe giữa → ô đầu sát mép body (x=16 thay vì 24), mỗi ô rộng hơn 4px.
++     `padding: 0 8px` dựng lại đúng lề ngoài đó; đo ở 1242px ra ô 286.5px tại
++     x = 24 / 326.5 / 629 / 931.5, khớp catalog. */
+ .filter-bar-grid {
+   display: grid;
+   grid-template-columns: 1fr;
+   gap: 16px;
+   width: 100%;
++  padding: 0 8px;
++  box-sizing: border-box;
+ }
+ 
+ @media (min-width: 576px) {
+@@ -2793,19 +2795,9 @@
+   width: 100%;
+ }
+ 
+-/* Panel của sd-select / lịch phải thoát ra ngoài khung body */
+-.filter-bar-body:has(.form-field-dropdown, .form-field-datepicker-wrapper, .form-field-datetime, sd-select) {
+-  overflow: visible;
+-}
+-
+-/* ─ Trạng thái thu gọn */
++/* ─ Trạng thái thu gọn: chỉ còn header (48px), body ẩn hẳn. */
+ .filter-bar.minimized .filter-bar-body {
+-  max-height: 0;
+-  opacity: 0;
+-  padding-top: 0;
+-  padding-bottom: 0;
+-  border-top-width: 0;
+-  overflow: hidden;
++  display: none;
+ }
+ 
+ /* Legacy inline filter-bar support */

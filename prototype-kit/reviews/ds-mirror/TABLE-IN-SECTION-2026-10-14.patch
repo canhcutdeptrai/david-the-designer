@@ -1,0 +1,99 @@
+# TABLE-IN-SECTION 2026-10-14 — sd-table trong sd-section: khung viền 1px #e6e6e6 + bo 8px + kẻ trên chân bảng, cách mép thân 16px (noPaddingBody: margin 16px)
+# Quyết định của Builder (ảnh: .inline-table-wrapper của add-page); bảng đặt thẳng trong trang danh sách giữ nguyên
+# 5 file: sd-tokens.css, sd-data.md, generate-skeletons.md, CHANGELOG, known-gaps
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/TABLE-IN-SECTION-2026-10-14.patch
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-13 17:21:09.149410095 +0000
++++ b/CHANGELOG.md	2026-10-13 17:21:09.045963283 +0000
+@@ -8,6 +8,16 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `sd-table` đặt trong `sd-section` có khung riêng, cách mép 16px (Builder 2026-10-14)
++
++Builder: *„table khi đặt ở ngoài (như trang danh sách) thì bình thường, còn nếu table đặt trong section thì để padding
++với table giống ảnh“*.
++
++- Bảng trong thân section: viền 1px `#e6e6e6`, bo 8px, đường kẻ trên chân bảng — như bảng nhập liệu của add-page.
++  Section `noPaddingBody` thì bảng tự lùi 16px. Bảng đặt thẳng trong trang danh sách giữ nguyên.
++- Chỉ đổi CSS (`sd-tokens.css`); docs `sd-data.md`, `generate-skeletons.md`. Lệch catalog có chủ ý — ghi known-gaps.
++  Bản vá: `reviews/ds-mirror/TABLE-IN-SECTION-2026-10-14.patch`.
++
+ ### Fixed — `sd-select`: bảng chọn nổi trong overlay ở `<body>`, không còn bị che / cắt
+ 
+ Builder: *„Hiện các dropdown của các ô select thường hay bị ở phía dưới nên hay bị che, khắc phục lại“*.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-13 17:21:09.269574537 +0000
++++ b/_memory/known-gaps.md	2026-10-13 17:21:09.038189099 +0000
+@@ -27,6 +27,14 @@
+ | 2026-10-10 | Token màu | Thiếu bộ `--sd-*-contrast` (màu chữ hợp lệ trên nền từng màu). Hệ quả thấy được: chip `warning` của `sd-stepper` dùng chữ trắng trên nền vàng ≈ **2.4:1**, dưới ngưỡng WCAG AA 4.5:1 | Chạm vào bảng token gốc, ảnh hưởng mọi component dùng màu — cần một đợt riêng và phải đối chiếu lại giá trị thật của theme `portal-fins` |
+ | 2026-10-11 | Catalog | **12 mục catalog kit chưa dựng** — nhóm A (dựng được đầy đủ) đã đóng hết; còn B/C/D. Dòng cũ ghi "25 mục" là của lượt trước, giữ nguyên phần diễn giải bên dưới để hiểu lịch sử: **25 mục catalog kit chưa dựng** (2026-10-11 đã dựng **7**: `sd-label`, `sd-view`, `sd-inline-text`, `sd-autocomplete`, `sd-date-range`, `sd-tree`, `sd-quick-action` — **hết nhóm "đáng làm trước cho back-office"**). Trước đó là **32 mục** (rà soát lại cả 63 mục: kit dựng 27, thêm 4 mục catalog xếp là directive/service mà kit có tương đương). Nhóm đáng làm trước đã xong hết; 25 mục còn lại là soạn thảo/chart/dựng form động/hạ tầng | Là việc dựng mới, không phải vá lệch — chờ Builder xếp thứ tự ưu tiên. Danh sách đầy đủ theo nhóm ở `reviews/ds-mirror/CORE-CATALOG-GAP.md` (mục cập nhật 2026-10-11) |
+ 
++## `sd-table` trong `sd-section` — khung riêng (2026-10-14, QUYẾT ĐỊNH CỦA BUILDER)
++
++Builder: *„table khi đặt ở ngoài (như trang danh sách) thì bình thường, còn nếu table đặt trong section thì để padding
++với table giống ảnh“* (ảnh = `.inline-table-wrapper` của add-page). `sd-section .c-section-body sd-table`: viền 1px
++`--sd-black200`, bo 8px (host đã `overflow:auto` nên bo cắt luôn nền hàng tiêu đề), `.c-paginator` kẻ trên 1px; thân
++`noPaddingBody` thì bảng `margin:16px`. **Lệch catalog có chủ ý** — catalog không có ví dụ bảng trong section, và
++2026-10-12 Builder đã gỡ khung thẻ của `.c-container` cho bảng đứng riêng (vẫn giữ nguyên như thế ngoài section).
++
+ ## `sd-select` — panel nổi trong overlay ở `<body>` (2026-10-13, Builder: *„dropdown của các ô select … bị che, khắc phục lại“*)
+ 
+ - Trước: panel `.sd-dropdown-menu` là con `position:absolute` của host → trong ô lọc hàng tiêu đề `sd-table`
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/generate-skeletons.md b/ai-instructions/generate-skeletons.md
+--- a/ai-instructions/generate-skeletons.md	2026-10-13 17:21:09.154415105 +0000
++++ b/ai-instructions/generate-skeletons.md	2026-10-13 17:21:09.033595457 +0000
+@@ -400,7 +400,8 @@
+       </div>
+     </sd-section>
+ 
+-    <!-- Full-width section với table -->
++    <!-- Section chứa table: bảng TỰ có khung viền + bo 8px và cách mép thân 16px (Builder 2026-10-14),
++         có hay không noPaddingBody đều vậy. Table đặt thẳng trong content-zone (trang danh sách) thì không khung. -->
+     <sd-section title="Danh sách hạng mục" collapsable noPaddingBody>
+       <sd-table
+         hide-inline-filter
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-data.md b/design-system/components/sd-data.md
+--- a/design-system/components/sd-data.md	2026-10-13 17:21:09.561125860 +0000
++++ b/design-system/components/sd-data.md	2026-10-13 17:21:09.034529831 +0000
+@@ -243,6 +243,11 @@
+ 
+ ### Read page — inline table (no filter, no pagination)
+ 
++> **Bảng trong `sd-section`** (Builder 2026-10-14): `sd-table` nằm trong thân section tự có khung viền 1px
++> `--sd-black200`, bo 8px, đường kẻ trên chân bảng, và cách mép thân 16px — kể cả khi section khai `noPaddingBody`
++> (bảng tự lùi 16px). Bảng đặt thẳng trong `content-zone` (trang danh sách) giữ nguyên, không khung. Không cần
++> tự thêm class / style.
++
+ ```html
+ <sd-section title="Chi tiết" icon="list" collapsable noPaddingBody>
+   <sd-table
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-13 17:21:09.550078772 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-13 17:20:28.843942858 +0000
+@@ -4261,6 +4261,25 @@
+   font-family: var(--sd-font-family);
+ }
+ sd-table .c-paginator .c-action { padding: 5px; }
++/* ── sd-table đặt TRONG sd-section — khung riêng, cách mép thân section ──
++   Builder 2026-10-14: *„table khi đặt ở ngoài (như trang danh sách) thì bình thường, còn
++   nếu table đặt trong section thì để padding với table giống ảnh“* — ảnh là bảng nhập liệu
++   `.inline-table-wrapper` của add-page: viền 1px #e6e6e6, bo 8px, chân bảng có đường kẻ trên.
++   Catalog không có trường hợp này (lệch CÓ CHỦ Ý, ghi known-gaps). Thân section thường đã
++   đệm 16px; thân `noPaddingBody` thì bảng tự lùi 16px để vẫn cách mép như ảnh.
++   Host `sd-table` sẵn `overflow:auto` nên bo góc cắt luôn nền xám của hàng tiêu đề. */
++sd-section .c-section-body sd-table {
++  box-sizing: border-box;
++  border: 1px solid var(--sd-black200);
++  border-radius: 8px;
++}
++sd-section .c-section-body.c-no-padding-body sd-table {
++  width: auto;
++  margin: 16px;
++}
++sd-section .c-section-body sd-table .c-paginator {
++  border-top: 1px solid var(--sd-black200);
++}
+ sd-table .mat-mdc-paginator {
+   display: block;
+   color: rgba(0, 0, 0, .87);

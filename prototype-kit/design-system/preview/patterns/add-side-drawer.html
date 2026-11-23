@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add — Side-sheet — Enterprise Portal</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="Add — Side-sheet"
+         data-subtitle="Tạo mới dạng side-sheet — form đơn giản hoặc phức tạp không cần trang riêng"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <div class="card mb-16">
+          <div class="card-header"><h3 class="card-title">Demo — Click để mở side-sheet</h3></div>
+          <div class="card-body">
+            <div class="flex gap-12 flex-wrap">
+              <sd-button type="fill" color="primary" prefixIcon="add" title="Tạo mới (form đơn giản)"
+                onclick="document.getElementById('sheet-add-simple').open()"></sd-button>
+              <sd-button type="light" color="primary" prefixIcon="add" title="Tạo mới (form phức tạp)"
+                onclick="document.getElementById('sheet-add-heavy').open()"></sd-button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Form tạo mới có thể gọn vừa side-sheet — user vẫn giữ được context của danh sách phía sau</li>
+                  <li>Form đơn giản: ≤ 5 sections, không có repeatable line items</li>
+                  <li>Form phức tạp: nhiều sections với nhiều fields, nhưng không cần trang riêng (không có upload file hàng loạt, không có table inline)</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Form có repeatable line items / batch input (dùng Add page)</li>
+                  <li>Cần wizard nhiều bước hoặc review step trước khi submit</li>
+                  <li>Form có inline table hoặc upload file hàng loạt</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Side-sheet đơn giản vs. phức tạp — khi nào dùng cái nào?</p>
+              <table class="ds-guide-table">
+                <thead>
+                  <tr><th>Tiêu chí</th><th>Form đơn giản</th><th>Form phức tạp</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Width</td><td>560px</td><td>760px</td></tr>
+                  <tr><td>Số fields / section</td><td>1–2 fields/hàng</td><td>Đến 4 fields/hàng</td></tr>
+                  <tr><td>Số sections</td><td>≤ 3</td><td>4–6</td></tr>
+                  <tr><td>Ví dụ</td><td>Tạo cấu hình, thêm nhãn</td><td>Tạo hợp đồng đặt cọc, tạo khách hàng</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Click Tạo mới mở side-sheet bên phải (760px), gồm section Bất động sản, Khách hàng chính, Giá trị hợp đồng, Đợt thanh toán. Footer có nút Bỏ qua và Gửi duyệt."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp — Form đơn giản (560px)</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;!-- Đặt ngoài .app-shell để tránh z-index issues --&gt;
+&lt;sd-side-drawer id="sheetTaoMoi" title="Tạo mới [Record]" width="560px"&gt;
+
+  &lt;div sdFooter class="d-flex align-items-center justify-content-end gap-8"&gt;
+    &lt;sd-button title="Bỏ qua" type="link" color="primary"
+      onclick="document.getElementById('sheetTaoMoi').close()"&gt;&lt;/sd-button&gt;
+    &lt;sd-button title="Lưu" type="fill" color="primary" prefixIcon="save"&gt;&lt;/sd-button&gt;
+  &lt;/div&gt;
+
+  &lt;div class="p-16"&gt;
+    &lt;sd-section title="..." icon="..."&gt;
+      &lt;div class="form-grid-4"&gt;
+        &lt;div class="form-field-group col-span-2"&gt;
+          &lt;sd-input label="..." required&gt;&lt;/sd-input&gt;
+        &lt;/div&gt;
+        &lt;div class="form-field-group col-span-2"&gt;
+          &lt;sd-select label="..." placeholder="Chọn..." items='[...]'&gt;&lt;/sd-select&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/sd-section&gt;
+  &lt;/div&gt;
+
+&lt;/sd-side-drawer&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp — Form phức tạp (760px, 4 fields/hàng)</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-side-drawer id="sheetTaoMoi" title="Tạo mới [Record]" width="760px"&gt;
+
+  &lt;div sdFooter class="d-flex align-items-center justify-content-end gap-8"&gt;
+    &lt;sd-button title="Bỏ qua" type="link" color="primary"&gt;&lt;/sd-button&gt;
+    &lt;sd-button title="Gửi duyệt" type="fill" color="primary" prefixIcon="send"&gt;&lt;/sd-button&gt;
+  &lt;/div&gt;
+
+  &lt;div class="p-16"&gt;
+
+    &lt;sd-section title="..." icon="..."&gt;
+      &lt;!-- Hàng 4 fields: mỗi field 1 cột --&gt;
+      &lt;div class="form-grid-4"&gt;
+        &lt;div class="form-field-group"&gt;&lt;sd-select label="..."&gt;&lt;/sd-select&gt;&lt;/div&gt;
+        &lt;div class="form-field-group"&gt;&lt;sd-select label="..."&gt;&lt;/sd-select&gt;&lt;/div&gt;
+        &lt;div class="form-field-group"&gt;&lt;sd-select label="..."&gt;&lt;/sd-select&gt;&lt;/div&gt;
+        &lt;div class="form-field-group"&gt;&lt;sd-date label="..."&gt;&lt;/sd-date&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;!-- Hàng 2 fields: mỗi field 2 cột --&gt;
+      &lt;div class="form-grid-4"&gt;
+        &lt;div class="form-field-group col-span-2"&gt;&lt;sd-input label="..."&gt;&lt;/sd-input&gt;&lt;/div&gt;
+        &lt;div class="form-field-group col-span-2"&gt;&lt;sd-input label="..."&gt;&lt;/sd-input&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/sd-section&gt;
+
+  &lt;/div&gt;
+
+&lt;/sd-side-drawer&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Lưu ý quan trọng</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Điểm</th><th>Đúng</th><th>Sai</th></tr></thead>
+                <tbody>
+                  <tr><td>Footer div</td><td><code>class="flex gap-8 align-items-center"</code></td><td>Thiếu class → buttons xếp dọc</td></tr>
+                  <tr><td>Cancel label</td><td>"Bỏ qua", "Thoát", "Quay lại"</td><td>"Hủy", "Huỷ", "Đóng", "Cancel"</td></tr>
+                  <tr><td>Body padding</td><td><code>class="p-16"</code> bọc ngoài sections</td><td>Inline style padding</td></tr>
+                  <tr><td>Layout trong section</td><td><code>form-grid-4</code> trực tiếp</td><td><code>form-sub-group</code> (chỉ cho full-page)</td></tr>
+                  <tr><td>Section read-only</td><td><code>noPaddingBody</code> + <code>sd-section-item</code></td><td>sd-input với <code>disabled</code></td></tr>
+                  <tr><td>Vị trí đặt side-sheet</td><td>Ngoài <code>.app-shell</code></td><td>Trong <code>.main-area</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Demo 1 — Form đơn giản (560px)
+     Ví dụ: Tạo mới cấu hình hệ thống
+     ═══════════════════════════════════════════════════════════ -->
+<sd-side-drawer id="sheet-add-simple" title="Tạo mới cấu hình hệ thống" width="560px">
+
+  <!-- Sửa 2026-10-12: nút thoát trước đây là `color="secondary"`, phạm Rule 17 của AGENTS.md
+       ("link color=secondary thì chữ quá mờ nhìn như bị disable, nên luôn là type=link color=primary").
+       Pattern page-header đã làm đúng từ trước; riêng trang này lệch. Sửa cả 2 chỗ markup và 2 chỗ
+       đoạn code mẫu bên dưới để BA/Dev chép ra không mang theo lỗi. -->
+  <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
+    <sd-button title="Bỏ qua" type="link" color="primary"
+      onclick="document.getElementById('sheet-add-simple').close()"></sd-button>
+    <sd-button title="Lưu" type="fill" color="primary" prefixIcon="save"></sd-button>
+  </div>
+
+  <div class="p-16">
+
+    <sd-section title="Định danh">
+      <div class="form-grid-4">
+        <div class="form-field-group col-span-4">
+          <sd-input label="Mã cấu hình" placeholder="VD: BOOKING_DEADLINE_SECONDS" required
+            helperText="Viết HOA toàn bộ, không dấu cách. Tối đa 100 ký tự."></sd-input>
+        </div>
+      </div>
+    </sd-section>
+
+    <sd-section title="Giá trị cấu hình">
+      <sd-radio id="val-type-simple" class="d-block mb-8" value="number"
+        items='[{"id":"number","name":"Dạng số / thời gian"},{"id":"boolean","name":"Dạng boolean"}]'></sd-radio>
+      <div class="form-grid-4">
+        <div class="form-field-group col-span-4">
+          <div id="val-num-simple">
+            <sd-input-number label="Giá trị" placeholder="VD: 7200" required
+              helperText="Bắt buộc. Chỉ nhập số nguyên, tối đa 10 chữ số."></sd-input-number>
+          </div>
+          <div id="val-bool-simple" style="display:none;">
+            <sd-select label="Giá trị" placeholder="Chọn..." required
+              helperText="Bắt buộc."
+              items='[{"id":"True","name":"True — Bật"},{"id":"False","name":"False — Tắt"}]'></sd-select>
+          </div>
+        </div>
+      </div>
+    </sd-section>
+
+    <sd-section title="Phạm vi áp dụng">
+      <div class="form-grid-4">
+        <div class="form-field-group col-span-4">
+          <sd-input label="Giá trị tham chiếu" placeholder="VD: PROJECT_A"></sd-input>
+        </div>
+      </div>
+    </sd-section>
+
+    <sd-section title="Diễn giải">
+      <div class="form-grid-4">
+        <div class="form-field-group col-span-4">
+          <sd-textarea label="Mô tả cấu hình"
+            placeholder="Mô tả rõ ý nghĩa, phạm vi áp dụng và tác động..." rows="4" required
+            helperText="Bắt buộc. Tối đa 255 ký tự."></sd-textarea>
+        </div>
+      </div>
+    </sd-section>
+
+  </div>
+
+</sd-side-drawer>
+
+<!-- ═══════════════════════════════════════════════════════════
+     Demo 2 — Form phức tạp (760px, đến 4 fields/hàng)
+     Ví dụ: Tạo mới hợp đồng đặt cọc
+     ═══════════════════════════════════════════════════════════ -->
+<sd-side-drawer id="sheet-add-heavy" title="Tạo mới hợp đồng đặt cọc" width="760px">
+
+  <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
+    <sd-button title="Bỏ qua" type="link" color="primary"
+      onclick="document.getElementById('sheet-add-heavy').close()"></sd-button>
+    <sd-button title="Gửi duyệt" type="fill" color="primary" prefixIcon="send"></sd-button>
+  </div>
+
+  <div class="p-16">
+
+    <!-- ── 1. Bất động sản ── -->
+    <sd-section title="Bất động sản">
+      <!-- Hàng 4 fields -->
+      <div class="form-grid-4">
+        <div class="form-field-group">
+          <sd-select label="Dự án" placeholder="Chọn..." required
+            items='[{"id":"ts","name":"The Sakura"},{"id":"to","name":"The Origami"},{"id":"tb","name":"The Beverly"}]'></sd-select>
+        </div>
+        <div class="form-field-group">
+          <sd-select label="Tòa nhà" placeholder="Chọn..."
+            items='[{"id":"s1","name":"Tòa S1"},{"id":"s2","name":"Tòa S2"},{"id":"s3","name":"Tòa S3"}]'></sd-select>
+        </div>
+        <div class="form-field-group">
+          <sd-select label="Căn hộ" placeholder="Chọn..." required
+            items='[{"id":"101","name":"S1-101 · 2PN · 65m²"},{"id":"102","name":"S1-102 · 3PN · 85m²"},{"id":"201","name":"S1-201 · 2PN · 65m²"}]'></sd-select>
+        </div>
+        <div class="form-field-group">
+          <sd-select label="Loại hợp đồng" placeholder="Chọn..." required
+            items='[{"id":"hddcd","name":"HĐ Đặt cọc"},{"id":"hdmb","name":"HĐ Mua bán"},{"id":"hdgv","name":"HĐ Góp vốn"}]'></sd-select>
+        </div>
+      </div>
+    </sd-section>
+
+    <!-- ── 2. Khách hàng chính ── -->
+    <sd-section title="Khách hàng chính">
+      <!-- Hàng 4 fields: loại + họ tên + CCCD + ngày cấp -->
+      <div class="form-grid-4">
+        <div class="form-field-group">
+          <sd-select label="Loại khách hàng" placeholder="Chọn..." required
+            items='[{"id":"cn","name":"Cá nhân"},{"id":"dn","name":"Doanh nghiệp"}]'></sd-select>
+        </div>
+        <div class="form-field-group col-span-2">
+          <sd-input label="Họ và tên" placeholder="Nguyễn Văn A" required></sd-input>
+        </div>
+        <div class="form-field-group">
+          <sd-input label="Số CCCD / Hộ chiếu" placeholder="012345678901" required></sd-input>
+        </div>
+      </div>
+      <!-- Hàng 4 fields: nơi cấp + ngày sinh + SĐT + email -->
+      <div class="form-grid-4">
+        <div class="form-field-group">
+          <sd-date label="Ngày cấp" required></sd-date>
+        </div>
+        <div class="form-field-group">
+          <sd-input label="Nơi cấp" placeholder="Cục CSQLHC"></sd-input>
+        </div>
+        <div class="form-field-group">
+          <sd-input label="Số điện thoại" placeholder="0901 234 567" required></sd-input>
+        </div>
+        <div class="form-field-group">
+          <sd-input label="Email" placeholder="email@example.com"></sd-input>
+        </div>
+      </div>
+    </sd-section>
+
+    <!-- ── 3. Giá trị hợp đồng ── -->
+    <sd-section title="Giá trị hợp đồng">
+      <!-- Hàng 4 fields: giá bán + CK% + giá sau CK + đặt cọc -->
+      <div class="form-grid-4">
+        <div class="form-field-group">
+          <sd-input-number label="Giá bán (VND)" value="3500000000" required
+            helperText="Theo bảng giá đã duyệt."></sd-input-number>
+        </div>
+        <div class="form-field-group">
+          <sd-input-number label="Chiết khấu (%)" value="5"
+            helperText="Tối đa 15%."></sd-input-number>
+        </div>
+        <div class="form-field-group">
+          <sd-input-number label="Giá sau chiết khấu (VND)" value="3325000000"
+            helperText="Tự động tính."></sd-input-number>
+        </div>
+        <div class="form-field-group">
+          <sd-input-number label="Số tiền đặt cọc (VND)" value="50000000" required
+            helperText="Tối thiểu 50 triệu."></sd-input-number>
+        </div>
+      </div>
+      <!-- Hàng 2 fields: hình thức TT + tài khoản nhận -->
+      <div class="form-grid-4">
+        <div class="form-field-group col-span-2">
+          <sd-select label="Hình thức thanh toán" placeholder="Chọn..." required
+            items='[{"id":"ck","name":"Chuyển khoản"},{"id":"tt","name":"Tiền mặt"},{"id":"the","name":"Thẻ tín dụng"}]'></sd-select>
+        </div>
+        <div class="form-field-group col-span-2">
+          <sd-select label="Tài khoản nhận tiền" placeholder="Chọn..."
+            items='[{"id":"tcb","name":"TCB – 19033345678 (VND)"},{"id":"vcb","name":"VCB – 00110089765 (VND)"}]'></sd-select>
+        </div>
+      </div>
+    </sd-section>
+
+    <!-- ── 4. Đợt thanh toán ── -->
+    <sd-section title="Đợt thanh toán">
+      <!-- Đợt 1 -->
+      <div class="form-grid-4">
+        <div class="form-field-group col-span-2">
+          <sd-date label="Đợt 1 — Hạn nộp" required></sd-date>
+        </div>
+        <div class="form-field-group">
+          <sd-input-number label="Đợt 1 — Tỷ lệ (%)" value="30" required></sd-input-number>
+        </div>
+        <div class="form-field-group">
+          <sd-input-number label="Đợt 1 — Số tiền (VND)" value="997500000"
+            helperText="Tự động tính."></sd-input-number>
+        </div>
+      </div>
+      <!-- Đợt 2 -->
+      <div class="form-grid-4">
+        <div class="form-field-group col-span-2">
+          <sd-date label="Đợt 2 — Hạn nộp"></sd-date>
+        </div>
+        <div class="form-field-group">
+          <sd-input-number label="Đợt 2 — Tỷ lệ (%)" value="70"></sd-input-number>
+        </div>
+        <div class="form-field-group">
+          <sd-input-number label="Đợt 2 — Số tiền (VND)" value="2327500000"
+            helperText="Tự động tính."></sd-input-number>
+        </div>
+      </div>
+    </sd-section>
+
+    <!-- ── 5. Ghi chú ── -->
+    <sd-section title="Ghi chú">
+      <div class="form-grid-4">
+        <div class="form-field-group col-span-4">
+          <sd-textarea label="Ghi chú nội bộ"
+            placeholder="Ghi chú cho bộ phận xét duyệt (không hiển thị cho khách hàng)..."
+            rows="3"></sd-textarea>
+        </div>
+      </div>
+    </sd-section>
+
+  </div>
+
+</sd-side-drawer>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  /* sd-radio nhóm (items + value) — đổi 2026-10-14, trước là 2 <input type="radio"> thuần */
+  function toggleSimple(val) {
+    document.getElementById('val-num-simple').style.display = val === 'number' ? '' : 'none';
+    document.getElementById('val-bool-simple').style.display = val === 'boolean' ? '' : 'none';
+  }
+  document.getElementById('val-type-simple').addEventListener('sd-change', function (e) { toggleSimple(e.detail.value); });
+</script>
+
+<script>
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      showPanel(0);
+    }
+
+    initPreviewTabs();
+  })();
+</script>
+
+</body>
+</html>

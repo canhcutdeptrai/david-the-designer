@@ -1,0 +1,1470 @@
+# BADGE-STATUS 2026-10-13 — gỡ sd-badge type="status" / status / color neutral (Builder chọn phương án C: giống catalog nhất)
+# 67 thẻ HTML + 7 ví dụ docs → color + icon (+ fontSet) theo STATUS_MAP (bảng tra); page-header data-badge-status + sd-table cột status tự tra; sd-table boolean theo thư viện (round success/error, True/False)
+# 20 file. Hình không đổi (ảnh chụp 98 trang: 0 khác)
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/BADGE-STATUS-2026-10-13.patch
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-13 14:03:02.301300053 +0000
++++ b/CHANGELOG.md	2026-10-13 14:03:02.322126830 +0000
+@@ -8,6 +8,18 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Removed — `sd-badge type="status"` + màu `neutral` (Builder chọn phương án C: giống catalog nhất)
++
++Builder: *„giải thích dễ hiểu, giờ tôi muốn giống Catalog core UI nhất thì sao?“* → *„C“*.
++
++- Gỡ `type="status"`, thuộc tính `status`, màu `neutral` khỏi `sd-badge` — thư viện 19.0.10 chỉ có `icon | round | tag`
++  và 6 màu. 67 thẻ HTML + 7 ví dụ docs viết lại sang `color` + `icon` (+ `fontSet`) — **hình không đổi** (ảnh chụp 98
++  trang trước / sau: 0 khác).
++- `STATUS_MAP` thành **bảng tra quy ước** (docs `generate-components.md` có cột color / icon / fontSet); JS có
++  `sdStatusBadge(khoá, nhãn)`. Pattern page-header `data-badge-status` và cột `type:"status"` của `sd-table` tự tra bảng.
++- `sd-table` cột `boolean` theo thư viện: viên thuốc `round` success / error, chữ mặc định **True / False**; `useBadge`
++  nhận thêm `type` + `icon`. Bản vá: `reviews/ds-mirror/BADGE-STATUS-2026-10-13.patch`.
++
+ ### Changed — `sd-badge` đồng bộ mã thư viện 19.0.10: tooltip kiểu Material, click không nổi, lớp chỉ cho giá trị hợp lệ
+ 
+ Builder: *„Tiếp tục phần Badge `sd-badge`…“*.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-13 14:03:02.303397880 +0000
++++ b/_memory/known-gaps.md	2026-10-13 14:03:02.323994551 +0000
+@@ -216,6 +216,26 @@
+ | `src` | không có | bí danh của `source` | Ngoại lệ 3 Rule 18 (markup cũ) |
+ | Export prototype (1 file HTML) | — | trang có `sd-preview-pdf` phải nhúng thêm `vendor/pdfjs/*.js` (~1,7 MB) | Ghi ở `ai-instructions/export.md` |
+ 
++## `sd-badge` — GỠ `type="status"` (2026-10-13, Builder: phương án **C** — *„giống Catalog core UI nhất“*)
++
++Thư viện 19.0.10 chỉ có `icon | round | tag`. Kit gỡ hẳn `type="status"`, thuộc tính `status`, màu `neutral`
++(cả 3 rule CSS `.c-neutral`). `type="status"` / `color="neutral"` viết bây giờ ra đúng như thư viện: nhánh cuối
++của template / không lớp màu.
++
++| Chỗ | Đổi thành |
++|---|---|
++| 67 thẻ HTML (`badge.html` 61, `add-page` 2, `read-page`, `section`, `tooltip`, `shell/template.html`) + 7 ví dụ trong docs md | `color` + `icon` (+ `fontSet="material-icons-outlined"` khi icon viền) theo STATUS_MAP; thiếu `title` → tên khoá viết hoa chữ đầu như cũ (`work`: `/tmp/claude-0/conv_status.py`) |
++| `STATUS_MAP` | ở lại làm **bảng tra quy ước** (màu `neutral` → `secondary`); xuất `window.SD_STATUS_MAP`, `sdStatusBadgeAttrs()`, `sdStatusBadge(khoá, nhãn)` |
++| Pattern page-header `data-badge-status` | pattern-loader tra bảng → `color` / `icon` / `fontSet` của `<sd-badge>` (8 prototype không phải sửa) |
++| `sd-table` cột `type:"status"` (cột tiện ích của kit) | `sdStatusBadgeHtml()` — badge theo API catalog |
++| `sd-table` cột `boolean` | **theo thư viện** (`TableFormatService.#createBadge`): `round` success / error, chữ `displayOnTrue \|\| 'True'` / `displayOnFalse \|\| 'False'`. Gỡ `statusOnTrue` / `statusOnFalse` (kit tự thêm, 0 chỗ dùng). Kit trước: badge icon `play_circle` / `remove_circle`, mặc định "Có" / "Không" |
++| `sd-table` `useBadge` | truyền thêm `type` (mặc định `round`) + `icon` như `#createBadge` (trước chỉ color + title) |
++| `color="neutral"` trong 2 prototype | `secondary` (`danh-sach-cam-nang`, `quan-ly-cam-nang` — biến `--color-neutral-*` cho icon giữ nguyên) |
++| Docs | `generate-components.md` (bảng tra có cột color / icon / fontSet), `generate-skeletons.md`, `sd-interactive.md`, `sd-data.md`, `sd-layout.md`, `sd-overlay.md`, preview `badge.html` (2 tab hướng dẫn), `tooltip.html` |
++
++Kiểm: quét 174 badge trên 99 trang — 0 badge còn `type` / `color` ngoài catalog; ảnh chụp 98 trang trước / sau
++**0 trang khác** (cột boolean của `table.html` nằm dưới màn đầu — đổi sang viên thuốc như thư viện); 0 lỗi JS.
++
+ ## `sd-badge` — ĐỒNG BỘ THƯ VIỆN 2026-10-13 (catalog `#c-badge` + `sd-angular-core-components-badge.mjs` 19.0.10)
+ 
+ Harness sinh tự động từ DOM catalog (`work/bdgen.mjs`, 32 badge đúng bố cục `.bd-row`): innerHTML 32/32 trùng
+@@ -237,14 +257,14 @@
+ 
+ | Chỗ | Catalog / thư viện | Kit | Vì sao |
+ |---|---|---|---|
+-| `type="status"` + `status` + `STATUS_MAP` | **không có** | có — tra icon / màu / font rồi vẽ qua đúng nhánh `icon` | 73 chỗ trong prototype + `sd-table` (cột boolean / status) đang dùng — Rule 18 ngoại lệ 3. **Docs vẫn hướng AI dùng cho trang mới** (`generate-components.md`) → CHỜ BUILDER: giữ, hay đổi docs sang `color` + `icon` của catalog |
+-| `color="neutral"` | không có | bí danh của `secondary` | Rule 18 ngoại lệ 3 (markup cũ) |
++| **[ĐÃ THAY THẾ 2026-10-13 — Builder chọn phương án C: gỡ hẳn, xem mục `sd-badge — GỠ type="status"` ở trên]** `type="status"` + `status` + `STATUS_MAP` | **không có** | có — tra icon / màu / font rồi vẽ qua đúng nhánh `icon` | 73 chỗ trong prototype + `sd-table` (cột boolean / status) đang dùng — Rule 18 ngoại lệ 3. **Docs vẫn hướng AI dùng cho trang mới** (`generate-components.md`) → CHỜ BUILDER: giữ, hay đổi docs sang `color` + `icon` của catalog |
++| **[ĐÃ THAY THẾ 2026-10-13 — gỡ bí danh, mọi chỗ đổi sang `secondary`]** `color="neutral"` | không có | bí danh của `secondary` | Rule 18 ngoại lệ 3 (markup cũ) |
+ | Mốc `pointer` | `click.observed` | `onclick` hoặc `data-sd-clickable` | Web Component không đọc được ai đang nghe |
+ | `font-family` của bong bóng tooltip | `Roboto` | `Roboto, "Helvetica Neue", sans-serif` | Như dòng "Phông nút" — vẽ như nhau |
+ | Thuộc tính cấu hình trên host | catalog vẽ `<sd-badge>` trần | còn trên host (badge viết tay) | Rule 18 ngoại lệ 1 — như mục `sd-history` |
+ 
+ Kiểm hành vi (`work/bdint.mjs`, 0 lỗi): onclick + listener trên host chạy, hàng cha không nhận; `pointer`; cờ
+-boolean thắng `color` đúng thứ tự; giá trị lạ không lớp; `status` → icon/màu STATUS_MAP; `neutral` → `c-secondary`;
++boolean thắng `color` đúng thứ tự; giá trị lạ không lớp; `status` → icon/màu STATUS_MAP *(lượt đầu — nay gỡ)*; `neutral` → `c-secondary` *(nay gỡ)*;
+ `type` lạ → `d-flex`; tooltip `mat` / delay 0 / above; đổi `size` vẽ lại.
+ 
+ ## `sd-button` — ĐỒNG BỘ THƯ VIỆN 2026-10-13 (vòng 3: phép kit → catalog + template thư viện)
+@@ -521,7 +541,7 @@
+ | Badge bấm được | `[class.pointer]`, div `aria-hidden="true"`, KHÔNG role/tabindex | y hệt (**bỏ** role=button / tabindex / aria-label / Enter-Space kit tự thêm 2026-10-10) | Theo thư viện; cần bàn phím thì trang bọc `<button>` |
+ | Tooltip badge | `data-tip` (móc demo catalog) | `data-sd-tooltip` (cơ chế tooltip của kit) | Cùng hình matTooltip |
+ | Icon badge | `.material-icons` của Google Fonts (inline-block) | `sd-badge .c-material-icon{display:inline-block}` gỡ `inline-flex` của `.material-icons` kit | Theo catalog |
+-| Màu `neutral` | không có | quy về `secondary` (round/tag `c-secondary`, icon `c-black400`) | Bí danh cũ của kit; icon "Ngừng bán…" chuyển xám black400 đúng thư viện |
++| **[ĐÃ THAY THẾ 2026-10-13 — `neutral` gỡ hẳn khỏi sd-badge]** Màu `neutral` | không có | quy về `secondary` (round/tag `c-secondary`, icon `c-black400`) | Bí danh cũ của kit; icon "Ngừng bán…" chuyển xám black400 đúng thư viện |
+ | `text-rendering` / phông trang | catalog `auto` + Roboto đóng gói | `html{text-rendering:optimizeLegibility}` + Google Fonts | Cấp trang (layout.css), không phải component — đo badge phải dùng phông catalog |
+ 
+ ## `sd-import-excel` — ĐỒNG BỘ 2026-10-13, exceljs thật (Builder: *„Nhúng exceljs vào kit“*)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/generate-components.md b/ai-instructions/generate-components.md
+--- a/ai-instructions/generate-components.md	2026-10-13 14:03:02.301906956 +0000
++++ b/ai-instructions/generate-components.md	2026-10-13 14:03:02.322663243 +0000
+@@ -19,7 +19,7 @@
+ | ❌ Sai — HTML thuần | ✅ Đúng — sd-* |
+ |---|---|
+ | `<button class="btn btn-sm btn-primary">Lưu</button>` | `<sd-button type="fill" color="primary" size="sm" title="Lưu"></sd-button>` |
+-| `<span class="badge badge-warning">Chờ duyệt</span>` | `<sd-badge type="status" status="waiting" title="Chờ duyệt"></sd-badge>` |
++| `<span class="badge badge-warning">Chờ duyệt</span>` | `<sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" title="Chờ duyệt"></sd-badge>` (trạng thái `waiting` của bảng tra STATUS_MAP) |
+ | `<input class="form-control" placeholder="Nhập...">` | `<sd-input label="Tên" placeholder="Nhập..."></sd-input>` |
+ | `<select class="form-select">...</select>` | `<sd-select label="Loại" items='[...]'></sd-select>` |
+ | `<input type="checkbox"> Đồng ý` | `<sd-checkbox label="Đồng ý điều khoản"></sd-checkbox>` |
+@@ -36,7 +36,7 @@
+ | Nút bấm | `<sd-button>` | `<sd-button type="fill" color="primary" title="Lưu"></sd-button>` |
+ | Checkbox (đa lựa chọn) | `<sd-checkbox>` | `<sd-checkbox label="Đồng ý điều khoản" checked></sd-checkbox>` |
+ | Radio (chọn 1 trong nhiều) | `<sd-radio>` | `<sd-radio name="payment" value="card" label="Thẻ tín dụng" checked></sd-radio>` |
+-| Trạng thái (lifecycle) | `<sd-badge type="status">` | `<sd-badge type="status" status="approved" title="Đã duyệt"></sd-badge>` |
++| Trạng thái (lifecycle) | `<sd-badge>` (type mặc định `icon`) + `color` / `icon` tra STATUS_MAP | `<sd-badge color="success" icon="thumb_up" fontSet="material-icons-outlined" title="Đã duyệt"></sd-badge>` |
+ | Tag/label tự do | `<sd-badge type="round">` | `<sd-badge type="round" color="secondary" title="Nháp"></sd-badge>` |
+ | Input text | `<sd-input>` | `<sd-input label="Họ tên" placeholder="Nhập..." required></sd-input>` |
+ | Dropdown chọn | `<sd-select>` | `<sd-select label="Loại" items='[{"id":"1","name":"A"}]'></sd-select>` |
+@@ -284,40 +284,49 @@
+ 
+ ---
+ 
+-## Conventions — STATUS_MAP
++## Conventions — STATUS_MAP (bảng tra trạng thái → color + icon)
+ 
+-**Dùng `sd-badge type="status"` cho mọi lifecycle state — KHÔNG dùng `type="tag"` cho trạng thái:**
++`sd-badge` chỉ có API của catalog (`type: icon | round | tag`, `color`, `icon`, `fontSet`, `title`…).
++**`type="status"` / `status="…"` KHÔNG còn** (gỡ 2026-10-13 — thư viện 19.0.10 không có; Builder chọn
++"giống catalog nhất"). Trạng thái lifecycle viết bằng **`type="icon"` (mặc định) + `color` + `icon`**
++lấy từ bảng tra dưới đây — để mọi trang cùng màu / icon. KHÔNG dùng `type="tag"` cho trạng thái.
+ 
+ ```html
+-<sd-badge type="status" status="[STATUS_KEY]" title="Tên hiển thị"></sd-badge>
++<sd-badge color="[color]" icon="[icon]" [fontSet="material-icons-outlined"] title="Tên hiển thị"></sd-badge>
++<!-- vd waiting: --> <sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" title="Chờ duyệt"></sd-badge>
+ ```
+ 
+-| Semantic | Key | Mô tả |
+-|---|---|---|
+-| New (xanh) | `unknown` | Chưa rõ trạng thái |
+-| New (xanh) | `new` | Đối tượng mới tạo |
+-| Processing (xanh) | `pending` | Chưa bắt đầu — **dùng cho Nháp/Draft** |
+-| Processing (xanh) | `waiting` | Đã gửi, đang chờ xét duyệt — **dùng cho Chờ duyệt** |
+-| Processing (xanh) | `inprogress` | Đang thực hiện |
+-| Success (xanh lá) | `checked` | Đã kiểm tra |
+-| Success (xanh lá) | `active` | Đang hoạt động bình thường |
+-| Success (xanh lá) | `success` | Đã hoàn tất thành công |
+-| Warning (cam) | `paused` | Đang tạm dừng |
+-| Warning (cam) | `warning` | Có vấn đề, cần theo dõi — **dùng cho Cần bổ sung** |
+-| Error (đỏ) | `blocked` | Bị chặn, không thể tiếp tục |
+-| Error (đỏ) | `error` | Có vấn đề, cần can thiệp |
+-| End (xám) | `cancelled` | Đã huỷ theo chủ ý |
+-| End (xám) | `deactivated` | Không còn hoạt động (bị tắt) |
+-| End (xám) | `removed` | Đã bị loại bỏ |
+-| Extend | `approved` | Đã được duyệt |
+-| Extend | `denied` | Đã bị từ chối |
++HTML dựng bằng JS thì gọi `sdStatusBadge('waiting', 'Chờ duyệt')` (trả về đúng thẻ trên).
++
++| Semantic | Trạng thái | `color` | `icon` | `fontSet` | Mô tả |
++|---|---|---|---|---|---|
++| New (xanh) | `unknown` | `info` | `help_outline` | outlined | Chưa rõ trạng thái |
++| New (xanh) | `new` | `info` | `circle` | — | Đối tượng mới tạo |
++| Processing (xanh) | `pending` | `info` | `pending` | outlined | Chưa bắt đầu — **dùng cho Nháp/Draft** |
++| Processing (xanh) | `waiting` | `info` | `access_time` | outlined | Đã gửi, đang chờ xét duyệt — **dùng cho Chờ duyệt** |
++| Processing (xanh) | `inprogress` | `info` | `timelapse` | outlined | Đang thực hiện |
++| Success (xanh lá) | `checked` | `success` | `task_alt` | outlined | Đã kiểm tra |
++| Success (xanh lá) | `active` | `success` | `play_circle` | — | Đang hoạt động bình thường |
++| Success (xanh lá) | `success` | `success` | `check_circle` | — | Đã hoàn tất thành công |
++| Warning (cam) | `paused` | `warning` | `pause_circle` | — | Đang tạm dừng |
++| Warning (cam) | `warning` | `warning` | `warning` | — | Có vấn đề, cần theo dõi — **dùng cho Cần bổ sung** |
++| Error (đỏ) | `blocked` | `error` | `block` | outlined | Bị chặn, không thể tiếp tục |
++| Error (đỏ) | `error` | `error` | `error` | — | Có vấn đề, cần can thiệp |
++| End (xám) | `cancelled` | `secondary` | `cancel` | — | Đã huỷ theo chủ ý |
++| End (xám) | `deactivated` | `secondary` | `remove_circle` | — | Không còn hoạt động (bị tắt) |
++| End (xám) | `removed` | `secondary` | `remove_circle_outline` | outlined | Đã bị loại bỏ |
++| Extend | `approved` | `success` | `thumb_up` | outlined | Đã được duyệt |
++| Extend | `denied` | `error` | `thumb_down` | outlined | Đã bị từ chối |
++
++"outlined" = khai `fontSet="material-icons-outlined"`; "—" = bỏ trống (mặc định `material-icons`, đặc).
++Không có màu `neutral` — xám là `secondary`.
+ 
+ > ⚠️ **Lỗi hay gặp:**
+ > - `pending` = Nháp/Draft — **không phải** Chờ duyệt. Dùng `waiting` cho Chờ duyệt.
+ > - `deactivated` ≠ Nháp — dùng `pending` cho Nháp/Draft.
+ > - `cancelled` ≠ Từ chối — dùng `denied` cho trường hợp bị từ chối.
+ 
+-**sd-table column type="status":**
++**sd-table column type="status"** (cột tiện ích của kit — tự tra bảng trên rồi vẽ badge theo API catalog):
+ ```json
+ {
+   "field": "status", "title": "Trạng thái", "type": "status",
+@@ -331,8 +340,9 @@
+   }
+ }
+ ```
+-> `id` = STATUS_MAP key (quyết định màu + icon), `name` = label hiển thị.
++> `id` = trạng thái của bảng tra (quyết định màu + icon), `name` = label hiển thị.
+ > **KHÔNG dùng `type: "values"`** cho cột lifecycle status.
++> Pattern page-header: `data-badge-status="waiting"` + `data-badge="Chờ duyệt"` — cũng tự tra bảng này.
+ 
+ ---
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/generate-skeletons.md b/ai-instructions/generate-skeletons.md
+--- a/ai-instructions/generate-skeletons.md	2026-10-13 14:03:02.301839419 +0000
++++ b/ai-instructions/generate-skeletons.md	2026-10-13 14:03:02.322597710 +0000
+@@ -363,7 +363,7 @@
+         <sd-section-item label="Mã">REC-001</sd-section-item>
+         <sd-section-item label="Tên">Record 1</sd-section-item>
+         <sd-section-item label="Trạng thái">
+-          <sd-badge type="status" status="active" title="Hoạt động"></sd-badge>
++          <sd-badge color="success" icon="play_circle" title="Hoạt động"></sd-badge>
+         </sd-section-item>
+       </sd-section>
+ 
+@@ -443,7 +443,7 @@
+ 4. **KHÔNG dùng `icon` trên title của `sd-section`** (bất kể là card trong `detail-cards-row` hay section full-width) — quy tắc này áp dụng cho mọi loại trang, không riêng Read. Theo Figma: MAG Sales Platform | Design System, node 62938:1961 (sd-section detail không có icon trên title). Ngoại lệ duy nhất: numbered card header dùng `avatar`, không phải `icon`.
+ 5. **Section full-width cần chia nhóm con** (nhiều field không chia đều 3 cột cho `detail-cards-row`) → dùng `.detail-section-group` + `.detail-section-group-title` (text đậm full-width) bọc `form-grid-4`. **KHÔNG dùng `.form-sub-group`** trong Read page — pattern đó có cột label trái 160px, chỉ đúng cho Add/Edit form. **Mỗi row phải đồng nhất độ rộng cột** — không trộn `col-span-1` và `col-span-2` trong cùng 1 row; sắp field ngắn thành row riêng (toàn `col-span-1`), field dài thành row riêng (toàn `col-span-2`/`col-span-4`). **Row chỉ có 2 field (1 ngắn + 1 dài)** → dùng `col-span-1` (ngắn) + `col-span-3` (dài), KHÔNG chia đều `col-span-2`+`col-span-2` — vì field dài sẽ bị đẩy sang track thứ 3 thay vì bắt đầu ngay ở cột 2.
+ 6. Table dùng `hide-inline-filter` (read-only data)
+-7. Badge dùng `sd-badge type="status"` inline trong `sd-section-item`
++7. Badge trạng thái inline trong `sd-section-item`: `sd-badge` + `color` / `icon` tra bảng STATUS_MAP (`generate-components.md`) — không có `type="status"`
+ 
+ ---
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-data.md b/design-system/components/sd-data.md
+--- a/design-system/components/sd-data.md	2026-10-13 14:03:02.308176397 +0000
++++ b/design-system/components/sd-data.md	2026-10-13 14:03:02.325284841 +0000
+@@ -85,9 +85,9 @@
+ | `number` | sd-input-number (sm) | `.` tách hàng nghìn, `,` tách thập phân; **mặc định 2 số lẻ** (catalog: "kiểu number mặc định hiện 2 số lẻ") — số đếm / tiền nguyên khai `option.precision: 0` hoặc `transform` | `precision` |
+ | `date` | sd-date-range (sm) — "Từ – đến" | dd/MM/yyyy | — |
+ | `datetime` | sd-date-range (sm) — "Từ – đến" | `div.T14R` dd/MM/yyyy + giờ xám | — |
+-| `boolean` | sd-select (sm) | sd-badge success/error | `displayOnTrue`, `displayOnFalse` |
++| `boolean` | sd-select (sm) | sd-badge `round` success / error (như thư viện) — chữ mặc định **True / False** | `displayOnTrue`, `displayOnFalse` |
+ | `values` | sd-select (sm) | Lookup display text | `items`, `valueField`, `displayField` |
+-| `status` | sd-select (sm) | sd-badge type="status" | `items` (id = STATUS_MAP key) |
++| `status` | sd-select (sm) | sd-badge (`color` + `icon` tra STATUS_MAP — API catalog) | `items` (id = khoá STATUS_MAP) |
+ | `link` | sd-input (sm) | Clickable link | `href` |
+ | `raw` | — (hidden) | Raw HTML — dùng cho cells chứa sd-components động | — |
+ | `action` | — (hidden) | Icon button đơn (1 hành động) | `icon`, `tooltip`, `onclick` hoặc `href`, `width` |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-interactive.md b/design-system/components/sd-interactive.md
+--- a/design-system/components/sd-interactive.md	2026-10-13 14:03:02.308256864 +0000
++++ b/design-system/components/sd-interactive.md	2026-10-13 14:03:02.325373631 +0000
+@@ -333,7 +333,7 @@
+ 
+ | Attribute | Values | Default |
+ |-----------|--------|---------|
+-| `type` | `icon`, `round`, `tag` (+ `status` là mở rộng của kit) | `icon` |
++| `type` | `icon`, `round`, `tag` | `icon` |
+ | `color` | `primary`, `secondary`, `info`, `success`, `warning`, `error` | `secondary` |
+ | `primary` … `error` | boolean — 6 cờ, bật cái nào thắng `color` | `false` |
+ | `size` | `sm`, `md`, `lg` | `sm` |
+@@ -342,7 +342,6 @@
+ | `icon` | Tên Material Icon | `fiber_manual_record` |
+ | `fontSet` | `material-icons`, `material-icons-outlined`, … | `material-icons` (đặc — đúng catalog; trước 2026-10-13 kit để outlined theo gói npm) |
+ | `tooltip` | string, xuống dòng bằng `&#10;` — `matTooltip` (bong bóng Material, hiện ngay, `above`) | — |
+-| `status` | Khoá `STATUS_MAP` — **chỉ dùng với `type="status"`** | — |
+ 
+ ### Ba type thật của thư viện
+ 
+@@ -397,23 +396,25 @@
+ sd-import-excel) truyền cấu hình qua `data-sd-cfg` — badge đọc rồi gỡ, host trống
+ thuộc tính như catalog.
+ 
+-### type="status" — lifecycle status badges
++### Trạng thái lifecycle — bảng tra STATUS_MAP → `color` + `icon` (API catalog)
+ 
+-**Thư viện KHÔNG có type này** — đây là lớp tiện ích riêng của kit cho trạng thái
+-lifecycle: tra `STATUS_MAP` ra sẵn icon + màu + bộ font rồi render qua **đúng nhánh
+-`icon` của thư viện** (từ 2026-10-10; trước đó nó dùng markup `.c-badge-status` tự chế).
+-Vẫn ghi đè được bằng `color`, `icon`, `title`, `fontSet`.
++**`type="status"` / `status="…"` đã GỠ 2026-10-13** — thư viện 19.0.10 chỉ có `icon` / `round` / `tag`
++(Builder chọn "giống catalog nhất"). Trạng thái lifecycle nay viết bằng **`type="icon"` (mặc định) +
++`color` + `icon`** (+ `fontSet="material-icons-outlined"` khi icon viền) tra từ bảng dưới — bảng là quy
++ước của kit để mọi trang thống nhất, không phải thuộc tính của `sd-badge`. Viết `type="status"` bây giờ ra
++nhánh cuối của template thư viện (chấm tròn xám) như mọi type lạ. JS: `sdStatusBadge(khoá, nhãn)` trả về
++thẻ đúng; cột `type:"status"` của `sd-table` và `data-badge-status` của page-header tự tra bảng này.
+ 
+ ```html
+-<sd-badge type="status" status="active"></sd-badge>
+-<sd-badge type="status" status="waiting" title="Chờ duyệt"></sd-badge>
+-<sd-badge type="status" status="approved" title="Đã duyệt"></sd-badge>
+-<sd-badge type="status" status="denied" title="Từ chối"></sd-badge>
++<sd-badge color="success" icon="play_circle" title="Active"></sd-badge>
++<sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" title="Chờ duyệt"></sd-badge>
++<sd-badge color="success" icon="thumb_up" fontSet="material-icons-outlined" title="Đã duyệt"></sd-badge>
++<sd-badge color="error" icon="thumb_down" fontSet="material-icons-outlined" title="Từ chối"></sd-badge>
+ ```
+ 
+ **Status key → semantic mapping:**
+ 
+-| Semantic | Key | Icon | Color |
++| Semantic | Trạng thái | `icon` | `color` |
+ |----------|-----|------|-------|
+ | **New** | `unknown` | help_outline | info |
+ | | `new` | circle | info |
+@@ -427,9 +428,9 @@
+ | | `warning` | warning | warning |
+ | **Error** | `blocked` | block | error |
+ | | `error` | error | error |
+-| **End** | `cancelled` | cancel | neutral |
+-| | `deactivated` | remove_circle | neutral |
+-| | `removed` | remove_circle_outline | neutral |
++| **End** | `cancelled` | cancel | secondary |
++| | `deactivated` | remove_circle | secondary |
++| | `removed` | remove_circle_outline | secondary |
+ | **Extend** | `approved` | thumb_up | success |
+ | | `denied` | thumb_down | error |
+ 
+@@ -508,7 +509,7 @@
+ cố ý không icon). Khai `color` là chạy theo thư viện: luôn có icon trừ khi `hideIcon`.
+ 
+ **Dùng khi:** banner cảnh báo/lưu ý ở đầu trang hoặc trong section (quá hạn, đang chờ duyệt, ghi chú điều kiện áp dụng...).
+-**Không dùng khi:** trạng thái lifecycle của 1 record cụ thể — dùng `sd-badge type="status"`; thông báo thoáng qua — dùng `SdNotifyService`.
++**Không dùng khi:** trạng thái lifecycle của 1 record cụ thể — dùng `sd-badge` (color + icon theo bảng tra STATUS_MAP); thông báo thoáng qua — dùng `SdNotifyService`.
+ 
+ **Mapping từ CSS cũ:** `.alert.alert-info` → `<sd-inform color="info">`, `.alert.alert-warning` → `<sd-inform color="warning">`, `.alert.alert-success` → `<sd-inform color="success">`, `.alert.alert-error` → `<sd-inform color="error">`.
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-layout.md b/design-system/components/sd-layout.md
+--- a/design-system/components/sd-layout.md	2026-10-13 14:03:02.308275909 +0000
++++ b/design-system/components/sd-layout.md	2026-10-13 14:03:02.325396899 +0000
+@@ -61,7 +61,7 @@
+   <sd-section-item label="Mã">SP-001</sd-section-item>
+   <sd-section-item label="Tên">Sản phẩm A</sd-section-item>
+   <sd-section-item label="Trạng thái">
+-    <sd-badge type="status" status="active" title="Hoạt động"></sd-badge>
++    <sd-badge color="success" icon="play_circle" title="Hoạt động"></sd-badge>
+   </sd-section-item>
+ </sd-section>
+ ```
+@@ -212,7 +212,7 @@
+   <sd-section-item label="Họ và tên">Nguyễn Văn A</sd-section-item>
+   <sd-section-item label="Email">a@email.com</sd-section-item>
+   <sd-section-item label="Trạng thái">
+-    <sd-badge type="status" status="active" title="Hoạt động"></sd-badge>
++    <sd-badge color="success" icon="play_circle" title="Hoạt động"></sd-badge>
+   </sd-section-item>
+ </sd-section>
+ ```
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-overlay.md b/design-system/components/sd-overlay.md
+--- a/design-system/components/sd-overlay.md	2026-10-13 14:03:02.308296633 +0000
++++ b/design-system/components/sd-overlay.md	2026-10-13 14:03:02.325423919 +0000
+@@ -110,7 +110,7 @@
+ <sd-side-drawer id="drawer1" width="560px">
+   <div sdHeaderLeft class="d-flex align-items-center gap-8">
+     <span>Chi tiết giao dịch</span>
+-    <sd-badge type="status" status="active" title="Đã thanh toán"></sd-badge>
++    <sd-badge color="success" icon="play_circle" title="Đã thanh toán"></sd-badge>
+   </div>
+   <sd-button sdHeaderRight title="Tải xuống" size="sm" type="light" color="primary"></sd-button>
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/js/pattern-loader.js b/design-system/core/js/pattern-loader.js
+--- a/design-system/core/js/pattern-loader.js	2026-10-13 14:03:02.305491991 +0000
++++ b/design-system/core/js/pattern-loader.js	2026-10-13 14:03:02.324580686 +0000
+@@ -126,6 +126,12 @@
+       tpl = tpl.replace('{{ACTIONS_BUTTONS}}', buttons);
+     }
+ 
++    /* data-badge-status → color / icon / fontSet của sd-badge (API catalog) qua STATUS_MAP của sd-components.js */
++    var bKey = attrs['badge-status'] || (pattern.defaults && pattern.defaults['badge-status']) || '';
++    var bAttr = window.sdStatusBadgeAttrs ? window.sdStatusBadgeAttrs(bKey, 'x') : { color: 'secondary', icon: 'fiber_manual_record', fontSet: '' };
++    attrs['badge-color'] = bAttr.color;
++    attrs['badge-icon'] = bAttr.icon;
++    attrs['badge-font'] = bAttr.fontSet || 'material-icons';
+     var contentHtml = interpolate(tpl, attrs, pattern.defaults);
+     var siteTabHtml = buildSiteTabZone(attrs['site-tabs'] || '');
+     var pageTabHtml = buildPageTabZone(attrs['page-tabs'] || '');
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-13 14:03:02.307674312 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-13 14:03:02.324809441 +0000
+@@ -1274,8 +1274,7 @@
+        không có biến đó nên dùng --sd-black400 (cùng vai trò chữ phụ).
+      - Thư viện gắn class .pointer cho badge clickable nhưng KHÔNG khai CSS
+        nào cho nó (đã kiểm cả bundle 22.2.12, không rule nào) — kit giữ y vậy.
+-     - c-neutral là màu cũ của kit, không có trong Color của thư viện; giữ
+-       làm bí danh của secondary cho các trang đang khai color="neutral". */
++     - [GỠ 2026-10-13] c-neutral (màu cũ của kit) — mọi chỗ đã đổi sang secondary. */
+ /* host: thư viện không khai display (catalog đo: inline trong #c-import-excel / #c-table, block khi là
+    phần tử flex). Kit giữ inline-block toàn cục vì các trang pattern dựa vào lề dọc của thẻ (đổi là xô
+    lệch validation / read-page — thử 2026-10-13); riêng `sd-import-excel` theo catalog: inline. */
+@@ -1336,9 +1335,6 @@
+ sd-badge .c-badge.c-success.c-badge--tag   { border: 1px solid var(--sd-success); }
+ sd-badge .c-badge.c-error     { background: var(--sd-error-light);     color: var(--sd-error); }
+ sd-badge .c-badge.c-error.c-badge--tag     { border: 1px solid var(--sd-error); }
+-/* `neutral` là bí danh cũ của kit, không có trong catalog — ánh xạ về secondary. */
+-sd-badge .c-badge.c-neutral   { background: var(--sd-secondary-light); color: var(--sd-secondary); }
+-sd-badge .c-badge.c-neutral.c-badge--tag   { border: 1px solid var(--sd-secondary); }
+ 
+ sd-badge .c-badge.c-badge--tag { border-radius: 4px; padding: 1px 7px; }
+ sd-badge .c-badge.c-badge--tag.c-badge--sm { padding: 1px 7px; }
+@@ -1362,8 +1358,6 @@
+ sd-badge .c-badge-icon .c-material-icon.c-success   { color: var(--sd-success); }
+ sd-badge .c-badge-icon .c-material-icon.c-error     { color: var(--sd-error); }
+ sd-badge .c-badge-icon .c-material-icon.c-warning   { color: var(--sd-warning); }
+-/* `neutral` — bí danh cũ của kit (không có trong catalog) = secondary → icon c-black400. */
+-sd-badge .c-badge-icon .c-material-icon.c-neutral   { color: var(--sd-black400); }
+ sd-badge .c-badge-description { color: var(--sd-black400); }
+ sd-badge .sd-multiline-tooltip { white-space: pre-line; }
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/patterns/page-header.js b/design-system/patterns/page-header.js
+--- a/design-system/patterns/page-header.js	2026-10-13 14:03:02.308069731 +0000
++++ b/design-system/patterns/page-header.js	2026-10-13 14:03:02.325163905 +0000
+@@ -25,6 +25,10 @@
+  *        data-primary-icon="add"
+  *        data-page-tabs="Tất cả,Đang bán,Ngừng bán"></div>
+  *
++ * data-badge-status — khoá STATUS_MAP (active, pending, waiting, approved…). pattern-loader tra ra
++ *                     color / icon / fontSet rồi vẽ `<sd-badge>` theo đúng API catalog (2026-10-13 —
++ *                     sd-badge không còn type="status").
++ *
+  * NOTE: Mỗi variant chỉ chứa page-header-content.
+  *       Outer wrapper (<div class="page-header">) và các optional zones
+  *       được build bởi processPageHeader trong pattern-loader.js.
+@@ -52,7 +56,7 @@
+     <div class="page-title-row">
+       <h1 class="page-title">{{title}}</h1>
+       <span class="record-id" title="{{record-id-field}}">{{record-id}}</span>
+-      {{#if badge}}<sd-badge type="status" status="{{badge-status}}" title="{{badge}}"></sd-badge>{{/if}}
++      {{#if badge}}<sd-badge color="{{badge-color}}" icon="{{badge-icon}}" fontSet="{{badge-font}}" title="{{badge}}"></sd-badge>{{/if}}
+     </div>
+     {{#if subtitle}}<p class="page-subtitle">{{subtitle}}</p>{{/if}}
+   </div>
+@@ -68,7 +72,7 @@
+     <div class="page-title-row">
+       <h1 class="page-title">{{title}}</h1>
+       <span class="record-id" title="{{record-id-field}}">{{record-id}}</span>
+-      <sd-badge type="status" status="{{badge-status}}" title="{{badge}}"></sd-badge>
++      <sd-badge color="{{badge-color}}" icon="{{badge-icon}}" fontSet="{{badge-font}}" title="{{badge}}"></sd-badge>
+     </div>
+     {{#if subtitle}}<p class="page-subtitle">{{subtitle}}</p>{{/if}}
+   </div>
+@@ -84,7 +88,7 @@
+     <div class="page-title-row">
+       <h1 class="page-title">{{title}}</h1>
+       {{#if record-id}}<span class="record-id" title="{{record-id-field}}">{{record-id}}</span>{{/if}}
+-      {{#if badge}}<sd-badge type="status" status="{{badge-status}}" title="{{badge}}"></sd-badge>{{/if}}
++      {{#if badge}}<sd-badge color="{{badge-color}}" icon="{{badge-icon}}" fontSet="{{badge-font}}" title="{{badge}}"></sd-badge>{{/if}}
+     </div>
+     {{#if subtitle}}<p class="page-subtitle">{{subtitle}}</p>{{/if}}
+   </div>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/badge.html b/design-system/preview/components/badge.html
+--- a/design-system/preview/components/badge.html	2026-10-13 14:03:02.311929484 +0000
++++ b/design-system/preview/components/badge.html	2026-10-13 14:03:02.327210468 +0000
+@@ -145,67 +145,67 @@
+           </div>
+         </sd-section>
+ 
+-        <sd-section title='type="status" — MỞ RỘNG riêng của kit, không có trong thư viện'>
++        <sd-section title="Trạng thái lifecycle — 17 trạng thái của bảng tra STATUS_MAP, viết bằng API catalog">
+           <p class="text-sm text-secondary mb-3">
+-            Thư viện chỉ có 3 type <code>icon</code> / <code>round</code> / <code>tag</code>.
+-            <code>status</code> là lớp tiện ích riêng của kit: tra <code>STATUS_MAP</code> ra sẵn
+-            icon + màu + bộ font rồi render qua <strong>đúng nhánh <code>icon</code> của thư viện</strong>
+-            (từ 2026-10-10 — trước đó nó dùng markup <code>.c-badge-status</code> tự chế). Vẫn ghi đè được
+-            bằng <code>color</code>, <code>icon</code>, <code>title</code>, <code>fontSet</code>.
++            Thư viện chỉ có 3 type <code>icon</code> / <code>round</code> / <code>tag</code>. Trạng thái lifecycle
++            viết bằng <code>type="icon"</code> (mặc định) + <code>color</code> + <code>icon</code> (+ <code>fontSet</code>)
++            tra từ <strong>bảng STATUS_MAP</strong> (tab Hướng dẫn Dev) — bảng là <em>quy ước</em> của kit để mọi trang
++            dùng cùng màu / icon, không phải thuộc tính của <code>sd-badge</code>. Kiểu cũ
++            <code>type="status" status="…"</code> đã gỡ 2026-10-13 (thư viện không có).
+           </p>
+           <p class="text-sm text-secondary mb-3">Semantic group: <strong>New</strong> — Mới (info/blue)</p>
+           <div class="flex gap-3 flex-wrap mb-4">
+-            <sd-badge type="status" status="unknown"></sd-badge>
+-            <sd-badge type="status" status="new"></sd-badge>
++            <sd-badge color="info" icon="help_outline" fontSet="material-icons-outlined" title="Unknown"></sd-badge>
++            <sd-badge color="info" icon="circle" title="New"></sd-badge>
+           </div>
+ 
+           <p class="text-sm text-secondary mb-3">Semantic group: <strong>Processing</strong> — Đang xử lý (info/blue)</p>
+           <div class="flex gap-3 flex-wrap mb-4">
+-            <sd-badge type="status" status="pending"></sd-badge>
+-            <sd-badge type="status" status="waiting"></sd-badge>
+-            <sd-badge type="status" status="inprogress"></sd-badge>
++            <sd-badge color="info" icon="pending" fontSet="material-icons-outlined" title="Pending"></sd-badge>
++            <sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" title="Waiting"></sd-badge>
++            <sd-badge color="info" icon="timelapse" fontSet="material-icons-outlined" title="Inprogress"></sd-badge>
+           </div>
+ 
+           <p class="text-sm text-secondary mb-3">Semantic group: <strong>Success</strong> — Ổn định / Hợp lệ (success/green)</p>
+           <div class="flex gap-3 flex-wrap mb-4">
+-            <sd-badge type="status" status="checked"></sd-badge>
+-            <sd-badge type="status" status="active"></sd-badge>
+-            <sd-badge type="status" status="success"></sd-badge>
++            <sd-badge color="success" icon="task_alt" fontSet="material-icons-outlined" title="Checked"></sd-badge>
++            <sd-badge color="success" icon="play_circle" title="Active"></sd-badge>
++            <sd-badge color="success" icon="check_circle" title="Success"></sd-badge>
+           </div>
+ 
+           <p class="text-sm text-secondary mb-3">Semantic group: <strong>Warning</strong> — Cần chú ý (warning/orange)</p>
+           <div class="flex gap-3 flex-wrap mb-4">
+-            <sd-badge type="status" status="paused"></sd-badge>
+-            <sd-badge type="status" status="warning"></sd-badge>
++            <sd-badge color="warning" icon="pause_circle" title="Paused"></sd-badge>
++            <sd-badge color="warning" icon="warning" title="Warning"></sd-badge>
+           </div>
+ 
+           <p class="text-sm text-secondary mb-3">Semantic group: <strong>Error</strong> — Cần can thiệp (error/red)</p>
+           <div class="flex gap-3 flex-wrap mb-4">
+-            <sd-badge type="status" status="blocked"></sd-badge>
+-            <sd-badge type="status" status="error"></sd-badge>
++            <sd-badge color="error" icon="block" fontSet="material-icons-outlined" title="Blocked"></sd-badge>
++            <sd-badge color="error" icon="error" title="Error"></sd-badge>
+           </div>
+ 
+-          <p class="text-sm text-secondary mb-3">Semantic group: <strong>End</strong> — Không còn hiệu lực (neutral/grey)</p>
++          <p class="text-sm text-secondary mb-3">Semantic group: <strong>End</strong> — Không còn hiệu lực (secondary/xám)</p>
+           <div class="flex gap-3 flex-wrap mb-4">
+-            <sd-badge type="status" status="cancelled"></sd-badge>
+-            <sd-badge type="status" status="deactivated"></sd-badge>
+-            <sd-badge type="status" status="removed"></sd-badge>
++            <sd-badge color="secondary" icon="cancel" title="Cancelled"></sd-badge>
++            <sd-badge color="secondary" icon="remove_circle" title="Deactivated"></sd-badge>
++            <sd-badge color="secondary" icon="remove_circle_outline" fontSet="material-icons-outlined" title="Removed"></sd-badge>
+           </div>
+ 
+           <p class="text-sm text-secondary mb-3">Semantic group: <strong>Extend</strong> — Mở rộng (mixed colors)</p>
+           <div class="flex gap-3 flex-wrap mb-4">
+-            <sd-badge type="status" status="approved"></sd-badge>
+-            <sd-badge type="status" status="denied"></sd-badge>
++            <sd-badge color="success" icon="thumb_up" fontSet="material-icons-outlined" title="Approved"></sd-badge>
++            <sd-badge color="error" icon="thumb_down" fontSet="material-icons-outlined" title="Denied"></sd-badge>
+           </div>
+         </sd-section>
+ 
+-        <sd-section title='type="status" — custom title override'>
+-          <p class="text-sm text-secondary mb-3">Dùng <code>title</code> để thay label mặc định bằng text tuỳ ý.</p>
++        <sd-section title="Trạng thái lifecycle — nhãn tiếng Việt">
++          <p class="text-sm text-secondary mb-3">Giữ <code>color</code> + <code>icon</code> của bảng tra, đặt <code>title</code> theo nghiệp vụ.</p>
+           <div class="flex gap-3 flex-wrap">
+-            <sd-badge type="status" status="success" title="Đã duyệt"></sd-badge>
+-            <sd-badge type="status" status="pending" title="Chờ phê duyệt"></sd-badge>
+-            <sd-badge type="status" status="error" title="Từ chối"></sd-badge>
+-            <sd-badge type="status" status="cancelled" title="Đã huỷ"></sd-badge>
++            <sd-badge color="success" icon="check_circle" title="Đã duyệt"></sd-badge>
++            <sd-badge color="info" icon="pending" fontSet="material-icons-outlined" title="Chờ phê duyệt"></sd-badge>
++            <sd-badge color="error" icon="error" title="Từ chối"></sd-badge>
++            <sd-badge color="secondary" icon="cancel" title="Đã huỷ"></sd-badge>
+           </div>
+         </sd-section>
+ 
+@@ -250,13 +250,13 @@
+         <sd-section title="Bảng mapping Badge Status">
+           <div class="ds-guide">
+             <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Toàn bộ 17 status value — màu sắc, semantic, icon, label tiếng Việt thường dùng</p>
++              <p class="ds-guide-label">Toàn bộ 17 trạng thái (bảng tra STATUS_MAP) — màu, nhóm nghĩa, icon, nhãn tiếng Việt thường dùng</p>
+               <table class="ds-guide-table">
+                 <thead>
+                   <tr>
+                     <th>Color token</th>
+                     <th>Semantic group</th>
+-                    <th>Status value</th>
++                    <th>Trạng thái</th>
+                     <th>Icon</th>
+                     <th>Mô tả</th>
+                     <th>Labels tiếng Việt thường dùng</th>
+@@ -265,7 +265,7 @@
+                 <tbody>
+                   <!-- New -->
+                   <tr>
+-                    <td><sd-badge type="status" status="unknown"></sd-badge></td>
++                    <td><sd-badge color="info" icon="help_outline" fontSet="material-icons-outlined" title="Unknown"></sd-badge></td>
+                     <td>New — Mới</td>
+                     <td><code>unknown</code></td>
+                     <td><code>help_outline</code></td>
+@@ -273,7 +273,7 @@
+                     <td>Không xác định, Chưa xác định</td>
+                   </tr>
+                   <tr>
+-                    <td><sd-badge type="status" status="new"></sd-badge></td>
++                    <td><sd-badge color="info" icon="circle" title="New"></sd-badge></td>
+                     <td>New — Mới</td>
+                     <td><code>new</code></td>
+                     <td><code>circle</code></td>
+@@ -282,7 +282,7 @@
+                   </tr>
+                   <!-- Processing -->
+                   <tr>
+-                    <td><sd-badge type="status" status="pending"></sd-badge></td>
++                    <td><sd-badge color="info" icon="pending" fontSet="material-icons-outlined" title="Pending"></sd-badge></td>
+                     <td>Processing — Đang xử lý</td>
+                     <td><code>pending</code></td>
+                     <td><code>pending</code></td>
+@@ -290,7 +290,7 @@
+                     <td>Chờ xử lý, Chờ phân công, Hàng chờ</td>
+                   </tr>
+                   <tr>
+-                    <td><sd-badge type="status" status="waiting"></sd-badge></td>
++                    <td><sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" title="Waiting"></sd-badge></td>
+                     <td>Processing — Đang xử lý</td>
+                     <td><code>waiting</code></td>
+                     <td><code>access_time</code></td>
+@@ -298,7 +298,7 @@
+                     <td>Chờ duyệt, Chờ xác nhận, Đang chờ phản hồi, Chờ thanh toán</td>
+                   </tr>
+                   <tr>
+-                    <td><sd-badge type="status" status="inprogress"></sd-badge></td>
++                    <td><sd-badge color="info" icon="timelapse" fontSet="material-icons-outlined" title="Inprogress"></sd-badge></td>
+                     <td>Processing — Đang xử lý</td>
+                     <td><code>inprogress</code></td>
+                     <td><code>timelapse</code></td>
+@@ -307,7 +307,7 @@
+                   </tr>
+                   <!-- Success -->
+                   <tr>
+-                    <td><sd-badge type="status" status="checked"></sd-badge></td>
++                    <td><sd-badge color="success" icon="task_alt" fontSet="material-icons-outlined" title="Checked"></sd-badge></td>
+                     <td>Success — Ổn định / Hợp lệ</td>
+                     <td><code>checked</code></td>
+                     <td><code>task_alt</code></td>
+@@ -315,7 +315,7 @@
+                     <td>Đã kiểm tra, Đã xác minh, Hợp lệ</td>
+                   </tr>
+                   <tr>
+-                    <td><sd-badge type="status" status="active"></sd-badge></td>
++                    <td><sd-badge color="success" icon="play_circle" title="Active"></sd-badge></td>
+                     <td>Success — Ổn định / Hợp lệ</td>
+                     <td><code>active</code></td>
+                     <td><code>play_circle</code></td>
+@@ -323,7 +323,7 @@
+                     <td>Hoạt động, Đang mở, Đang kinh doanh, Kích hoạt</td>
+                   </tr>
+                   <tr>
+-                    <td><sd-badge type="status" status="success"></sd-badge></td>
++                    <td><sd-badge color="success" icon="check_circle" title="Success"></sd-badge></td>
+                     <td>Success — Ổn định / Hợp lệ</td>
+                     <td><code>success</code></td>
+                     <td><code>check_circle</code></td>
+@@ -332,7 +332,7 @@
+                   </tr>
+                   <!-- Warning -->
+                   <tr>
+-                    <td><sd-badge type="status" status="paused"></sd-badge></td>
++                    <td><sd-badge color="warning" icon="pause_circle" title="Paused"></sd-badge></td>
+                     <td>Warning — Cần chú ý</td>
+                     <td><code>paused</code></td>
+                     <td><code>pause_circle</code></td>
+@@ -340,7 +340,7 @@
+                     <td>Tạm dừng, Tạm ngưng, Đang tạm khóa</td>
+                   </tr>
+                   <tr>
+-                    <td><sd-badge type="status" status="warning"></sd-badge></td>
++                    <td><sd-badge color="warning" icon="warning" title="Warning"></sd-badge></td>
+                     <td>Warning — Cần chú ý</td>
+                     <td><code>warning</code></td>
+                     <td><code>warning</code></td>
+@@ -349,7 +349,7 @@
+                   </tr>
+                   <!-- Error -->
+                   <tr>
+-                    <td><sd-badge type="status" status="blocked"></sd-badge></td>
++                    <td><sd-badge color="error" icon="block" fontSet="material-icons-outlined" title="Blocked"></sd-badge></td>
+                     <td>Error — Cần can thiệp</td>
+                     <td><code>blocked</code></td>
+                     <td><code>block</code></td>
+@@ -357,7 +357,7 @@
+                     <td>Bị chặn, Bị khóa, Tạm khóa</td>
+                   </tr>
+                   <tr>
+-                    <td><sd-badge type="status" status="error"></sd-badge></td>
++                    <td><sd-badge color="error" icon="error" title="Error"></sd-badge></td>
+                     <td>Error — Cần can thiệp</td>
+                     <td><code>error</code></td>
+                     <td><code>error</code></td>
+@@ -366,7 +366,7 @@
+                   </tr>
+                   <!-- End -->
+                   <tr>
+-                    <td><sd-badge type="status" status="cancelled"></sd-badge></td>
++                    <td><sd-badge color="secondary" icon="cancel" title="Cancelled"></sd-badge></td>
+                     <td>End — Không còn hiệu lực</td>
+                     <td><code>cancelled</code></td>
+                     <td><code>cancel</code></td>
+@@ -374,7 +374,7 @@
+                     <td>Đã huỷ, Huỷ bỏ, Đã hủy đơn</td>
+                   </tr>
+                   <tr>
+-                    <td><sd-badge type="status" status="deactivated"></sd-badge></td>
++                    <td><sd-badge color="secondary" icon="remove_circle" title="Deactivated"></sd-badge></td>
+                     <td>End — Không còn hiệu lực</td>
+                     <td><code>deactivated</code></td>
+                     <td><code>remove_circle</code></td>
+@@ -382,7 +382,7 @@
+                     <td>Ngừng hoạt động, Vô hiệu, Đã đóng, Ngừng kinh doanh</td>
+                   </tr>
+                   <tr>
+-                    <td><sd-badge type="status" status="removed"></sd-badge></td>
++                    <td><sd-badge color="secondary" icon="remove_circle_outline" fontSet="material-icons-outlined" title="Removed"></sd-badge></td>
+                     <td>End — Không còn hiệu lực</td>
+                     <td><code>removed</code></td>
+                     <td><code>remove_circle_outline</code></td>
+@@ -391,7 +391,7 @@
+                   </tr>
+                   <!-- Extend -->
+                   <tr>
+-                    <td><sd-badge type="status" status="approved"></sd-badge></td>
++                    <td><sd-badge color="success" icon="thumb_up" fontSet="material-icons-outlined" title="Approved"></sd-badge></td>
+                     <td>Extend — Mở rộng</td>
+                     <td><code>approved</code></td>
+                     <td><code>thumb_up</code></td>
+@@ -399,7 +399,7 @@
+                     <td>Đã duyệt, Phê duyệt, Chấp thuận</td>
+                   </tr>
+                   <tr>
+-                    <td><sd-badge type="status" status="denied"></sd-badge></td>
++                    <td><sd-badge color="error" icon="thumb_down" fontSet="material-icons-outlined" title="Denied"></sd-badge></td>
+                     <td>Extend — Mở rộng</td>
+                     <td><code>denied</code></td>
+                     <td><code>thumb_down</code></td>
+@@ -524,8 +524,8 @@
+                     <td>Object này đi từ lúc tạo đến lúc kết thúc qua những bước nào?</td>
+                   </tr>
+                   <tr>
+-                    <td><strong>2. Map vào status value</strong></td>
+-                    <td>Đối chiếu từng trạng thái nghiệp vụ với bảng 17 status ở trên</td>
++                    <td><strong>2. Map vào trạng thái của bảng tra</strong></td>
++                    <td>Đối chiếu từng trạng thái nghiệp vụ với bảng 17 trạng thái ở trên</td>
+                     <td>Trạng thái này thuộc semantic group nào (New / Processing / Success / Warning / Error / End)?</td>
+                   </tr>
+                   <tr>
+@@ -546,20 +546,20 @@
+               <p class="ds-guide-label">Ví dụ — Workflow đơn hàng mua hàng nội bộ</p>
+               <div class="ds-guide-prd">
+                 <p style="margin-bottom: 12px"><strong>Bước 1 — Liệt kê trạng thái:</strong> Nháp → Chờ duyệt → Đang xử lý → Đang giao → Đã giao → Đã huỷ</p>
+-                <p style="margin-bottom: 12px"><strong>Bước 2 — Map status value:</strong></p>
++                <p style="margin-bottom: 12px"><strong>Bước 2 — Map trạng thái (bảng tra):</strong></p>
+                 <div class="flex gap-2 flex-wrap" style="margin-bottom: 12px">
+-                  <sd-badge type="status" status="new" title="Nháp"></sd-badge>
++                  <sd-badge color="info" icon="circle" title="Nháp"></sd-badge>
+                   <span class="text-secondary" style="align-self: center">→</span>
+-                  <sd-badge type="status" status="waiting" title="Chờ duyệt"></sd-badge>
++                  <sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" title="Chờ duyệt"></sd-badge>
+                   <span class="text-secondary" style="align-self: center">→</span>
+-                  <sd-badge type="status" status="inprogress" title="Đang xử lý"></sd-badge>
++                  <sd-badge color="info" icon="timelapse" fontSet="material-icons-outlined" title="Đang xử lý"></sd-badge>
+                   <span class="text-secondary" style="align-self: center">→</span>
+-                  <sd-badge type="status" status="inprogress" title="Đang giao"></sd-badge>
++                  <sd-badge color="info" icon="timelapse" fontSet="material-icons-outlined" title="Đang giao"></sd-badge>
+                   <span class="text-secondary" style="align-self: center">→</span>
+-                  <sd-badge type="status" status="success" title="Đã giao"></sd-badge>
++                  <sd-badge color="success" icon="check_circle" title="Đã giao"></sd-badge>
+                 </div>
+                 <div class="flex gap-2 flex-wrap">
+-                  <sd-badge type="status" status="cancelled" title="Đã huỷ"></sd-badge>
++                  <sd-badge color="secondary" icon="cancel" title="Đã huỷ"></sd-badge>
+                   <span class="text-secondary text-sm" style="align-self: center">(terminal — từ bất kỳ trạng thái nào trước success)</span>
+                 </div>
+               </div>
+@@ -569,7 +569,7 @@
+               <p class="ds-guide-label">Checklist trước khi giao AI tạo prototype</p>
+               <ul class="ds-guide-list">
+                 <li>Đã liệt kê đủ trạng thái — không bỏ sót trạng thái lỗi / terminal</li>
+-                <li>Mỗi trạng thái nghiệp vụ chỉ map vào đúng 1 status value (không dùng 2 badge cho cùng 1 trạng thái)</li>
++                <li>Mỗi trạng thái nghiệp vụ chỉ map vào đúng 1 trạng thái (không dùng 2 badge cho cùng 1 trạng thái)</li>
+                 <li>Label tiếng Việt rõ ràng, ngắn ≤ 3 từ (phù hợp hiển thị trong table cell)</li>
+                 <li>Có phân biệt trạng thái nào operator cần action ngay (error/blocked) vs. chỉ cần biết (warning/paused)</li>
+                 <li>Các trạng thái terminal (cancelled, removed, deactivated) không có arrow ra</li>
+@@ -588,12 +588,12 @@
+               <div class="ds-guide-prd">
+                 <p>"Cột <strong>Trạng thái</strong> trong bảng hiển thị badge theo vòng đời:</p>
+                 <ul style="margin: 8px 0 8px 20px; line-height: 1.8">
+-                  <li><strong>Nháp</strong> → <code>status="new"</code></li>
+-                  <li><strong>Chờ duyệt</strong> → <code>status="waiting"</code></li>
+-                  <li><strong>Đang xử lý</strong> → <code>status="inprogress"</code></li>
+-                  <li><strong>Hoàn thành</strong> → <code>status="success"</code></li>
+-                  <li><strong>Đã huỷ</strong> → <code>status="cancelled"</code></li>
+-                  <li><strong>Lỗi</strong> → <code>status="error"</code></li>
++                  <li><strong>Nháp</strong> → <code>new</code></li>
++                  <li><strong>Chờ duyệt</strong> → <code>waiting</code></li>
++                  <li><strong>Đang xử lý</strong> → <code>inprogress</code></li>
++                  <li><strong>Hoàn thành</strong> → <code>success</code></li>
++                  <li><strong>Đã huỷ</strong> → <code>cancelled</code></li>
++                  <li><strong>Lỗi</strong> → <code>error</code></li>
+                 </ul>
+                 <p>Dùng label mặc định của DS, không cần thêm <code>title</code>."</p>
+               </div>
+@@ -602,7 +602,7 @@
+             <div class="ds-guide-col ds-guide-col--full">
+               <p class="ds-guide-label">Khi cần label khác mặc định — thêm <code>title</code></p>
+               <div class="ds-guide-prd">
+-                <p>"Badge trạng thái phê duyệt: dùng <code>status="approved"</code> nhưng hiển thị label là <strong>'Đã phê duyệt'</strong> (thêm <code>title="Đã phê duyệt"</code>)."</p>
++                <p>"Badge trạng thái phê duyệt: dùng <code>approved</code> nhưng hiển thị label là <strong>'Đã phê duyệt'</strong> (thêm <code>title="Đã phê duyệt"</code>)."</p>
+               </div>
+             </div>
+ 
+@@ -614,8 +614,8 @@
+       <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+       <div class="tab-panel" data-tab-panel="2" style="display:none">
+ 
+-        <!-- 1. type="status" -->
+-        <sd-section title='type="status" — lifecycle status badge'>
++        <!-- 1. Trạng thái lifecycle -->
++        <sd-section title="Trạng thái lifecycle — bảng tra STATUS_MAP → color + icon (API catalog)">
+           <div class="ds-guide">
+ 
+             <div class="ds-guide-col ds-guide-col--full">
+@@ -625,53 +625,43 @@
+                   <span class="ds-guide-code-lang">HTML</span>
+                   <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                 </div>
+-                <pre class="ds-guide-code"><span class="code-comment">&lt;!-- Dùng status value — label & icon lấy từ DS config --&gt;</span>
+-&lt;sd-badge type="status" status="active"&gt;&lt;/sd-badge&gt;
+-&lt;sd-badge type="status" status="waiting"&gt;&lt;/sd-badge&gt;
+-&lt;sd-badge type="status" status="error"&gt;&lt;/sd-badge&gt;
+-
+-<span class="code-comment">&lt;!-- Override label hiển thị, giữ nguyên màu & icon của status --&gt;</span>
+-&lt;sd-badge type="status" status="success" title="Đã giao hàng"&gt;&lt;/sd-badge&gt;
+-&lt;sd-badge type="status" status="waiting" title="Chờ phê duyệt"&gt;&lt;/sd-badge&gt;</pre>
+-              </div>
+-            </div>
++                <pre class="ds-guide-code"><span class="code-comment">&lt;!-- Tra bảng dưới: trạng thái → color + icon (+ fontSet khi icon viền) --&gt;</span>
++&lt;sd-badge color="success" icon="play_circle" title="Hoạt động"&gt;&lt;/sd-badge&gt;                                  <span class="code-comment">&lt;!-- active --&gt;</span>
++&lt;sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" title="Chờ duyệt"&gt;&lt;/sd-badge&gt;  <span class="code-comment">&lt;!-- waiting --&gt;</span>
++&lt;sd-badge color="error" icon="error" title="Lỗi"&gt;&lt;/sd-badge&gt;                                                <span class="code-comment">&lt;!-- error --&gt;</span>
+ 
+-            <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Attributes</p>
+-              <table class="ds-guide-table">
+-                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Bắt buộc</th><th>Mô tả</th></tr></thead>
+-                <tbody>
+-                  <tr><td><code>type</code></td><td><code>status</code></td><td>Có</td><td>Khai báo kiểu badge</td></tr>
+-                  <tr><td><code>status</code></td><td>Xem bảng 17 values bên dưới</td><td>Có</td><td>Quyết định màu sắc, icon và label mặc định</td></tr>
+-                  <tr><td><code>title</code></td><td>string</td><td>Không</td><td>Override label mặc định. Màu và icon vẫn theo <code>status</code></td></tr>
+-                </tbody>
+-              </table>
++<span class="code-comment">&lt;!-- HTML dựng bằng JS: sdStatusBadge(khoá, nhãn) trả về đúng thẻ trên --&gt;</span>
++el.innerHTML = sdStatusBadge('approved', 'Đã phê duyệt');</pre>
++              </div>
++              <p class="ds-guide-note"><code>type="status"</code> / <code>status="…"</code> <strong>không còn</strong> (gỡ 2026-10-13 —
++                thư viện 19.0.10 không có). Cột <code>type:"status"</code> của <code>sd-table</code> và <code>data-badge-status</code>
++                của pattern page-header vẫn nhận khoá trạng thái, tự tra bảng này rồi vẽ badge theo API catalog.</p>
+             </div>
+ 
+             <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Bảng 17 status values — default label & icon</p>
++              <p class="ds-guide-label">Bảng tra 17 trạng thái — nhãn mặc định, icon, màu</p>
+               <table class="ds-guide-table">
+                 <thead>
+-                  <tr><th>status=</th><th>Default label</th><th>Icon</th><th>Color group</th><th>Preview</th></tr>
++                  <tr><th>Trạng thái</th><th>Nhãn thường dùng</th><th>icon (fontSet viền nếu có)</th><th>color</th><th>Hình</th></tr>
+                 </thead>
+                 <tbody>
+-                  <tr><td><code>unknown</code></td><td>Không xác định</td><td><code>help_outline</code></td><td>info</td><td><sd-badge type="status" status="unknown"></sd-badge></td></tr>
+-                  <tr><td><code>new</code></td><td>Mới</td><td><code>circle</code></td><td>info</td><td><sd-badge type="status" status="new"></sd-badge></td></tr>
+-                  <tr><td><code>pending</code></td><td>Chờ xử lý</td><td><code>pending</code></td><td>info</td><td><sd-badge type="status" status="pending"></sd-badge></td></tr>
+-                  <tr><td><code>waiting</code></td><td>Đang chờ</td><td><code>access_time</code></td><td>info</td><td><sd-badge type="status" status="waiting"></sd-badge></td></tr>
+-                  <tr><td><code>inprogress</code></td><td>Đang xử lý</td><td><code>timelapse</code></td><td>info</td><td><sd-badge type="status" status="inprogress"></sd-badge></td></tr>
+-                  <tr><td><code>checked</code></td><td>Đã kiểm tra</td><td><code>task_alt</code></td><td>success</td><td><sd-badge type="status" status="checked"></sd-badge></td></tr>
+-                  <tr><td><code>active</code></td><td>Hoạt động</td><td><code>play_circle</code></td><td>success</td><td><sd-badge type="status" status="active"></sd-badge></td></tr>
+-                  <tr><td><code>success</code></td><td>Hoàn thành</td><td><code>check_circle</code></td><td>success</td><td><sd-badge type="status" status="success"></sd-badge></td></tr>
+-                  <tr><td><code>paused</code></td><td>Tạm dừng</td><td><code>pause_circle</code></td><td>warning</td><td><sd-badge type="status" status="paused"></sd-badge></td></tr>
+-                  <tr><td><code>warning</code></td><td>Cảnh báo</td><td><code>warning</code></td><td>warning</td><td><sd-badge type="status" status="warning"></sd-badge></td></tr>
+-                  <tr><td><code>blocked</code></td><td>Bị chặn</td><td><code>block</code></td><td>error</td><td><sd-badge type="status" status="blocked"></sd-badge></td></tr>
+-                  <tr><td><code>error</code></td><td>Lỗi</td><td><code>error</code></td><td>error</td><td><sd-badge type="status" status="error"></sd-badge></td></tr>
+-                  <tr><td><code>cancelled</code></td><td>Đã huỷ</td><td><code>cancel</code></td><td>neutral</td><td><sd-badge type="status" status="cancelled"></sd-badge></td></tr>
+-                  <tr><td><code>deactivated</code></td><td>Ngừng hoạt động</td><td><code>remove_circle</code></td><td>neutral</td><td><sd-badge type="status" status="deactivated"></sd-badge></td></tr>
+-                  <tr><td><code>removed</code></td><td>Đã xóa</td><td><code>remove_circle_outline</code></td><td>neutral</td><td><sd-badge type="status" status="removed"></sd-badge></td></tr>
+-                  <tr><td><code>approved</code></td><td>Đã duyệt</td><td><code>thumb_up</code></td><td>success</td><td><sd-badge type="status" status="approved"></sd-badge></td></tr>
+-                  <tr><td><code>denied</code></td><td>Từ chối</td><td><code>thumb_down</code></td><td>error</td><td><sd-badge type="status" status="denied"></sd-badge></td></tr>
++                  <tr><td><code>unknown</code></td><td>Không xác định</td><td><code>help_outline</code></td><td>info</td><td><sd-badge color="info" icon="help_outline" fontSet="material-icons-outlined" title="Unknown"></sd-badge></td></tr>
++                  <tr><td><code>new</code></td><td>Mới</td><td><code>circle</code></td><td>info</td><td><sd-badge color="info" icon="circle" title="New"></sd-badge></td></tr>
++                  <tr><td><code>pending</code></td><td>Chờ xử lý</td><td><code>pending</code></td><td>info</td><td><sd-badge color="info" icon="pending" fontSet="material-icons-outlined" title="Pending"></sd-badge></td></tr>
++                  <tr><td><code>waiting</code></td><td>Đang chờ</td><td><code>access_time</code></td><td>info</td><td><sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" title="Waiting"></sd-badge></td></tr>
++                  <tr><td><code>inprogress</code></td><td>Đang xử lý</td><td><code>timelapse</code></td><td>info</td><td><sd-badge color="info" icon="timelapse" fontSet="material-icons-outlined" title="Inprogress"></sd-badge></td></tr>
++                  <tr><td><code>checked</code></td><td>Đã kiểm tra</td><td><code>task_alt</code></td><td>success</td><td><sd-badge color="success" icon="task_alt" fontSet="material-icons-outlined" title="Checked"></sd-badge></td></tr>
++                  <tr><td><code>active</code></td><td>Hoạt động</td><td><code>play_circle</code></td><td>success</td><td><sd-badge color="success" icon="play_circle" title="Active"></sd-badge></td></tr>
++                  <tr><td><code>success</code></td><td>Hoàn thành</td><td><code>check_circle</code></td><td>success</td><td><sd-badge color="success" icon="check_circle" title="Success"></sd-badge></td></tr>
++                  <tr><td><code>paused</code></td><td>Tạm dừng</td><td><code>pause_circle</code></td><td>warning</td><td><sd-badge color="warning" icon="pause_circle" title="Paused"></sd-badge></td></tr>
++                  <tr><td><code>warning</code></td><td>Cảnh báo</td><td><code>warning</code></td><td>warning</td><td><sd-badge color="warning" icon="warning" title="Warning"></sd-badge></td></tr>
++                  <tr><td><code>blocked</code></td><td>Bị chặn</td><td><code>block</code></td><td>error</td><td><sd-badge color="error" icon="block" fontSet="material-icons-outlined" title="Blocked"></sd-badge></td></tr>
++                  <tr><td><code>error</code></td><td>Lỗi</td><td><code>error</code></td><td>error</td><td><sd-badge color="error" icon="error" title="Error"></sd-badge></td></tr>
++                  <tr><td><code>cancelled</code></td><td>Đã huỷ</td><td><code>cancel</code></td><td>secondary</td><td><sd-badge color="secondary" icon="cancel" title="Cancelled"></sd-badge></td></tr>
++                  <tr><td><code>deactivated</code></td><td>Ngừng hoạt động</td><td><code>remove_circle</code></td><td>secondary</td><td><sd-badge color="secondary" icon="remove_circle" title="Deactivated"></sd-badge></td></tr>
++                  <tr><td><code>removed</code></td><td>Đã xóa</td><td><code>remove_circle_outline</code></td><td>secondary</td><td><sd-badge color="secondary" icon="remove_circle_outline" fontSet="material-icons-outlined" title="Removed"></sd-badge></td></tr>
++                  <tr><td><code>approved</code></td><td>Đã duyệt</td><td><code>thumb_up</code></td><td>success</td><td><sd-badge color="success" icon="thumb_up" fontSet="material-icons-outlined" title="Approved"></sd-badge></td></tr>
++                  <tr><td><code>denied</code></td><td>Từ chối</td><td><code>thumb_down</code></td><td>error</td><td><sd-badge color="error" icon="thumb_down" fontSet="material-icons-outlined" title="Denied"></sd-badge></td></tr>
+                 </tbody>
+               </table>
+             </div>
+@@ -698,7 +688,6 @@
+                   <tr><td><code>fontSet</code></td><td><code>material-icons</code> | <code>material-icons-outlined</code> | …</td><td><code>material-icons</code></td><td>Đặc, đúng catalog <code>#c-badge</code></td></tr>
+                   <tr><td><code>size</code></td><td><code>sm</code> | <code>md</code> | <code>lg</code></td><td><code>sm</code></td><td>Đổi cùng lúc cỡ icon (16/18/24) và cỡ chữ + padding của khung. Giá trị khác → không lớp cỡ (như thư viện; <code>color</code> / <code>fontSet</code> lạ cũng vậy)</td></tr>
+                   <tr><td><code>tooltip</code></td><td>string</td><td>—</td><td><code>matTooltip</code>: bong bóng kiểu Material, hiện ngay, vị trí <code>above</code>. Xuống dòng bằng <code>&amp;#10;</code></td></tr>
+-                  <tr><td><code>status</code></td><td>khoá trong <code>STATUS_MAP</code></td><td>—</td><td><strong>Mở rộng riêng của kit</strong>, chỉ dùng với <code>type="status"</code></td></tr>
+                 </tbody>
+               </table>
+             </div>
+@@ -746,7 +735,7 @@
+                 <li><code>icon</code> — trạng thái trong bảng và danh sách dày: nhẹ nhất, không chiếm nền. Đây là mặc định của thư viện.</li>
+                 <li><code>round</code> — nhãn trạng thái cần nổi, đứng một mình trong header hoặc thẻ chi tiết.</li>
+                 <li><code>tag</code> — khi cần kèm <code>description</code>, hoặc phân loại tĩnh cần khung rõ ràng. Lưu ý Rule 19 của kit: hạn chế viền, nên <code>round</code> vẫn là lựa chọn mặc định cho nhãn có nền.</li>
+-                <li><code>status</code> — mở rộng của kit, dùng khi trạng thái đã nằm trong <code>STATUS_MAP</code> để khỏi khai lại icon và màu ở từng trang.</li>
++                <li>Trạng thái lifecycle — vẫn là <code>type="icon"</code>, lấy <code>color</code> + <code>icon</code> từ bảng tra STATUS_MAP để mọi trang thống nhất.</li>
+               </ul>
+             </div>
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/section.html b/design-system/preview/components/section.html
+--- a/design-system/preview/components/section.html	2026-10-13 14:03:02.309170938 +0000
++++ b/design-system/preview/components/section.html	2026-10-13 14:03:02.326691759 +0000
+@@ -79,7 +79,7 @@
+         <!-- Nhiều hành động trên header: nhóm bằng c-header-divider (lớp bố cục của kit) -->
+         <sd-section title="Lệnh chuyển tiền #1" subTitle="IB &middot; 2.000.000.000 VND" collapsible>
+           <div class="d-flex align-items-center gap-8" sdHeaderRight>
+-            <sd-badge type="status" status="unknown" title="Nháp"></sd-badge>
++            <sd-badge color="info" icon="help_outline" fontSet="material-icons-outlined" title="Nháp"></sd-badge>
+             <div class="c-header-divider"></div>
+             <sd-button type="light" color="primary" size="sm" prefixIcon="content_copy" title="Nhân bản"></sd-button>
+             <sd-button type="light" color="primary" size="sm" prefixIcon="delete_outline" title="Xóa"></sd-button>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/tooltip.html b/design-system/preview/components/tooltip.html
+--- a/design-system/preview/components/tooltip.html	2026-10-13 14:03:02.309211222 +0000
++++ b/design-system/preview/components/tooltip.html	2026-10-13 14:03:02.326730293 +0000
+@@ -144,12 +144,12 @@
+         </sd-section>
+ 
+         <sd-section title="Qua component - sd-button / sd-badge dùng chung">
+-          <p class="text-sm text-secondary mb-3"><code>sd-button</code> và <code>sd-badge</code> không có input <code>tooltip</code> riêng - đặt thẳng <code>data-sd-tooltip</code> trên thẻ component, dùng chính cơ chế chung.</p>
++          <p class="text-sm text-secondary mb-3">Directive <code>sdTooltip</code> gắn được lên mọi thẻ, kể cả <code>sd-button</code> / <code>sd-badge</code> (catalog <code>#c-tooltip</code>) — ra bong bóng <code>sdTooltip</code>. Khác với input <code>tooltip</code> của chính hai component đó: input ấy là <code>matTooltip</code> của thư viện, ra bong bóng kiểu Material (xem trang Badge / Button).</p>
+ 
+           <div class="flex gap-3 items-center flex-wrap mb-4">
+             <sd-button type="fill" color="primary" title="Tạo mới" prefixIcon="add" sdTooltip="Nhấn để tạo đơn hàng mới"></sd-button>
+             <sd-button type="light" color="primary" size="sm" prefixIcon="group_add" aria-label="Thêm người" sdTooltip="Thêm người vào nhóm"></sd-button>
+-            <sd-badge type="status" status="waiting" sdTooltip="Đang chờ người phụ trách xác nhận"></sd-badge>
++            <sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" sdTooltip="Đang chờ người phụ trách xác nhận" title="Waiting"></sd-badge>
+             <sd-badge type="round" color="info" title="Mới" sdTooltip="Đơn hàng tạo trong vòng 24 giờ"></sd-badge>
+           </div>
+ 
+@@ -166,7 +166,7 @@
+ &lt;sd-button type="light" color="primary" size="sm" prefixIcon="group_add" aria-label="Thêm người" sdTooltip="Thêm người vào nhóm"&gt;&lt;/sd-button&gt;
+ 
+ <span class="code-comment">&lt;!-- sd-badge: mọi type đều dùng chung sdTooltip --&gt;</span>
+-&lt;sd-badge type="status" status="waiting" sdTooltip="Đang chờ người phụ trách xác nhận"&gt;&lt;/sd-badge&gt;
++&lt;sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" title="Waiting" sdTooltip="Đang chờ người phụ trách xác nhận"&gt;&lt;/sd-badge&gt;
+ &lt;sd-badge type="round" color="info" title="Mới" sdTooltip="Đơn hàng tạo trong vòng 24 giờ"&gt;&lt;/sd-badge&gt;</pre>
+               </div>
+             </div>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/patterns/add-page.html b/design-system/preview/patterns/add-page.html
+--- a/design-system/preview/patterns/add-page.html	2026-10-13 14:03:02.308403435 +0000
++++ b/design-system/preview/patterns/add-page.html	2026-10-13 14:03:02.325596708 +0000
+@@ -221,7 +221,7 @@
+                     subtitle="H2H &middot; 5.000.000.000 VND &middot; CF: CF_OUT_001"
+                     collapsable>
+           <div class="d-flex align-items-center gap-8" sdHeaderRight>
+-            <sd-badge type="status" status="unknown" title="Nháp"></sd-badge>
++            <sd-badge color="info" icon="help_outline" fontSet="material-icons-outlined" title="Nháp"></sd-badge>
+             <div class="c-header-divider"></div>
+             <sd-button type="light" color="primary" size="sm" prefixIcon="content_copy" title="Nhân bản"></sd-button>
+             <sd-button type="light" color="primary" size="sm" prefixIcon="delete_outline" title="Xóa"></sd-button>
+@@ -308,7 +308,7 @@
+                     subtitle="IB &middot; 2.000.000.000 VND &middot; CF: CF_OUT_012"
+                     collapsable collapsed>
+           <div class="d-flex align-items-center gap-8" sdHeaderRight>
+-            <sd-badge type="status" status="unknown" title="Nháp"></sd-badge>
++            <sd-badge color="info" icon="help_outline" fontSet="material-icons-outlined" title="Nháp"></sd-badge>
+             <div class="c-header-divider"></div>
+             <sd-button type="light" color="primary" size="sm" prefixIcon="content_copy" title="Nhân bản"></sd-button>
+             <sd-button type="light" color="primary" size="sm" prefixIcon="delete_outline" title="Xóa"></sd-button>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/patterns/read-page.html b/design-system/preview/patterns/read-page.html
+--- a/design-system/preview/patterns/read-page.html	2026-10-13 14:03:02.308424660 +0000
++++ b/design-system/preview/patterns/read-page.html	2026-10-13 14:03:02.325618719 +0000
+@@ -54,7 +54,7 @@
+           </sd-section>
+ 
+           <sd-section title="Thông tin phê duyệt" noPaddingBody collapsable>
+-            <sd-section-item label="Trạng thái"><sd-badge type="status" status="waiting" title="Chờ duyệt"></sd-badge></sd-section-item>
++            <sd-section-item label="Trạng thái"><sd-badge color="info" icon="access_time" fontSet="material-icons-outlined" title="Chờ duyệt"></sd-badge></sd-section-item>
+             <sd-section-item label="Người duyệt">—</sd-section-item>
+             <sd-section-item label="Nội dung duyệt">—</sd-section-item>
+             <sd-section-item label="Ngày duyệt">—</sd-section-item>
+@@ -268,7 +268,7 @@
+     &lt;sd-section-item label="Mã"&gt;REC-001&lt;/sd-section-item&gt;
+     &lt;sd-section-item label="Tên"&gt;Record 1&lt;/sd-section-item&gt;
+     &lt;sd-section-item label="Trạng thái"&gt;
+-      &lt;sd-badge type="status" status="active" title="Hoạt động"&gt;&lt;/sd-badge&gt;
++      &lt;sd-badge color="success" icon="play_circle" title="Hoạt động"&gt;&lt;/sd-badge&gt;
+     &lt;/sd-section-item&gt;
+   &lt;/sd-section&gt;
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-13 14:03:02.303507648 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-13 14:03:02.324099723 +0000
+@@ -2109,8 +2109,11 @@
+   /* ══════════════════════════════════════════════════════════
+      sd-badge
+      ══════════════════════════════════════════════════════════ */
+-  /* Status badge lookup — maps status key → { icon, color, filled }
+-     filled: true = material-icons (filled), false = material-icons-outlined */
++  /* STATUS_MAP — BẢNG TRA quy ước của kit (không phải API của sd-badge): trạng thái lifecycle → màu + icon
++     + bộ font để viết badge theo đúng API catalog. 2026-10-13 (Builder chọn phương án C): GỠ `type="status"`
++     khỏi sd-badge — thư viện 19.0.10 chỉ có icon | round | tag. Bảng này còn dùng cho: cột `type:'status'`
++     của sd-table, `data-badge-status` của pattern page-header, và hàm `window.sdStatusBadge()`.
++     filled: true = material-icons (mặc định của sd-badge, khỏi khai), false = fontSet="material-icons-outlined" */
+   var STATUS_MAP = {
+     unknown:     { icon: 'help_outline',           color: 'info',    filled: false },
+     new:         { icon: 'circle',                 color: 'info',    filled: true },
+@@ -2124,12 +2127,27 @@
+     warning:     { icon: 'warning',                color: 'warning', filled: true },
+     blocked:     { icon: 'block',                  color: 'error',   filled: false },
+     error:       { icon: 'error',                  color: 'error',   filled: true },
+-    cancelled:   { icon: 'cancel',                 color: 'neutral', filled: true },
+-    deactivated: { icon: 'remove_circle',          color: 'neutral', filled: true },
+-    removed:     { icon: 'remove_circle_outline',  color: 'neutral', filled: false },
++    cancelled:   { icon: 'cancel',                 color: 'secondary', filled: true },
++    deactivated: { icon: 'remove_circle',          color: 'secondary', filled: true },
++    removed:     { icon: 'remove_circle_outline',  color: 'secondary', filled: false },
+     approved:    { icon: 'thumb_up',               color: 'success', filled: false },
+     denied:      { icon: 'thumb_down',             color: 'error',   filled: false }
+   };
++  /* Thuộc tính sd-badge (API catalog) cho một khoá trạng thái — khoá lạ → 'unknown'.
++     `title` bỏ trống → tên khoá viết hoa chữ đầu (như kiểu cũ). */
++  function sdStatusBadgeAttrs(key, title) {
++    var k = String(key || '').toLowerCase(), cfg = STATUS_MAP[k] || STATUS_MAP.unknown;
++    var t = (title != null && title !== '') ? String(title) : (k ? k.charAt(0).toUpperCase() + k.slice(1) : '');
++    return { color: cfg.color, icon: cfg.icon, fontSet: cfg.filled ? '' : 'material-icons-outlined', title: t };
++  }
++  function sdStatusBadgeHtml(key, title) {
++    var a = sdStatusBadgeAttrs(key, title);
++    return '<sd-badge color="' + a.color + '" icon="' + a.icon + '"' +
++      (a.fontSet ? ' fontSet="' + a.fontSet + '"' : '') + ' title="' + escAttr(a.title) + '"></sd-badge>';
++  }
++  window.SD_STATUS_MAP = STATUS_MAP;
++  window.sdStatusBadgeAttrs = sdStatusBadgeAttrs;
++  window.sdStatusBadge = sdStatusBadgeHtml;
+ 
+   /* Mirror theo badge.component.ts / .html / .scss thật của @sdcorejs/angular
+      v22.2.12. Rà soát 2026-10-10 — bản trước lệch gần như toàn bộ:
+@@ -2149,14 +2167,14 @@
+      `d-flex flex-column`, chữ icon có khoảng trắng hai bên, secondary của icon là `c-black400`;
+      bỏ role/tabindex/aria-label tự thêm (thư viện không có).
+ 
+-     'status' + STATUS_MAP ở trên là phần MỞ RỘNG riêng của kit (thư viện
+-     không có) — giữ lại vì sd-table và 75 chỗ trong prototype đang dùng,
+-     nhưng nay render qua đúng nhánh 'icon' của thư viện thay vì markup riêng. */
++     2026-10-13: GỠ `type="status"` / thuộc tính `status` / màu `neutral` (Rule 18 — Builder chọn phương án C).
++     Mọi chỗ cũ đã viết lại sang `color` + `icon` (+ `fontSet`) theo STATUS_MAP; `type="status"` nay đi nhánh
++     cuối của template thư viện như mọi type lạ. */
+   var SD_BADGE_COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error'];
+   var SD_BADGE_FONTS = ['material-icons', 'material-icons-outlined', 'material-icons-round', 'material-icons-sharp'];
+   class SdBadge extends HTMLElement {
+     static get observedAttributes() {
+-      return ['type', 'color', 'size', 'title', 'description', 'icon', 'status',
++      return ['type', 'color', 'size', 'title', 'description', 'icon',
+               'tooltip', 'fontset', 'fontSet',
+               'primary', 'secondary', 'success', 'info', 'warning', 'error'];
+     }
+@@ -2244,21 +2262,6 @@
+         this._strippingTitle = false;
+       }
+ 
+-      /* 'status' — mở rộng riêng của kit: tra STATUS_MAP rồi đi tiếp bằng
+-         đúng nhánh 'icon' của thư viện. */
+-      if (type === 'status') {
+-        var status = (this._cfgVal('status') || '').toLowerCase();
+-        var cfg = STATUS_MAP[status] || STATUS_MAP['unknown'];
+-        if (!this._cfgVal('color') && !this._hasColorFlag()) color = cfg.color;
+-        if (!icon) icon = cfg.icon;
+-        if (!fontSet) fontSet = cfg.filled ? 'material-icons' : 'material-icons-outlined';
+-        if (!title) title = status ? (status.charAt(0).toUpperCase() + status.slice(1)) : '';
+-        type = 'icon';
+-      }
+-
+-      /* 'neutral' là màu cũ của kit — thư viện gọi là 'secondary'; quy về secondary để DOM giống
+-         catalog (CSS vẫn giữ bí danh c-neutral cho markup viết tay). */
+-      if (color === 'neutral') color = 'secondary';
+       var iconName = icon || 'fiber_manual_record';
+       /* fontSet mặc định `material-icons` (ĐẶC) — catalog @sd-angular/core 19.0.10. */
+       var iconFont = fontSet || 'material-icons';
+@@ -2325,11 +2328,6 @@
+       });
+     }
+ 
+-    _hasColorFlag() {
+-      var flags = ['primary', 'secondary', 'success', 'info', 'warning', 'error'];
+-      for (var i = 0; i < flags.length; i++) if (this._boolAttr(flags[i])) return true;
+-      return false;
+-    }
+   }
+   customElements.define('sd-badge', SdBadge);
+ 
+@@ -8675,14 +8673,11 @@
+           return esc(String(value));
+         }
+         case 'boolean': {
+-          var displayTrue = (col.option && col.option.displayOnTrue) || 'Có';
+-          var displayFalse = (col.option && col.option.displayOnFalse) || 'Không';
+-          var statusTrue = (col.option && col.option.statusOnTrue) || 'active';
+-          var statusFalse = (col.option && col.option.statusOnFalse) || 'deactivated';
+-          if (value === true || value === 'true') {
+-            return '<sd-badge type="status" status="' + escAttr(statusTrue) + '" title="' + escAttr(displayTrue) + '"></sd-badge>';
+-          }
+-          return '<sd-badge type="status" status="' + escAttr(statusFalse) + '" title="' + escAttr(displayFalse) + '"></sd-badge>';
++          /* Thư viện (TableFormatService): display = value === true ? displayOnTrue || 'True' : displayOnFalse || 'False';
++             #createBadge → { type: 'round', color: value ? 'success' : 'error' } (2026-10-13, thay type="status") */
++          var bTrue = value === true || value === 'true';
++          var bTitle = bTrue ? ((col.option && col.option.displayOnTrue) || 'True') : ((col.option && col.option.displayOnFalse) || 'False');
++          return '<sd-badge data-sd-cfg="' + escAttr(JSON.stringify({ type: 'round', color: bTrue ? 'success' : 'error', title: bTitle, ctx: 'T' })) + '"></sd-badge>';
+         }
+         case 'values': {
+           if (col.option && col.option.items) {
+@@ -8702,7 +8697,8 @@
+             var sf = col.option.items.find(function (i) { return String(i[svf]) === sKey; });
+             if (sf) sTitle = sf[sdf];
+           }
+-          return '<sd-badge type="status" status="' + escAttr(sKey) + '" title="' + escAttr(sTitle) + '"></sd-badge>';
++          /* cột trạng thái (quy ước của kit): badge viết theo API catalog — color + icon từ STATUS_MAP */
++          return sdStatusBadgeHtml(sKey, sTitle);
+         }
+         case 'link': {
+           var linkHref = (col.option && col.option.href) ? col.option.href : '#';
+@@ -9487,7 +9483,8 @@
+         var b = col.useBadge(value, row, items);
+         if (b && (b.title || b.title === 0)) {
+           /* catalog #c-table: `<sd-badge>` trống thuộc tính, `div.c-badge c-COL c-badge--sm` (ctx 'T') */
+-          return '<sd-badge data-sd-cfg="' + escAttr(JSON.stringify({ type: 'round', color: b.color || 'secondary', title: String(b.title), ctx: 'T' })) + '"></sd-badge>';
++          /* #createBadge: { type: badge.type ?? 'round', color, icon } + title */
++          return '<sd-badge data-sd-cfg="' + escAttr(JSON.stringify({ type: b.type || 'round', color: b.color || 'secondary', icon: b.icon || '', title: String(b.title), ctx: 'T' })) + '"></sd-badge>';
+         }
+       }
+       if (typeof col.transform === 'function') {
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/shell/template.html b/design-system/shell/template.html
+--- a/design-system/shell/template.html	2026-10-13 14:03:02.308104790 +0000
++++ b/design-system/shell/template.html	2026-10-13 14:03:02.325203406 +0000
+@@ -84,7 +84,7 @@
+           <div class="page-title-row">
+             <h1 class="page-title">{{RECORD_NAME}}</h1>
+             <span class="record-id">#{{RECORD_ID}}</span>
+-            <sd-badge type="status" status="active" title="{{STATUS}}"></sd-badge>
++            <sd-badge color="success" icon="play_circle" title="{{STATUS}}"></sd-badge>
+           </div>
+           -->
+           <!-- Sub Title (tuỳ chọn):
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/danh-sach-cam-nang.html b/prototypes/cam-nang-phan-quyen/danh-sach-cam-nang.html
+--- a/prototypes/cam-nang-phan-quyen/danh-sach-cam-nang.html	2026-10-13 14:03:02.303086964 +0000
++++ b/prototypes/cam-nang-phan-quyen/danh-sach-cam-nang.html	2026-10-13 14:03:02.323696503 +0000
+@@ -1,165 +1,165 @@
+-<!DOCTYPE html>
+-<html lang="vi">
+-<head>
+-  <meta charset="UTF-8">
+-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-  <title>Danh sách Cẩm nang — Cẩm nang Phân quyền</title>
+-
+-  <link rel="preconnect" href="https://fonts.googleapis.com">
+-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+-
+-  <link rel="stylesheet" href="../../design-system/core/styles/tokens.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/layout.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/components.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/utilities.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/page-patterns.css">
+-  <link rel="stylesheet" href="../../design-system/core/styles/sd-tokens.css">
+-  <style>
+-    /* ── Grid / card utilities ───────────────────────────────── */
+-    .grid            { display: grid; }
+-    .grid-cols-2     { grid-template-columns: repeat(2, 1fr); }
+-    .cursor-pointer  { cursor: pointer; }
+-    .items-start     { align-items: flex-start; }
+-    .w-12            { width: 48px; }
+-    .h-12            { height: 48px; }
+-    .text-lg         { font-size: 18px; line-height: 1.4; }
+-    .text-3xl        { font-size: 30px; line-height: 1.2; }
+-    .font-bold       { font-weight: 700; }
+-    .border-r        { border-right: 1px solid var(--border-secondary); }
+-    .mt-8            { margin-top: 32px; }
+-    .p-4             { padding: 16px; }
+-    .p-6             { padding: 24px; }
+-    .text-center     { text-align: center; }
+-    /* ── Color utilities ─────────────────────────────────────── */
+-    .text-primary    { color: var(--color-primary-600); }
+-    .text-secondary  { color: var(--text-secondary); }
+-    .text-success    { color: var(--color-success-600); }
+-    .text-info       { color: var(--color-info-600); }
+-    .justify-center  { justify-content: center; }
+-    .text-warning    { color: var(--color-warning-600); }
+-    .bg-primary-light  { background: var(--color-primary-50); }
+-    .bg-info-light     { background: var(--color-info-50); }
+-    .bg-warning-light  { background: var(--color-warning-50); }
+-    .bg-success-light  { background: var(--color-success-50); }
+-    /* ── Card component ──────────────────────────────────────── */
+-    .card {
+-      background: var(--surface-primary);
+-      border: 1px solid var(--border-secondary);
+-      border-radius: 10px;
+-      transition: box-shadow .2s, border-color .2s;
+-    }
+-    .card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.1); border-color: var(--color-primary-200); }
+-    .handbook-table { width:100%; border-collapse:collapse; background:var(--surface-primary); }
+-    .handbook-table th { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.4px; color:var(--text-tertiary); padding:9px 12px; text-align:left; border-bottom:1px solid var(--border-secondary); background:var(--surface-secondary); }
+-    .handbook-table td { padding:11px 12px; border-bottom:1px solid var(--border-secondary); font-size:13px; color:var(--text-primary); vertical-align:middle; }
+-    .handbook-table tbody tr { cursor:pointer; }
+-    .handbook-table tbody tr:hover { background:var(--color-primary-50); }
+-    .handbook-code { font-family:'JetBrains Mono',monospace; color:var(--color-primary-700); font-size:12px; font-weight:600; }
+-    .handbook-name { font-weight:600; color:var(--text-primary); text-decoration:none; }
+-    .handbook-name:hover { color:var(--color-primary-600); text-decoration:underline; }
+-    .handbook-actions { display:flex; align-items:center; justify-content:flex-end; gap:6px; }
+-    .handbook-action {
+-      width:28px; height:28px; border-radius:4px; display:inline-flex; align-items:center; justify-content:center;
+-      color:var(--text-secondary); text-decoration:none; border:1px solid transparent;
+-    }
+-    .handbook-action:hover { background:var(--surface-secondary); border-color:var(--border-secondary); color:var(--color-primary-600); }
+-  </style>
+-</head>
+-<body>
+-  <div class="app-shell">
+-    <aside class="sidebar" id="sidebar"></aside>
+-    <div class="main-area">
+-
+-      <div data-pattern="page-header" data-variant="browse"
+-           data-title="Danh sách Cẩm nang Phân quyền"
+-           data-primary-action="Tạo Cẩm nang"
+-           data-primary-icon="add"
+-           data-primary-href="tao-cam-nang.html"></div>
+-
+-      <div class="content-zone">
+-
+-        <div class="surface rounded-lg overflow-hidden">
+-          <table class="handbook-table">
+-            <thead>
+-              <tr>
+-                <th style="width:120px;">Mã</th>
+-                <th>Tên Cẩm nang</th>
+-                <th style="width:120px;">Đầu việc</th>
+-                <th style="width:130px;">Cập nhật</th>
+-                <th style="width:110px;">Trạng thái</th>
+-                <th style="width:84px;"></th>
+-              </tr>
+-            </thead>
+-            <tbody>
+-              <tr onclick="location.href='danh-sach-workitem.html?handbook=mag'">
+-                <td><span class="handbook-code">MAG</span></td>
+-                <td><a class="handbook-name" href="danh-sach-workitem.html?handbook=mag" onclick="event.stopPropagation()">Cẩm nang MAG</a></td>
+-                <td><strong class="text-primary">45</strong></td>
+-                <td>2026/04/25</td>
+-                <td><sd-badge type="round" color="success" title="Đang áp dụng"></sd-badge></td>
+-                <td>
+-                  <div class="handbook-actions">
+-                    <a class="handbook-action" href="chi-tiet-cam-nang.html?id=MAG" onclick="event.stopPropagation()" title="Xem chi tiết cẩm nang"><span class="material-icons-outlined mi-md">visibility</span></a>
+-                    <a class="handbook-action" href="sua-cam-nang.html?id=MAG" onclick="event.stopPropagation()" title="Sửa cẩm nang"><span class="material-icons-outlined mi-md">edit</span></a>
+-                  </div>
+-                </td>
+-              </tr>
+-              <tr onclick="location.href='danh-sach-workitem.html?handbook=duan'">
+-                <td><span class="handbook-code">DUAN</span></td>
+-                <td><a class="handbook-name" href="danh-sach-workitem.html?handbook=duan" onclick="event.stopPropagation()">Cẩm nang Dự án</a></td>
+-                <td><strong class="text-primary">28</strong></td>
+-                <td>2026/04/20</td>
+-                <td><sd-badge type="round" color="success" title="Đang áp dụng"></sd-badge></td>
+-                <td>
+-                  <div class="handbook-actions">
+-                    <a class="handbook-action" href="chi-tiet-cam-nang.html?id=DUAN" onclick="event.stopPropagation()" title="Xem chi tiết cẩm nang"><span class="material-icons-outlined mi-md">visibility</span></a>
+-                    <a class="handbook-action" href="sua-cam-nang.html?id=DUAN" onclick="event.stopPropagation()" title="Sửa cẩm nang"><span class="material-icons-outlined mi-md">edit</span></a>
+-                  </div>
+-                </td>
+-              </tr>
+-              <tr onclick="location.href='danh-sach-workitem.html?handbook=mpm'">
+-                <td><span class="handbook-code">MPM</span></td>
+-                <td><a class="handbook-name" href="danh-sach-workitem.html?handbook=mpm" onclick="event.stopPropagation()">Cẩm nang MPM</a></td>
+-                <td><strong class="text-primary">67</strong></td>
+-                <td>2026/04/22</td>
+-                <td><sd-badge type="round" color="success" title="Đang áp dụng"></sd-badge></td>
+-                <td>
+-                  <div class="handbook-actions">
+-                    <a class="handbook-action" href="chi-tiet-cam-nang.html?id=MPM" onclick="event.stopPropagation()" title="Xem chi tiết cẩm nang"><span class="material-icons-outlined mi-md">visibility</span></a>
+-                    <a class="handbook-action" href="sua-cam-nang.html?id=MPM" onclick="event.stopPropagation()" title="Sửa cẩm nang"><span class="material-icons-outlined mi-md">edit</span></a>
+-                  </div>
+-                </td>
+-              </tr>
+-              <tr onclick="location.href='danh-sach-workitem.html?handbook=he'">
+-                <td><span class="handbook-code">HE</span></td>
+-                <td><a class="handbook-name" href="danh-sach-workitem.html?handbook=he" onclick="event.stopPropagation()">Cẩm nang H&amp;E</a></td>
+-                <td><strong class="text-primary">32</strong></td>
+-                <td>2026/04/18</td>
+-                <td><sd-badge type="round" color="neutral" title="Ngừng áp dụng"></sd-badge></td>
+-                <td>
+-                  <div class="handbook-actions">
+-                    <a class="handbook-action" href="chi-tiet-cam-nang.html?id=HE" onclick="event.stopPropagation()" title="Xem chi tiết cẩm nang"><span class="material-icons-outlined mi-md">visibility</span></a>
+-                    <a class="handbook-action" href="sua-cam-nang.html?id=HE" onclick="event.stopPropagation()" title="Sửa cẩm nang"><span class="material-icons-outlined mi-md">edit</span></a>
+-                  </div>
+-                </td>
+-              </tr>
+-            </tbody>
+-          </table>
+-        </div>
+-
+-      </div>
+-    </div>
+-  </div>
+-
+-  <script src="../../design-system/sd-components/sd-components.js"></script>
+-  <script src="../../design-system/patterns/page-header.js"></script>
+-  <script src="../../design-system/patterns/data-table.js"></script>
+-  <script src="../../design-system/core/js/pattern-loader.js"></script>
+-  <script src="../../design-system/core/js/shell.js"></script>
+-  <script src="../../design-system/patterns/sidebar.js"></script>
+-  <script src="../shared-nav.js"></script>
+-</body>
+-</html>
++<!DOCTYPE html>
++<html lang="vi">
++<head>
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1.0">
++  <title>Danh sách Cẩm nang — Cẩm nang Phân quyền</title>
++
++  <link rel="preconnect" href="https://fonts.googleapis.com">
++  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
++  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
++  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
++
++  <link rel="stylesheet" href="../../design-system/core/styles/tokens.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/layout.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/components.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/utilities.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/page-patterns.css">
++  <link rel="stylesheet" href="../../design-system/core/styles/sd-tokens.css">
++  <style>
++    /* ── Grid / card utilities ───────────────────────────────── */
++    .grid            { display: grid; }
++    .grid-cols-2     { grid-template-columns: repeat(2, 1fr); }
++    .cursor-pointer  { cursor: pointer; }
++    .items-start     { align-items: flex-start; }
++    .w-12            { width: 48px; }
++    .h-12            { height: 48px; }
++    .text-lg         { font-size: 18px; line-height: 1.4; }
++    .text-3xl        { font-size: 30px; line-height: 1.2; }
++    .font-bold       { font-weight: 700; }
++    .border-r        { border-right: 1px solid var(--border-secondary); }
++    .mt-8            { margin-top: 32px; }
++    .p-4             { padding: 16px; }
++    .p-6             { padding: 24px; }
++    .text-center     { text-align: center; }
++    /* ── Color utilities ─────────────────────────────────────── */
++    .text-primary    { color: var(--color-primary-600); }
++    .text-secondary  { color: var(--text-secondary); }
++    .text-success    { color: var(--color-success-600); }
++    .text-info       { color: var(--color-info-600); }
++    .justify-center  { justify-content: center; }
++    .text-warning    { color: var(--color-warning-600); }
++    .bg-primary-light  { background: var(--color-primary-50); }
++    .bg-info-light     { background: var(--color-info-50); }
++    .bg-warning-light  { background: var(--color-warning-50); }
++    .bg-success-light  { background: var(--color-success-50); }
++    /* ── Card component ──────────────────────────────────────── */
++    .card {
++      background: var(--surface-primary);
++      border: 1px solid var(--border-secondary);
++      border-radius: 10px;
++      transition: box-shadow .2s, border-color .2s;
++    }
++    .card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.1); border-color: var(--color-primary-200); }
++    .handbook-table { width:100%; border-collapse:collapse; background:var(--surface-primary); }
++    .handbook-table th { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.4px; color:var(--text-tertiary); padding:9px 12px; text-align:left; border-bottom:1px solid var(--border-secondary); background:var(--surface-secondary); }
++    .handbook-table td { padding:11px 12px; border-bottom:1px solid var(--border-secondary); font-size:13px; color:var(--text-primary); vertical-align:middle; }
++    .handbook-table tbody tr { cursor:pointer; }
++    .handbook-table tbody tr:hover { background:var(--color-primary-50); }
++    .handbook-code { font-family:'JetBrains Mono',monospace; color:var(--color-primary-700); font-size:12px; font-weight:600; }
++    .handbook-name { font-weight:600; color:var(--text-primary); text-decoration:none; }
++    .handbook-name:hover { color:var(--color-primary-600); text-decoration:underline; }
++    .handbook-actions { display:flex; align-items:center; justify-content:flex-end; gap:6px; }
++    .handbook-action {
++      width:28px; height:28px; border-radius:4px; display:inline-flex; align-items:center; justify-content:center;
++      color:var(--text-secondary); text-decoration:none; border:1px solid transparent;
++    }
++    .handbook-action:hover { background:var(--surface-secondary); border-color:var(--border-secondary); color:var(--color-primary-600); }
++  </style>
++</head>
++<body>
++  <div class="app-shell">
++    <aside class="sidebar" id="sidebar"></aside>
++    <div class="main-area">
++
++      <div data-pattern="page-header" data-variant="browse"
++           data-title="Danh sách Cẩm nang Phân quyền"
++           data-primary-action="Tạo Cẩm nang"
++           data-primary-icon="add"
++           data-primary-href="tao-cam-nang.html"></div>
++
++      <div class="content-zone">
++
++        <div class="surface rounded-lg overflow-hidden">
++          <table class="handbook-table">
++            <thead>
++              <tr>
++                <th style="width:120px;">Mã</th>
++                <th>Tên Cẩm nang</th>
++                <th style="width:120px;">Đầu việc</th>
++                <th style="width:130px;">Cập nhật</th>
++                <th style="width:110px;">Trạng thái</th>
++                <th style="width:84px;"></th>
++              </tr>
++            </thead>
++            <tbody>
++              <tr onclick="location.href='danh-sach-workitem.html?handbook=mag'">
++                <td><span class="handbook-code">MAG</span></td>
++                <td><a class="handbook-name" href="danh-sach-workitem.html?handbook=mag" onclick="event.stopPropagation()">Cẩm nang MAG</a></td>
++                <td><strong class="text-primary">45</strong></td>
++                <td>2026/04/25</td>
++                <td><sd-badge type="round" color="success" title="Đang áp dụng"></sd-badge></td>
++                <td>
++                  <div class="handbook-actions">
++                    <a class="handbook-action" href="chi-tiet-cam-nang.html?id=MAG" onclick="event.stopPropagation()" title="Xem chi tiết cẩm nang"><span class="material-icons-outlined mi-md">visibility</span></a>
++                    <a class="handbook-action" href="sua-cam-nang.html?id=MAG" onclick="event.stopPropagation()" title="Sửa cẩm nang"><span class="material-icons-outlined mi-md">edit</span></a>
++                  </div>
++                </td>
++              </tr>
++              <tr onclick="location.href='danh-sach-workitem.html?handbook=duan'">
++                <td><span class="handbook-code">DUAN</span></td>
++                <td><a class="handbook-name" href="danh-sach-workitem.html?handbook=duan" onclick="event.stopPropagation()">Cẩm nang Dự án</a></td>
++                <td><strong class="text-primary">28</strong></td>
++                <td>2026/04/20</td>
++                <td><sd-badge type="round" color="success" title="Đang áp dụng"></sd-badge></td>
++                <td>
++                  <div class="handbook-actions">
++                    <a class="handbook-action" href="chi-tiet-cam-nang.html?id=DUAN" onclick="event.stopPropagation()" title="Xem chi tiết cẩm nang"><span class="material-icons-outlined mi-md">visibility</span></a>
++                    <a class="handbook-action" href="sua-cam-nang.html?id=DUAN" onclick="event.stopPropagation()" title="Sửa cẩm nang"><span class="material-icons-outlined mi-md">edit</span></a>
++                  </div>
++                </td>
++              </tr>
++              <tr onclick="location.href='danh-sach-workitem.html?handbook=mpm'">
++                <td><span class="handbook-code">MPM</span></td>
++                <td><a class="handbook-name" href="danh-sach-workitem.html?handbook=mpm" onclick="event.stopPropagation()">Cẩm nang MPM</a></td>
++                <td><strong class="text-primary">67</strong></td>
++                <td>2026/04/22</td>
++                <td><sd-badge type="round" color="success" title="Đang áp dụng"></sd-badge></td>
++                <td>
++                  <div class="handbook-actions">
++                    <a class="handbook-action" href="chi-tiet-cam-nang.html?id=MPM" onclick="event.stopPropagation()" title="Xem chi tiết cẩm nang"><span class="material-icons-outlined mi-md">visibility</span></a>
++                    <a class="handbook-action" href="sua-cam-nang.html?id=MPM" onclick="event.stopPropagation()" title="Sửa cẩm nang"><span class="material-icons-outlined mi-md">edit</span></a>
++                  </div>
++                </td>
++              </tr>
++              <tr onclick="location.href='danh-sach-workitem.html?handbook=he'">
++                <td><span class="handbook-code">HE</span></td>
++                <td><a class="handbook-name" href="danh-sach-workitem.html?handbook=he" onclick="event.stopPropagation()">Cẩm nang H&amp;E</a></td>
++                <td><strong class="text-primary">32</strong></td>
++                <td>2026/04/18</td>
++                <td><sd-badge type="round" color="secondary" title="Ngừng áp dụng"></sd-badge></td>
++                <td>
++                  <div class="handbook-actions">
++                    <a class="handbook-action" href="chi-tiet-cam-nang.html?id=HE" onclick="event.stopPropagation()" title="Xem chi tiết cẩm nang"><span class="material-icons-outlined mi-md">visibility</span></a>
++                    <a class="handbook-action" href="sua-cam-nang.html?id=HE" onclick="event.stopPropagation()" title="Sửa cẩm nang"><span class="material-icons-outlined mi-md">edit</span></a>
++                  </div>
++                </td>
++              </tr>
++            </tbody>
++          </table>
++        </div>
++
++      </div>
++    </div>
++  </div>
++
++  <script src="../../design-system/sd-components/sd-components.js"></script>
++  <script src="../../design-system/patterns/page-header.js"></script>
++  <script src="../../design-system/patterns/data-table.js"></script>
++  <script src="../../design-system/core/js/pattern-loader.js"></script>
++  <script src="../../design-system/core/js/shell.js"></script>
++  <script src="../../design-system/patterns/sidebar.js"></script>
++  <script src="../shared-nav.js"></script>
++</body>
++</html>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/quan-ly-cam-nang.html b/prototypes/cam-nang-phan-quyen/quan-ly-cam-nang.html
+--- a/prototypes/cam-nang-phan-quyen/quan-ly-cam-nang.html	2026-10-13 14:03:02.302753212 +0000
++++ b/prototypes/cam-nang-phan-quyen/quan-ly-cam-nang.html	2026-10-13 14:03:02.323327969 +0000
+@@ -447,7 +447,7 @@
+         </div>
+         <div class="content-body">
+           <div class="flex gap-4 mb-6">
+-            <sd-badge type="round" color="${statusColor}" title="${statusLabel}"></sd-badge>
++            <sd-badge type="round" color="${statusColor === 'neutral' ? 'secondary' : statusColor}" title="${statusLabel}"></sd-badge>
+             <span class="text-sm text-secondary">${workitem.tierCount} Approval Tier</span>
+           </div>
+ 
+@@ -456,7 +456,7 @@
+             <sd-section-item label="Tên đầu việc">${workitem.name}</sd-section-item>
+             <sd-section-item label="Cẩm nang">${handbook.name} (${handbook.code})</sd-section-item>
+             <sd-section-item label="Trạng thái">
+-              <sd-badge type="round" color="${statusColor}" title="${statusLabel}"></sd-badge>
++              <sd-badge type="round" color="${statusColor === 'neutral' ? 'secondary' : statusColor}" title="${statusLabel}"></sd-badge>
+             </sd-section-item>
+           </sd-section>
+ 

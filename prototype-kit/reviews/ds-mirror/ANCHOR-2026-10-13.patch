@@ -1,0 +1,1174 @@
+# ANCHOR 2026-10-13 — sd-anchor + sd-anchor-item đồng bộ mã thư viện sd-angular-core-components-anchor.mjs 19.0.10 + catalog #c-anchor
+# Gỡ hideNavOnMobile (22.2.12) → hideNav mặc định isMobile(); DOM nguyên văn (anchor-nav, section, mat-icon); CSS nguyên văn; gỡ host/nav style kit tự thêm
+# 7 file: sd-components.js, sd-tokens.css, preview anchor.html, sd-layout.md, CHANGELOG, known-gaps, lessons
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/ANCHOR-2026-10-13.patch
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-13 14:33:50.114308749 +0000
++++ b/CHANGELOG.md	2026-10-13 14:33:50.130030531 +0000
+@@ -8,6 +8,21 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `sd-anchor` + `sd-anchor-item` đồng bộ mã thư viện 19.0.10 (bản trước theo gói npm 22.2.12)
++
++Builder: *„Tiếp tục phần Anchor `sd-anchor`…“*.
++
++- Đối chiếu `sd-angular-core-components-anchor.mjs` 19.0.10 + catalog `#c-anchor`: DOM 2/2 ví dụ trùng nguyên văn
++  (thẻ `anchor-nav`, `<section>` bọc nội dung, icon `mat-icon`, chữ có khoảng trắng), toạ độ + computed 0 lệch, mục active
++  khi cuộn trùng catalog.
++- **Gỡ `hideNavOnMobile`** (input của 22.2.12): `hideNav` nay mặc định = điện thoại (userAgent `Mobi|Android`) như thư
++  viện; ẩn thì không dựng nav. Gỡ role / aria tự thêm; `color` không giới hạn 6 giá trị; active theo đúng tập
++  IntersectionObserver của thư viện.
++- CSS nguyên văn thư viện (đúng phạm vi emulated); gỡ phần kit tự thêm: host `display:block; height:100%`, nav tự cuộn,
++  mục không co, cỡ chữ / màu / icon 20px riêng — trang tự cho chiều cao như catalog (`style="display: block; height: …"`).
++- Preview `anchor.html` dựng lại theo 2 ví dụ catalog + hideNav / overScroll; docs `sd-layout.md`. Bản vá:
++  `reviews/ds-mirror/ANCHOR-2026-10-13.patch`.
++
+ ### Changed — `sd-avatar` đồng bộ mã thư viện 19.0.10: ảnh lỗi rơi về chữ, DOM nguyên văn catalog
+ 
+ Builder: *„Tiếp tục phần Avatar `sd-avatar`…“*.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-13 14:33:50.116170061 +0000
++++ b/_memory/known-gaps.md	2026-10-13 14:33:50.133113639 +0000
+@@ -216,6 +216,37 @@
+ | `src` | không có | bí danh của `source` | Ngoại lệ 3 Rule 18 (markup cũ) |
+ | Export prototype (1 file HTML) | — | trang có `sd-preview-pdf` phải nhúng thêm `vendor/pdfjs/*.js` (~1,7 MB) | Ghi ở `ai-instructions/export.md` |
+ 
++## `sd-anchor` + `sd-anchor-item` — ĐỒNG BỘ THƯ VIỆN 2026-10-13 (catalog `#c-anchor` + `sd-angular-core-components-anchor.mjs` 19.0.10)
++
++Bản trước (2026-09-24) dựng theo `@sdcorejs/angular` 22.2.12. Harness sinh từ DOM catalog (`work/angen.mjs`, 2 ví dụ, nội
++dung mẫu nguyên văn): DOM 2/2 trùng nguyên văn (trừ thuộc tính cấu hình trên host — Rule 18 ngoại lệ 1), toạ độ + computed
++0 lệch; cuộn tới 0 / 150 / 250 / 400 / 600 / 800px → mục active trùng catalog cả 6 lần (`work/ancat.mjs`).
++
++| Chỗ | Thư viện 19.0.10 / kit nay | Kit trước (22.2.12 + tự thêm) |
++|---|---|---|
++| `hideNavOnMobile` | **không có** — `hideNav` mặc định `BrowserUtilities.isMobile()` = `/Mobi\|Android/i.test(userAgent)` | input riêng, theo bề rộng < 768px + nghe resize |
++| hideNav | **không dựng** khối nav (`@if`), không chạy observer | `display: none` |
++| Nav | `div.c-anchor-list > anchor-nav > div.c-anchor-list` (thẻ `anchor-nav` thật) | thiếu `anchor-nav`; nav có `role="navigation"` + `aria-label`, mục có `role="link"` / `aria-label` / `aria-current` (tự thêm) |
++| Mục nav | `tabindex` · `class` · `data-autoid`; chữ `" Tiêu đề "`; icon `mat-icon notranslate c-anchor-list-item-icon material-icons …` 24px | thứ tự khác, icon thêm `mi-lg`, 20px |
++| `sd-anchor-item` | nội dung bọc `<section>` | không bọc |
++| `color` | không kiểm — `var(--sd-{color})` | chỉ 6 giá trị, lạ → primary |
++| Active khi cuộn | section **đầu tiên trong tập "đang thấy"** của IntersectionObserver | đo hình học, đòi giao ≥ 1px |
++| Host CSS | **không có** (inline) — trang tự cho `display: block; height` như catalog | `sd-anchor{display:block;height:100%}`, `sd-anchor-item{display:block}` |
++| CSS nav | nguyên văn, phạm vi emulated (`sd-anchor .c-anchor-vertical > .c-anchor-list` / `anchor-nav .c-anchor-list …`) | thêm nav tự cuộn khi tràn, mục `flex: 0 0 auto`, chữ neutral-900 14px font riêng, outline-offset focus |
++| Khoá mục | `Utilities.generateUuid()` (`crypto.randomUUID`) | chỉ số |
++
++**Lưu ý — thay một quyết định cũ:** 2026-09-24 kit tự sửa chỗ thư viện bóp mục lục khi tràn (chữ xuống dòng bị xén) và
++không dùng `ellipsis` ở preview. Theo chỉ đạo sau đó *„Không được khác Core UI catalog, làm giống y hệt“*, kit nay chép
++đúng thư viện; preview dùng `ellipsis` như ví dụ 2 của catalog. Tiêu đề dài → bật `ellipsis` hoặc viết ngắn.
++
++**Còn khác, có chủ ý:** `autoId="loan-detail"` của ví dụ 2 — catalog in code có `autoId` nhưng DOM chụp không có
++`data-autoid` trên mục nav; kit theo thư viện (`[attr.data-autoId]="itemAutoId(section)"`) nên **có**
++`data-autoid="components-anchor-loan-detail-general"`. Thuộc tính cấu hình trên host (Rule 18 ngoại lệ 1).
++
++Kiểm hành vi (`work/anint.mjs`, 0 lỗi): active ban đầu = mục 1; cuộn đổi active; bấm → debounce 200ms rồi cuộn tới mục;
++`autoId` + `key`; `hideNav` gỡ / dựng lại nav; `overScroll`; thêm item động → nav dựng lại, `title` gỡ khỏi host, nội dung
++bọc `<section>`; đổi `title` qua property; `color`; giả userAgent Android → không có nav.
++
+ ## `sd-avatar` — ĐỒNG BỘ THƯ VIỆN 2026-10-13 (catalog `#c-avatar` + `sd-angular-core-components-avatar.mjs` 19.0.10)
+ 
+ Harness sinh từ DOM catalog (`work/avgen.mjs`, 15 avatar đúng bố cục `.av-*`): innerHTML 15/15 trùng **nguyên văn**
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-13 14:33:50.116126689 +0000
++++ b/_memory/lessons.md	2026-10-13 14:33:50.133067026 +0000
+@@ -246,7 +246,7 @@
+ Thư viện dùng `input(true, { transform: booleanAttribute })` khá nhiều:
+ `disableBackdropClose`, `lazyLoadContent`, `stretchTabs`, `showToolbar`, `loop`,
+ `zoomable`, `downloadable`, `sidebarOpen`, `showClearAll`, `addable`,
+-`hideNavOnMobile`. Nghĩa là **không khai = BẬT**, khai `="false"` = tắt.
++`hideNavOnMobile` *(input của gói npm 22.2.12 — 19.0.10 không có, đã gỡ 2026-10-13; `hideNav` của 19.0.10 mặc định = `isMobile()`)*. Nghĩa là **không khai = BẬT**, khai `="false"` = tắt.
+ 
+ `sdHasFlag` của kit thì ngược (có mặt = bật, vắng = tắt). Gặp một cờ sai kiểu này
+ thì phải đi soát CẢ NHÓM chứ đừng vá lẻ — dùng `sdFlagDefaultTrue()`.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-layout.md b/design-system/components/sd-layout.md
+--- a/design-system/components/sd-layout.md	2026-10-13 14:33:50.117629605 +0000
++++ b/design-system/components/sd-layout.md	2026-10-13 14:33:50.134510369 +0000
+@@ -432,72 +432,71 @@
+ 
+ ## sd-anchor
+ 
+-Sidebar điều hướng giữa các phần khác nhau trong một trang dài - tự detect phần đang hiển thị khi cuộn (Scroll Tracking), bấm sidebar để nhảy tới phần (Click Navigation), highlight mục đang xem (Active Highlight). Portal: `/component/anchor/basic`, `/component/anchor/with-section`.
+-
+-> ⚠️ **Bắt buộc:** sd-anchor phải được bọc trong thẻ parent có chiều cao cụ thể (height: 600px, 100%, ...) để hoạt động đúng.
++Trang dài chia mục, kèm **mục lục dính bên phải**: gom các `sd-anchor-item` con, theo dõi mục đang hiển thị bằng
++IntersectionObserver và cuộn mượt khi bấm vào mục lục. **ĐỒNG BỘ 2026-10-13 theo catalog `#c-anchor` + mã thư viện
++(`sd-angular-core-components-anchor.mjs` 19.0.10)** — DOM 2/2 ví dụ trùng nguyên văn, toạ độ + computed 0 lệch,
++mục active khi cuộn trùng catalog. Preview: [components/anchor.html](../preview/components/anchor.html).
++
++> ⚠️ **Chiều cao do trang chứa quyết định** — component chỉ đặt `height: 100%` cho khung cuộn bên trong, thẻ
++> `sd-anchor` **không có style** (như thư viện). Viết như catalog: `<sd-anchor style="display: block; height: 340px">`
++> (hoặc `height: 100%` trong một khung có chiều cao).
+ 
+ | Attribute | Values | Default |
+ |-----------|--------|---------|
+ | `sidebarWidth` | string - CSS width | `200px` |
+-| `color` | `primary` \| `secondary` \| `info` \| `success` \| `warning` \| `error` | `primary` |
+-| `ellipsis` | boolean | `false` — **kit không dùng**, xem ghi chú dưới |
++| `color` | `primary` \| `secondary` \| `info` \| `success` \| `warning` \| `error` → `var(--sd-{color})` | `primary` |
++| `ellipsis` | boolean — cắt tiêu đề dài bằng "…" | `false` |
+ | `overScroll` | boolean | `false` |
+-| `hideNav` | boolean | `false` |
+-| `hideNavOnMobile` | boolean | **`true`** |
++| `hideNav` | boolean | **`true` trên điện thoại** (userAgent khớp `/Mobi\|Android/i`), `false` trên máy tính |
+ | `autoId` | string | - |
+ 
+-> **Hình thức:** mục lục kiểu **thanh dọc bên trái mỗi mục** (`border-left: 2px`), khoảng cách nội dung ↔ nav
+-> 16px, mục padding 8px 24px, icon 20px. Mục active: thanh + chữ + icon đổi sang `color`, **in đậm 700**,
+-> **không có nền**. Không có hiệu ứng hover. Cả khối `.c-anchor-vertical` là vùng cuộn, nav dính lại nhờ
+-> `position: sticky`.
++> **Hình thức (styles nguyên văn):** mục lục kiểu **thanh dọc bên trái mỗi mục** (`border-left: 2px`), khoảng cách
++> nội dung ↔ nav 16px, mục padding `.5rem 1.5rem`, chữ `--sd-black500` cỡ chữ của trang, icon `mat-icon` 24px.
++> Mục active: thanh + chữ + icon đổi sang `color`, **in đậm 700**, không nền, không hover. Cả khối
++> `.c-anchor-vertical` là vùng cuộn, nav dính lại nhờ `position: sticky`.
+ 
+-Ba điểm dễ hiểu sai, đều đã đối chiếu source thật của `@sdcorejs/angular` v22.2.12:
++Ba điểm dễ hiểu sai:
+ 
+ - **`overScroll` KHÔNG phải "cuộn quá phần cuối".** `false` (mặc định) = **chặn** cuộn lan ra trang ngoài
+-  (`overscroll-behavior: contain`); `true` = cho lan. Không liên quan gì tới việc chèn khoảng trống cuối nội dung.
+-- **`hideNavOnMobile` mặc định là `true`**, không phải false — sidebar **tự ẩn** khi màn hình < 768px
+-  (breakpoint mobile của `SdViewportService`). Muốn giữ nav trên mobile phải đặt `hideNavOnMobile="false"`.
+-- **`autoId` chỉ sinh ra `data-autoid` khi item cũng có `key`**: `components-anchor-{autoId}-{key}`.
+-
+-> **Tiêu đề dài thì XUỐNG DÒNG, không cắt ba chấm** (quyết định của Builder 2026-09-24). Input
+-> `ellipsis` của thư viện vẫn giữ trong API cho ai thực sự cần, nhưng **preview và trang mới của kit
+-> không dùng** — mục lục bị cắt thì người đọc không biết phần đó nói gì.
+->
+-> Kèm theo đó, kit sửa một lỗi mà SCSS gốc cũng dính: khi mục lục dài hơn chiều cao nav, flex bóp từng
+-> mục lại (`flex-shrink` mặc định = 1) và `overflow: hidden` **xén mất chữ đã xuống dòng** (đo được chữ
+-> cao 100px bị nhồi vào ô 43px). Kit đặt `flex: 0 0 auto` cho mục và cho **nav tự cuộn** khi tràn. Mục
+-> lục vừa khung — tức đa số trường hợp — thì không đổi gì, vẫn giống hệt Core.
++  (`overscroll-behavior: contain`); `true` = cho lan.
++- **`hideNav` mặc định BẬT trên điện thoại** (thư viện `BrowserUtilities.isMobile()` = dò `Mobi|Android` trong
++  userAgent, không theo bề rộng màn hình). Khi ẩn thì mục lục **không được dựng** (không chỉ là ẩn bằng CSS).
++  Muốn luôn hiện: `hideNav="false"`. *Bản trước có `hideNavOnMobile` theo bề rộng < 768px — đó là input của gói
++  npm 22.2.12, 19.0.10 không có → đã gỡ 2026-10-13.*
++- **`autoId` chỉ sinh ra `data-autoid` khi item cũng có `key`**: `components-anchor-{autoId}-{key}`, gắn trên mục nav.
++
++> **Mục lục dài hơn khung:** thư viện không cho nav tự cuộn và flex có thể bóp mục (chữ xuống dòng bị `overflow:
++> hidden` xén). Kit nay chép đúng như vậy (2026-10-13 — bản trước tự thêm `flex: 0 0 auto` + nav tự cuộn). Tiêu
++> đề dài thì bật `ellipsis` như ví dụ thứ hai của catalog, hoặc giữ tiêu đề ngắn.
+ 
+ ```html
+-<div style="height: 600px">
+-  <sd-anchor sidebarWidth="200px" color="primary">
+-    <sd-anchor-item title="Giới thiệu">
+-      <div style="height: 600px; padding: 20px">Nội dung...</div>
+-    </sd-anchor-item>
+-    <sd-anchor-item title="Tính năng" icon="star">
+-      <div style="height: 600px; padding: 20px">Nội dung...</div>
+-    </sd-anchor-item>
+-  </sd-anchor>
+-</div>
++<sd-anchor style="display: block; height: 600px" sidebarWidth="200px" color="primary">
++  <sd-anchor-item title="Giới thiệu" key="intro">
++    <div style="height: 600px; padding: 20px">Nội dung...</div>
++  </sd-anchor-item>
++  <sd-anchor-item title="Tính năng" icon="star" key="feature">
++    <div style="height: 600px; padding: 20px">Nội dung...</div>
++  </sd-anchor-item>
++</sd-anchor>
+ ```
+ 
+-> **containerHeight:** xuất hiện trên bảng điều khiển thử nghiệm của Portal nhưng KHÔNG nằm trong danh sách input chính thức "API & Properties" - nhiều khả năng là ô chỉnh chiều cao của div bọc ngoài trong trang demo, không phải input của component. Mirror KHÔNG dựng `containerHeight`.
+->
+-> **Scroll tracking:** dùng `IntersectionObserver` (root = `.c-anchor-vertical`, threshold 0) và lấy section
+-> **đầu tiên đang nhìn thấy** — đúng cơ chế thư viện. Bấm một mục thì **debounce 200ms** rồi mới cuộn, và cuộn
+-> `behavior: "smooth"`.
++> **DOM:** `sd-anchor > div.c-anchor-vertical > div.c-anchor-content > sd-anchor-item > section > …` và
++> `div.c-anchor-list[style="flex-basis: W"] > anchor-nav > div.c-anchor-list[style="width: W; --anchor-active-color: …"]
++> > div[tabindex=0].c-anchor-list-item`. Nội dung mỗi item được bọc trong `<section>` như template thư viện.
+ >
+-> **Khác biệt có chủ ý:** thư viện bọc nội dung mỗi item trong `<section>`; mirror giữ nguyên node gốc, không
+-> bọc — đã kiểm SCSS của `sd-anchor-item` **rỗng hoàn toàn** nên thẻ đó không có tác dụng thị giác nào.
++> **Scroll tracking:** `IntersectionObserver` (root = `.c-anchor-vertical`, threshold 0), mục active = section
++> **đầu tiên** đang nằm trong tập "đang thấy". Bấm / Enter một mục → **debounce 200ms** → cuộn `smooth`; trong lúc
++> cuộn do bấm thì bỏ qua observer, tắt cờ ở `scrollend` (hoặc sau 200ms nếu không cuộn được). JS gọi tay được
++> `anchor.scrollSectionByClick(chỉ số | key)`.
+ 
+ ## sd-anchor-item
+ 
+-Một mục bên trong `sd-anchor`. Tiêu đề hiển thị trong sidebar; nội dung (slot) giữ nguyên node DOM.
++Một mục bên trong `sd-anchor`. Tiêu đề hiển thị trong mục lục; nội dung (slot) giữ nguyên node DOM, bọc trong `<section>` như template thư viện.
+ 
+ | Attribute | Values | Default |
+ |-----------|--------|---------|
+ | `title` | string - required | - |
+-| `icon` | string - tên Material icon Outlined, đặt trước tiêu đề (20px = size md của `sd-icon`) | - |
++| `icon` | string - tên Material icon (bộ `material-icons` đặc, `mat-icon` 24px — như catalog), đặt trước tiêu đề | - |
+ | `key` | string - khoá ổn định, ghép với `autoId` của `sd-anchor` thành `data-autoid` | - |
+ 
+ Vì `title` là global attribute HTML, mirror gỡ `title` khỏi thẻ host để tránh tooltip gốc của trình duyệt (cơ chế `_strippingTitle`, cùng cách `SdInform` xử lý).
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-13 14:33:50.116966104 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-13 14:33:50.133943092 +0000
+@@ -5223,122 +5223,24 @@
+ 
+ 
+ /* --- sd-anchor + sd-anchor-item styles ---
+-   Rà soát 2026-09-24 — dựng lại bám ĐÚNG SCSS gốc của SdAnchor/AnchorNav
+-   (@sdcorejs/angular v22.2.12, lấy từ styles đã biên dịch trong gói npm).
+-   Bản trước dựng theo kiểu "khung 2 cột có viền + mục active bo tròn nền nhạt"
+-   nên nhìn khác hẳn Core, vốn là kiểu mục lục có THANH DỌC bên trái mỗi mục:
+-
+-     Core                                   Bản trước của kit
+-     - không viền, không nền, không bo       - khung có viền + bo + nền trắng
+-     - mục có border-left 2px                - mục bo tròn, nền primary-light khi active
+-     - active: thanh + chữ đổi màu, đậm 700  - active: nền pill, chữ primary, đậm 500
+-     - padding mục 8px 24px                  - 8px 12px
+-     - không có hiệu ứng hover               - hover đổi nền xám
+-     - cả khối cuộn, nav dính (sticky)       - chỉ vùng nội dung cuộn, nav có kẻ dọc
+-
+-   Cảnh báo Portal: parent phải có chiều cao cụ thể (height: 600px, 100%, ...)
+-   thì component mới hoạt động đúng. */
+-sd-anchor { display: block; height: 100%; }
+-sd-anchor-item { display: block; }
+-
+-sd-anchor .c-anchor-vertical {
+-  position: relative;
+-  display: flex;
+-  height: 100%;
+-  width: 100%;
+-  gap: 16px;
+-  overflow-y: auto;
+-}
+-/* overScroll=false → chặn cuộn lan ra trang ngoài (đúng nghĩa thật của input này) */
+-sd-anchor .c-anchor-vertical.c-stop-scroll-propagation { overscroll-behavior: contain; }
+-sd-anchor .c-anchor-content { flex: 1 1 auto; min-width: 0; }
+-/* Thẻ bọc nav: dính lại khi cuộn, bề rộng = sidebarWidth (đặt qua flex-basis) */
+-sd-anchor .c-anchor-vertical .c-anchor-list {
+-  flex: 0 0 auto;
+-  position: sticky;
+-  top: 0;
+-  right: 6px;
+-}
+-sd-anchor .c-anchor-list {
+-  height: 100%;
+-  display: flex;
+-  flex-direction: column;
+-  box-sizing: border-box;
+-}
+-/* Mục lục dài hơn chiều cao nav thì CHO NAV TỰ CUỘN, không bóp mục lại.
+-   Khác biệt có chủ ý so với thư viện: SCSS gốc không có hai dòng này nên khi
+-   tổng chiều cao các mục vượt nav, flex bóp từng mục xuống (flex-shrink mặc
+-   định = 1) và `overflow: hidden` của mục XÉN MẤT chữ đã xuống dòng — đo được
+-   chữ cao 100px bị nhồi vào ô 43px. Trường hợp mục lục vừa khung (đa số) thì
+-   hai dòng này không đổi gì, vẫn giống hệt Core. */
+-sd-anchor .c-anchor-vertical .c-anchor-list > .c-anchor-list {
+-  max-height: 100%;
+-  overflow-y: auto;
+-}
+-sd-anchor .c-anchor-list .c-anchor-list-item {
+-  /* Không cho flex bóp mục: tiêu đề dài phải xuống dòng và hiện ĐỦ chữ.
+-     Kit cố ý KHÔNG cắt ba chấm ở mục lục — xem ghi chú ở trên. */
+-  flex: 0 0 auto;
+-  border-left: 2px solid var(--sd-secondary-light);
+-  color: var(--color-neutral-900);
+-  padding: 8px 24px;
+-  cursor: pointer;
+-  display: flex;
+-  align-items: center;
+-  gap: 8px;
+-  min-width: 0;
+-  overflow: hidden;
+-  font-family: var(--sd-font-family);
+-  font-size: 14px;
+-  line-height: 20px;
+-  font-weight: 400;
+-  box-sizing: border-box;
+-}
+-sd-anchor .c-anchor-list .c-anchor-list-item .c-anchor-list-item-icon {
+-  flex: 0 0 auto;
+-  /* sd-icon mặc định size md = 20px (SD_ICON_SIZE_MAP), không phải 16px.
+-     overflow:hidden để khi font Material Icons không tải được (mạng chặn
+-     Google Fonts) thì chữ thay thế bị xén trong ô 20px, không tràn đè lên
+-     nhãn — đúng cách sd-icon thật cũng xén glyph quá khổ. */
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  width: 20px;
+-  height: 20px;
+-  line-height: 20px;
+-  overflow: hidden;
+-}
+-sd-anchor .c-anchor-list .c-anchor-list-item .c-anchor-list-item-text {
+-  flex: 1 1 0;
+-  min-width: 0;
+-  user-select: none;
+-  -webkit-user-select: none;
+-  -moz-user-select: none;   /* catalog khai đủ bốn tiền tố */
+-  -ms-user-select: none;
+-}
+-/* ellipsis đặt trên CHÍNH thẻ text (đúng thư viện), không phải class trên wrapper */
+-sd-anchor .c-anchor-list .c-anchor-list-item .c-anchor-list-item-text.ellipsis {
+-  overflow: hidden;
+-  text-overflow: ellipsis;
+-  white-space: nowrap;
+-}
+-/* Active: thanh dọc + chữ + icon đổi sang màu theo input `color`, đậm 700.
+-   KHÔNG có nền — nền pill là thứ bản trước tự thêm, thư viện không có. */
+-sd-anchor .c-anchor-list .c-anchor-list-item.active {
+-  border-left: 2px solid var(--anchor-active-color, var(--sd-primary));
+-  color: var(--anchor-active-color, var(--sd-primary));
+-  font-weight: 700;
+-}
+-sd-anchor .c-anchor-list .c-anchor-list-item.active .c-anchor-list-item-icon {
+-  color: var(--anchor-active-color, var(--sd-primary));
+-}
+-sd-anchor .c-anchor-list .c-anchor-list-item:not(.active) {
+-  border-left: 2px solid var(--sd-secondary-light);
+-  font-weight: 400;
+-}
+-/* Viền focus bàn phím — thư viện để tabindex="0" cho điều hướng bằng phím nhưng
+-   không tự vẽ; giữ outline mặc định của trình duyệt thay vì tắt đi. */
+-sd-anchor .c-anchor-list .c-anchor-list-item:focus-visible { outline-offset: -2px; }
++   ĐỒNG BỘ 2026-10-13 — styles NGUYÊN VĂN của SdAnchor + AnchorNav (`sd-angular-core-components-anchor.mjs` 19.0.10),
++   đúng phạm vi emulated như catalog `#c-anchor`: rule của SdAnchor chỉ ăn khung ngoài (`.c-anchor-vertical >
++   .c-anchor-list`), rule của AnchorNav chỉ ăn bên trong `anchor-nav`. Host `sd-anchor` / `sd-anchor-item`
++   KHÔNG có style (thư viện) — trang chứa tự cho chiều cao (catalog: style="display: block; height: 340px").
++   Gỡ phần kit tự thêm của bản 22.2.12: host block/100%, nav tự cuộn, mục flex 0 0 auto, chữ neutral-900 /
++   14px / font riêng, icon 20px, outline-offset focus. */
++sd-anchor .c-anchor-vertical{position:relative;display:flex;height:100%;width:100%;gap:16px;overflow-y:auto}
++sd-anchor .c-anchor-vertical.c-stop-scroll-propagation{overscroll-behavior:contain}
++sd-anchor .c-anchor-vertical>.c-anchor-content{flex:1 1 auto;min-width:0}
++sd-anchor .c-anchor-vertical>.c-anchor-list{flex:0 0 auto;position:sticky;top:0;right:6px}
++anchor-nav .c-anchor-list{height:100%;display:flex;flex-direction:column}
++anchor-nav .c-anchor-list .c-anchor-list-item{border-left:2px solid var(--sd-secondary-light);color:var(--sd-black500);padding:.5rem 1.5rem;cursor:pointer;display:flex;align-items:center;gap:.5rem;min-width:0;overflow:hidden}
++anchor-nav .c-anchor-list .c-anchor-list-item .c-anchor-list-item-icon{flex:0 0 auto}
++anchor-nav .c-anchor-list .c-anchor-list-item .c-anchor-list-item-text{flex:1 1 0;min-width:0;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
++anchor-nav .c-anchor-list .c-anchor-list-item .c-anchor-list-item-text.ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
++anchor-nav .c-anchor-list .c-anchor-list-item.active{border-left:2px solid var(--anchor-active-color, var(--sd-primary));color:var(--anchor-active-color, var(--sd-primary));font-weight:700}
++anchor-nav .c-anchor-list .c-anchor-list-item.active .c-anchor-list-item-icon{color:var(--anchor-active-color, var(--sd-primary))}
++anchor-nav .c-anchor-list .c-anchor-list-item:not(.active){border-left:2px solid var(--sd-secondary-light);font-weight:400}
+ 
+ 
+ /* --- sd-splitter + sd-splitter-panel styles ---
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/anchor.html b/design-system/preview/components/anchor.html
+--- a/design-system/preview/components/anchor.html	2026-10-13 14:33:50.118720428 +0000
++++ b/design-system/preview/components/anchor.html	2026-10-13 14:33:50.135795886 +0000
+@@ -28,235 +28,73 @@
+ 
+     <div data-pattern="page-header" data-variant="browse"
+          data-title="sd-anchor"
+-         data-subtitle="Mirror SdAnchor — color (6), sidebarWidth, ellipsis, overScroll, hideNav, hideNavOnMobile, autoId/key"
++         data-subtitle="SdAnchor 19.0.10 — color (6), sidebarWidth, ellipsis, overScroll, hideNav, autoId/key — mục lục dính bên phải, theo dõi mục đang xem"
+          data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+ 
+     <div class="content-zone">
+ 
+       <!-- ── Tab: Preview ──────────────────────────────────── -->
+-      <div class="tab-panel" data-tab-panel="0">
++      <div class="tab-panel" data-tab-panel="0" data-catalog-section="c-anchor">
++        <!-- 2 ví dụ đúng catalog #c-anchor; thẻ .an-* là nội dung mẫu của trang demo -->
+ 
+-        <sd-inform class="mb-6" type="warning" icon title="Bắt buộc: parent có chiều cao cụ thể">
+-          sd-anchor phải được bọc trong thẻ parent có chiều cao cụ thể (height: 600px, 100%, ...) để hoạt động đúng. Các demo bên dưới đều bọc trong div có height: 600px.
+-        </sd-inform>
+-
+-        <sd-section title="Cơ bản - 4 mục">
+-          <p class="text-sm text-secondary mb-3">Sidebar rộng 200px (mặc định). Cuộn nội dung để xem highlight tự chuyển theo mục đang hiển thị; bấm mục bên trái để nhảy tới phần tương ứng.</p>
+-          <div style="height: 600px">
+-            <sd-anchor>
+-              <sd-anchor-item title="Giới thiệu">
+-                <div style="height: 600px; padding: 20px">
+-                  <p class="text-md font-medium">Giới thiệu</p>
+-                  <p class="text-sm text-secondary">Phần nội dung giới thiệu về sản phẩm, dài 600px.</p>
+-                </div>
+-              </sd-anchor-item>
+-              <sd-anchor-item title="Tính năng" icon="star">
+-                <div style="height: 600px; padding: 20px">
+-                  <p class="text-md font-medium">Tính năng</p>
+-                  <p class="text-sm text-secondary">Mục này có icon Material bên cạnh tiêu đề trong sidebar.</p>
+-                </div>
+-              </sd-anchor-item>
+-              <sd-anchor-item title="Tài liệu">
+-                <div style="height: 600px; padding: 20px">
+-                  <p class="text-md font-medium">Tài liệu</p>
+-                  <p class="text-sm text-secondary">Hướng dẫn sử dụng và tài liệu kỹ thuật.</p>
+-                </div>
+-              </sd-anchor-item>
+-              <sd-anchor-item title="Hỏi đáp">
+-                <div style="height: 600px; padding: 20px">
+-                  <p class="text-md font-medium">Hỏi đáp</p>
+-                  <p class="text-sm text-secondary">Các câu hỏi thường gặp và hỗ trợ.</p>
+-                </div>
+-              </sd-anchor-item>
+-            </sd-anchor>
+-          </div>
+-        </sd-section>
+-
+-        <sd-section title="hideNav - ẩn sidebar">
+-          <p class="text-sm text-secondary mb-3">Thuộc tính <code>hidenav</code> ẩn hẳn sidebar điều hướng, chỉ còn vùng nội dung cuộn.</p>
+-          <div style="height: 600px">
+-            <sd-anchor hidenav>
+-              <sd-anchor-item title="Lịch sử">
+-                <div style="height: 600px; padding: 20px">
+-                  <p class="text-md font-medium">Lịch sử</p>
+-                  <p class="text-sm text-secondary">Không có sidebar, nội dung chiếm toàn bộ chiều rộng.</p>
+-                </div>
+-              </sd-anchor-item>
+-              <sd-anchor-item title="Nhật ký">
+-                <div style="height: 600px; padding: 20px">
+-                  <p class="text-md font-medium">Nhật ký</p>
+-                  <p class="text-sm text-secondary">Vẫn định vị được các phần nhưng không có mục điều hướng để bấm.</p>
+-                </div>
+-              </sd-anchor-item>
+-            </sd-anchor>
+-          </div>
+-        </sd-section>
+-
+-        <sd-section title="Tiêu đề dài — xuống dòng, KHÔNG cắt ba chấm">
+-          <p class="text-sm text-secondary mb-3">
+-            Mặc định tiêu đề dài <strong>xuống dòng đầy đủ</strong>, đọc được trọn vẹn — đây là cách
+-            dùng chuẩn trong kit. Thư viện có input <code>ellipsis</code> để cắt một dòng bằng dấu ba
+-            chấm, nhưng <strong>kit không dùng</strong>: tiêu đề mục lục bị cắt thì Builder không biết
+-            phần đó nói gì. Input vẫn giữ trong API cho ai thực sự cần (xem tab Hướng dẫn Dev).
+-          </p>
+-          <div style="height: 600px">
+-            <sd-anchor>
+-              <sd-anchor-item title="Điều khoản sử dụng và chính sách bảo mật khi đăng ký tài khoản doanh nghiệp">
+-                <div style="height: 600px; padding: 20px">
+-                  <p class="text-md font-medium">Điều khoản sử dụng</p>
+-                  <p class="text-sm text-secondary">Tiêu đề dài xuống dòng trong sidebar, hiện đủ chữ.</p>
+-                </div>
+-              </sd-anchor-item>
+-              <sd-anchor-item title="Quy trình xử lý khiếu nại và hoàn tiền trong vòng 30 ngày làm việc">
+-                <div style="height: 600px; padding: 20px">
+-                  <p class="text-md font-medium">Quy trình xử lý khiếu nại</p>
+-                  <p class="text-sm text-secondary">Mục thứ hai với tiêu đề dài tương tự.</p>
+-                </div>
+-              </sd-anchor-item>
+-              <sd-anchor-item title="Cam kết bảo mật dữ liệu cá nhân của khách hàng theo quy định hiện hành" icon="lock">
+-                <div style="height: 600px; padding: 20px">
+-                  <p class="text-md font-medium">Cam kết bảo mật</p>
+-                  <p class="text-sm text-secondary">Mục có icon, tiêu đề dài 3 dòng.</p>
+-                </div>
+-              </sd-anchor-item>
+-            </sd-anchor>
+-          </div>
+-        </sd-section>
+-
+-        <sd-section title="sidebarWidth - bề rộng tuỳ chỉnh">
+-          <p class="text-sm text-secondary mb-3">Thuộc tính <code>sidebarwidth</code> chỉnh bề rộng sidebar; demo này dùng 280px thay cho mặc định 200px.</p>
+-          <div style="height: 600px">
+-            <sd-anchor sidebarwidth="280px">
+-              <sd-anchor-item title="Tổng quan">
+-                <div style="height: 600px; padding: 20px">
+-                  <p class="text-md font-medium">Tổng quan</p>
+-                  <p class="text-sm text-secondary">Sidebar rộng hơn để phù hợp tiêu đề dài hoặc layout riêng.</p>
+-                </div>
+-              </sd-anchor-item>
+-              <sd-anchor-item title="Cấu hình">
+-                <div style="height: 600px; padding: 20px">
+-                  <p class="text-md font-medium">Cấu hình</p>
+-                  <p class="text-sm text-secondary">Nội dung vẫn cuộn và highlight bình thường.</p>
+-                </div>
+-              </sd-anchor-item>
+-            </sd-anchor>
+-          </div>
++        <sd-section title="Mặc định — nav bên phải rộng 200px, màu primary; cuộn nội dung để mục active đổi theo, bấm nav để cuộn tới">
++          <div class="an-stage">
++            <sd-anchor style="display: block; height: 340px;">
++              <sd-anchor-item key="general" title="Thông tin chung"><div class="an-card"><div class="T16M an-title">Thông tin chung</div><div class="an-row"><span class="T14R text-black400">Mã hồ sơ</span><span class="T14M">FUND-2026-Q4-018</span></div><div class="an-row"><span class="T14R text-black400">Loại khoản vay</span><span class="T14M">Vay ngắn hạn bổ sung vốn lưu động</span></div><div class="an-row"><span class="T14R text-black400">Người tạo</span><span class="T14M">Nguyễn Văn An</span></div><div class="an-row"><span class="T14R text-black400">Ngày tạo</span><span class="T14M">01/10/2026</span></div><div class="an-row"><span class="T14R text-black400">Trạng thái</span><span class="T14M">Chờ duyệt</span></div></div></sd-anchor-item>
++              <sd-anchor-item key="limit" title="Hạn mức tín dụng"><div class="an-card"><div class="T16M an-title">Hạn mức tín dụng</div><div class="an-row"><span class="T14R text-black400">Ngân hàng</span><span class="T14M">Vietcombank – CN Sở giao dịch</span></div><div class="an-row"><span class="T14R text-black400">Hạn mức</span><span class="T14M">500.000.000.000 ₫</span></div><div class="an-row"><span class="T14R text-black400">Đã sử dụng</span><span class="T14M">320.000.000.000 ₫</span></div><div class="an-row"><span class="T14R text-black400">Còn lại</span><span class="T14M">180.000.000.000 ₫</span></div></div></sd-anchor-item>
++              <sd-anchor-item key="disbursement" title="Lịch giải ngân"><div class="an-card"><div class="T16M an-title">Lịch giải ngân</div><div class="an-row"><span class="T14R text-black400">Đợt 1 · 15/10/2026</span><span class="T14M">60.000.000.000 ₫</span></div><div class="an-row"><span class="T14R text-black400">Đợt 2 · 01/11/2026</span><span class="T14M">50.000.000.000 ₫</span></div><div class="an-row"><span class="T14R text-black400">Đợt 3 · 15/11/2026</span><span class="T14M">40.000.000.000 ₫</span></div><div class="an-row"><span class="T14R text-black400">Tổng</span><span class="T14M">150.000.000.000 ₫</span></div></div></sd-anchor-item>
++              <sd-anchor-item key="attachments" title="Hồ sơ đính kèm"><div class="an-card"><div class="T16M an-title">Hồ sơ đính kèm</div><div class="an-row"><span class="T14R text-black400">Hợp đồng tín dụng</span><span class="T14M">HDTD_VCB_2026_0915.pdf</span></div><div class="an-row"><span class="T14R text-black400">Tờ trình</span><span class="T14M">TT_Funding_Q4.docx</span></div><div class="an-row"><span class="T14R text-black400">Bảng dòng tiền</span><span class="T14M">Dong_tien_T10-T12.xlsx</span></div></div></sd-anchor-item>
++              <sd-anchor-item key="history" title="Lịch sử phê duyệt"><div class="an-card"><div class="T16M an-title">Lịch sử phê duyệt</div><div class="an-row"><span class="T14R text-black400">01/10/2026 09:12</span><span class="T14M">Nguyễn Văn An gửi duyệt</span></div><div class="an-row"><span class="T14R text-black400">02/10/2026 14:30</span><span class="T14M">Trần Thị Bích Ngọc yêu cầu bổ sung</span></div><div class="an-row"><span class="T14R text-black400">03/10/2026 10:05</span><span class="T14M">Nguyễn Văn An gửi lại</span></div></div></sd-anchor-item>
++            </sd-anchor>
++          </div>
++          <pre class="ds-guide-code mt-3">&lt;sd-anchor style="display: block; height: 340px"&gt;
++  &lt;sd-anchor-item title="Thông tin chung" key="general"&gt;…&lt;/sd-anchor-item&gt;
++  &lt;sd-anchor-item title="Hạn mức tín dụng" key="limit"&gt;…&lt;/sd-anchor-item&gt;
++  &lt;sd-anchor-item title="Lịch giải ngân" key="disbursement"&gt;…&lt;/sd-anchor-item&gt;
++  &lt;sd-anchor-item title="Hồ sơ đính kèm" key="attachments"&gt;…&lt;/sd-anchor-item&gt;
++  &lt;sd-anchor-item title="Lịch sử phê duyệt" key="history"&gt;…&lt;/sd-anchor-item&gt;
++&lt;/sd-anchor&gt;</pre>
++        </sd-section>
++
++        <sd-section title="icon + color=&quot;info&quot; + ellipsis + sidebarWidth — tiêu đề dài bị cắt &quot;…&quot; khi bật ellipsis">
++          <div class="an-stage">
++            <sd-anchor style="display: block; height: 340px;" color="info" sidebarWidth="190px" ellipsis autoId="loan-detail">
++              <sd-anchor-item key="general" title="Thông tin chung" icon="info"><div class="an-card"><div class="T16M an-title">Thông tin chung</div><div class="an-row"><span class="T14R text-black400">Mã hồ sơ</span><span class="T14M">FUND-2026-Q4-018</span></div><div class="an-row"><span class="T14R text-black400">Loại khoản vay</span><span class="T14M">Vay ngắn hạn bổ sung vốn lưu động</span></div><div class="an-row"><span class="T14R text-black400">Người tạo</span><span class="T14M">Nguyễn Văn An</span></div><div class="an-row"><span class="T14R text-black400">Ngày tạo</span><span class="T14M">01/10/2026</span></div><div class="an-row"><span class="T14R text-black400">Trạng thái</span><span class="T14M">Chờ duyệt</span></div></div></sd-anchor-item>
++              <sd-anchor-item key="limit" title="Hạn mức tín dụng theo từng ngân hàng" icon="account_balance"><div class="an-card"><div class="T16M an-title">Hạn mức tín dụng theo từng ngân hàng</div><div class="an-row"><span class="T14R text-black400">Ngân hàng</span><span class="T14M">Vietcombank – CN Sở giao dịch</span></div><div class="an-row"><span class="T14R text-black400">Hạn mức</span><span class="T14M">500.000.000.000 ₫</span></div><div class="an-row"><span class="T14R text-black400">Đã sử dụng</span><span class="T14M">320.000.000.000 ₫</span></div><div class="an-row"><span class="T14R text-black400">Còn lại</span><span class="T14M">180.000.000.000 ₫</span></div></div></sd-anchor-item>
++              <sd-anchor-item key="disbursement" title="Lịch giải ngân và trả nợ dự kiến" icon="event"><div class="an-card"><div class="T16M an-title">Lịch giải ngân và trả nợ dự kiến</div><div class="an-row"><span class="T14R text-black400">Đợt 1 · 15/10/2026</span><span class="T14M">60.000.000.000 ₫</span></div><div class="an-row"><span class="T14R text-black400">Đợt 2 · 01/11/2026</span><span class="T14M">50.000.000.000 ₫</span></div><div class="an-row"><span class="T14R text-black400">Đợt 3 · 15/11/2026</span><span class="T14M">40.000.000.000 ₫</span></div><div class="an-row"><span class="T14R text-black400">Tổng</span><span class="T14M">150.000.000.000 ₫</span></div></div></sd-anchor-item>
++              <sd-anchor-item key="attachments" title="Hồ sơ đính kèm" icon="attach_file"><div class="an-card"><div class="T16M an-title">Hồ sơ đính kèm</div><div class="an-row"><span class="T14R text-black400">Hợp đồng tín dụng</span><span class="T14M">HDTD_VCB_2026_0915.pdf</span></div><div class="an-row"><span class="T14R text-black400">Tờ trình</span><span class="T14M">TT_Funding_Q4.docx</span></div><div class="an-row"><span class="T14R text-black400">Bảng dòng tiền</span><span class="T14M">Dong_tien_T10-T12.xlsx</span></div></div></sd-anchor-item>
++              <sd-anchor-item key="history" title="Lịch sử phê duyệt" icon="history"><div class="an-card"><div class="T16M an-title">Lịch sử phê duyệt</div><div class="an-row"><span class="T14R text-black400">01/10/2026 09:12</span><span class="T14M">Nguyễn Văn An gửi duyệt</span></div><div class="an-row"><span class="T14R text-black400">02/10/2026 14:30</span><span class="T14M">Trần Thị Bích Ngọc yêu cầu bổ sung</span></div><div class="an-row"><span class="T14R text-black400">03/10/2026 10:05</span><span class="T14M">Nguyễn Văn An gửi lại</span></div></div></sd-anchor-item>
++            </sd-anchor>
++          </div>
++          <pre class="ds-guide-code mt-3">&lt;sd-anchor style="display: block; height: 340px" color="info" sidebarWidth="190px" ellipsis autoId="loan-detail"&gt;
++  &lt;sd-anchor-item title="Thông tin chung" icon="info" key="general"&gt;…&lt;/sd-anchor-item&gt;
++  &lt;sd-anchor-item title="Hạn mức tín dụng theo từng ngân hàng" icon="account_balance" key="limit"&gt;…&lt;/sd-anchor-item&gt;
++  …
++&lt;/sd-anchor&gt;
++&lt;!-- autoId + key → mỗi mục nav có data-autoid="components-anchor-loan-detail-general" … --&gt;</pre>
+         </sd-section>
+ 
+-        <sd-section title="color — 6 giá trị (mặc định primary)">
++        <sd-section title="hideNav · overScroll">
+           <p class="text-sm text-secondary mb-3">
+-            <code>color</code> đổi màu mục đang active: <strong>thanh dọc bên trái + chữ + icon</strong>.
+-            Đúng thư viện, mục active in đậm 700 và <strong>không có nền</strong>; mục chưa active giữ
+-            thanh xám ở mọi màu.
++            <code>hideNav</code>: không dựng mục lục (mặc định <strong>bật trên điện thoại</strong> — thư viện dò
++            <code>/Mobi|Android/i</code> trong userAgent). <code>overScroll</code>: mặc định <strong>tắt</strong> =
++            chặn cuộn lan ra trang ngoài (<code>overscroll-behavior: contain</code>); bật thì cho lan.
++            Chiều cao <code>sd-anchor</code> do trang chứa quyết định — component chỉ đặt <code>height: 100%</code>.
+           </p>
+-          <div class="flex gap-16 flex-wrap">
+-            <div style="height: 220px; width: 300px">
+-              <sd-anchor color="success" sidebarwidth="140px">
+-                <sd-anchor-item title="Đã duyệt" icon="check_circle">
+-                  <div style="height: 200px; padding: 12px"><p class="text-sm text-secondary">color="success"</p></div>
+-                </sd-anchor-item>
+-                <sd-anchor-item title="Chờ duyệt" icon="schedule">
+-                  <div style="height: 200px; padding: 12px"><p class="text-sm text-secondary">Mục 2</p></div>
+-                </sd-anchor-item>
+-              </sd-anchor>
+-            </div>
+-            <div style="height: 220px; width: 300px">
+-              <sd-anchor color="error" sidebarwidth="140px">
+-                <sd-anchor-item title="Từ chối" icon="cancel">
+-                  <div style="height: 200px; padding: 12px"><p class="text-sm text-secondary">color="error"</p></div>
+-                </sd-anchor-item>
+-                <sd-anchor-item title="Ghi chú" icon="notes">
+-                  <div style="height: 200px; padding: 12px"><p class="text-sm text-secondary">Mục 2</p></div>
+-                </sd-anchor-item>
+-              </sd-anchor>
+-            </div>
+-            <div style="height: 220px; width: 300px">
+-              <sd-anchor color="info" sidebarwidth="140px">
+-                <sd-anchor-item title="Thông tin" icon="info">
+-                  <div style="height: 200px; padding: 12px"><p class="text-sm text-secondary">color="info"</p></div>
+-                </sd-anchor-item>
+-                <sd-anchor-item title="Liên hệ" icon="call">
+-                  <div style="height: 200px; padding: 12px"><p class="text-sm text-secondary">Mục 2</p></div>
+-                </sd-anchor-item>
+-              </sd-anchor>
+-            </div>
+-          </div>
+-        </sd-section>
+-
+-        <sd-section title="overScroll — cho cuộn lan ra ngoài hay không">
+-          <p class="text-sm text-secondary mb-3">
+-            Đây là chỗ bản mirror trước <strong>hiểu ngược</strong>. Đúng thư viện:
+-            mặc định <code>overScroll=false</code> nên khối anchor <strong>chặn</strong> cuộn lan ra trang
+-            ngoài khi đã cuộn tới đáy (<code>overscroll-behavior: contain</code>); đặt
+-            <code>overscroll</code> thì cho lan ra như bình thường. Nó <strong>không</strong> liên quan gì
+-            tới việc chèn thêm khoảng trống cuối nội dung.
+-          </p>
+-          <div style="height: 240px">
+-            <sd-anchor overscroll sidebarwidth="180px">
+-              <sd-anchor-item title="Cuộn lan ra ngoài" icon="swap_vert">
+-                <div style="height: 220px; padding: 12px">
+-                  <p class="text-sm text-secondary">Cuộn tới đáy rồi cuộn tiếp — trang ngoài sẽ cuộn theo.</p>
+-                </div>
+-              </sd-anchor-item>
+-              <sd-anchor-item title="Mục hai" icon="list">
+-                <div style="height: 220px; padding: 12px"><p class="text-sm text-secondary">Nội dung mục hai.</p></div>
+-              </sd-anchor-item>
++          <div class="an-stage an-two">
++            <sd-anchor style="display: block; height: 220px;" hideNav>
++              <sd-anchor-item title="Phần A"><div class="an-card"><div class="T16M an-title">Phần A</div><div class="T14R">Nội dung mẫu.</div></div></sd-anchor-item>
++              <sd-anchor-item title="Phần B"><div class="an-card"><div class="T16M an-title">Phần B</div><div class="T14R">Nội dung mẫu.</div></div></sd-anchor-item>
++              <sd-anchor-item title="Phần C"><div class="an-card"><div class="T16M an-title">Phần C</div><div class="T14R">Nội dung mẫu.</div></div></sd-anchor-item>
++            </sd-anchor>
++            <sd-anchor style="display: block; height: 220px;" overScroll sidebarWidth="140px">
++              <sd-anchor-item title="Phần A"><div class="an-card"><div class="T16M an-title">Phần A</div><div class="T14R">Nội dung mẫu.</div></div></sd-anchor-item>
++              <sd-anchor-item title="Phần B"><div class="an-card"><div class="T16M an-title">Phần B</div><div class="T14R">Nội dung mẫu.</div></div></sd-anchor-item>
++              <sd-anchor-item title="Phần C"><div class="an-card"><div class="T16M an-title">Phần C</div><div class="T14R">Nội dung mẫu.</div></div></sd-anchor-item>
+             </sd-anchor>
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="hideNavOnMobile — mặc định TRUE">
+-          <p class="text-sm text-secondary mb-3">
+-            Thư viện <strong>tự ẩn</strong> sidebar khi màn hình vào breakpoint mobile
+-            (&lt; 768px, theo <code>SdViewportService</code>) — mặc định là <code>true</code>, không phải
+-            false. Thu hẹp cửa sổ trình duyệt xuống dưới 768px để thấy sidebar biến mất; đặt
+-            <code>hidenavonmobile="false"</code> thì giữ sidebar cả trên mobile.
+-          </p>
+-          <div class="flex gap-16 flex-wrap">
+-            <div style="height: 200px; width: 340px">
+-              <sd-anchor sidebarwidth="150px">
+-                <sd-anchor-item title="Mặc định" icon="smartphone">
+-                  <div style="height: 180px; padding: 12px"><p class="text-sm text-secondary">Ẩn nav khi &lt; 768px</p></div>
+-                </sd-anchor-item>
+-                <sd-anchor-item title="Mục hai" icon="list">
+-                  <div style="height: 180px; padding: 12px"><p class="text-sm text-secondary">Nội dung</p></div>
+-                </sd-anchor-item>
+-              </sd-anchor>
+-            </div>
+-            <div style="height: 200px; width: 340px">
+-              <sd-anchor sidebarwidth="150px" hidenavonmobile="false">
+-                <sd-anchor-item title="Giữ nav" icon="desktop_windows">
+-                  <div style="height: 180px; padding: 12px"><p class="text-sm text-secondary">Giữ nav cả trên mobile</p></div>
+-                </sd-anchor-item>
+-                <sd-anchor-item title="Mục hai" icon="list">
+-                  <div style="height: 180px; padding: 12px"><p class="text-sm text-secondary">Nội dung</p></div>
+-                </sd-anchor-item>
+-              </sd-anchor>
+-            </div>
+-          </div>
+-        </sd-section>
+-
+-        <sd-section title="autoId + key — hook cho automation test">
+-          <p class="text-sm text-secondary mb-3">
+-            <code>autoId</code> trên <code>sd-anchor</code> cộng với <code>key</code> trên từng
+-            <code>sd-anchor-item</code> sinh ra thuộc tính
+-            <code>data-autoid="components-anchor-{autoId}-{key}"</code> trên đúng mục điều hướng tương ứng
+-            (mở DevTools để xem). Thiếu một trong hai thì không sinh gì — đúng thư viện.
+-          </p>
+-          <div style="height: 220px">
+-            <sd-anchor autoid="ho-so" sidebarwidth="180px">
+-              <sd-anchor-item title="Thông tin chung" icon="badge" key="general">
+-                <div style="height: 200px; padding: 12px"><p class="text-sm text-secondary">data-autoid="components-anchor-ho-so-general"</p></div>
+-              </sd-anchor-item>
+-              <sd-anchor-item title="Đính kèm" icon="attach_file" key="attachment">
+-                <div style="height: 200px; padding: 12px"><p class="text-sm text-secondary">data-autoid="components-anchor-ho-so-attachment"</p></div>
+-              </sd-anchor-item>
+-            </sd-anchor>
+-          </div>
+-        </sd-section>
+-
+-      </div><!-- /tab-panel: Preview -->
+-
+       <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+       <div class="tab-panel" data-tab-panel="1" style="display:none">
+         <sd-section title="Hướng dẫn BA / PO">
+@@ -311,7 +149,7 @@
+                   <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                 </div>
+                 <pre class="ds-guide-code">&lt;div style="height: 600px"&gt;
+-  &lt;sd-anchor sidebarWidth="200px" [ellipsis]="false" [overScroll]="false" [hideNav]="false"&gt;
++  &lt;sd-anchor style="display: block; height: 100%" sidebarWidth="200px"&gt;
+     &lt;sd-anchor-item title="Giới thiệu"&gt;
+       &lt;div style="height: 600px; padding: 20px"&gt;Nội dung...&lt;/div&gt;
+     &lt;/sd-anchor-item&gt;
+@@ -327,11 +165,10 @@
+                 <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                 <tbody>
+                   <tr><td>sidebarWidth</td><td>string (CSS width)</td><td>200px</td><td>Bề rộng sidebar điều hướng - đọc qua <code>sidebarwidth</code></td></tr>
+-                  <tr><td>color</td><td>primary | secondary | info | success | warning | error</td><td>primary</td><td>Màu mục đang active: thanh dọc trái + chữ + icon</td></tr>
++                  <tr><td>color</td><td>primary | secondary | info | success | warning | error (→ <code>var(--sd-{color})</code>)</td><td>primary</td><td>Màu mục đang active: thanh dọc trái + chữ + icon</td></tr>
+                   <tr><td>ellipsis</td><td>boolean</td><td>false</td><td>Cắt tiêu đề dài bằng dấu ba chấm trong sidebar</td></tr>
+                   <tr><td>overScroll</td><td>boolean</td><td>false</td><td><strong>false = CHẶN</strong> cuộn lan ra trang ngoài (<code>overscroll-behavior: contain</code>); true = cho lan</td></tr>
+-                  <tr><td>hideNav</td><td>boolean</td><td>false</td><td>Ẩn hẳn sidebar điều hướng, chỉ còn vùng nội dung</td></tr>
+-                  <tr><td>hideNavOnMobile</td><td>boolean</td><td><strong>true</strong></td><td>Tự ẩn sidebar khi màn hình &lt; 768px (breakpoint mobile của SdViewportService)</td></tr>
++                  <tr><td>hideNav</td><td>boolean</td><td><strong>true trên điện thoại</strong> (<code>/Mobi|Android/i</code> trong userAgent), false trên máy tính</td><td>Không dựng mục lục, chỉ còn vùng nội dung. <code>hideNav="false"</code> để luôn hiện</td></tr>
+                   <tr><td>autoId</td><td>string</td><td>-</td><td>Cùng với <code>key</code> của item sinh <code>data-autoid="components-anchor-{autoId}-{key}"</code></td></tr>
+                 </tbody>
+               </table>
+@@ -384,6 +221,15 @@
+ 
+ </div>
+ 
++<style>
++  /* nội dung mẫu + bố cục trang demo của catalog #c-anchor (anchor.css .an-*) */
++  .an-stage { background: #f8f9fa; padding: 24px; border-radius: 8px; }
++  .an-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
++  .an-card { background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 16px; min-height: 220px; box-shadow: 0 1px 2px #2f31361a; }
++  .an-title { margin-bottom: 8px; }
++  .an-row { display: flex; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f2f2f2; }
++  .an-row > span:first-child { width: 180px; flex: 0 0 auto; }
++</style>
+ <script src="../../sd-components/sd-components.js"></script>
+ <script src="../../patterns/page-header.js"></script>
+ <script src="../../patterns/sidebar.js"></script>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-13 14:33:50.116263057 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-13 14:33:50.133220579 +0000
+@@ -6518,323 +6518,216 @@
+ 
+ 
+   /* ══════════════════════════════════════════════════════════
+-     sd-anchor + sd-anchor-item — mirror SdAnchor/SdAnchorItem của
+-     @sdcorejs/angular v22.2.12.
+-
+-     Nguồn đối chiếu (rà soát lại 2026-09-24, Portal: /component/anchor/basic
+-     và /component/anchor/with-section):
+-     - `types/sdcorejs-angular-components-anchor.d.ts` — danh sách input đầy đủ.
+-       KHÔNG lấy từ trang demo: hai trang demo chỉ bày 4 input (sidebarWidth,
+-       ellipsis, overScroll, hideNav) nên mirror bản trước thiếu hẳn
+-       `color`, `hideNavOnMobile`, `autoId` và `key` của item.
+-     - `anchor.component.ts/.html`, `anchor-nav.component.ts/.html` và SCSS đã
+-       biên dịch, lấy từ sourcesContent của source map trong gói npm.
+-
+-     API THẬT:
+-       sd-anchor: sidebarWidth ("200px"), ellipsis (false), overScroll (false),
+-                  hideNav (false), hideNavOnMobile (TRUE), color (primary),
+-                  autoId
+-       sd-anchor-item: title (bắt buộc), icon, key
+-     `containerHeight` chỉ là biến của TRANG DEMO (chiều cao thẻ bọc), không
+-     phải input của component — mirror không dựng, đúng như bản trước đã ghi.
+-
+-     Mấy chỗ bản mirror trước làm SAI, nay sửa theo đúng source:
+-     - `overScroll` bị hiểu ngược. Thư viện: overScroll=false thì THÊM class
+-       `c-stop-scroll-propagation` (= `overscroll-behavior: contain`, chặn cuộn
+-       lan ra trang ngoài); overScroll=true thì cho lan. Bản trước lại đi chèn
+-       `padding-bottom` giả vào nội dung — không liên quan gì tới ý nghĩa thật.
+-     - Vùng cuộn là CHÍNH `.c-anchor-vertical` (cả khối cuộn, nav dính lại nhờ
+-       `position: sticky`), không phải `.c-anchor-content` cuộn riêng như bản
+-       trước. Đây là lý do bản trước nhìn thành "khung 2 cột có đường kẻ giữa".
+-     - Active theo IntersectionObserver (root = wrapper, threshold 0, lấy
+-       section ĐẦU TIÊN đang nhìn thấy) + seed sẵn section đầu, thay cho phép
+-       so `offsetTop - scrollTop <= 80` của bản trước.
+-     - Click có debounce 200ms rồi mới cuộn, và cuộn `behavior: "smooth"`.
+-
+-     Khác biệt CÓ CHỦ Ý (ghi rõ để không bị hiểu là sót):
+-     - Thư viện bọc nội dung mỗi item trong `<section>`; mirror giữ nguyên node
+-       gốc, không bọc. Đã kiểm: SCSS của `sd-anchor-item` RỖNG hoàn toàn nên
+-       thẻ đó không có tác dụng thị giác nào, bọc thêm chỉ làm MutationObserver
+-       của kit phải xử lý vòng lặp vô ích.
+-     - Nav item dùng `<div tabindex="0">` + click/Enter đúng thư viện (bản
+-       trước dùng `<a href="#">`, bấm vào là thêm dấu # vào URL).
+-     - `hideNavOnMobile` mirror bằng ngưỡng rộng < 768px — đúng breakpoint
+-       `tablet: 768` của SdViewportService (mobile là dải dưới ngưỡng này).
+-     `title` là global attribute — gỡ khỏi thẻ host để tránh tooltip mặc định
+-     của trình duyệt, dùng cơ chế _strippingTitle giống SdInform.
+-     Cảnh báo Portal: sd-anchor phải nằm trong thẻ cha có chiều cao cụ thể
+-     (height: 600px, 100%, ...) thì mới hoạt động đúng.
+-     ══════════════════════════════════════════════════════════ */
+-  var SD_ANCHOR_COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error'];
+-  var SD_ANCHOR_MOBILE_MAX = 767;   // < 768 = breakpoint mobile của SdViewportService
++     sd-anchor + sd-anchor-item — ĐỒNG BỘ 2026-10-13 theo catalog `#c-anchor` + MÃ THƯ VIỆN
++     (`sd-angular-core-components-anchor.mjs` 19.0.10: SdAnchor, AnchorNav, SdAnchorItem).
++     (Bản trước 2026-09-24 dựng theo @sdcorejs/angular 22.2.12 — có `hideNavOnMobile`, nav ẩn bằng display:none.)
++
++     API (= khối API catalog): sd-anchor: sidebarWidth ('200px') · color ('primary', không kiểm — `var(--sd-{color})`)
++       · ellipsis · overScroll · hideNav (mặc định BrowserUtilities.isMobile() = /Mobi|Android/i.test(userAgent))
++       · autoId. sd-anchor-item: title (bắt buộc) · icon · key.
++     DOM (template thư viện, catalog in nguyên văn):
++       sd-anchor > div.c-anchor-vertical[.c-stop-scroll-propagation khi !overScroll]
++         > div.c-anchor-content > sd-anchor-item > section > (nội dung)
++         > div.c-anchor-list[style="flex-basis: W;"] > anchor-nav
++             > div.c-anchor-list[style="width: W; --anchor-active-color: var(--sd-COLOR);"]
++               > div[tabindex=0].c-anchor-list-item[.active][data-autoid="components-anchor-{autoId}-{key}"]
++                   > (mat-icon.c-anchor-list-item-icon) + div.c-anchor-list-item-text[.ellipsis] " Tiêu đề "
++       hideNav → KHÔNG dựng khối nav (thư viện `@if (!hideNav())`) và không theo dõi cuộn.
++     Hành vi: IntersectionObserver (root = wrapper, threshold 0) giữ tập section đang thấy, mục active = section ĐẦU
++       TIÊN (theo thứ tự) nằm trong tập; bỏ qua khi đang cuộn do bấm. Bấm / Enter trên mục → debounceTime(200) →
++       scrollSectionByClick: active ngay, cuộn smooth tới đầu section, cờ cuộn-do-bấm tắt ở `scrollend` (hoặc sau
++       200ms nếu không cuộn được). `title` của sd-anchor-item gỡ khỏi host (effect thư viện). */
++  function sdAnchorIsMobile() { return /Mobi|Android/i.test(navigator.userAgent); }
++  /* Utilities.generateUuid() của @sdcorejs/utils */
++  function sdUuid() {
++    if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
++    return Date.now() + '-' + Math.random().toString(36).substring(2, 9);
++  }
+ 
+   class SdAnchorItem extends HTMLElement {
+-    static get observedAttributes() {
+-      return ['title', 'icon', 'key'];
+-    }
++    static get observedAttributes() { return ['title', 'icon', 'key']; }
+     connectedCallback() {
++      /* template thư viện: <section><ng-content/></section> — bọc một lần, giữ nguyên node con */
++      if (!this._wrapped) {
++        this._wrapped = true;
++        var sec = document.createElement('section');
++        while (this.firstChild) sec.appendChild(this.firstChild);
++        this.appendChild(sec);
++      }
++      this._takeTitle();
+       this._notifyGroup();
+     }
+     attributeChangedCallback(name) {
+       if (this._strippingTitle) return;
+-      if (name === 'title') this._title = this.getAttribute('title') || '';
++      if (name === 'title') this._takeTitle();
+       if (this.isConnected) this._notifyGroup();
+     }
++    _takeTitle() {
++      if (!this.hasAttribute('title')) return;
++      this._title = this.getAttribute('title') || '';
++      if (this._title) {   // effect(): if (title()) removeAttribute('title')
++        this._strippingTitle = true; this.removeAttribute('title'); this._strippingTitle = false;
++      }
++    }
++    get title() { return this._title !== undefined ? this._title : (this.getAttribute('title') || ''); }
++    set title(v) { this._title = v == null ? '' : String(v); this._notifyGroup(); }
+     _notifyGroup() {
+-      var parent = this.parentElement;
+-      var group = parent && parent.closest ? parent.closest('sd-anchor') : null;
+-      if (group && group._rebuild) group._rebuild();
++      var group = this.parentElement && this.parentElement.closest ? this.parentElement.closest('sd-anchor') : null;
++      if (group && group._schedule) group._schedule();
+     }
+   }
+   customElements.define('sd-anchor-item', SdAnchorItem);
+ 
+   class SdAnchor extends HTMLElement {
+     static get observedAttributes() {
+-      return ['sidebarwidth', 'ellipsis', 'overscroll', 'hidenav', 'hidenavonmobile', 'color', 'autoid'];
+-    }
+-    constructor() {
+-      super();
+-      this._activeIndex = 0;
+-      this._clickTimer = null;
+-      this._isClickScrolling = false;
++      return ['sidebarwidth', 'sidebarWidth', 'ellipsis', 'overscroll', 'overScroll', 'hidenav', 'hideNav', 'color', 'autoid', 'autoId'];
+     }
++    constructor() { super(); this._activeKey = null; this._clickTimer = null; this._isClickScrolling = false; }
+     connectedCallback() {
+       var self = this;
+-      this._render();
+-      if (!this._observer) {
+-        this._observer = new MutationObserver(function () {
+-          self._rebuild();
+-        });
+-        this._observer.observe(this, { childList: true, subtree: true });
+-      }
+-      // hideNavOnMobile phụ thuộc bề rộng cửa sổ nên phải đánh giá lại khi resize
+-      if (!this._resizeBound) {
+-        this._resizeBound = function () { self._rebuild(); };
+-        window.addEventListener('resize', this._resizeBound);
+-      }
+-      this._rebuild();
+-    }
+-    disconnectedCallback() {
+-      if (this._observer) { this._observer.disconnect(); this._observer = null; }
+-      if (this._resizeBound) { window.removeEventListener('resize', this._resizeBound); this._resizeBound = null; }
+-      this._cleanIntersectionObserver();
+-      if (this._clickTimer) { clearTimeout(this._clickTimer); this._clickTimer = null; }
+-    }
+-    attributeChangedCallback() {
+-      if (this.isConnected) this._rebuild();
+-    }
+-
+-    /* Mirror booleanAttribute của Angular: chỉ `="false"` mới là false. */
+-    _boolAttr(n, dflt) {
+-      var v = this.getAttribute(n);
+-      if (v === null) return !!dflt;
+-      return v !== 'false';
+-    }
+-
+-    _getItems() {
+-      return this._content ? Array.prototype.filter.call(this._content.children, function (n) {
+-        return n.tagName === 'SD-ANCHOR-ITEM';
+-      }) : [];
+-    }
+-
+-    _getItemTitle(item) {
+-      if (item._title === undefined) {
+-        item._title = item.getAttribute('title') || '';
+-      }
+-      if (item.hasAttribute('title')) {
+-        item._strippingTitle = true;
+-        item.removeAttribute('title');
+-        item._strippingTitle = false;
+-      }
+-      return item._title;
+-    }
+-
+-    /* navHidden = hideNav || (hideNavOnMobile && đang ở breakpoint mobile) */
+-    get _navHidden() {
+-      var hideNav = this._boolAttr('hideNav', false) || this._boolAttr('hidenav', false);
+-      if (hideNav) return true;
+-      var onMobile = this.hasAttribute('hideNavOnMobile') || this.hasAttribute('hidenavonmobile')
+-        ? (this._boolAttr('hideNavOnMobile', true) && this._boolAttr('hidenavonmobile', true))
+-        : true;   // mặc định THẬT của thư viện là true
+-      return onMobile && window.innerWidth <= SD_ANCHOR_MOBILE_MAX;
+-    }
+-
+-    _render() {
+-      var self = this;
+       if (!this._wrapper) {
+-        this._content = document.createElement('div');
+-        this._content.className = 'c-anchor-content';
+-        Array.from(this.childNodes).forEach(function (n) {
+-          if (n.nodeType === 1 && n.tagName === 'SD-ANCHOR-ITEM') {
+-            self._content.appendChild(n);
+-          }
+-        });
+-        // Đúng cấu trúc thư viện: thẻ bọc ngoài `.c-anchor-list` (sticky, flex-basis
+-        // = sidebarWidth) chứa nav `.c-anchor-list` bên trong (chính là anchor-nav).
+-        this._nav = document.createElement('div');
+-        this._nav.className = 'c-anchor-list';
+-        this._nav.setAttribute('role', 'navigation');
+-        this._nav.setAttribute('aria-label', 'Điều hướng trong trang');
+-        this._navOuter = document.createElement('div');
+-        this._navOuter.className = 'c-anchor-list';
+-        this._navOuter.appendChild(this._nav);
+         this._wrapper = document.createElement('div');
+         this._wrapper.className = 'c-anchor-vertical';
+-        // Portal: nội dung bên TRÁI, danh sách điều hướng bên PHẢI
++        this._content = document.createElement('div');
++        this._content.className = 'c-anchor-content';
++        while (this.firstChild) this._content.appendChild(this.firstChild);   // ng-content
+         this._wrapper.appendChild(this._content);
+-        this._wrapper.appendChild(this._navOuter);
+-        this.innerHTML = '';
+         this.appendChild(this._wrapper);
+-      }
+-    }
+-
+-    _applyAppearance() {
+-      if (!this._wrapper) return;
+-      var sidebarWidth = this.getAttribute('sidebarWidth') || this.getAttribute('sidebarwidth') || '200px';
+-      var overScroll = this._boolAttr('overScroll', false) || this._boolAttr('overscroll', false);
+-      var color = this.getAttribute('color') || 'primary';
+-      if (SD_ANCHOR_COLORS.indexOf(color) === -1) color = 'primary';
+-
+-      // overScroll=false → chặn cuộn lan ra ngoài (đúng thư viện, KHÔNG phải chèn padding)
+-      this._wrapper.classList.toggle('c-stop-scroll-propagation', !overScroll);
+-      this._navOuter.style.flexBasis = sidebarWidth;
+-      this._nav.style.width = sidebarWidth;
+-      this._nav.style.setProperty('--anchor-active-color', 'var(--sd-' + color + ')');
+-      this._navOuter.style.display = this._navHidden ? 'none' : '';
+-    }
+-
+-    _autoIdPrefix() {
+-      var raw = this.getAttribute('autoId') || this.getAttribute('autoid') || '';
+-      return raw ? 'components-anchor-' + raw : '';
+-    }
+-
+-    _rebuild() {
+-      if (!this.isConnected || !this._wrapper || !this._nav) return;
+-      var self = this;
+-      var items = this._getItems();
+-      var nav = this._nav;
+-      var observer = this._observer;
+-      var ellipsis = this._boolAttr('ellipsis', false);
+-      var prefix = this._autoIdPrefix();
+-      if (observer) observer.disconnect();
+-      try {
+-        nav.innerHTML = '';
+-        var frag = document.createDocumentFragment();
+-        items.forEach(function (item, i) {
+-          var title = self._getItemTitle(item) || ('Mục ' + (i + 1));
+-          var icon = item.getAttribute('icon') || '';
+-          var key = item.getAttribute('key') || '';
+-
+-          var link = document.createElement('div');
+-          link.className = 'c-anchor-list-item';
+-          link.setAttribute('tabindex', '0');
+-          link.setAttribute('role', 'link');
+-          link.setAttribute('aria-label', title);
+-          if (prefix && key) link.setAttribute('data-autoid', prefix + '-' + key);
+-          if (icon) {
+-            link.appendChild(sdMatIconEl(icon, 'c-anchor-list-item-icon mi-lg'));
+-          }
+-          var labelEl = document.createElement('div');
+-          labelEl.className = 'c-anchor-list-item-text' + (ellipsis ? ' ellipsis' : '');
+-          labelEl.textContent = title;
+-          link.appendChild(labelEl);
+-          var go = function () { self._onClickSection(i); };
+-          link.addEventListener('click', go);
+-          link.addEventListener('keydown', function (e) {
+-            if (e.key === 'Enter') { e.preventDefault(); go(); }
++        /* item thêm / bớt về sau (contentChildren đổi) → dựng lại nav. Item chèn thẳng vào host thì chuyển vào nội dung. */
++        this._mo = new MutationObserver(function (muts) {
++          muts.forEach(function (m) {
++            if (m.target === self) Array.prototype.forEach.call(m.addedNodes, function (n) { if (n !== self._wrapper && n.parentNode === self) self._content.appendChild(n); });
+           });
+-          frag.appendChild(link);
++          self._schedule();
+         });
+-        nav.appendChild(frag);
+-      } finally {
+-        if (observer) observer.observe(this, { childList: true, subtree: true });
++        this._mo.observe(this, { childList: true });
++        this._mo.observe(this._content, { childList: true });
+       }
+-      this._applyAppearance();
+-      this._registerIntersectionObserver();
+-      this._paintActive();
++      this._build();
+     }
+-
+-    /* Click có debounce 200ms đúng thư viện (anchor-nav dùng debounceTime(200)) */
+-    _onClickSection(i) {
+-      var self = this;
+-      if (this._clickTimer) clearTimeout(this._clickTimer);
+-      this._clickTimer = setTimeout(function () {
+-        self._clickTimer = null;
+-        self._goTo(i);
+-      }, 200);
++    disconnectedCallback() {
++      this._cleanIo();
++      if (this._clickTimer) { clearTimeout(this._clickTimer); this._clickTimer = null; }
++      this._cleanClickScroll();
+     }
+-
+-    _cleanIntersectionObserver() {
+-      if (this._io) { this._io.disconnect(); this._io = null; }
+-      this._visible = null;
++    attributeChangedCallback() { if (this._wrapper) this._schedule(); }
++    _schedule() {
++      var self = this;
++      if (this._pending) return;
++      this._pending = true;
++      queueMicrotask(function () { self._pending = false; if (self.isConnected) self._build(); });
++    }
++    _attr(a, b) { var v = this.getAttribute(a); if (v === null) v = this.getAttribute(b); return v; }
++    _bool(a, b, dflt) { var v = this._attr(a, b); return v === null ? dflt : v !== 'false'; }
++    _items() {
++      return Array.prototype.filter.call(this._content.children, function (n) { return n.tagName === 'SD-ANCHOR-ITEM'; });
++    }
++    _key(item) { if (!item._sdAnchorId) item._sdAnchorId = sdUuid(); return item._sdAnchorId; }   // Utilities.generateUuid()
++
++    _build() {
++      var self = this;
++      var sidebarWidth = this._attr('sidebarWidth', 'sidebarwidth') || '200px';
++      var color = this._attr('color', 'color') || 'primary';
++      var ellipsis = this._bool('ellipsis', 'ellipsis', false);
++      var overScroll = this._bool('overScroll', 'overscroll', false);
++      var hideNav = this._bool('hideNav', 'hidenav', sdAnchorIsMobile());
++      var rawId = this._attr('autoId', 'autoid');
++      var autoId = rawId ? 'components-anchor-' + rawId : '';
++      this._wrapper.classList.toggle('c-stop-scroll-propagation', !overScroll);   // [ngClass]
++      var items = this._items();
++      if (this._navOuter) { this._navOuter.remove(); this._navOuter = null; this._navList = null; }
++      this._cleanIo();
++      if (hideNav) return;
++      var outer = document.createElement('div');
++      outer.className = 'c-anchor-list';
++      outer.style.flexBasis = sidebarWidth;
++      var navEl = document.createElement('anchor-nav');
++      var list = document.createElement('div');
++      list.className = 'c-anchor-list';
++      list.style.width = sidebarWidth;
++      list.style.setProperty('--anchor-active-color', 'var(--sd-' + color + ')');
++      items.forEach(function (item) {
++        var id = self._key(item);
++        var row = document.createElement('div');
++        row.setAttribute('tabindex', '0');
++        row.className = 'c-anchor-list-item' + (id === self._activeKey ? ' active' : '');
++        var key = item.getAttribute('key');
++        if (autoId && key) row.setAttribute('data-autoid', autoId + '-' + key);
++        var icon = item.getAttribute('icon');
++        if (icon) {
++          var ic = document.createElement('mat-icon');
++          ic.setAttribute('role', 'img');
++          ic.className = 'mat-icon notranslate c-anchor-list-item-icon material-icons mat-ligature-font mat-icon-no-color';
++          ic.setAttribute('aria-hidden', 'true');
++          ic.setAttribute('data-mat-icon-type', 'font');
++          ic.textContent = icon;
++          row.appendChild(ic);
++        }
++        var txt = document.createElement('div');
++        txt.className = 'c-anchor-list-item-text' + (ellipsis ? ' ellipsis' : '');
++        txt.textContent = ' ' + item.title + ' ';
++        row.appendChild(txt);
++        var fire = function () {   // anchor-nav: debounceTime(200) rồi clickSection
++          if (self._clickTimer) clearTimeout(self._clickTimer);
++          self._clickTimer = setTimeout(function () { self._clickTimer = null; self.scrollSectionByClick(id); }, 200);
++        };
++        row.addEventListener('click', fire);
++        row.addEventListener('keydown', function (e) { if (e.key === 'Enter') fire(); });
++        row._sdAnchorId = id;
++        list.appendChild(row);
++      });
++      navEl.appendChild(list);
++      outer.appendChild(navEl);
++      this._wrapper.appendChild(outer);
++      this._navOuter = outer; this._navList = list;
++      this._registerIo(items);
++    }
++    _paint() {
++      if (!this._navList) return;
++      var key = this._activeKey;
++      Array.prototype.forEach.call(this._navList.children, function (r) { r.classList.toggle('active', r._sdAnchorId === key); });
+     }
+-
+-    _registerIntersectionObserver() {
+-      this._cleanIntersectionObserver();
+-      if (this._navHidden) return;
++    _cleanIo() { if (this._io) { this._io.disconnect(); this._io = null; } this._visible = new Set(); }
++    _registerIo(items) {
+       var self = this;
+-      var items = this._getItems();
+-      if (!items.length) return;
+-      this._visible = new Set();
++      this._cleanIo();
++      if (typeof IntersectionObserver === 'undefined') return;
+       this._io = new IntersectionObserver(function (entries) {
+-        entries.forEach(function (entry) {
+-          if (entry.isIntersecting) self._visible.add(entry.target);
+-          else self._visible.delete(entry.target);
+-        });
++        entries.forEach(function (e) { if (e.isIntersecting) self._visible.add(e.target); else self._visible.delete(e.target); });
+         if (self._isClickScrolling) return;
+-        // Lấy section ĐẦU TIÊN đang nhìn thấy — đúng ý thư viện. Nhưng quyết định
+-        // bằng HÌNH HỌC chứ không tin mỗi `_visible`: khi cuộn tới đúng đầu một
+-        // section, đáy của section trước nằm ĐÚNG mép trên wrapper, phần giao có
+-        // diện tích 0 mà trình duyệt vẫn có thể báo isIntersecting = true. Khi đó
+-        // section trước thắng vòng lặp và mục vừa bấm bị mất highlight (bấm mục 3
+-        // lại sáng mục 2). Thư viện thật cũng dính đúng chỗ này, chỉ là tuỳ lúc.
+-        // Đòi giao nhau tối thiểu 1px thì kết quả xác định, và đúng với thứ người
+-        // dùng đang thực sự nhìn thấy.
+-        var wrapRect = self._wrapper.getBoundingClientRect();
+-        var list = self._getItems();
+-        for (var k = 0; k < list.length; k++) {
+-          var r = list[k].getBoundingClientRect();
+-          if (r.bottom > wrapRect.top + 1 && r.top < wrapRect.bottom - 1) {
+-            if (self._activeIndex !== k) { self._activeIndex = k; self._paintActive(); }
++        var list = self._items();
++        for (var i = 0; i < list.length; i++) {
++          if (self._visible.has(list[i])) {
++            var id = self._key(list[i]);
++            if (self._activeKey !== id) { self._activeKey = id; self._paint(); }
+             break;
+           }
+         }
+       }, { root: this._wrapper, threshold: 0 });
+-      items.forEach(function (item) { self._io.observe(item); });
+-      // Seed về section đầu khi active hiện tại không còn trỏ vào section nào đang sống
+-      if (this._activeIndex >= items.length) this._activeIndex = 0;
++      items.forEach(function (it) { self._io.observe(it); });
+     }
+-
+-    _goTo(i) {
+-      var self = this;
+-      var items = this._getItems();
+-      if (i < 0 || i >= items.length) return;
+-      this._activeIndex = i;
+-      this._paintActive();
++    _cleanClickScroll() {
++      if (this._clickTimeout) { clearTimeout(this._clickTimeout); this._clickTimeout = null; }
++      if (this._scrollEnd) { this._wrapper.removeEventListener('scrollend', this._scrollEnd); this._scrollEnd = null; }
++    }
++    /* scrollSectionByClick(id) — tên thư viện; nhận cả chỉ số / key cho trang gọi tay */
++    scrollSectionByClick(id) {
++      var self = this, items = this._items();
++      var target = items.filter(function (it, i) { return self._key(it) === id || i === id || it.getAttribute('key') === id; })[0];
++      this._activeKey = target ? this._key(target) : id;
++      this._paint();
++      if (!target) return;
++      this._cleanClickScroll();
+       this._isClickScrolling = true;
+-      var wrapperEl = this._wrapper;
+-      var target = items[i];
+-      var prev = wrapperEl.scrollTop;
+-      var top = prev + target.getBoundingClientRect().top - wrapperEl.getBoundingClientRect().top;
+-      var done = function () {
+-        self._isClickScrolling = false;
+-        wrapperEl.removeEventListener('scrollend', done);
+-      };
+-      wrapperEl.addEventListener('scrollend', done);
+-      // Không cuộn được (đã ở đúng chỗ) thì scrollend không bao giờ bắn — nhả cờ sau 200ms
+-      setTimeout(function () { if (wrapperEl.scrollTop === prev) done(); }, 200);
+-      wrapperEl.scrollTo({ top: top, behavior: 'smooth' });
+-    }
+-
+-    _paintActive() {
+-      if (!this._nav) return;
+-      var activeIndex = this._activeIndex;
+-      var links = this._nav.querySelectorAll('.c-anchor-list-item');
+-      Array.prototype.forEach.call(links, function (link, i) {
+-        var active = i === activeIndex;
+-        link.classList.toggle('active', active);
+-        link.setAttribute('aria-current', active ? 'true' : 'false');
+-      });
++      var w = this._wrapper, prev = w.scrollTop;
++      var top = prev + target.getBoundingClientRect().top - w.getBoundingClientRect().top;
++      this._scrollEnd = function () { self._isClickScrolling = false; w.removeEventListener('scrollend', self._scrollEnd); self._scrollEnd = null; };
++      w.addEventListener('scrollend', this._scrollEnd);
++      this._clickTimeout = setTimeout(function () {
++        self._clickTimeout = null;
++        if (w.scrollTop === prev) { self._isClickScrolling = false; if (self._scrollEnd) { w.removeEventListener('scrollend', self._scrollEnd); self._scrollEnd = null; } }
++      }, 200);
++      w.scrollTo({ top: top, behavior: 'smooth' });
+     }
+   }
+   customElements.define('sd-anchor', SdAnchor);

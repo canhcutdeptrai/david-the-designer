@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-date-range — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-date-range"
+         data-subtitle="Ô chọn khoảng ngày “Từ – đến”, giá trị { from, to }"></div>
+
+    <div class="content-zone">
+
+        <sd-section title="Trạng thái ô nhập">
+          <p class="fs-12 text-black400 mb-8">Rỗng · có khoảng ngày · bắt buộc · disabled. Dấu ngăn là EN DASH, ẩn khi cả hai ô trống.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:980px;">
+            <sd-date-range label="Kỳ báo cáo dòng tiền"></sd-date-range>
+            <sd-date-range label="Kỳ báo cáo dòng tiền" from="2026/10/05" to="2026/10/20"></sd-date-range>
+            <sd-date-range label="Thời hạn hạn mức" required></sd-date-range>
+            <sd-date-range label="Kỳ Kế hoạch Funding" from="2026/10/01" to="2026/12/31" disabled></sd-date-range>
+          </div>
+        </sd-section>
+
+        <sd-section title="Lỗi bắt buộc + touched · size sm" subtitle="core.form.date-range.required — mẫu catalog #c-date-range">
+          <div class="d-flex flex-wrap gap-16">
+            <div style="width:280px"><sd-date-range class="dr-cat-touch" label="Thời hạn hạn mức" required></sd-date-range></div>
+            <div style="width:280px"><sd-date-range size="sm" label="Kỳ báo cáo" from="2026/10/05" to="2026/10/20"></sd-date-range></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Lịch đang mở" subtitle="tháng 10/2026, khoảng 05/10 → 20/10 — lịch mở sát mép dưới ô (khe 0)">
+          <div style="min-height:420px">
+            <div style="width:320px"><sd-date-range id="drCatOpen" label="Kỳ báo cáo dòng tiền" from="2026/10/05" to="2026/10/20"></sd-date-range></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="size=sm và min/max">
+          <p class="fs-12 text-black400 mb-8">Bấm icon <code>today</code> để mở lịch; ngày ngoài phạm vi bị khoá. Có giá trị thì icon <code>cancel</code> (xoá) đứng trước — kể cả khi disabled, như catalog.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:980px;">
+            <sd-date-range size="sm" label="Kỳ báo cáo" from="2026/10/05" to="2026/10/20"></sd-date-range>
+            <sd-date-range label="Trong tháng 10/2026" min="2026/10/05" max="2026/10/20"></sd-date-range>
+          </div>
+        </sd-section>
+
+        <sd-section title="Chế độ xem">
+          <p class="fs-12 text-black400 mb-8">viewed: “dd/MM/yyyy → dd/MM/yyyy”.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:980px;">
+            <sd-date-range label="Kỳ báo cáo dòng tiền" from="2026/10/05" to="2026/10/20" viewed></sd-date-range>
+          </div>
+        </sd-section>
+
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+<script>
+  /* Mẫu catalog #c-date-range: ô lỗi ở trạng thái touched, lịch mở sẵn */
+  document.querySelectorAll('.dr-cat-touch').forEach(function (el) { el._touched = true; el._render(); });
+  var drOpen = document.getElementById('drCatOpen'); if (drOpen) drOpen._open();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,550 @@
+# BUTTONFIX2-2026-10-13 — chỉnh nốt chỗ lệch catalog: vòng xoay mat-spinner, nút trang demo, nút huỷ SdConfirmService
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/BUTTONFIX2-2026-10-13.patch
+# 11 file: AGENTS.md CHANGELOG.md known-gaps.md sd-service.md sd-tokens.css import-excel.html quick-action.html service.html tooltip.html upload-file.html sd-components.js 
+
+diff -ruN a/AGENTS.md b/AGENTS.md
+--- a/AGENTS.md	2026-10-13 07:35:18.909417479 +0000
++++ b/AGENTS.md	2026-10-13 07:35:18.911082104 +0000
+@@ -126,7 +126,7 @@
+ 2. **Không dùng màu ngoài token** — mọi màu phải từ CSS variables
+ 3. **Không dùng font ngoài** Roboto + JetBrains Mono + Material Icons Outlined. **Mono font (`font-family-mono`) chỉ dùng cho dữ liệu dạng code** (JSON, API response, log...) — **không dùng cho** ID, mã, số tiền, datetime, hay bất kỳ business data nào. **Không hardcode `style="font-family:..."` trên element** — dùng CSS class
+ 4. **Không dùng inline SVG cho icon** — luôn dùng `<span class="material-icons-outlined mi-{size}">name</span>` (KHÔNG dùng `material-icons` filled)
+-   - **Phạm vi:** Rule 4 áp cho icon AI tự viết trong HTML trang (prototype, pattern). **Icon bên trong component `sd-*` / `bpm-*` thì theo đúng catalog**: thẻ `<mat-icon>` với đủ lớp của catalog, đặc (`material-icons`) hay viền (`material-icons-outlined`) đúng như catalog vẽ — dựng qua `sdMatIconHtml()` / `sdMatIconEl()` trong `sd-components.js`. Builder chốt 2026-10-13: *"đổi một lượt cho cả kit → ok"* (trước đó từng chỗ: `bpm-kpi-card`, nút xoá chip, `sd-section`, `sd-tree`, `sd-stepper`). Đừng sửa ngược các icon đó về outlined. Icon của `sd-button` (khi không khai `fontSet`) còn đổi **theo vật chứa** như catalog — đặc trong `sd-table` / `sd-modal` / `sd-side-drawer` / `sd-quick-action` / `sd-form-render`, viền ở chỗ khác — do bộ quan sát `sdIconContextFix()` lo; Builder 2026-10-13: *"những phần icon theo Catalog luôn nhé"*. Thứ tự lớp / thuộc tính của nút cũng theo mục chứa (`sdButtonDomFix()`, 2026-10-13) — đừng "dọn" cho thống nhất, xem `_memory/known-gaps.md` mục `sd-button — DOM theo mục catalog`.
++   - **Phạm vi:** Rule 4 áp cho icon AI tự viết trong HTML trang (prototype, pattern). **Icon bên trong component `sd-*` / `bpm-*` thì theo đúng catalog**: thẻ `<mat-icon>` với đủ lớp của catalog, đặc (`material-icons`) hay viền (`material-icons-outlined`) đúng như catalog vẽ — dựng qua `sdMatIconHtml()` / `sdMatIconEl()` trong `sd-components.js`. Builder chốt 2026-10-13: *"đổi một lượt cho cả kit → ok"* (trước đó từng chỗ: `bpm-kpi-card`, nút xoá chip, `sd-section`, `sd-tree`, `sd-stepper`). Đừng sửa ngược các icon đó về outlined. Icon của `sd-button` (khi không khai `fontSet`) còn đổi **theo vật chứa** như catalog — đặc trong `sd-table` / `sd-modal` / `sd-side-drawer` / `sd-quick-action` / `sd-form-render`, viền ở chỗ khác — do bộ quan sát `sdIconContextFix()` lo; Builder 2026-10-13: *"những phần icon theo Catalog luôn nhé"*. Vòng xoay `loading` bên trong `sd-*` cũng theo catalog: markup `mat-spinner` SVG nguyên văn (`SD_MAT_SPINNER`) — không phải icon nên không thuộc lệnh cấm SVG. Thứ tự lớp / thuộc tính của nút cũng theo mục chứa (`sdButtonDomFix()`, 2026-10-13) — đừng "dọn" cho thống nhất, xem `_memory/known-gaps.md` mục `sd-button — DOM theo mục catalog`.
+ 5. **Không thêm breadcrumb / topbar** — OMEU không dùng
+ 6. **Không dùng gradient, glassmorphism, decorative animations**
+ 7. **Không skip shell** — mọi trang phải có sidebar + page-header
+@@ -139,7 +139,7 @@
+ 14. **Tối đa 3 text buttons** trong Action Zone của Header — buttons thứ 4+ vào dropdown overflow
+ 15. **Kiểm tra khoảng cách giữa các block** — mỗi khi thêm element vào page (alert, banner, section, table...), xem xét element trước/sau có bị dính không. Nếu có, thêm margin bằng utility class (`mb-4`, `mb-6`...). **Không để hai block chạm nhau thiếu khoảng cách.**
+ 16. **Cancel button label** — nút hủy/thoát chỉ được dùng đúng 1 trong 3 label: **"Bỏ qua"**, **"Thoát"**, **"Quay lại"**. **Không dùng** "Hủy", "Huỷ", "Cancel", "Đóng" hay bất kỳ biến thể nào khác.
+-17. **Cụm nút trong hộp thoại phân cấp ba bậc, cùng `color="primary"`** - bậc 1 hành động chính dùng `type="fill"`, bậc 2 hành động phụ trong cùng cụm CTA dùng `type="light"`, bậc 3 thoát ra không làm gì (Bỏ qua / Thoát / Quay lại) dùng `type="link"`. Nút thoát **không dùng** `light`/`outline` vì nó nổi ngang hàng các bậc trên; `link color="secondary"` thì chữ quá mờ nhìn như bị disable, nên luôn là `type="link" color="primary"`.
++17. **Cụm nút trong hộp thoại phân cấp ba bậc, cùng `color="primary"`** - bậc 1 hành động chính dùng `type="fill"`, bậc 2 hành động phụ trong cùng cụm CTA dùng `type="light"`, bậc 3 thoát ra không làm gì (Bỏ qua / Thoát / Quay lại) dùng `type="link"`. Nút thoát **không dùng** `light`/`outline` vì nó nổi ngang hàng các bậc trên; `link color="secondary"` thì chữ quá mờ nhìn như bị disable, nên luôn là `type="link" color="primary"`. **Ngoại lệ — nút huỷ MẶC ĐỊNH của `SdConfirmService`** theo thư viện / catalog `#c-confirm`: `light` · `secondary`, chữ vẫn "Bỏ qua" (Builder 2026-10-13: *"Kiểu catalog, giữ chữ Bỏ qua"*). Rule 17 áp cho hộp thoại AI tự dựng trên trang.
+ 18. **KHÔNG tự thêm thứ mốc chuẩn không có.** Nếu `@sd-angular/core` 19.0.10 không có một slot / biến thể / attribute, thì **kit cũng không có**. Thấy kit đang có mà catalog không có thì mặc định là **GỠ**, không phải "ghi known-gaps rồi giữ lại".
+ 
+     Lý do: thứ không có trong mốc chuẩn thì **không ai thiết kế nó** — không số đo, không ví dụ, không ai từng nhìn xem nó ra sao. `sd-modal` từng có hai slot bịa (`sdHeader` thay cả header, `sdFooter` vùng giữa); hệ quả là một footer ba cụm có nút lơ lửng giữa và một modal mất cả header chuẩn lẫn nút X. Hai thứ đó nằm im nhiều vòng rà soát, được ghi chú là "lệch theo hướng nhiều hơn, giữ lại", cho tới khi Builder mở trang lên và nói "UI nhìn như đang bị lỗi" (2026-10-12).
+diff -ruN a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-13 07:35:18.922067660 +0000
++++ b/CHANGELOG.md	2026-10-13 07:35:18.928062648 +0000
+@@ -8,6 +8,21 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — Chỉnh nốt các chỗ lệch catalog của `sd-button` (vòng xoay, nút trang demo, nút huỷ hộp xác nhận)
++
++Builder: *„Chỉnh những cái lệch giống Catalog“*.
++
++- **Vòng xoay `mat-spinner` thật** thay 4 vòng CSS tự vẽ: `sd-button` loading (18px), `sd-upload-file` (18px),
++  `sd-table` loading (100px), `sd-tree` lazy (`mat-progress-spinner` 16px) — markup nguyên văn từng mục catalog +
++  khối CSS MatProgressSpinner chép từ catalog (màu nét theo kiểu / màu nút). Hình tĩnh trùng catalog từng điểm ảnh.
++- **Icon trong nút** xếp lớp theo mục catalog; nút `outline` có lớp phủ trùm viền như catalog.
++- **Nút của trang demo**: trang preview đánh dấu vùng demo `data-catalog-section` → nút trên trang Quick action,
++  Import excel, Upload file, Tooltip, Service (Notify / Confirm / Loading) mang đúng dạng của mục catalog tương ứng.
++- **`SdConfirmService`**: nút huỷ mặc định `light` · `secondary` như thư viện / catalog, chữ giữ "Bỏ qua"
++  (Builder: *„Kiểu catalog, giữ chữ Bỏ qua“*); ghi ngoại lệ vào Rule 17 của `AGENTS.md`; `sd-service.md` cập nhật.
++- Kiểm: 11 mục + 6 trang preview không còn dạng nút lạ; 97 trang không lỗi JS; ảnh chụp chỉ đổi vòng xoay bảng.
++  Bản vá: `reviews/ds-mirror/BUTTONFIX2-2026-10-13.patch`.
++
+ ### Changed — `sd-button` dựng DOM theo mục catalog chứa nút (kéo theo `sd-inform`)
+ 
+ Builder: *„Làm cho khớp với catalog“* (phần còn lệch của vòng Inform: ruột `sd-button` trong `[sdInformAction]`).
+diff -ruN a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-13 07:35:18.936151712 +0000
++++ b/_memory/known-gaps.md	2026-10-13 07:35:18.937931856 +0000
+@@ -129,7 +129,7 @@
+ | Menu lệnh | overlay CDK; demo vẽ tay ở `top:80px; right:0` | con của dòng, `top:calc(100% - 8px); right:0` → trùng toạ độ demo | Panel kit có `padding:8px 0`, catalog đặt ở `.mat-mdc-menu-content` — cùng kết quả |
+ | Nút ⋮ | không `aria-label` | `aria-label="Lệnh"` | Rule 9 |
+ | Nút ❌ thanh thao tác | không tooltip, không `aria-label` | không tooltip; `aria-label="Bỏ chọn"` | Rule 9 |
+-| Spinner lazy | `mat-progress-spinner` SVG | vòng CSS 16px | Đã ghi từ trước |
++| **[ĐÃ THEO CATALOG 2026-10-13 — markup `mat-spinner` nguyên văn, xem mục `sd-button — DOM theo mục catalog`]** Spinner lazy | `mat-progress-spinner` SVG | vòng CSS 16px | Đã ghi từ trước |
+ | `[selectable]` · `[itemTemplate]` · `tree.defaultExpanded` | có tên trong API | không dựng | Đã ghi từ trước |
+ 
+ Đã gỡ (Rule 18): `autoId`, `expand()`, `collapse()`, `clearSelection()`, `selectedIds`, tooltip „Bỏ chọn“.
+@@ -243,10 +243,20 @@
+ 
+ | Chỗ | Catalog | Kit | Vì sao |
+ |---|---|---|---|
+-| Nút **của trang demo** trong mục #c-quick-action / #c-import-excel / #c-upload-file / #c-tooltip / #c-notify / #c-loading | mang dạng của mục đó dù nằm ngoài component | dạng mặc định (#c-button) | Đó là nút của trang trình bày, không thuộc component; trang kit không có "mục" để bám |
+-| `loading` | `mat-spinner` SVG | vòng CSS | Đã ghi (Rule 4) |
++| ~~Nút **của trang demo** trong mục #c-quick-action / #c-import-excel / #c-upload-file / #c-tooltip / #c-notify / #c-loading~~ **ĐÃ THEO CATALOG 2026-10-13** | mang dạng của mục đó dù nằm ngoài component | trang preview đánh dấu vùng demo `data-catalog-section="c-…"` → nút ngoài component lấy dạng của mục đó (`SD_BTN_SECTION_FORM`); nút trong tab Hướng dẫn giữ dạng mặc định (catalog không có tab đó) | |
++| ~~`loading`~~ | `mat-spinner` SVG | nay **nguyên văn** markup `mat-spinner` + khối CSS MatProgressSpinner của catalog | **ĐÃ THEO CATALOG 2026-10-13** |
+ | Thuộc tính cấu hình trên thẻ host (`type`, `color`, `size`…) | catalog vẽ `<sd-button>` trần | còn trên host | Web Component đọc cấu hình từ attribute (Rule 18 ngoại lệ 1) |
+-| Nút "Bỏ qua" của `SdConfirmService` | thư viện: `sd-button` mặc định (light) `color=secondary` | `link primary` | Chưa rà mục #c-confirm — để vòng Confirm |
++| ~~Nút "Bỏ qua" của `SdConfirmService`~~ **ĐÃ THEO CATALOG 2026-10-13** | thư viện: `sd-button` mặc định (light) `color=secondary`, chữ "Hủy bỏ" | `light` · `secondary`, chữ **"Bỏ qua"** | Builder chốt *"Kiểu catalog, giữ chữ Bỏ qua"* (Rule 16) |
++
++Vòng 2 cùng ngày (Builder: *„Chỉnh những cái lệch giống Catalog“*):
++- **Vòng xoay**: `sd-button` (18px), `sd-upload-file` (18px), `sd-table` (100px), `sd-tree` (`mat-progress-spinner` 16px)
++  dùng **markup nguyên văn** của từng mục catalog (`SD_MAT_SPINNER`) + khối CSS "MatProgressSpinner" chép từ
++  `button.css` (nét theo màu nút như catalog; `#c-tree` giữ tên keyframes `c-tree-…`). Thay 4 vòng CSS tự vẽ.
++  Đây là vòng xoay của component (phạm vi Rule 4: bên trong `sd-*` theo catalog), không phải icon AI tự vẽ.
++- Icon trong nút: thứ tự lớp theo mục (#c-button `mat-icon notranslate c-icon-prefix …`, A `… c-icon-prefix` cuối,
++  T/F dạng rút gọn, S `c-icon-prefix mat-icon …`). Nút `outline`: lớp phủ trùm cả viền (`top/left/right/bottom:-1px`).
++- Nút của trang demo + nút huỷ `SdConfirmService`: xem hai dòng gạch ở trên.
++- Còn lại DUY NHẤT: thuộc tính cấu hình trên thẻ host — Web Component nhận input qua attribute (Rule 18 ngoại lệ 1).
+ 
+ ## `sd-inform` — ĐỒNG BỘ 2026-10-13 theo catalog + mã thư viện
+ 
+@@ -522,7 +532,7 @@
+ | Giờ trong cột datetime | `span.text-black400` — nhưng bundle `#c-table` KHÔNG khai `.text-black400` nên catalog vẽ chữ đen | Kit tô xám theo nghĩa lớp của sd-core | Theo DOM class, không theo thiếu sót của bundle demo |
+ | Phân trang khi bảng rỗng | DOM gắn `d-none`, bundle không khai `.d-none` → vẫn hiện | Kit ẩn | Như trên |
+ | Nút chân bảng khi rỗng | „Tải lại“ khoá, „Export“ bị gỡ | Kit làm y vậy | Chép nguyên kết quả catalog (lạ nhưng đúng DOM) |
+-| Spinner 100px | `mat-spinner` SVG | vòng CSS 100px nét 10px primary | Kit không có MDC |
++| **[ĐÃ THEO CATALOG 2026-10-13 — markup `mat-spinner` nguyên văn, xem mục `sd-button — DOM theo mục catalog`]** Spinner 100px | `mat-spinner` SVG | vòng CSS 100px nét 10px primary | Kit không có MDC |
+ | Chế độ server | `items(filter, paging)` | Kit gọi với `filter` = ô lọc + `orderBy`/`orderDirection`, `paging` = `{page:1,pageSize}` — chưa đổi trang thật | Chuyển trang ‹ › chưa dựng (catalog demo cũng tĩnh) |
+ | Số mặc định | „kiểu number mặc định hiện 2 số lẻ“ | Đổi mặc định sang 2 số lẻ; đã thêm `option.precision: 0` cho 27 cột số đếm/tiền có sẵn (kể cả 2 trang prototype cam-nang-phan-quyen) để giữ hình cũ | Theo catalog, không làm vỡ trang đang có |
+ | Cột `type: action / menu / raw / link / status / boolean`, `addable` | không có trong catalog | Giữ | Đang dùng ở nhiều trang; catalog dùng `commands` / `useBadge` |
+@@ -534,7 +544,7 @@
+ | Nút xoá / phóng to / ô „+N“ | `mat-icon` (nút xoá là `mat-icon-button`); ô „+N“ là `div` | `button` / `div[role=button][tabindex=0]` bọc icon | Rule 9 — bấm được bằng bàn phím; số đo trùng catalog |
+ | Ô tải lên | `aria-hidden="true"`, không nhận focus | `role="button" tabindex="0"` + `aria-label` | Rule 9 (đã có từ trước) |
+ | Icon close · info_outline | `material-icons` (đặc) | `material-icons-outlined` | Rule 4 — hai glyph này giống hệt nhau ở hai bộ |
+-| Spinner đang tải | `mat-spinner` SVG, vòng cung co giãn | vòng CSS 18px viền 2px primary, hở một góc (giống `sd-button .c-spinner`) | Kit không có MDC; khung, vị trí, màu, nét trùng |
++| **[ĐÃ THEO CATALOG 2026-10-13 — markup `mat-spinner` nguyên văn, xem mục `sd-button — DOM theo mục catalog`]** Spinner đang tải | `mat-spinner` SVG, vòng cung co giãn | vòng CSS 18px viền 2px primary, hở một góc (giống `sd-button .c-spinner`) | Kit không có MDC; khung, vị trí, màu, nét trùng |
+ | Modal „Xem ảnh“ | `cdk-overlay`, demo cố định gallery 360px | `sd-modal` 60vw, gallery 60vh như bản gốc | Catalog ghi „chiều cao gốc 60vh được cố định 360px“ |
+ | Ảnh lỗi / đang tải trong modal | catalog không minh hoạ | hiện như tài liệu (icon file + tên + „Tải file“) | Catalog im lặng — chọn đường hiển thị sẵn có, không vẽ thêm |
+ | `scaleToPixel` · kéo-thả · `upload()` / `details` thật | catalog ghi „không chạy“ | nhận thuộc tính, không nén ảnh; adapter cục bộ | Giữ như trước |
+@@ -790,7 +800,7 @@
+ | `sd-radio` focus bàn phím | Phủ vòng ripple 28px mờ 12% | Nền `rgba(0,0,0,.12)` trên `.c-radio-hit` | Cùng hình, không cần tầng ripple của Material (2026-10-11) |
+ | ~~`sd-stepper` `state="error"`~~ **ĐÃ ĐỔI 2026-10-12** | Catalog: portal không bật `showError` → `state="error"` / `errorMessage` không hiển thị gì | Kit nay cũng không vẽ gì (trước tô đỏ + dòng lỗi) | Theo ghi chú `#c-stepper` |
+ | `sd-button` vòng focus bàn phím | Catalog chỉ báo focus bằng lớp phủ 12%, và còn `.c-button:focus{outline:none}` | Giữ lớp phủ 12% **và** thêm `outline: 2px solid primary` ở `:focus-visible` | Lớp phủ 12% trên nền đặc gần như không thấy; điều hướng bằng bàn phím cần một dấu hiệu rõ. Chỉ hiện khi dùng bàn phím nên không ảnh hưởng hình thức lúc bấm chuột (2026-10-11) |
+-| `sd-button` vòng xoay `loading` | `<mat-spinner diameter="18" strokeWidth="2">` (SVG) | Vòng CSS thuần 18px, `box-sizing: border-box` | Rule 4 cấm inline SVG cho icon. `border-box` là bắt buộc: thiếu nó viền 2px cộng thêm 4px bề ngang (2026-10-11) |
++| **[ĐÃ THEO CATALOG 2026-10-13 — markup `mat-spinner` nguyên văn, xem mục `sd-button — DOM theo mục catalog`]** `sd-button` vòng xoay `loading` | `<mat-spinner diameter="18" strokeWidth="2">` (SVG) | Vòng CSS thuần 18px, `box-sizing: border-box` | Rule 4 cấm inline SVG cho icon. `border-box` là bắt buộc: thiếu nó viền 2px cộng thêm 4px bề ngang (2026-10-11) |
+ | `appearance` (sd-input · sd-date · sd-datetime · sd-chip · sd-chip-calendar) | Input có thật trong khối API | **Không dựng** | Catalog chỉ liệt kê TÊN, mọi ví dụ đều là `outline` mặc định — không có bằng chứng giá trị khác trông thế nào. Dựng là đoán (2026-10-11) |
+ | `floatLabel` (sd-date) | Input có thật trong khối API | **Không dựng** | Như trên: chỉ có tên, không có biến thể minh hoạ (2026-10-11) |
+ | `hyperlink` (sd-radio) | Input có thật trong khối API | **Không dựng cho `sd-radio`** | Catalog có ví dụ `hyperlink` cho `sd-view` nhưng KHÔNG có cho `sd-radio`. **Cập nhật 2026-10-11 lượt sau:** `sd-view` đã dựng và CÓ `hyperlink` đầy đủ (link nội bộ / link http mở tab mới) — phần còn thiếu chỉ là `sd-radio`, vẫn không có ví dụ nào |
+@@ -825,7 +835,7 @@
+ | `tree.defaultExpanded: N` (sd-tree) | Mở sẵn một số nhánh khi dựng cây | **Không dựng** — kit chỉ đọc `expanded: true` trên từng item | Cách hiểu hiển nhiên "mở tới cấp N" **không khớp DOM của chính ví dụ đó**: `tc`(cấp 0) và `nv`(cấp 1) mở, nhưng `kt`(cấp 1) và `nh`(cấp 0) đóng. Ít nhất ba cách hiểu khác vừa khít một ví dụ duy nhất đó. `expanded?` thì nằm sẵn trong kiểu item mà catalog ghi rõ → dựng cái đó (2026-10-11) |
+ | `[selectable]` · `[itemTemplate]` / `sdTreeItemDef` (sd-tree) | Bảng API có khai | **Không dựng** | `selector.visible` mới là thứ có ví dụ cho việc chọn nhiều; `[selectable]` chỉ có tên. `itemTemplate`/`sdTreeItemDef` là `ng-template` của Angular — không mirror được sang Web Component (2026-10-11) |
+ | Menu lệnh của `sd-tree` là overlay CDK | `.mat-mdc-menu-panel.sd-tree__command-menu` nằm trong `cdk-overlay-container` ở `body` | Kit dựng lớp nổi riêng là **con của dòng**, nhưng giữ đúng tên lớp và số đo bên trong (`min-height:40px`, `padding:0 12px`, `gap:6px`, icon 16px) | Cùng kiểu lệch đã ghi cho popover `sd-query-bar`: khác tầng hạ tầng, không khác hình. Hệ quả thật: menu của kit bị `overflow:hidden` của khung cha cắt nếu cây nằm trong vùng cuộn hẹp (2026-10-11) |
+-| Vòng xoay lazy của `sd-tree` | `<mat-progress-spinner>` (SVG `mdc-circular-progress`) 16px | Vòng xoay CSS 16px dùng lại `.c-spinner` của `sd-button` | Rule 4 của AGENTS.md cấm inline SVG cho icon; kit đã dựng spinner bằng CSS từ `sd-button`. Cỡ và màu (`--sd-primary`) theo catalog (2026-10-11) |
++| **[ĐÃ THEO CATALOG 2026-10-13 — markup `mat-spinner` nguyên văn, xem mục `sd-button — DOM theo mục catalog`]** Vòng xoay lazy của `sd-tree` | `<mat-progress-spinner>` (SVG `mdc-circular-progress`) 16px | Vòng xoay CSS 16px dùng lại `.c-spinner` của `sd-button` | Rule 4 của AGENTS.md cấm inline SVG cho icon; kit đã dựng spinner bằng CSS từ `sd-button`. Cỡ và màu (`--sd-primary`) theo catalog (2026-10-11) |
+ | `sd-quick-action` trong trang demo `#c-quick-action` là `position:absolute` | Trang demo nhốt thanh trong khung ảnh | Kit dùng `position:fixed; bottom:90px` | **Không phải lệch**: chính catalog ghi *"Thanh dùng `position:fixed` trong app; ở đây là `absolute` trong khung"*. Giá trị thật lấy từ bản trong bundle `#c-tree` (2026-10-11) |
+ | `.sd-view-mode` / `.sd-view-label` / `.sd-view-value` | Catalog **không có** ba lớp này; chế độ xem chỉ là `<sd-view>` + hai `<div>` | **ĐÃ BỎ 2026-10-11** — 11 chỗ trong `sd-components.js` chuyển sang hàm chung `sdViewHtml()` | Kit từng bỏ thẻ `<sd-view>` vì hồi đó nó chưa phải component ("thẻ chết"). Dựng `sd-view` 2026-10-11 làm lý do đó hết hiệu lực. Kèm theo: bỏ `gap:2px`, bỏ `color:--sd-black500` trên giá trị, và giá trị rỗng đổi từ `—` sang `--` (EMPTY_STR) |
+ | Nút xoá của `sd-input` | `<button class="sd-clear-btn sd-hover">` tròn 20px, `visibility:hidden` cho tới khi khung hover/focus | **ĐÃ ĐỔI 2026-10-11** — trước là `<span class="sd-input-clear">` tuyệt đối ở mép phải, luôn hiện | Bắt được khi đọc markup `#c-input-color`. Lớp khai ở tầng dùng chung vì `sd-autocomplete` dùng đúng lớp này |
+diff -ruN a/design-system/components/sd-service.md b/design-system/components/sd-service.md
+--- a/design-system/components/sd-service.md	2026-10-13 07:35:18.944933537 +0000
++++ b/design-system/components/sd-service.md	2026-10-13 07:35:18.946540532 +0000
+@@ -78,7 +78,7 @@
+ | `yesTitle` | string | `Đồng ý` | Nhãn nút xác nhận |
+ | `noTitle` | string | `Bỏ qua` | Nhãn nút bỏ qua - kit chỉ dùng Bỏ qua / Thoát / Quay lại |
+ | `yesButtonColor` | `primary`, `secondary`, `success`, `error`, `warning`, `info` | `primary` | Màu nút xác nhận |
+-| `noButtonColor` | `primary`, `secondary`, `success`, `error`, `warning`, `info` | `primary` | Màu nút bỏ qua |
++| `noButtonColor` | `primary`, `secondary`, `success`, `error`, `warning`, `info` | `secondary` | Màu nút bỏ qua |
+ 
+ **Tuỳ chọn riêng:**
+ 
+@@ -91,7 +91,7 @@
+ 
+ `required = true` thì nút Đồng ý bị vô hiệu tới khi có giá trị hợp lệ. Nút dùng `sd-button`, màu theo `yesButtonColor` / `noButtonColor`, không custom CSS.
+ 
+-Nút huỷ (theo `noTitle`) dùng `type="link"` mặc định `color="primary"` - không nền, không viền, chữ màu nâu brand theo quyết định PD; muốn đổi màu thì truyền `noButtonColor`. Cố ý khác Portal (Portal dùng nền xám nhạt); đây là quyết định của PD, không phải lệch mirror.
++Nút huỷ (theo `noTitle`) là `sd-button` kiểu mặc định (`light`) màu `noButtonColor || 'secondary'` — nền xám nhạt, chữ đen — đúng thư viện / catalog `#c-confirm`. Builder chốt 2026-10-13: *"Kiểu catalog, giữ chữ Bỏ qua"* — chữ mặc định vẫn "Bỏ qua" (Rule 16; thư viện là "Hủy bỏ"). Bản trước (link primary theo Rule 17) đã đổi.
+ 
+ ```js
+ const value = await SdConfirmService.withRadio('Vui lòng chọn quyền truy cập phù hợp:', {
+diff -ruN a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-13 07:35:18.953107986 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-13 07:35:18.955234731 +0000
+@@ -396,6 +396,8 @@
+ sd-button .c-button.c-outline.mat-primary,
+ sd-button .c-button.c-link.mat-primary,
+ sd-button .c-button.c-text.mat-primary { --sd-btn-state-layer: var(--sd-primary); }
++/* catalog `.mat-mdc-outlined-button .mdc-button__ripple{top:-1px;left:-1px;bottom:-1px;right:-1px}` — lớp phủ trùm cả viền */
++sd-button .mat-mdc-outlined-button .mdc-button__ripple { top: -1px; left: -1px; bottom: -1px; right: -1px; }
+ sd-button .c-button:hover > .mat-mdc-button-persistent-ripple::before { opacity: .04; }
+ sd-button .c-button:active > .mat-mdc-button-persistent-ripple::before,
+ sd-button .c-button:focus-visible > .mat-mdc-button-persistent-ripple::before { opacity: .12; }
+@@ -463,24 +465,65 @@
+ sd-button .c-icon-prefix,
+ sd-button .c-icon-suffix,
+ sd-button .c-action-indicator { flex: 0 0 auto; display: inline-flex; }
+-sd-button .c-spinner {
+-  flex: 0 0 auto;
+-  display: inline-block;
+-  /* mat-spinner diameter=18 là TOÀN BỘ ô 18px; thiếu border-box thì viền 2px
+-     cộng thêm 4px làm nút rộng hơn catalog đúng 4px. */
+-  box-sizing: border-box;
+-  width: 18px;
+-  height: 18px;
+-  border: 2px solid currentColor;
+-  border-right-color: transparent;
+-  border-radius: 50%;
+-  animation: sd-spin 0.8s linear infinite;
+-}
+-@keyframes sd-spin { to { transform: rotate(360deg); } }
+-@media (prefers-reduced-motion: reduce) {
+-  sd-button .c-spinner { animation: none; }
+-}
+ sd-button.sd-loading .c-button { pointer-events: none; opacity: 0.85; }
++/* ── MatProgressSpinner (mat-spinner / mat-progress-spinner) — ĐỒNG BỘ 2026-10-13 ──────────────
++   Chép nguyên khối "MatProgressSpinner" của catalog (css/components/button.css; table / tree /
++   upload-file / import-excel in cùng bộ luật), bỏ phạm vi `#c-*`. Màu nét mặc định
++   `--mat-sys-primary` của catalog = màu chủ đạo theme → `--sd-primary`. Markup: SD_MAT_SPINNER
++   trong sd-components.js. Thay cho các vòng CSS tự vẽ trước đây (sd-button, sd-upload-file,
++   sd-table, sd-tree). */
++.mat-mdc-progress-spinner{--mat-progress-spinner-animation-multiplier: 1;display:block;overflow:hidden;line-height:0;position:relative;direction:ltr;transition:opacity 250ms cubic-bezier(0.4, 0, 0.6, 1)}
++.mat-mdc-progress-spinner circle{stroke-width:var(--mat-progress-spinner-active-indicator-width, 4px)}
++.mdc-circular-progress__determinate-container,.mdc-circular-progress__indeterminate-circle-graphic,.mdc-circular-progress__indeterminate-container,.mdc-circular-progress__spinner-layer{position:absolute;width:100%;height:100%}
++.mdc-circular-progress__determinate-container{transform:rotate(-90deg)}
++.mdc-circular-progress--indeterminate .mdc-circular-progress__determinate-container{opacity:0}
++.mdc-circular-progress__indeterminate-container{font-size:0;letter-spacing:0;white-space:nowrap;opacity:0}
++.mdc-circular-progress--indeterminate .mdc-circular-progress__indeterminate-container{opacity:1;animation:mdc-circular-progress-container-rotate calc(1568.2352941176ms*var(--mat-progress-spinner-animation-multiplier)) linear infinite}
++.mdc-circular-progress__determinate-circle-graphic,.mdc-circular-progress__indeterminate-circle-graphic{fill:rgba(0,0,0,0)}
++.mat-mdc-progress-spinner .mdc-circular-progress__determinate-circle,.mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic{stroke:var(--mat-progress-spinner-active-indicator-color, var(--sd-primary))}
++.mdc-circular-progress__determinate-circle{transition:stroke-dashoffset 500ms cubic-bezier(0, 0, 0.2, 1)}
++.mdc-circular-progress__gap-patch{position:absolute;top:0;left:47.5%;box-sizing:border-box;width:5%;height:100%;overflow:hidden}
++.mdc-circular-progress__gap-patch .mdc-circular-progress__indeterminate-circle-graphic{left:-900%;width:2000%;transform:rotate(180deg)}
++.mdc-circular-progress__circle-clipper .mdc-circular-progress__indeterminate-circle-graphic{width:200%}
++.mdc-circular-progress__circle-right .mdc-circular-progress__indeterminate-circle-graphic{left:-100%}
++.mdc-circular-progress--indeterminate .mdc-circular-progress__circle-left .mdc-circular-progress__indeterminate-circle-graphic{animation:mdc-circular-progress-left-spin calc(1333ms*var(--mat-progress-spinner-animation-multiplier)) cubic-bezier(0.4, 0, 0.2, 1) infinite both}
++.mdc-circular-progress--indeterminate .mdc-circular-progress__circle-right .mdc-circular-progress__indeterminate-circle-graphic{animation:mdc-circular-progress-right-spin calc(1333ms*var(--mat-progress-spinner-animation-multiplier)) cubic-bezier(0.4, 0, 0.2, 1) infinite both}
++.mdc-circular-progress__circle-clipper{display:inline-flex;position:relative;width:50%;height:100%;overflow:hidden}
++.mdc-circular-progress--indeterminate .mdc-circular-progress__spinner-layer{animation:mdc-circular-progress-spinner-layer-rotate calc(5332ms*var(--mat-progress-spinner-animation-multiplier)) cubic-bezier(0.4, 0, 0.2, 1) infinite both}
++@keyframes mdc-circular-progress-container-rotate{to{transform:rotate(360deg)}}
++@keyframes mdc-circular-progress-spinner-layer-rotate{12.5%{transform:rotate(135deg)}25%{transform:rotate(270deg)}37.5%{transform:rotate(405deg)}50%{transform:rotate(540deg)}62.5%{transform:rotate(675deg)}75%{transform:rotate(810deg)}87.5%{transform:rotate(945deg)}100%{transform:rotate(1080deg)}}
++@keyframes mdc-circular-progress-left-spin{from{transform:rotate(265deg)}50%{transform:rotate(130deg)}to{transform:rotate(265deg)}}
++@keyframes mdc-circular-progress-right-spin{from{transform:rotate(-265deg)}50%{transform:rotate(-130deg)}to{transform:rotate(-265deg)}}
++sd-button:is(sd-button) button.c-button.c-fill .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:#fff!important}
++sd-button:is(sd-button) button.c-button.c-light.mat-mdc-unelevated-button.mat-primary .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-primary)!important}
++sd-button:is(sd-button) button.c-button.c-light.mat-mdc-unelevated-button.mat-info .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-info)!important}
++sd-button:is(sd-button) button.c-button.c-light.mat-mdc-unelevated-button.mat-success .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-success)!important}
++sd-button:is(sd-button) button.c-button.c-light.mat-mdc-unelevated-button.mat-warning .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-warning)!important}
++sd-button:is(sd-button) button.c-button.c-light.mat-mdc-unelevated-button.mat-error .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-error)!important}
++sd-button:is(sd-button) button.c-button.c-light.mat-mdc-unelevated-button.mat-secondary .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:#000!important}
++sd-button:is(sd-button) button.c-button.c-outline.mat-mdc-outlined-button.mat-primary .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-primary)!important}
++sd-button:is(sd-button) button.c-button.c-outline.mat-mdc-outlined-button.mat-info .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-info)!important}
++sd-button:is(sd-button) button.c-button.c-outline.mat-mdc-outlined-button.mat-success .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-success)!important}
++sd-button:is(sd-button) button.c-button.c-outline.mat-mdc-outlined-button.mat-warning .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-warning)!important}
++sd-button:is(sd-button) button.c-button.c-outline.mat-mdc-outlined-button.mat-error .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-error)!important}
++sd-button:is(sd-button) button.c-button.c-outline.mat-mdc-outlined-button.mat-secondary .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:#000!important}
++sd-button:is(sd-button) button.c-button.c-link.mat-mdc-button.mat-primary .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-primary)!important}
++sd-button:is(sd-button) button.c-button.c-link.mat-mdc-button.mat-info .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-info)!important}
++sd-button:is(sd-button) button.c-button.c-link.mat-mdc-button.mat-success .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-success)!important}
++sd-button:is(sd-button) button.c-button.c-link.mat-mdc-button.mat-warning .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-warning)!important}
++sd-button:is(sd-button) button.c-button.c-link.mat-mdc-button.mat-error .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:var(--sd-error)!important}
++sd-button:is(sd-button) button.c-button.c-link.mat-mdc-button.mat-secondary .mat-mdc-progress-spinner .mdc-circular-progress__indeterminate-circle-graphic circle{stroke:#000!important}
++sd-button:is(sd-button) .c-spinner{display:inline-block}
++/* #c-tree đặt tên keyframes riêng (c-tree-…) — cùng chuyển động */
++@keyframes c-tree-mdc-circular-progress-container-rotate{to{transform:rotate(360deg)}}
++@keyframes c-tree-mdc-circular-progress-spinner-layer-rotate{12.5%{transform:rotate(135deg)}25%{transform:rotate(270deg)}37.5%{transform:rotate(405deg)}50%{transform:rotate(540deg)}62.5%{transform:rotate(675deg)}75%{transform:rotate(810deg)}87.5%{transform:rotate(945deg)}100%{transform:rotate(1080deg)}}
++@keyframes c-tree-mdc-circular-progress-left-spin{from{transform:rotate(265deg)}50%{transform:rotate(130deg)}to{transform:rotate(265deg)}}
++@keyframes c-tree-mdc-circular-progress-right-spin{from{transform:rotate(-265deg)}50%{transform:rotate(-130deg)}to{transform:rotate(-265deg)}}
++.sd-tree__toggle .mdc-circular-progress--indeterminate .mdc-circular-progress__indeterminate-container{animation-name:c-tree-mdc-circular-progress-container-rotate}
++.sd-tree__toggle .mdc-circular-progress--indeterminate .mdc-circular-progress__circle-left .mdc-circular-progress__indeterminate-circle-graphic{animation-name:c-tree-mdc-circular-progress-left-spin}
++.sd-tree__toggle .mdc-circular-progress--indeterminate .mdc-circular-progress__circle-right .mdc-circular-progress__indeterminate-circle-graphic{animation-name:c-tree-mdc-circular-progress-right-spin}
++.sd-tree__toggle .mdc-circular-progress--indeterminate .mdc-circular-progress__spinner-layer{animation-name:c-tree-mdc-circular-progress-spinner-layer-rotate}
++
+ 
+ /* ── type="fill" ─────────────────────────────────────────── */
+ sd-button .c-button.c-fill.mat-primary   { background-color: var(--sd-primary); color: #fff; }
+@@ -4458,18 +4501,6 @@
+ sd-table .c-paginator-btn[aria-disabled="true"] .material-icons-outlined ,
+ sd-table .c-paginator-btn[aria-disabled="true"] .mat-icon { color: rgba(0, 0, 0, .33); cursor: default; pointer-events: none; }
+ 
+-/* Lớp phủ đang tải: spinner 100px (catalog mat-spinner 100px, nét primary). */
+-sd-table .c-loading-spinner {
+-  display: block;
+-  box-sizing: border-box;
+-  width: 100px;
+-  height: 100px;
+-  border: 10px solid var(--sd-primary);
+-  border-right-color: transparent;
+-  border-radius: 50%;
+-  animation: sd-spin .8s linear infinite;
+-}
+-@media (prefers-reduced-motion: reduce) { sd-table .c-loading-spinner { animation: none; } }
+ 
+ /* Empty table */
+ sd-table .sd-table-empty {
+@@ -6672,19 +6703,6 @@
+   color: #fff;
+ }
+ 
+-/* Spinner lúc đang tải — catalog: <mat-spinner> 18px (nét 2px, màu primary,
+-   không vệt nền) là khối con trực tiếp của c-img-container, nằm sát mép trái
+-   ô ảnh và giữa theo chiều dọc. Kit dựng bằng CSS giống `sd-button .c-spinner`. */
+-sd-upload-file .c-img-container > .c-spinner {
+-  display: block;
+-  box-sizing: border-box;
+-  width: 18px;
+-  height: 18px;
+-  border: 2px solid var(--sd-primary);
+-  border-right-color: transparent;
+-  border-radius: 50%;
+-  animation: sd-spin 0.8s linear infinite;
+-}
+ 
+ /* Ảnh lỗi */
+ sd-upload-file .sd-image-image-error {
+@@ -6764,9 +6782,6 @@
+ /* (Đã gỡ 2026-10-12 theo catalog: khối mobile phóng nút lên 44px, `.sd-upload-desc`,
+    `.text-secondary` riêng, `.c-uploading`, `.c-drag-placeholder`, `.c-img-eror` —
+    catalog không có; mô tả nay nằm trong sd-label, dung lượng dùng .text-black400.) */
+-@media (prefers-reduced-motion: reduce) {
+-  sd-upload-file .c-img-container > .c-spinner { animation: none; }
+-}
+ 
+ /* Icon theo đuôi file — ĐỔI SANG BỘ CỦA CATALOG (#c-upload-file, 2026-10-11).
+    Catalog chỉ định nghĩa BỐN icon: mặc định, pdf, xls/xlsx, doc/docx — nét phẳng
+@@ -7306,20 +7321,6 @@
+ .sd-tree__toggle .mat-icon {
+   width: 20px; height: 20px; font-size: 20px; line-height: 20px;
+ }
+-/* Vòng xoay lúc tải nhánh lazy — catalog nhúng `<mat-progress-spinner>` 16px;
+-   kit dùng đúng kiểu vòng xoay đã có ở `sd-button .c-spinner`, cỡ 16px. */
+-.sd-tree__toggle .c-spinner {
+-  box-sizing: border-box;
+-  width: 16px;
+-  height: 16px;
+-  border: 2px solid var(--sd-primary);
+-  border-right-color: transparent;
+-  border-radius: 50%;
+-  animation: sd-spin .8s linear infinite;
+-}
+-@media (prefers-reduced-motion: reduce) {
+-  .sd-tree__toggle .c-spinner { animation: none; }
+-}
+ .sd-tree__checkbox {
+   flex: 0 0 auto;
+   height: var(--sd-tree-control-size);
+diff -ruN a/design-system/preview/components/import-excel.html b/design-system/preview/components/import-excel.html
+--- a/design-system/preview/components/import-excel.html	2026-10-13 07:35:18.961911965 +0000
++++ b/design-system/preview/components/import-excel.html	2026-10-13 07:35:18.963528493 +0000
+@@ -25,14 +25,14 @@
+          data-subtitle="Modal nhập dữ liệu từ Excel — kiểm tra từng ô rồi xem trước trước khi lưu"></div>
+     <div class="content-zone">
+ 
+-      <sd-section title="Chưa có dữ liệu">
++      <sd-section data-catalog-section="c-import-excel" title="Chưa có dữ liệu">
+         <p class="text-sm text-secondary mb-2">Bấm khung nét đứt để tải tệp mẫu. Nút “Xác nhận &amp; Lưu” đang vô hiệu.</p>
+         <sd-button type="fill" color="primary" prefixIcon="upload_file" title="Import Excel"
+                    onclick="document.getElementById('ie1').open()"></sd-button>
+         <sd-import-excel id="ie1"></sd-import-excel>
+       </sd-section>
+ 
+-      <sd-section title="Đã đọc file — dòng hợp lệ, cảnh báo, lỗi">
++      <sd-section data-catalog-section="c-import-excel" title="Đã đọc file — dòng hợp lệ, cảnh báo, lỗi">
+         <p class="text-sm text-secondary mb-2">Bấm các nút đếm để lọc theo trạng thái; rê chuột vào ô đỏ để xem lỗi. Có dòng lỗi thì nút “Xác nhận &amp; Lưu” vẫn vô hiệu.</p>
+         <sd-button type="fill" color="primary" prefixIcon="upload_file" title="Import Excel (có dữ liệu)"
+                    onclick="document.getElementById('ie2').open()"></sd-button>
+diff -ruN a/design-system/preview/components/quick-action.html b/design-system/preview/components/quick-action.html
+--- a/design-system/preview/components/quick-action.html	2026-10-13 07:35:18.969759248 +0000
++++ b/design-system/preview/components/quick-action.html	2026-10-13 07:35:18.971477730 +0000
+@@ -48,7 +48,7 @@
+            thuộc component — y như khung `.vp` của catalog. Thanh thật là `position:fixed`;
+            `transform` trên khung biến khung thành mốc định vị để thanh nằm trong ảnh,
+            đúng cách catalog nhốt thanh bằng `absolute` (catalog tự ghi chú điều đó). -->
+-      <sd-section title="Thông điệp + hành động" subTitle="opened = true, hai slot [sdMessage] + [sdAction]" noPaddingBody>
++      <sd-section data-catalog-section="c-quick-action" title="Thông điệp + hành động" subTitle="opened = true, hai slot [sdMessage] + [sdAction]" noPaddingBody>
+         <div class="qa-demo">
+           <div class="qa-demo-page">
+             <div class="qa-demo-row">
+@@ -72,7 +72,7 @@
+         </div>
+       </sd-section>
+ 
+-      <sd-section title="Chỉ thông điệp" subTitle="slot [sdAction] rỗng → vùng hành động ẩn, thêm padding-right 16px" noPaddingBody>
++      <sd-section data-catalog-section="c-quick-action" title="Chỉ thông điệp" subTitle="slot [sdAction] rỗng → vùng hành động ẩn, thêm padding-right 16px" noPaddingBody>
+         <div class="qa-demo">
+           <div class="qa-demo-page">
+             <div class="qa-demo-row">
+diff -ruN a/design-system/preview/components/service.html b/design-system/preview/components/service.html
+--- a/design-system/preview/components/service.html	2026-10-13 07:35:18.978019496 +0000
++++ b/design-system/preview/components/service.html	2026-10-13 07:35:18.979708480 +0000
+@@ -39,7 +39,7 @@
+         <!-- Mirror catalog #c-notify — 3 biến thể. Toast trong khung demo dựng sẵn,
+              KHÔNG tự tắt (giống catalog, để tiện xem); toast bấm nút tạo ra thì
+              hiện ở góc trên phải và tự tắt đúng thời gian của service. -->
+-        <sd-section title="SdNotifyService - Bốn loại" subtitle="toast mới nhất ở trên; bấm nút để gọi service (tự tắt như thật), × để đóng">
++        <sd-section data-catalog-section="c-notify" title="SdNotifyService - Bốn loại" subtitle="toast mới nhất ở trên; bấm nút để gọi service (tự tắt như thật), × để đóng">
+           <div class="nt-pair">
+             <div class="nt-triggers">
+               <p>Gọi service:</p>
+@@ -52,21 +52,21 @@
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="SdNotifyService - Lỗi nhiều dòng" subtitle="mảng thông điệp, hoặc nhiều lần gọi trong 500 ms; hiện 2 dòng đầu, bấm &quot;Hiện thêm&quot; để mở">
++        <sd-section data-catalog-section="c-notify" title="SdNotifyService - Lỗi nhiều dòng" subtitle="mảng thông điệp, hoặc nhiều lần gọi trong 500 ms; hiện 2 dòng đầu, bấm &quot;Hiện thêm&quot; để mở">
+           <div class="nt-pair">
+             <div class="sd-toast-container is-inline" id="nt-static-multi"></div>
+             <div class="sd-toast-container is-inline" id="nt-static-multi-open"></div>
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="SdNotifyService - Tiêu đề riêng, nút hành động, nội dung HTML" subtitle="title · actionLabel/onAction · html: true">
++        <sd-section data-catalog-section="c-notify" title="SdNotifyService - Tiêu đề riêng, nút hành động, nội dung HTML" subtitle="title · actionLabel/onAction · html: true">
+           <div class="nt-pair">
+             <div class="sd-toast-container is-inline" id="nt-static-action"></div>
+             <div class="sd-toast-container is-inline" id="nt-static-html"></div>
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="SdConfirmService - Hộp thoại xác nhận" subtitle="confirm / withInput / withRadio / withDate">
++        <sd-section data-catalog-section="c-confirm" title="SdConfirmService - Hộp thoại xác nhận" subtitle="confirm / withInput / withRadio / withDate">
+           <div class="flex gap-2 flex-wrap mb-4">
+             <sd-button type="fill" color="primary" title="confirm" onclick="demoConfirm('confirm')"></sd-button>
+             <sd-button type="fill" color="primary" title="withInput" onclick="demoConfirm('withInput')"></sd-button>
+@@ -82,7 +82,7 @@
+           <p class="text-sm text-secondary">Đồng ý = resolve, hủy (X / backdrop / nút trái) = reject. Nút trái trong demo dùng "Bỏ qua" / "Quay lại" theo quy ước kit.</p>
+         </sd-section>
+ 
+-        <sd-section title="SdLoadingService - Overlay loading" subtitle="start(selector) · stop(selector) · isLoading(selector) — selector mặc định 'body'">
++        <sd-section data-catalog-section="c-loading" title="SdLoadingService - Overlay loading" subtitle="start(selector) · stop(selector) · isLoading(selector) — selector mặc định 'body'">
+           <p class="text-sm text-secondary mb-3">
+             <strong>Trên một phần tử</strong> — <code>start('#funding-plan-card')</code>. Phần tử
+             <strong>phải có <code>position: relative</code></strong>: service không tự đặt, lớp phủ
+diff -ruN a/design-system/preview/components/tooltip.html b/design-system/preview/components/tooltip.html
+--- a/design-system/preview/components/tooltip.html	2026-10-13 07:35:18.986092354 +0000
++++ b/design-system/preview/components/tooltip.html	2026-10-13 07:35:18.987924506 +0000
+@@ -34,7 +34,7 @@
+     <div class="content-zone">
+ 
+       <!-- ── Tab: Preview ──────────────────────────────────── -->
+-      <div class="tab-panel" data-tab-panel="0">
++      <div class="tab-panel" data-tab-panel="0" data-catalog-section="c-tooltip">
+ 
+         <!-- ══ Mirror catalog #c-tooltip — 5 biến thể. Bốn khối đầu MỞ SẴN để xem;
+              nút trong khối mở sẵn KHÔNG gắn sdTooltip (như catalog) để rê chuột
+diff -ruN a/design-system/preview/components/upload-file.html b/design-system/preview/components/upload-file.html
+--- a/design-system/preview/components/upload-file.html	2026-10-13 07:35:18.994166492 +0000
++++ b/design-system/preview/components/upload-file.html	2026-10-13 07:35:18.996043616 +0000
+@@ -41,7 +41,7 @@
+     <div class="content-zone">
+ 
+       <!-- ── Tab: Preview ──────────────────────────────────── -->
+-      <div class="tab-panel" data-tab-panel="0">
++      <div class="tab-panel" data-tab-panel="0" data-catalog-section="c-upload-file">
+ 
+         <!-- ── Theo Core UI Catalog #c-upload-file — rà soát 2026-10-12 ── -->
+         <sd-section title="Rỗng — có label, mô tả, bắt buộc" subtitle="bên phải: đã touched mà chưa có file">
+diff -ruN a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-13 07:35:19.002515010 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-13 07:35:19.005057306 +0000
+@@ -127,13 +127,23 @@
+   /* Dạng theo MỤC catalog chứa nút, không theo component gần nhất: nút của `sd-quick-action` nằm
+      trong `sd-tree` mang dạng của #c-tree → lấy vật chứa NGOÀI CÙNG. Riêng B (import-excel /
+      upload-file bọc sẵn sd-modal) và N (hộp xác nhận dựng bằng sd-modal) được ưu tiên. */
++  var SD_BTN_SECTION_FORM = {
++    'c-inform': 'A', 'c-modal': 'A', 'c-modal-resizable': 'A', 'c-quick-action': 'A', 'c-side-drawer': 'A',
++    'c-import-excel': 'B', 'c-upload-file': 'B', 'c-table': 'T', 'c-form-generic': 'F',
++    'c-stepper': 'S', 'c-tree': 'S', 'c-confirm': 'N', 'c-tooltip': 'N', 'c-notify': 'N', 'c-loading': 'N'
++  };
+   function sdButtonCtx(btn) {
+     if (btn.closest(SD_BTN_CTX_B)) return 'B';
+     if (btn.closest(SD_BTN_CTX[0][1])) return 'N';
+     var all = SD_BTN_CTX.slice(1).map(function (c) { return c[1]; }).join(', ');
+     var n = btn.parentElement && btn.parentElement.parentElement, outer = null;
+     while (n && n.nodeType === 1) { if (n.matches(all)) outer = n; n = n.parentElement; }
+-    if (!outer) return '';
++    if (!outer) {
++      /* Nút của TRANG trình bày (ngoài mọi component): catalog vẽ theo dạng của mục chứa nó.
++         Trang preview của kit đánh dấu vùng demo bằng `data-catalog-section="c-…"`. */
++      var mark = btn.closest('[data-catalog-section]');
++      return mark ? (SD_BTN_SECTION_FORM[mark.getAttribute('data-catalog-section')] || '') : '';
++    }
+     for (var i = 1; i < SD_BTN_CTX.length; i++) if (outer.matches(SD_BTN_CTX[i][1])) return SD_BTN_CTX[i][0];
+     return '';
+   }
+@@ -162,6 +172,31 @@
+     for (var i = 0; i < cl.length; i++) if (!known.test(cl[i]) && cl[i] !== mColor) parts.push(cl[i]);
+     var want = parts.filter(Boolean).join(' ');
+     if (btn.className !== want) btn.className = want;
++    /* icon trong nút: thứ tự lớp cũng theo mục (#c-button: `mat-icon notranslate c-icon-prefix FONT …`;
++       A: `… mat-icon-no-color c-icon-prefix`; T: `mat-icon c-icon-prefix FONT mat-ligature-font`, chỉ `class`;
++       F: `mat-icon c-icon-prefix FONT`; S: `c-icon-prefix mat-icon notranslate …`) */
++    btn.querySelectorAll('.c-button-content-wrapper > mat-icon').forEach(function (ic) {
++      var icl = ic.classList, own = [], font = '';
++      for (var k = 0; k < icl.length; k++) {
++        var c = icl[k];
++        if (/^material-icons/.test(c)) font = c;
++        else if (!/^(mat-icon|notranslate|mat-ligature-font|mat-icon-no-color)$/.test(c)) own.push(c);
++      }
++      var o = own.join(' '), list;
++      if (ctx === 'A') list = ['mat-icon', 'notranslate', font, 'mat-ligature-font', 'mat-icon-no-color', o];
++      else if (ctx === 'T') list = ['mat-icon', o, font, 'mat-ligature-font'];
++      else if (ctx === 'F') list = ['mat-icon', o, font];
++      else if (ctx === 'S') list = [o, 'mat-icon', 'notranslate', font, 'mat-ligature-font', 'mat-icon-no-color'];
++      else list = ['mat-icon', 'notranslate', o, font, 'mat-ligature-font', 'mat-icon-no-color'];
++      var w = list.filter(Boolean).join(' ');
++      if (ic.className !== w) ic.className = w;
++      if (ctx === 'T' || ctx === 'F') { ic.removeAttribute('role'); ic.removeAttribute('aria-hidden'); ic.removeAttribute('data-mat-icon-type'); }
++      else if (!ic.hasAttribute('role')) {
++        var cls = ic.getAttribute('class'); ic.removeAttribute('class');
++        ic.setAttribute('role', 'img'); ic.setAttribute('class', cls);
++        ic.setAttribute('aria-hidden', 'true'); ic.setAttribute('data-mat-icon-type', 'font');
++      }
++    });
+     /* #c-table / #c-form-generic vẽ nút KHÔNG có hai span cuối (focus-indicator, touch-target) */
+     var fi = btn.querySelector(':scope > .mat-focus-indicator'), tt = btn.querySelector(':scope > .mat-mdc-button-touch-target');
+     var rp = btn.querySelector(':scope > .mat-mdc-button-persistent-ripple');
+@@ -205,6 +240,17 @@
+     window.__sdIconCtxObs.observe(document.documentElement, { childList: true, subtree: true });
+     document.addEventListener('DOMContentLoaded', function () { sdIconContextScan(document.body); sdButtonDomScan(document.body); });
+   }
++  /* ── Vòng xoay `mat-spinner` / `mat-progress-spinner` của Material (MDC circular progress) —
++     markup NGUYÊN VĂN từng mục catalog (2026-10-13, Builder: "Chỉnh những cái lệch giống Catalog"):
++     button (#c-button, 18px, có c-spinner) · upload (#c-upload-file, 18px) · table (#c-table, 100px) ·
++     tree (#c-tree, mat-progress-spinner 16px). Đây là vòng xoay của component, không phải icon AI tự vẽ
++     → theo catalog (phạm vi Rule 4). CSS: khối "MatProgressSpinner" trong sd-tokens.css. */
++  var SD_MAT_SPINNER = {
++    button: "<mat-spinner role=\"progressbar\" tabindex=\"-1\" mode=\"indeterminate\" diameter=\"18\" strokewidth=\"2\" class=\"mat-mdc-progress-spinner mdc-circular-progress c-spinner mat-primary mdc-circular-progress--indeterminate\" style=\"width: 18px; height: 18px; --mat-progress-spinner-size: 18px; --mat-progress-spinner-active-indicator-width: 18px;\" aria-valuemin=\"0\" aria-valuemax=\"100\"><div aria-hidden=\"true\" class=\"mdc-circular-progress__determinate-container\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__determinate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" class=\"mdc-circular-progress__determinate-circle\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray: 25.132741228718345px; stroke-width: 11.11111111111111%;\"></circle></svg></div><div aria-hidden=\"true\" class=\"mdc-circular-progress__indeterminate-container\"><div class=\"mdc-circular-progress__spinner-layer\"><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-left\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray: 25.132741228718345px; stroke-dashoffset: 12.566370614359172px; stroke-width: 11.11111111111111%;\"></circle></svg></div><div class=\"mdc-circular-progress__gap-patch\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray: 25.132741228718345px; stroke-dashoffset: 12.566370614359172px; stroke-width: 11.11111111111111%;\"></circle></svg></div><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-right\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray: 25.132741228718345px; stroke-dashoffset: 12.566370614359172px; stroke-width: 11.11111111111111%;\"></circle></svg></div></div></div></mat-spinner>",
++    upload: "<mat-spinner role=\"progressbar\" mode=\"indeterminate\" tabindex=\"-1\" class=\"mat-mdc-progress-spinner mdc-circular-progress mat-primary mdc-circular-progress--indeterminate\" style=\"width:18px;height:18px;--mat-progress-spinner-size:18px;--mat-progress-spinner-active-indicator-width:18px\"><div class=\"mdc-circular-progress__determinate-container\" aria-hidden=\"true\"></div><div class=\"mdc-circular-progress__indeterminate-container\" aria-hidden=\"true\"><div class=\"mdc-circular-progress__spinner-layer\"><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-left\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray:25.1327px;stroke-dashoffset:12.5664px;stroke-width:11.1111%\"></circle></svg></div><div class=\"mdc-circular-progress__gap-patch\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray:25.1327px;stroke-dashoffset:12.5664px;stroke-width:11.1111%\"></circle></svg></div><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-right\"><svg viewBox=\"0 0 10 10\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle r=\"4\" cx=\"50%\" cy=\"50%\" style=\"stroke-dasharray:25.1327px;stroke-dashoffset:12.5664px;stroke-width:11.1111%\"></circle></svg></div></div></div></mat-spinner>",
++    table: "<mat-spinner role=\"progressbar\" tabindex=\"-1\" mode=\"indeterminate\" class=\"mat-mdc-progress-spinner mdc-circular-progress mat-primary mdc-circular-progress--indeterminate\" style=\"width: 100px; height: 100px; --mat-progress-spinner-size: 100px; --mat-progress-spinner-active-indicator-width: 100px;\"><div aria-hidden=\"true\" class=\"mdc-circular-progress__determinate-container\"></div><div aria-hidden=\"true\" class=\"mdc-circular-progress__indeterminate-container\"><div class=\"mdc-circular-progress__spinner-layer\"><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-left\"><svg viewBox=\"0 0 100 100\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"45\" style=\"stroke-dasharray: 282.743px; stroke-dashoffset: 141.372px; stroke-width: 10%;\"></circle></svg></div><div class=\"mdc-circular-progress__gap-patch\"><svg viewBox=\"0 0 100 100\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"45\" style=\"stroke-dasharray: 282.743px; stroke-dashoffset: 141.372px; stroke-width: 10%;\"></circle></svg></div><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-right\"><svg viewBox=\"0 0 100 100\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"45\" style=\"stroke-dasharray: 282.743px; stroke-dashoffset: 141.372px; stroke-width: 10%;\"></circle></svg></div></div></div></mat-spinner>",
++    tree: "<mat-progress-spinner role=\"progressbar\" tabindex=\"-1\" mode=\"indeterminate\" class=\"mat-mdc-progress-spinner mdc-circular-progress--indeterminate mat-primary\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: 16px; height: 16px; --mat-progress-spinner-size: 16px; --mat-progress-spinner-active-indicator-width: 16px;\"><div aria-hidden=\"true\" class=\"mdc-circular-progress__determinate-container\"></div><div aria-hidden=\"true\" class=\"mdc-circular-progress__indeterminate-container\"><div class=\"mdc-circular-progress__spinner-layer\"><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-left\"><svg viewBox=\"0 0 7.6 7.6\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"3\" style=\"stroke-dasharray: 18.850px; stroke-dashoffset: 9.425px; stroke-width: 10%;\"></circle></svg></div><div class=\"mdc-circular-progress__gap-patch\"><svg viewBox=\"0 0 7.6 7.6\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"3\" style=\"stroke-dasharray: 18.850px; stroke-dashoffset: 9.425px; stroke-width: 10%;\"></circle></svg></div><div class=\"mdc-circular-progress__circle-clipper mdc-circular-progress__circle-right\"><svg viewBox=\"0 0 7.6 7.6\" class=\"mdc-circular-progress__indeterminate-circle-graphic\" xmlns=\"http://www.w3.org/2000/svg\" focusable=\"false\"><circle cx=\"50%\" cy=\"50%\" r=\"3\" style=\"stroke-dasharray: 18.850px; stroke-dashoffset: 9.425px; stroke-width: 10%;\"></circle></svg></div></div></div></mat-progress-spinner>"
++  };
+   function escAttr(s) {
+     /* Ép về chuỗi trước: `sd-form-render` truyền cả số (`maxSize: 10`,
+        `item.id: 1`) vào đây và `(10 || '').replace` thì nổ — dẫm 2026-10-11. */
+@@ -789,8 +835,8 @@
+ 
+       var inner = '';
+       if (showSpinner) {
+-        // mat-spinner diameter 18 strokeWidth 2 — dựng bằng CSS, không inline SVG (Rule 4)
+-        inner += '<span class="c-spinner" role="progressbar" aria-label="Đang xử lý"></span>';
++        // <mat-spinner mode="indeterminate" diameter="18" strokeWidth="2" class="c-spinner"> — nguyên văn catalog
++        inner += SD_MAT_SPINNER.button;
+       } else if (showPrefix) {
+         inner += sdMatIconHtml(prefixIcon, 'c-icon-prefix', fontSet);
+       }
+@@ -8325,7 +8371,7 @@
+           html += '<img class="c-img" src="' + escAttr(image.src) + '" alt="Preview" style="max-height:' + ph + ';">';
+         } else {
+           /* catalog: <mat-spinner> 18px là con trực tiếp của c-img-container */
+-          html += '<span class="c-spinner" role="progressbar" aria-label="Đang tải"></span>';
++          html += SD_MAT_SPINNER.upload;
+         }
+         if (hasOverlay) {
+           html += '<div class="c-overlay-count" role="button" tabindex="0" aria-label="' + escAttr(sdUploadT('previewTitle')) + '">' +
+@@ -9408,7 +9454,7 @@
+       /* Đang tải (chế độ server, Promise chưa xong) — catalog: .c-loading phủ
+          bảng trừ 56px dưới + mat-spinner 100px. */
+       var loadingHtml = this._serverPending
+-        ? '<div class="c-loading"><span class="c-loading-spinner" role="progressbar" aria-label="Đang tải"></span></div>' : '';
++        ? '<div class="c-loading">' + SD_MAT_SPINNER.table + '</div>' : '';
+       this.innerHTML = '<div class="c-container">' + loadingHtml +
+         '<div class="c-table">' +
+         '<table class="mat-mdc-table">' +
+@@ -15580,7 +15626,7 @@
+       var html = rows.map(function (r) {
+         var toggleInner, toggleCls = 'sd-tree__toggle', toggleDisabled = '', aria = '';
+         if (self._loading[r.id]) {
+-          toggleInner = '<span class="c-spinner" role="progressbar" aria-label="Đang tải"></span>';
++          toggleInner = SD_MAT_SPINNER.tree;
+           toggleDisabled = ' disabled';
+           aria = ' aria-expanded="false"';
+         } else if (r.branch) {
+@@ -17850,9 +17896,12 @@
+       var footer = document.createElement('div');
+       footer.setAttribute('sdfooterright', '');
+       var noBtn = document.createElement('sd-button');
++      /* thư viện: `<sd-button [color]="data.noButtonColor || 'secondary'">` — type mặc định (light), như
++         catalog #c-confirm. Chữ giữ "Bỏ qua" (Rule 16; thư viện là "Hủy bỏ") — Builder chốt 2026-10-13:
++         "Kiểu catalog, giữ chữ Bỏ qua". */
+       noBtn.setAttribute('title', options.noTitle || 'Bỏ qua');
+-      noBtn.setAttribute('type', 'link');
+-      noBtn.setAttribute('color', options.noButtonColor || 'primary');
++      noBtn.setAttribute('type', 'light');
++      noBtn.setAttribute('color', options.noButtonColor || 'secondary');
+       var yesBtn = document.createElement('sd-button');
+       yesBtn.setAttribute('title', options.yesTitle || 'Đồng ý');
+       yesBtn.setAttribute('type', 'fill');

@@ -1,0 +1,332 @@
+--- /tmp/sd-components.bak3	2026-10-12 09:48:31.752975359 +0000
++++ prototype-kit-CATALOG-1012m/design-system/sd-components/sd-components.js	2026-10-12 09:48:31.788876614 +0000
+@@ -50,6 +50,78 @@
+     return sdScriptSrc.slice(0, slash + 1) + '../core/assets/' + name;
+   }
+ 
++  /* ══════════════════════════════════════════════════════════════════
++     LỊCH DÙNG CHUNG — mirror `mat-calendar` (month view) của Core UI Catalog
++     Dùng cho: sd-date · sd-datetime · sd-chip-calendar · sd-date-range.
++     Dựng 2026-10-12 khi Builder chốt "Đổi theo catalog để khớp sát nhất".
++
++     Trước đây bốn component mỗi cái giữ MỘT BẢN SAO markup lịch riêng
++     (tiêu đề, nhãn thứ, vòng lặp ô ngày) — đó là lý do chúng trôi lệch nhau.
++     Nay phần nhìn thấy được của lịch đi qua đúng bốn hàm dưới đây.
++
++     Theo catalog (ghi chú cuối mục #c-chip-calendar, #c-date-range):
++       - LOCALE en-US: tiêu đề `OCT 2026`, nhãn thứ hẹp `S M T W T F S`,
++         tuần bắt đầu CHỦ NHẬT. (Catalog: "NativeDateAdapter với LOCALE_ID
++         mặc định en-US".)
++       - Thanh tiêu đề: nút kỳ `[OCT 2026 ▾]` bên TRÁI · khoảng đệm · `[‹] [›]`
++         bên PHẢI — không phải `‹ tiêu đề ›` như bản trước.
++       - Hàng đầu lưới có NHÃN THÁNG (`OCT`) chiếm chỗ các ô trống, theo luật
++         của MatMonthView: số ô trống trước ngày 1 >= 3 thì nhãn nằm chung hàng
++         đầu; < 3 thì nhãn nằm hàng riêng phía trên.
++       - KHÔNG hiện ngày của tháng trước/sau — ô trống là trống.
++     Nút kỳ KHÔNG mở bảng chọn tháng/năm: catalog chỉ có `mat-month-view`
++     (8 chỗ), 0 chỗ `mat-year-view` / `mat-multi-year-view`, và không JS nào
++     dựng hai view đó. Dựng là đoán — xem known-gaps.md. */
++  var SD_CAL_MONTHS_SHORT = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
++                             'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
++  var SD_CAL_DOW_NARROW = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
++  var SD_CAL_DOW_LONG = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
++  /* MatMonthView: `_firstRowOffset < labelMinRequiredCells (3)` → nhãn ra hàng riêng */
++  var SD_CAL_LABEL_MIN_CELLS = 3;
++
++  /* `cls` = { prev, title, next } — lớp riêng của từng component, giữ nguyên để
++     code gắn sự kiện / đặt tiêu đề cũ của component vẫn tìm thấy phần tử. */
++  function sdCalHeaderHtml(cls) {
++    return '<div class="form-field-datepicker-header">' +
++      '<button class="form-field-datepicker-period" type="button" aria-label="Choose month and year">' +
++        '<span class="form-field-datepicker-title ' + cls.title + '"></span>' +
++        '<span class="form-field-datepicker-caret" aria-hidden="true"></span>' +
++      '</button>' +
++      '<div class="form-field-datepicker-spacer"></div>' +
++      '<button class="form-field-datepicker-nav ' + cls.prev + '" type="button" aria-label="Previous month">' +
++        '<span class="material-icons-outlined">chevron_left</span></button>' +
++      '<button class="form-field-datepicker-nav ' + cls.next + '" type="button" aria-label="Next month">' +
++        '<span class="material-icons-outlined">chevron_right</span></button>' +
++    '</div>';
++  }
++
++  /* Nhãn thứ + đường kẻ ngăn (catalog: `th.mat-calendar-table-header-divider`,
++     vẽ bằng ::after cao 1px `rgba(0,0,0,.12)` tràn ra hai bên 8px). */
++  function sdCalWeekdaysHtml() {
++    var h = '<div class="form-field-datepicker-weekdays">';
++    for (var i = 0; i < 7; i++) {
++      h += '<div class="form-field-datepicker-weekday">' +
++        '<span class="sr-only">' + SD_CAL_DOW_LONG[i] + '</span>' +
++        '<span aria-hidden="true">' + SD_CAL_DOW_NARROW[i] + '</span></div>';
++    }
++    return h + '</div><div class="form-field-datepicker-divider"></div>';
++  }
++
++  function sdCalPeriodLabel(year, month) {
++    return SD_CAL_MONTHS_SHORT[month] + ' ' + year;
++  }
++
++  /* Phần ĐẦU lưới ngày: nhãn tháng + ô trống, đúng luật MatMonthView. */
++  function sdCalLeadHtml(year, month) {
++    var offset = new Date(year, month, 1).getDay();   // tuần bắt đầu Chủ nhật
++    var label = SD_CAL_MONTHS_SHORT[month];
++    if (offset >= SD_CAL_LABEL_MIN_CELLS) {
++      return '<div class="form-field-datepicker-label sd-cal-span-' + offset + '" aria-hidden="true">' + label + '</div>';
++    }
++    return '<div class="form-field-datepicker-label sd-cal-span-7" aria-hidden="true">' + label + '</div>' +
++      (offset ? '<div class="form-field-datepicker-blank sd-cal-span-' + offset + '"></div>' : '');
++  }
++
+   /* ══════════════════════════════════════════════════════════
+      sd-button — mirror theo button.component.ts / .html / .scss +
+      action-popover.ts của @sdcorejs/angular v22.2.12.
+@@ -1741,22 +1813,8 @@
+         '</div>' +
+         (showErrorText ? '<div class="sd-error-text">' + esc(errorMsg) + '</div>' : '') +
+         '<div class="form-field-datepicker sd-cc-popup" role="dialog" aria-label="Chọn ngày">' +
+-          '<div class="form-field-datepicker-header">' +
+-            '<button class="form-field-datepicker-nav sd-cc-prev" type="button" aria-label="Tháng trước">' +
+-              '<span class="material-icons-outlined mi-16">chevron_left</span></button>' +
+-            '<div class="form-field-datepicker-title sd-cc-title"></div>' +
+-            '<button class="form-field-datepicker-nav sd-cc-next" type="button" aria-label="Tháng sau">' +
+-              '<span class="material-icons-outlined mi-16">chevron_right</span></button>' +
+-          '</div>' +
+-          '<div class="form-field-datepicker-weekdays">' +
+-            '<div class="form-field-datepicker-weekday">T2</div>' +
+-            '<div class="form-field-datepicker-weekday">T3</div>' +
+-            '<div class="form-field-datepicker-weekday">T4</div>' +
+-            '<div class="form-field-datepicker-weekday">T5</div>' +
+-            '<div class="form-field-datepicker-weekday">T6</div>' +
+-            '<div class="form-field-datepicker-weekday">T7</div>' +
+-            '<div class="form-field-datepicker-weekday">CN</div>' +
+-          '</div>' +
++          sdCalHeaderHtml({ prev: 'sd-cc-prev', title: 'sd-cc-title', next: 'sd-cc-next' }) +
++          sdCalWeekdaysHtml() +
+           '<div class="form-field-datepicker-days sd-cc-days"></div>' +
+         '</div>';
+ 
+@@ -1942,13 +2000,11 @@
+         this._viewMonth = now.getMonth();
+       }
+ 
+-      var MONTHS_VI = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+-                       'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+-      titleEl.textContent = MONTHS_VI[this._viewMonth] + ', ' + this._viewYear;
++      titleEl.textContent = sdCalPeriodLabel(this._viewYear, this._viewMonth);
+ 
+       var firstDay = new Date(this._viewYear, this._viewMonth, 1);
+       var lastDay = new Date(this._viewYear, this._viewMonth + 1, 0);
+-      var startDow = (firstDay.getDay() + 6) % 7;
++      var startDow = firstDay.getDay();   /* en-US: tuần bắt đầu Chủ nhật (catalog) */
+       var daysInMonth = lastDay.getDate();
+       var prevLast = new Date(this._viewYear, this._viewMonth, 0).getDate();
+       var selectedSet = {};
+@@ -1958,9 +2014,8 @@
+       function pad(n) { return n < 10 ? '0' + n : String(n); }
+ 
+       var html = '';
+-      for (var i = startDow - 1; i >= 0; i--) {
+-        html += '<button class="form-field-datepicker-day other-month" type="button" tabindex="-1">' + (prevLast - i) + '</button>';
+-      }
++      /* Catalog không hiện ngày của tháng trước: đầu lưới là nhãn tháng + ô trống. */
++      html += sdCalLeadHtml(this._viewYear, this._viewMonth);
+       for (var d = 1; d <= daysInMonth; d++) {
+         var val = self._viewYear + '/' + pad(self._viewMonth + 1) + '/' + pad(d);
+         var cls = 'form-field-datepicker-day';
+@@ -1970,11 +2025,7 @@
+         if (selectedSet[val]) cls += ' selected';
+         html += '<button class="' + cls + '" type="button" data-value="' + val + '">' + d + '</button>';
+       }
+-      var totalCells = startDow + daysInMonth;
+-      var remaining = (7 - (totalCells % 7)) % 7;
+-      for (var j = 1; j <= remaining; j++) {
+-        html += '<button class="form-field-datepicker-day other-month" type="button" tabindex="-1">' + j + '</button>';
+-      }
++      /* Catalog không hiện ngày của tháng sau — hàng cuối dừng ở ngày cuối tháng. */
+       daysEl.innerHTML = html;
+ 
+       daysEl.querySelectorAll('.form-field-datepicker-day:not(.other-month)').forEach(function (btn) {
+@@ -3852,22 +3903,8 @@
+         (showErrorText ? '<div class="sd-error-text">' + esc(errorMsg) + '</div>'
+           : (helperText ? '<div class="sd-helper-text">' + esc(helperText) + '</div>' : '')) +
+         '<div class="form-field-datepicker sd-date-popup" role="dialog" aria-label="Chọn ngày">' +
+-          '<div class="form-field-datepicker-header">' +
+-            '<button class="form-field-datepicker-nav sd-date-cal-prev" type="button" aria-label="Tháng trước">' +
+-              '<span class="material-icons-outlined">chevron_left</span></button>' +
+-            '<div class="form-field-datepicker-title sd-date-cal-title"></div>' +
+-            '<button class="form-field-datepicker-nav sd-date-cal-next" type="button" aria-label="Tháng sau">' +
+-              '<span class="material-icons-outlined">chevron_right</span></button>' +
+-          '</div>' +
+-          '<div class="form-field-datepicker-weekdays">' +
+-            '<div class="form-field-datepicker-weekday">T2</div>' +
+-            '<div class="form-field-datepicker-weekday">T3</div>' +
+-            '<div class="form-field-datepicker-weekday">T4</div>' +
+-            '<div class="form-field-datepicker-weekday">T5</div>' +
+-            '<div class="form-field-datepicker-weekday">T6</div>' +
+-            '<div class="form-field-datepicker-weekday">T7</div>' +
+-            '<div class="form-field-datepicker-weekday">CN</div>' +
+-          '</div>' +
++          sdCalHeaderHtml({ prev: 'sd-date-cal-prev', title: 'sd-date-cal-title', next: 'sd-date-cal-next' }) +
++          sdCalWeekdaysHtml() +
+           '<div class="form-field-datepicker-days sd-date-cal-days"></div>' +
+         '</div>';
+ 
+@@ -3964,20 +4001,19 @@
+         this._viewYear = base.getFullYear();
+         this._viewMonth = base.getMonth();
+       }
+-      titleEl.textContent = SD_DATE_MONTHS_VI[this._viewMonth] + ', ' + this._viewYear;
++      titleEl.textContent = sdCalPeriodLabel(this._viewYear, this._viewMonth);
+ 
+       var firstDay = new Date(this._viewYear, this._viewMonth, 1);
+       var lastDay = new Date(this._viewYear, this._viewMonth + 1, 0);
+-      var startDow = (firstDay.getDay() + 6) % 7;
++      var startDow = firstDay.getDay();   /* en-US: tuần bắt đầu Chủ nhật (catalog) */
+       var daysInMonth = lastDay.getDate();
+       var prevLast = new Date(this._viewYear, this._viewMonth, 0).getDate();
+       var min = this.min, max = this.max;
+       var viewYear = this._viewYear, viewMonth = this._viewMonth;
+ 
+       var html = '';
+-      for (var i = startDow - 1; i >= 0; i--) {
+-        html += '<button class="form-field-datepicker-day other-month" type="button" tabindex="-1">' + (prevLast - i) + '</button>';
+-      }
++      /* Catalog không hiện ngày của tháng trước: đầu lưới là nhãn tháng + ô trống. */
++      html += sdCalLeadHtml(this._viewYear, this._viewMonth);
+       for (var d = 1; d <= daysInMonth; d++) {
+         var dateObj = new Date(viewYear, viewMonth, d);
+         var val = viewYear + '/' + sdDatePad(viewMonth + 1) + '/' + sdDatePad(d);
+@@ -3989,11 +4025,7 @@
+         html += '<button class="' + cls + '" type="button"' +
+           (outOfRange ? ' disabled tabindex="-1"' : ' data-value="' + val + '"') + '>' + d + '</button>';
+       }
+-      var totalCells = startDow + daysInMonth;
+-      var remaining = (7 - (totalCells % 7)) % 7;
+-      for (var j = 1; j <= remaining; j++) {
+-        html += '<button class="form-field-datepicker-day other-month" type="button" tabindex="-1">' + j + '</button>';
+-      }
++      /* Catalog không hiện ngày của tháng sau — hàng cuối dừng ở ngày cuối tháng. */
+       daysEl.innerHTML = html;
+ 
+       var self = this;
+@@ -4311,17 +4343,8 @@
+       return '<div class="form-field-datetime-popup sd-dt-popup">' +
+         '<sd-datetime-picker><div class="sd-datetime-picker" role="dialog" aria-label="Chọn ngày giờ">' +
+           '<div class="picker-calendar">' +
+-            '<div class="form-field-datepicker-header">' +
+-              '<button class="form-field-datepicker-nav sd-dt-prev" type="button" aria-label="Tháng trước">' +
+-                '<span class="material-icons-outlined">chevron_left</span></button>' +
+-              '<div class="form-field-datepicker-title sd-dt-cal-title"></div>' +
+-              '<button class="form-field-datepicker-nav sd-dt-next" type="button" aria-label="Tháng sau">' +
+-                '<span class="material-icons-outlined">chevron_right</span></button>' +
+-            '</div>' +
+-            '<div class="form-field-datepicker-weekdays">' +
+-              SD_DT_WEEKDAYS_VI.slice(1).concat(SD_DT_WEEKDAYS_VI.slice(0, 1))
+-                .map(function (w) { return '<div class="form-field-datepicker-weekday">' + w + '</div>'; }).join('') +
+-            '</div>' +
++            sdCalHeaderHtml({ prev: 'sd-dt-prev', title: 'sd-dt-cal-title', next: 'sd-dt-next' }) +
++            sdCalWeekdaysHtml() +
+             '<div class="form-field-datepicker-days sd-dt-days"></div>' +
+           '</div>' +
+           '<div class="picker-divider"></div>' +
+@@ -4537,11 +4560,11 @@
+       var now = new Date();
+       var draft = this._draft;
+       if (this._viewYear === null) { this._viewYear = (draft || now).getFullYear(); this._viewMonth = (draft || now).getMonth(); }
+-      titleEl.textContent = SD_DATE_MONTHS_VI[this._viewMonth] + ', ' + this._viewYear;
++      titleEl.textContent = sdCalPeriodLabel(this._viewYear, this._viewMonth);
+ 
+       var firstDay = new Date(this._viewYear, this._viewMonth, 1);
+       var lastDay = new Date(this._viewYear, this._viewMonth + 1, 0);
+-      var startDow = (firstDay.getDay() + 6) % 7;
++      var startDow = firstDay.getDay();   /* en-US: tuần bắt đầu Chủ nhật (catalog) */
+       var daysInMonth = lastDay.getDate();
+       var prevLast = new Date(this._viewYear, this._viewMonth, 0).getDate();
+       var min = this.min, max = this.max;
+@@ -4554,9 +4577,8 @@
+       }
+ 
+       var html = '';
+-      for (var i = startDow - 1; i >= 0; i--) {
+-        html += '<button class="form-field-datepicker-day other-month" type="button" tabindex="-1">' + (prevLast - i) + '</button>';
+-      }
++      /* Catalog không hiện ngày của tháng trước: đầu lưới là nhãn tháng + ô trống. */
++      html += sdCalLeadHtml(this._viewYear, this._viewMonth);
+       for (var dd = 1; dd <= daysInMonth; dd++) {
+         var dateObj = new Date(viewYear, viewMonth, dd);
+         var out = dayOutOfRange(dateObj);
+@@ -4567,11 +4589,7 @@
+         html += '<button class="' + cls + '" type="button"' +
+           (out ? ' disabled tabindex="-1"' : ' data-day="' + dd + '"') + '>' + dd + '</button>';
+       }
+-      var totalCells = startDow + daysInMonth;
+-      var remaining = (7 - (totalCells % 7)) % 7;
+-      for (var j = 1; j <= remaining; j++) {
+-        html += '<button class="form-field-datepicker-day other-month" type="button" tabindex="-1">' + j + '</button>';
+-      }
++      /* Catalog không hiện ngày của tháng sau — hàng cuối dừng ở ngày cuối tháng. */
+       daysEl.innerHTML = html;
+ 
+       var self = this;
+@@ -13568,22 +13586,8 @@
+         (showErrorText ? '<div class="sd-error-text">' + esc(errorMsg) + '</div>'
+           : (helperText ? '<div class="sd-helper-text">' + esc(helperText) + '</div>' : '')) +
+         '<div class="form-field-datepicker sd-range-popup" role="dialog" aria-label="Chọn khoảng ngày">' +
+-          '<div class="form-field-datepicker-header">' +
+-            '<button class="form-field-datepicker-nav sd-range-cal-prev" type="button" aria-label="Tháng trước">' +
+-              '<span class="material-icons-outlined">chevron_left</span></button>' +
+-            '<div class="form-field-datepicker-title sd-range-cal-title"></div>' +
+-            '<button class="form-field-datepicker-nav sd-range-cal-next" type="button" aria-label="Tháng sau">' +
+-              '<span class="material-icons-outlined">chevron_right</span></button>' +
+-          '</div>' +
+-          '<div class="form-field-datepicker-weekdays">' +
+-            '<div class="form-field-datepicker-weekday">T2</div>' +
+-            '<div class="form-field-datepicker-weekday">T3</div>' +
+-            '<div class="form-field-datepicker-weekday">T4</div>' +
+-            '<div class="form-field-datepicker-weekday">T5</div>' +
+-            '<div class="form-field-datepicker-weekday">T6</div>' +
+-            '<div class="form-field-datepicker-weekday">T7</div>' +
+-            '<div class="form-field-datepicker-weekday">CN</div>' +
+-          '</div>' +
++          sdCalHeaderHtml({ prev: 'sd-range-cal-prev', title: 'sd-range-cal-title', next: 'sd-range-cal-next' }) +
++          sdCalWeekdaysHtml() +
+           '<div class="form-field-datepicker-days sd-range-cal-days"></div>' +
+         '</div>';
+ 
+@@ -13613,21 +13617,20 @@
+         this._viewYear = base.getFullYear();
+         this._viewMonth = base.getMonth();
+       }
+-      titleEl.textContent = SD_DATE_MONTHS_VI[this._viewMonth] + ', ' + this._viewYear;
++      titleEl.textContent = sdCalPeriodLabel(this._viewYear, this._viewMonth);
+ 
+       var y = this._viewYear, mo = this._viewMonth;
+       var firstDay = new Date(y, mo, 1);
+       var daysInMonth = new Date(y, mo + 1, 0).getDate();
+-      var startDow = (firstDay.getDay() + 6) % 7;
++      var startDow = firstDay.getDay();   /* en-US: tuần bắt đầu Chủ nhật (catalog) */
+       var prevLast = new Date(y, mo, 0).getDate();
+       var min = this.min, max = this.max;
+       var fromT = fromC ? sdDateFromCanonical(fromC).getTime() : null;
+       var toT = toC ? sdDateFromCanonical(toC).getTime() : null;
+ 
+       var html = '';
+-      for (var i = startDow - 1; i >= 0; i--) {
+-        html += '<button class="form-field-datepicker-day other-month" type="button" tabindex="-1">' + (prevLast - i) + '</button>';
+-      }
++      /* Catalog không hiện ngày của tháng trước: đầu lưới là nhãn tháng + ô trống. */
++      html += sdCalLeadHtml(this._viewYear, this._viewMonth);
+       for (var d = 1; d <= daysInMonth; d++) {
+         var obj = new Date(y, mo, d);
+         var t = obj.getTime();
+@@ -13645,10 +13648,7 @@
+         html += '<button class="' + cls + '" type="button"' +
+           (out ? ' disabled tabindex="-1"' : ' data-value="' + val + '"') + '>' + d + '</button>';
+       }
+-      var rest = (7 - ((startDow + daysInMonth) % 7)) % 7;
+-      for (var j = 1; j <= rest; j++) {
+-        html += '<button class="form-field-datepicker-day other-month" type="button" tabindex="-1">' + j + '</button>';
+-      }
++      /* Catalog không hiện ngày của tháng sau — hàng cuối dừng ở ngày cuối tháng. */
+       daysEl.innerHTML = html;
+     }
+ 

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-chip-calendar — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-chip-calendar"
+         data-subtitle="Chọn danh sách ngày từ calendar popup - lưu yyyy/MM/dd, chip hiển thị dd/MM/yyyy"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <!-- Normal -->
+        <!-- ── Theo Core UI Catalog #c-chip-calendar — rà soát 2026-10-12 ── -->
+        <sd-section title="Đã chọn" subtitle="chip ngày dd/MM/yyyy, ô nhập readonly (chỉ chọn qua lịch) — 3 chip một hàng, ô nhập xuống hàng dưới">
+          <div style="width:420px"><sd-chip-calendar label="Ngày trả nợ gốc" value="2026/10/05,2026/10/12,2026/10/19"></sd-chip-calendar></div>
+        </sd-section>
+
+        <sd-section title="Lịch đang mở" subtitle="ngày đã chọn tô --sd-primary-light — bấm ngày để thêm/bỏ chip">
+          <div style="min-height:440px">
+            <div style="width:420px"><sd-chip-calendar id="ccCatOpen" label="Ngày trả nợ gốc" max="12" value="2026/10/05,2026/10/12,2026/10/19"></sd-chip-calendar></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Lỗi bắt buộc + touched" subtitle="core.form.chip-calendar.required — khung rỗng cao 52px">
+          <div style="width:420px"><sd-chip-calendar class="cc-cat-touch" label="Ngày trả lãi" required></sd-chip-calendar></div>
+        </sd-section>
+
+        <sd-section title="Normal">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-chip-calendar label="Ngày batch" value="2026/05/02,2026/05/03"></sd-chip-calendar>
+            <sd-chip-calendar label="Placeholder tuỳ chỉnh" placeholder="Bấm để chọn ngày..."></sd-chip-calendar>
+            <sd-chip-calendar label="Không có giá trị"></sd-chip-calendar>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            Bấm vào ô để mở lịch. Chọn một ngày sẽ thêm chip; <b>bấm lại đúng ngày đó lần nữa
+            sẽ bỏ chọn</b> (toggle) — không cần vào chip để xoá. Chip tự sắp xếp theo ngày tăng dần.
+          </p>
+        </sd-section>
+
+        <!-- Required -->
+        <sd-section title="Required">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-chip-calendar label="Ngày trực" required></sd-chip-calendar>
+            <sd-chip-calendar label="Đã có giá trị" value="2026/04/20" required></sd-chip-calendar>
+            <sd-chip-calendar label="Ẩn lỗi inline" required hideInlineError></sd-chip-calendar>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            Bỏ trống, mở lịch rồi đóng lại (bấm ra ngoài hoặc Esc) để thấy lỗi "Vui lòng nhập thông tin".
+            Ô thứ ba dùng <code>hideInlineError</code> — lỗi hiện qua icon đỏ + tooltip.
+          </p>
+        </sd-section>
+
+        <!-- Min / Max -->
+        <sd-section title="Giới hạn số lượng — min / max">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-chip-calendar label="Tối thiểu 2" min="2" value="2026/04/17"></sd-chip-calendar>
+            <sd-chip-calendar label="Tối đa 3" max="3" value="2026/04/17,2026/04/18,2026/04/20"></sd-chip-calendar>
+            <sd-chip-calendar label="Trong khoảng 1–3" min="1" max="3" value="2026/04/17,2026/04/18"></sd-chip-calendar>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            <code>min</code>/<code>max</code> <b>không chặn</b> thao tác chọn/bỏ chọn ngày — vẫn bỏ chọn
+            được xuống dưới <code>min</code> hoặc chọn thêm quá <code>max</code>, chỉ báo lỗi khi đóng lịch
+            nếu số lượng ngoài khoảng (đúng thư viện thật: đây là validator hiển thị, không phải rào chặn
+            tương tác — thử ô đầu: bỏ chọn ngày 17/4 rồi đóng lịch để thấy lỗi mà chip vẫn mất).
+          </p>
+        </sd-section>
+
+        <!-- Removable -->
+        <sd-section title="Removable">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-chip-calendar label="Không xoá được từ chip" value="2026/04/17,2026/04/20" removable="false"></sd-chip-calendar>
+            <sd-chip-calendar label="Bình thường" value="2026/04/17,2026/04/20"></sd-chip-calendar>
+            <sd-chip-calendar label="Disabled" value="2026/04/17,2026/04/20" disabled></sd-chip-calendar>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            <code>removable="false"</code>: ẩn nút x trên chip, nhưng vẫn <b>bỏ chọn được bằng cách bấm lại
+            đúng ngày đó trong lịch</b> (calendar không có khái niệm removable riêng — chỉ chi phối nút x
+            trên chip, đúng thư viện thật vì cả hai đường đều đi qua cùng một hàm chọn/bỏ chọn).
+          </p>
+        </sd-section>
+
+        <!-- Sizes & viewed -->
+        <sd-section title="Kích thước · Viewed">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-chip-calendar label="Size sm" size="sm" value="2026/04/17,2026/04/18"></sd-chip-calendar>
+            <sd-chip-calendar label="Size md (mặc định)" value="2026/04/17,2026/04/18"></sd-chip-calendar>
+          </div>
+          <div class="grid grid-cols-3 gap-24 mt-24">
+            <sd-chip-calendar label="Viewed" value="2026/04/17,2026/04/18,2026/04/20" viewed></sd-chip-calendar>
+          </div>
+        </sd-section>
+
+        <!-- Sự kiện -->
+        <sd-section title="Sự kiện sd-change">
+          <sd-chip-calendar id="cc-events" label="Danh sách ngày trực"></sd-chip-calendar>
+          <p class="fs-12 text-black400 mt-16 mb-0">Gần nhất: <span id="cc-event-output" class="text-black500">chưa có</span></p>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list mb-0 pl-0">
+                  <li>Cần chọn nhiều ngày từ lịch thành danh sách: ngày áp dụng, lịch trực, ngày nghỉ nhóm</li>
+                  <li>Người dùng thấy ngay danh sách ngày đã chọn dưới dạng chip, bấm lại ngày trong lịch để bỏ chọn</li>
+                  <li>Cần giới hạn số ngày tối thiểu / tối đa (min / max) — hỏi BA xác định rõ số cụ thể</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list mb-0 pl-0">
+                  <li>Chỉ chọn đúng 1 ngày — dùng sd-date</li>
+                  <li>Nhập danh sách giá trị tự do (không phải ngày) không cần lịch — dùng sd-chip</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Form tạo đợt áp dụng: field 'Các ngày áp dụng' chọn nhiều ngày từ lịch, mỗi ngày thành một chip, bấm lại ngày đó để bỏ chọn, tối đa 30 ngày, bắt buộc ít nhất 1 ngày."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-chip-calendar
+  label="Chọn các ngày"
+  size="md"
+  value="2026/04/17,2026/04/18,2026/04/20"&gt;&lt;/sd-chip-calendar&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>label</td><td>string</td><td>-</td><td>Floating label</td></tr>
+                  <tr><td>placeholder</td><td>string</td><td>= label</td><td>Placeholder của ô khi chưa chọn ngày nào</td></tr>
+                  <tr><td>value</td><td>string - danh sách yyyy/MM/dd phân tách bằng dấu phẩy</td><td>-</td><td>Danh sách ngày đã chọn. Property <code>.value</code> trả về mảng string[], two-way. Bí danh: <code>model</code></td></tr>
+                  <tr><td>size</td><td><code>sm</code>, <code>md</code></td><td>md</td><td>Chiều cao field <span class="fs-12 text-black400">(catalog chỉ có hai cỡ; <code>lg</code> / <code>xs</code> cũ vẫn nhận nhưng hiển thị như <code>md</code>)</span></td></tr>
+                  <tr><td>required</td><td>boolean</td><td>false</td><td>Hiện dấu * + báo lỗi "Vui lòng nhập thông tin" khi danh sách rỗng lúc đóng lịch</td></tr>
+                  <tr><td>min</td><td>number</td><td>-</td><td>Số ngày tối thiểu — <b>chỉ báo lỗi</b> khi đóng lịch nếu ít hơn, không chặn bỏ chọn</td></tr>
+                  <tr><td>max</td><td>number</td><td>-</td><td>Số ngày tối đa — <b>chỉ báo lỗi</b> khi đóng lịch nếu nhiều hơn, không chặn chọn thêm</td></tr>
+                  <tr><td>removable</td><td>boolean</td><td>true</td><td>Hiện/ẩn nút xoá (x) trên từng chip — không ảnh hưởng việc bỏ chọn qua lịch</td></tr>
+                  <tr><td>disabled</td><td>boolean</td><td>false</td><td>Vô hiệu hoá toàn bộ (mở lịch + xoá chip)</td></tr>
+                  <tr><td>viewed</td><td>boolean</td><td>false</td><td>Chế độ xem — text tĩnh, các giá trị nối bằng ", ". <code>viewed="false"</code> là không xem</td></tr>
+                  <tr><td>hideInlineError</td><td>boolean</td><td>false</td><td>Ẩn dòng lỗi chữ, thay bằng icon đỏ + tooltip</td></tr>
+                  <tr><td>autoId</td><td>string</td><td>-</td><td>Sinh <code>data-autoId="forms-chip-{autoId}"</code> cho E2E</td></tr>
+                  <tr><td>name</td><td>string</td><td>-</td><td>Tên field (tương thích form) — chỉ lưu, không có tác dụng hiển thị</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Events</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Event</th><th>Detail</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>sd-change</td><td>{ value: string[] }</td><td>Khi chọn hoặc bỏ chọn ngày thật sự đổi danh sách</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Lệch có chủ ý so với @sdcorejs/angular</p>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li>Chip tự sắp xếp lại theo ngày tăng dần sau mỗi lần chọn/bỏ chọn; thư viện thật giữ đúng
+                  thứ tự người dùng bấm chọn (không sắp xếp) — kit cố ý sắp xếp để danh sách ngày dễ đọc hơn.</li>
+                <li><code>removable</code> thư viện thật nhận boolean HOẶC callback <code>(item) =&gt; boolean</code>;
+                  kit chỉ nhận boolean qua HTML attribute.</li>
+                <li>Không mirror <code>appearance</code>, <code>floatLabel</code>, <code>form</code>,
+                  <code>hyperlink</code>, autocomplete chọn nhiều item qua gõ chữ (<code>separatorKeysCodes</code>
+                  tồn tại trong API thật nhưng không được dùng ở đâu trong template thật — vestigial, không mirror).</li>
+                <li>Label dùng floating <code>.sd-label</code> (nổi lên trong field khi có giá trị/focus) — đúng
+                  convention mặc định của mọi input khác trong kit, dù thư viện thật render <code>&lt;sd-label&gt;</code>
+                  tĩnh phía trên box khi không set <code>appearance</code>.</li>
+                <li>Không có <code>addable</code> và không expose <code>focus()</code> làm method public — cả hai
+                  đều không tồn tại trong <code>.d.ts</code> thật của <code>sd-chip-calendar</code> (khác
+                  <code>sd-chip</code>): ô nhập chỉ đọc (readonly), không có đường gõ tay để thêm giá trị.</li>
+              </ul>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+<script>
+  /* Mẫu catalog #c-chip-calendar: ô lỗi ở trạng thái touched, lịch mở sẵn */
+  document.querySelectorAll('.cc-cat-touch').forEach(function (el) { el._touched = true; el._render(); });
+  var ccOpen = document.getElementById('ccCatOpen'); if (ccOpen) ccOpen._openPopup();
+</script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      showPanel(0);
+    }
+    initPreviewTabs();
+  })();
+
+  // Demo sự kiện chip-calendar
+  (function () {
+    var cc = document.getElementById('cc-events');
+    var out = document.getElementById('cc-event-output');
+    if (!cc || !out) return;
+    cc.addEventListener('sd-change', function (e) {
+      out.textContent = 'sd-change → [' + (e.detail.value || []).join(', ') + ']';
+    });
+  })();
+</script>
+
+</body>
+</html>

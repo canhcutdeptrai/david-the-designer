@@ -1,0 +1,441 @@
+--- a/design-system/sd-components/sd-components.js
++++ b/design-system/sd-components/sd-components.js
+@@ -9557,8 +9557,28 @@
+         setTimeout(function () { self._render(); }, 0);
+       }
+     }
+-    attributeChangedCallback() {
+-      sdSyncAutoId(this, 'components-side-drawer-');}
++    attributeChangedCallback(name) {
++      sdSyncAutoId(this, 'components-side-drawer-');
++      /* `title` là input của catalog → đổi lúc chạy thì tiêu đề đổi theo. Attribute
++         bị gỡ khỏi host sau khi đọc (tránh tooltip gốc của trình duyệt). */
++      if (name === 'title' && this._rendered && !this._stripTitle && this.hasAttribute('title')) {
++        this._title = this.getAttribute('title') || '';
++        this._setTitleText(this._title);
++        this._stripTitle = true;
++        this.removeAttribute('title');
++        this._stripTitle = false;
++      }
++    }
++
++    _setTitleText(t) {
++      var area = this.querySelector('.sd-side-drawer-title');
++      if (!area) return;
++      if (!this._titleNode) {
++        this._titleNode = document.createTextNode('');
++        area.insertBefore(this._titleNode, area.firstChild);
++      }
++      this._titleNode.textContent = t ? ' ' + t + ' ' : '';
++    }
+ 
+     _render() {
+       if (this._rendered) return;
+@@ -9572,7 +9592,9 @@
+ 
+       this._title = title;
+       if (this.hasAttribute('title')) {
++        this._stripTitle = true;
+         this.removeAttribute('title');
++        this._stripTitle = false;
+       }
+ 
+       /* Collect slots.
+@@ -9594,26 +9616,30 @@
+       // Build structure
+       this.innerHTML = '';
+ 
+-      // Backdrop
++      /* DOM theo catalog `#c-side-drawer`: `div.sd-side-drawer[style=width]
++         [data-opened][data-loading]` rồi NỀN `div.sd-side-drawer-backdrop` đứng
++         SAU (anh em). Giữ thêm lớp `sd-side-drawer-panel` cũ vì vài trang
++         prototype đang tìm theo tên đó. */
+       var backdrop = document.createElement('div');
+       backdrop.className = 'sd-side-drawer-backdrop';
+       if (!disableBackdrop) {
+         backdrop.addEventListener('click', function () { self.close(); });
+       }
+-      this.appendChild(backdrop);
+ 
+       // Panel
+       var panel = document.createElement('div');
+-      panel.className = 'sd-side-drawer-panel';
++      panel.className = 'sd-side-drawer sd-side-drawer-panel';
+       panel.style.width = width;
+ 
+       // Header
+       var header = document.createElement('div');
+       header.className = 'sd-side-drawer-header';
+ 
++      /* catalog: tiêu đề là CHỮ TRẦN trong `.sd-side-drawer-title` (20px/28px/500);
++         `[sdHeaderLeft]` chiếu vào đúng chỗ đó. Bản trước bọc chữ bằng span.T16M. */
+       var titleArea = document.createElement('div');
+       titleArea.className = 'sd-side-drawer-title';
+-      titleArea.innerHTML = '<span class="T16M">' + esc(title) + '</span>';
++      if (title) { this._titleNode = document.createTextNode(' ' + title + ' '); titleArea.appendChild(this._titleNode); }
+       if (headerLeftSlot) titleArea.appendChild(headerLeftSlot);
+       header.appendChild(titleArea);
+ 
+@@ -9624,7 +9650,8 @@
+         var closeBtn = document.createElement('button');
+         closeBtn.className = 'sd-side-drawer-close-btn';
+         closeBtn.setAttribute('aria-label', 'Đóng');
+-        closeBtn.innerHTML = '<span class="material-icons-outlined" style="font-size:20px;">close</span>';
++        closeBtn.type = 'button';
++        closeBtn.innerHTML = '<span class="material-icons-outlined" aria-hidden="true">close</span>';
+         closeBtn.addEventListener('click', function () { self.close(); });
+         actions.appendChild(closeBtn);
+       }
+@@ -9649,18 +9676,20 @@
+       }
+ 
+       this.appendChild(panel);
++      this.appendChild(backdrop);
+       this._syncState();
+     }
+ 
+     /* isOpened / isLoading — catalog #c-side-drawer khai hai thuộc tính đọc này
+        trong bảng API, và DOM mẫu gắn `data-opened` / `data-loading` lên panel. */
+     get isOpened() { return this.classList.contains('sd-side-drawer-active'); }
+-    get isLoading() { return !!this.querySelector('.sd-side-drawer-loading'); }
++    get isLoading() { return !!this.querySelector('.sd-side-drawer-panel > div.sd-loading'); }
+ 
+     _syncState() {
+       var panel = this.querySelector('.sd-side-drawer-panel');
+       if (!panel) return;
+       panel.setAttribute('data-opened', this.isOpened ? 'true' : 'false');
++      panel.classList.toggle('sd-side-drawer-active', this.isOpened);   // catalog gắn lớp này lên CHÍNH tấm trượt
+       panel.setAttribute('data-loading', this.isLoading ? 'true' : 'false');
+     }
+ 
+@@ -9696,19 +9725,25 @@
+       this._syncState();
+     }
+ 
++    /* catalog: startLoading() chèn ĐÚNG DOM của SdLoadingService vào drawer —
++       `div.sd-loading` (trắng 60%, phủ kín) > `div.sd-loading-spinner` (5rem,
++       viền .5rem primary, cạnh trên --sd-black200, quay 1s). Kit dùng chung luật
++       `div.sd-loading` của SdLoadingService. Bản trước: lớp riêng 80% + vòng 32px. */
+     startLoading() {
+       var panel = this.querySelector('.sd-side-drawer-panel');
+-      if (panel && !panel.querySelector('.sd-side-drawer-loading')) {
++      if (panel && !panel.querySelector(':scope > div.sd-loading')) {
+         var overlay = document.createElement('div');
+-        overlay.className = 'sd-side-drawer-loading';
+-        overlay.innerHTML = '<div class="sd-spinner"></div>';
++        overlay.className = 'sd-loading';
++        overlay.setAttribute('role', 'progressbar');
++        overlay.setAttribute('aria-label', 'Đang tải');
++        overlay.innerHTML = '<div class="sd-loading-spinner"></div>';
+         panel.appendChild(overlay);
+       }
+       this._syncState();
+     }
+ 
+     stopLoading() {
+-      var loading = this.querySelector('.sd-side-drawer-loading');
++      var loading = this.querySelector('.sd-side-drawer-panel > div.sd-loading');
+       if (loading) loading.remove();
+       this._syncState();
+     }
+--- a/design-system/core/styles/sd-tokens.css
++++ b/design-system/core/styles/sd-tokens.css
+@@ -3657,10 +3657,9 @@
+   min-height: 64px;
+   flex-shrink: 0;
+ }
++/* catalog: `.sd-side-drawer-title{font-size:20px;line-height:28px;font-weight:500;flex:1;margin-right:16px}`
++   — KHÔNG flex / gap (bản trước kit tự thêm). */
+ sd-side-drawer .sd-side-drawer-title {
+-  display: flex;
+-  align-items: center;
+-  gap: 12px;
+   flex: 1;
+   margin-right: 16px;
+   font-size: 20px;
+@@ -3726,31 +3725,35 @@
+   padding: 0 16px 16px;
+   overflow: auto;
+ }
++/* catalog: `.sd-side-drawer-footer{border-top:1px solid #dde0e5;padding:8px}` — việc căn
++   nút là của `[sdFooter]` (catalog dùng `d-flex align-items-center justify-content-end`).
++   Bản trước kit tự cho footer flex + dồn phải + gap 8px (Rule 18 — đã gỡ). */
+ sd-side-drawer .sd-side-drawer-footer {
+-  display: flex;        /* kit: căn nút về phải sẵn; catalog để trang tự căn */
+-  align-items: center;
+-  justify-content: flex-end;
+-  gap: 8px;
+   padding: 8px;
+   border-top: 1px solid #dde0e5;
+   flex-shrink: 0;
+ }
+-sd-side-drawer .sd-side-drawer-loading {
+-  position: absolute;
+-  inset: 0;
+-  background: rgba(255, 255, 255, 0.8);
++/* `.side-drawer-body-custom` — lớp GLOBAL của portal (src/styles.scss) mà catalog
++   `#c-side-drawer` dùng cho thân dạng thẻ: đệm dọc 16px, mỗi `.content-wrapper` là
++   thẻ trắng bo 8px đệm 16px 16px 4px, bóng nhẹ. Hai utility `.mb-4` (4px) và
++   `.mb-12` (12px) của catalog khác thang `--space-*` của kit (`.mb-4` = 16px) nên
++   thu hẹp phạm vi vào trong lớp này — cùng cách đã làm với `sd-label .mb-2`. */
++.side-drawer-body-custom { padding: 16px 0; }
++.side-drawer-body-custom .content-wrapper {
++  background: #fff;
++  border-radius: 8px;
++  padding: 16px 16px 4px 16px;
++  box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
++}
++.side-drawer-body-custom .mb-4 { margin-bottom: 4px !important; }
++.side-drawer-body-custom .mb-12 { margin-bottom: 12px !important; }
++/* Bí danh cũ `slot="footer"` (trang cũ không khai class căn): giữ cách căn cũ để
++   prototype đang dùng không đổi hình. Trang mới dùng `[sdFooter]` + class như catalog. */
++sd-side-drawer .sd-side-drawer-footer > [slot="footer"] {
+   display: flex;
+   align-items: center;
+-  justify-content: center;
+-  z-index: 10;
+-}
+-sd-side-drawer .sd-spinner {
+-  width: 32px;
+-  height: 32px;
+-  border: 3px solid var(--sd-black200);
+-  border-top-color: var(--sd-primary);
+-  border-radius: 50%;
+-  animation: sd-spin 0.6s linear infinite;
++  justify-content: flex-end;
++  gap: 8px;
+ }
+ 
+ /* Tôn trọng "giảm chuyển động" — rà soát 2026-10-11 (vòng 7). Công cụ đo BỎ QUA
+--- a/design-system/preview/components/side-drawer.html
++++ b/design-system/preview/components/side-drawer.html
+@@ -17,6 +17,10 @@
+   <link rel="stylesheet" href="../../core/styles/utilities.css">
+   <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+   <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
++  <style>
++    /* chữ thân mẫu của catalog (`.ui-demo__modal-body{margin:0}`) — CHỈ của trang preview */
++    .ui-demo__modal-body { margin: 0 !important; }
++  </style>
+ </head>
+ <body>
+ 
+@@ -36,6 +40,18 @@
+       <!-- ── Tab: Preview ──────────────────────────────────── -->
+       <div class="tab-panel" data-tab-panel="0">
+ 
++        <!-- ── Theo Core UI Catalog #c-side-drawer — rà soát 2026-10-12 ── -->
++        <sd-section title="Hẹp 480px" subtitle="width=&quot;480px&quot; — vừa một cột form">
++          <sd-button type="fill" color="primary" size="sm" title="Hẹp (480px)" onclick="document.getElementById('cat-drawer-narrow').open()"></sd-button>
++        </sd-section>
++        <sd-section title="Rộng 800px + đang tải" subtitle="startLoading(): lớp phủ trắng 60% + spinner của SdLoadingService">
++          <sd-button type="fill" color="primary" size="sm" title="Rộng (800px) + đang tải" onclick="openLoadingDrawer()"></sd-button>
++        </sd-section>
++        <sd-section title="Header tuỳ biến + thân dạng thẻ" subtitle="sdHeaderLeft, sdHeaderRight, lớp global .side-drawer-body-custom của portal">
++          <sd-button type="outline" color="secondary" size="sm" title="Lịch sử phê duyệt" onclick="document.getElementById('cat-drawer-history').open()"></sd-button>
++        </sd-section>
++
++        <!-- ── Các ví dụ bổ sung của kit ── -->
+         <!-- Trigger buttons -->
+         <div class="card mb-4">
+           <div class="card-header"><h3 class="card-title">Demo — Click để mở drawer</h3></div>
+@@ -149,6 +165,57 @@
+ <!-- Drawer instances (outside app-shell to avoid z-index issues) -->
+ 
+ <!-- Basic drawer -->
++
++<!-- ── Drawer của các mục catalog #c-side-drawer ── -->
++<sd-side-drawer id="cat-drawer-narrow" width="480px" title="Sidesheet hẹp">
++  <p class="ui-demo__modal-body">Bề ngang 480px — vừa một cột form.</p>
++  <div sdFooter class="d-flex align-items-center justify-content-end">
++    <sd-button type="fill" color="primary" size="md" title="Đóng" onclick="document.getElementById('cat-drawer-narrow').close()"></sd-button>
++  </div>
++</sd-side-drawer>
++<sd-side-drawer id="cat-drawer-wide" width="800px" title="Sidesheet rộng — trạng thái đang tải">
++  <p class="ui-demo__modal-body">Bề ngang 800px (cùng số mà drawer Lịch sử / Thảo luận của Treasury đang dùng). Spinner do <code>startLoading()</code> bật, tự tắt sau 2 giây.</p>
++  <div sdFooter class="d-flex align-items-center justify-content-end">
++    <sd-button type="fill" color="primary" size="md" title="Đóng" onclick="document.getElementById('cat-drawer-wide').close()"></sd-button>
++  </div>
++</sd-side-drawer>
++<sd-side-drawer id="cat-drawer-history" width="560px">
++  <div sdHeaderLeft>
++    <div>Lịch sử phê duyệt</div>
++    <div class="T12R text-black400">HS-2026-0142 · Kế hoạch Funding Q4/2026</div>
++  </div>
++  <sd-button sdHeaderRight type="outline" color="secondary" prefixIcon="download" title="Tải xuống"></sd-button>
++  <div class="side-drawer-body-custom">
++    <div class="content-wrapper mb-12">
++      <div class="d-flex align-items-center justify-content-between mb-4"><span class="T14M">Yêu cầu bổ sung</span><span class="T12R text-black400">08/10/2026 14:05</span></div>
++      <div class="T12R text-black400 mb-8">Lê Minh Châu · Phê duyệt cấp 2</div>
++      <p class="T14R">Bổ sung báo cáo dòng tiền tháng 9 và xác nhận hạn mức còn lại tại Vietcombank.</p>
++    </div>
++    <div class="content-wrapper mb-12">
++      <div class="d-flex align-items-center justify-content-between mb-4"><span class="T14M">Phê duyệt cấp 1</span><span class="T12R text-black400">08/10/2026 10:41</span></div>
++      <div class="T12R text-black400 mb-8">Trần Thị Bình · Trưởng phòng Nguồn vốn</div>
++      <p class="T14R">Đồng ý phương án vay 80 tỷ, kỳ hạn 15 tháng.</p>
++    </div>
++    <div class="content-wrapper mb-12">
++      <div class="d-flex align-items-center justify-content-between mb-4"><span class="T14M">Trình duyệt</span><span class="T12R text-black400">08/10/2026 09:12</span></div>
++      <div class="T12R text-black400 mb-8">Nguyễn Văn An · Chuyên viên Treasury</div>
++      <p class="T14R">Kế hoạch Funding Q4/2026 — nhu cầu vốn lưu động.</p>
++    </div>
++  </div>
++  <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
++    <sd-button type="link" color="secondary" size="md" title="Đóng" onclick="document.getElementById('cat-drawer-history').close()"></sd-button>
++    <sd-button type="fill" color="primary" size="md" title="Xuất báo cáo"></sd-button>
++  </div>
++</sd-side-drawer>
++<script>
++  /* catalog: open() → startLoading() → stopLoading() sau 2 giây */
++  function openLoadingDrawer() {
++    var d = document.getElementById('cat-drawer-wide');
++    d.open();
++    d.startLoading();
++    setTimeout(function () { d.stopLoading(); }, 2000);
++  }
++</script>
+ <sd-side-drawer id="drawer-basic" title="Ghi chú" width="400px">
+   <div class="p-6">
+     <p class="text-md mb-3">Đây là drawer cơ bản — chỉ có title + body content.</p>
+@@ -157,8 +224,10 @@
+ </sd-side-drawer>
+ 
+ <!-- Full layout drawer -->
+-<sd-side-drawer id="drawer-full" title="Chi tiết giao dịch" width="560px">
+-  <div sdHeaderLeft>
++<sd-side-drawer id="drawer-full" width="560px">
++  <!-- `[sdHeaderLeft]` chiếu vào ĐÚNG chỗ tiêu đề (catalog) — muốn chữ + badge cùng hàng thì tự đặt cả hai vào đây. -->
++  <div sdHeaderLeft class="d-flex align-items-center gap-8">
++    <span>Chi tiết giao dịch</span>
+     <sd-badge type="round" color="success" title="Đã thanh toán"></sd-badge>
+   </div>
+   <div sdHeaderRight>
+@@ -180,7 +249,7 @@
+     </sd-section>
+   </div>
+ 
+-  <div sdFooter class="flex gap-2 items-center">
++  <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
+     <sd-button title="Bỏ qua" type="link" color="secondary"
+       onclick="document.getElementById('drawer-full').close()"></sd-button>
+     <sd-button title="Duyệt giao dịch" type="fill" color="primary" prefixIcon="check"></sd-button>
+--- a/design-system/preview/patterns/add-side-drawer.html
++++ b/design-system/preview/patterns/add-side-drawer.html
+@@ -121,7 +121,7 @@
+                 <pre class="ds-guide-code">&lt;!-- Đặt ngoài .app-shell để tránh z-index issues --&gt;
+ &lt;sd-side-drawer id="sheetTaoMoi" title="Tạo mới [Record]" width="560px"&gt;
+ 
+-  &lt;div sdFooter class="flex gap-2 items-center"&gt;
++  &lt;div sdFooter class="d-flex align-items-center justify-content-end gap-8"&gt;
+     &lt;sd-button title="Bỏ qua" type="link" color="primary"
+       onclick="document.getElementById('sheetTaoMoi').close()"&gt;&lt;/sd-button&gt;
+     &lt;sd-button title="Lưu" type="fill" color="primary" prefixIcon="save"&gt;&lt;/sd-button&gt;
+@@ -153,7 +153,7 @@
+                 </div>
+                 <pre class="ds-guide-code">&lt;sd-side-drawer id="sheetTaoMoi" title="Tạo mới [Record]" width="760px"&gt;
+ 
+-  &lt;div sdFooter class="flex gap-2 items-center"&gt;
++  &lt;div sdFooter class="d-flex align-items-center justify-content-end gap-8"&gt;
+     &lt;sd-button title="Bỏ qua" type="link" color="primary"&gt;&lt;/sd-button&gt;
+     &lt;sd-button title="Gửi duyệt" type="fill" color="primary" prefixIcon="send"&gt;&lt;/sd-button&gt;
+   &lt;/div&gt;
+@@ -216,7 +216,7 @@
+        ("link color=secondary thì chữ quá mờ nhìn như bị disable, nên luôn là type=link color=primary").
+        Pattern page-header đã làm đúng từ trước; riêng trang này lệch. Sửa cả 2 chỗ markup và 2 chỗ
+        đoạn code mẫu bên dưới để BA/Dev chép ra không mang theo lỗi. -->
+-  <div sdFooter class="flex gap-2 items-center">
++  <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
+     <sd-button title="Bỏ qua" type="link" color="primary"
+       onclick="document.getElementById('sheet-add-simple').close()"></sd-button>
+     <sd-button title="Lưu" type="fill" color="primary" prefixIcon="save"></sd-button>
+@@ -287,7 +287,7 @@
+      ═══════════════════════════════════════════════════════════ -->
+ <sd-side-drawer id="sheet-add-heavy" title="Tạo mới hợp đồng đặt cọc" width="760px">
+ 
+-  <div sdFooter class="flex gap-2 items-center">
++  <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
+     <sd-button title="Bỏ qua" type="link" color="primary"
+       onclick="document.getElementById('sheet-add-heavy').close()"></sd-button>
+     <sd-button title="Gửi duyệt" type="fill" color="primary" prefixIcon="send"></sd-button>
+--- a/design-system/components/sd-overlay.md
++++ b/design-system/components/sd-overlay.md
+@@ -86,13 +86,20 @@
+ | `[sdFooter]` (cũ: `slot="footer"`) | Footer buttons |
+ | (default) | Body content |
+ 
++> **Rà soát `#c-side-drawer` 2026-10-12:**
++> - `[sdHeaderLeft]` chiếu vào **đúng chỗ tiêu đề** (khối, không flex) — muốn chữ + badge cùng hàng thì đặt cả hai trong `<div sdHeaderLeft class="d-flex align-items-center gap-8">`. Tiêu đề là chữ trần 20px/28px/500; đổi `title` lúc chạy thì tiêu đề đổi theo.
++> - Footer **không tự căn** — `[sdFooter]` tự khai `class="d-flex align-items-center justify-content-end gap-8"` như catalog. Bí danh cũ `slot="footer"` vẫn được căn phải để trang cũ không đổi hình.
++> - `startLoading()` chèn đúng DOM của SdLoadingService (`div.sd-loading` trắng 60% + vòng 5rem).
++> - Lớp global `.side-drawer-body-custom` (portal) + `.content-wrapper` cho thân dạng thẻ — xem mục "Header tuỳ biến + thân dạng thẻ" ở preview.
++
+ **JavaScript API:** `element.open()` / `element.close()` / `element.startLoading()` / `element.stopLoading()`
+ **Thuộc tính đọc:** `element.isOpened` / `element.isLoading` (catalog khai trong
+ bảng API). Tấm trượt mang `data-opened` / `data-loading` tương ứng.
+ 
+ ```html
+-<sd-side-drawer id="drawer1" title="Chi tiết giao dịch" width="560px">
+-  <div sdHeaderLeft>
++<sd-side-drawer id="drawer1" width="560px">
++  <div sdHeaderLeft class="d-flex align-items-center gap-8">
++    <span>Chi tiết giao dịch</span>
+     <sd-badge type="status" status="active" title="Đã thanh toán"></sd-badge>
+   </div>
+   <sd-button sdHeaderRight title="Tải xuống" size="sm" type="light" color="primary"></sd-button>
+@@ -105,8 +112,8 @@
+     </sd-section>
+   </div>
+ 
+-  <!-- Footer: div phải có flex để buttons nằm ngang -->
+-  <div sdFooter class="flex gap-2 items-center">
++  <!-- Footer: catalog tự căn bằng class trên [sdFooter] — footer của drawer không tự căn -->
++  <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
+     <sd-button title="Bỏ qua" type="link" color="primary"></sd-button>
+     <sd-button title="Duyệt" type="fill" color="primary"></sd-button>
+   </div>
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -8,6 +8,24 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `#c-side-drawer`: `sd-side-drawer` khớp catalog — tiêu đề, footer, lớp đang tải, thân dạng thẻ
++
++Builder: *„Tiếp tục phần Side drawer“*. Đo 3 drawer catalog (hẹp 480px · rộng 800px đang
++tải · header tuỳ biến + thân dạng thẻ 560px). Sau khi sửa, mọi mốc trùng toạ độ: tấm trượt
++(nền, bóng), header, tiêu đề, nút ×, nút `sdHeaderRight`, thân, thẻ `.content-wrapper`, footer
++và nút trong footer, lớp phủ đang tải + spinner, nền mờ.
++
++| | Catalog | Kit trước | Kit nay |
++|---|---|---|---|
++| Tiêu đề | chữ trần trong `.sd-side-drawer-title`, 20px/28px/500, khối | bọc `span.T16M`, title là flex + gap 12px | khớp; đổi `title` lúc chạy thì tiêu đề đổi theo |
++| Footer | chỉ `padding:8px` + kẻ trên — `[sdFooter]` tự căn | footer tự flex, dồn phải, gap 8px | khớp (bí danh `slot="footer"` vẫn căn phải) |
++| `startLoading()` | DOM của SdLoadingService: `div.sd-loading` trắng 60% + vòng 5rem | lớp riêng trắng 80% + vòng 32px | khớp |
++| Thân dạng thẻ | lớp global `.side-drawer-body-custom` của portal | không có | thêm |
++| DOM | `div.sd-side-drawer.sd-side-drawer-active` rồi nền mờ đứng sau | nền mờ trước, `.sd-side-drawer-panel` | theo catalog (giữ lớp cũ cho prototype) |
++
++Preview `side-drawer.html` + pattern `add-side-drawer.html` + `sd-overlay.md`: `[sdFooter]` dùng class
++căn của catalog; thêm 3 mục đúng catalog ở đầu preview. 97 trang, 0 lỗi JS.
++
+ ### Changed — `#c-stepper`: `sd-stepper` khớp catalog — dòng chữ, đệm nội dung, "Optional", lỗi ẩn, bước khoá
+ 
+ Builder: *„Tiếp tục phần Stepper“*. Đo 4 stepper catalog (ngang · `labelPosition="bottom"` ·
+--- a/_memory/known-gaps.md
++++ b/_memory/known-gaps.md
+@@ -125,6 +125,16 @@
+ Đã gỡ (Rule 18): `autoId`, `expand()`, `collapse()`, `clearSelection()`, `selectedIds`, tooltip „Bỏ chọn“.
+ Đã thêm theo bảng API catalog: setter `selectedItems`, `tree`.
+ 
++## `sd-side-drawer` — rà soát `#c-side-drawer` 2026-10-12
++
++| Chỗ | Catalog | Kit | Vì sao |
++|---|---|---|---|
++| Thẻ host | `.sd-side-drawer` CHÍNH là tấm trượt | host `<sd-side-drawer>` là lớp phủ fixed; tấm trượt là `div.sd-side-drawer` (thêm lớp cũ `sd-side-drawer-panel`) | Web Component cần một host; DOM bên trong theo catalog, toạ độ trùng |
++| Icon × | `mat-icon.material-icons` | `material-icons-outlined` | Rule 4 (glyph giống hệt) |
++| `aria-label` nút × | "Close" | "Đóng" | Rule 9 — tiếng Việt |
++| Bí danh `slot="header-left/right"`, `slot="footer"` | không có | vẫn nhận; `slot="footer"` được căn phải sẵn | Ngoại lệ 3 — 3 trang prototype đang dùng |
++| `.mb-4` / `.mb-12` trong `.side-drawer-body-custom` | 4px / 12px | thu hẹp phạm vi vào lớp đó | Thang `--space-*` của kit: `.mb-4` toàn cục = 16px |
++
+ ## `sd-stepper` — đo lại `#c-stepper` 2026-10-12 (font catalog)
+ 
+ | Chỗ | Catalog | Kit | Vì sao |

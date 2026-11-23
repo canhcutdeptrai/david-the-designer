@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-* Service - Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-* Service"
+         data-subtitle="Notify / Confirm / Loading - 3 services qua window globals, không phải thẻ HTML"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <!-- Mirror catalog #c-notify — 3 biến thể. Toast trong khung demo dựng sẵn,
+             KHÔNG tự tắt (giống catalog, để tiện xem); toast bấm nút tạo ra thì
+             hiện ở góc trên phải và tự tắt đúng thời gian của service. -->
+        <sd-section data-catalog-section="c-notify" title="SdNotifyService - Bốn loại" subtitle="toast mới nhất ở trên; bấm nút để gọi service (tự tắt như thật), × để đóng">
+          <div class="nt-pair">
+            <div class="nt-triggers">
+              <p>Gọi service:</p>
+              <sd-button type="light" color="success" size="sm" title="notify.success()" onclick="demoNotify('success')"></sd-button>
+              <sd-button type="light" color="info" size="sm" title="notify.info()" onclick="demoNotify('info')"></sd-button>
+              <sd-button type="light" color="warning" size="sm" title="notify.warning()" onclick="demoNotify('warning')"></sd-button>
+              <sd-button type="light" color="error" size="sm" title="notify.error()" onclick="demoNotify('error')"></sd-button>
+            </div>
+            <div class="sd-toast-container is-inline" id="nt-static-4"></div>
+          </div>
+        </sd-section>
+
+        <sd-section data-catalog-section="c-notify" title="SdNotifyService - Lỗi nhiều dòng" subtitle="mảng thông điệp, hoặc nhiều lần gọi trong 500 ms; hiện 2 dòng đầu, bấm &quot;Hiện thêm&quot; để mở">
+          <div class="nt-pair">
+            <div class="sd-toast-container is-inline" id="nt-static-multi"></div>
+            <div class="sd-toast-container is-inline" id="nt-static-multi-open"></div>
+          </div>
+        </sd-section>
+
+        <sd-section data-catalog-section="c-notify" title="SdNotifyService - Tiêu đề riêng, nút hành động, nội dung HTML" subtitle="title · actionLabel/onAction · html: true">
+          <div class="nt-pair">
+            <div class="sd-toast-container is-inline" id="nt-static-action"></div>
+            <div class="sd-toast-container is-inline" id="nt-static-html"></div>
+          </div>
+        </sd-section>
+
+        <sd-section data-catalog-section="c-confirm" title="SdConfirmService - Hộp thoại xác nhận" subtitle="confirm / withInput / withRadio / withDate">
+          <div class="flex gap-8 flex-wrap mb-16">
+            <sd-button type="fill" color="primary" title="confirm" onclick="demoConfirm('confirm')"></sd-button>
+            <sd-button type="fill" color="primary" title="withInput" onclick="demoConfirm('withInput')"></sd-button>
+            <sd-button type="fill" color="primary" title="withRadio" onclick="demoConfirm('withRadio')"></sd-button>
+            <sd-button type="fill" color="primary" title="withDate" onclick="demoConfirm('withDate')"></sd-button>
+          </div>
+          <div class="card mb-8">
+            <div class="card-body">
+              <p class="fs-12 text-black400 mb-8">Kết quả trả về từ promise (kể cả khi bị hủy):</p>
+              <p id="confirm-result" class="T14M mb-0">Chưa gọi dialog nào</p>
+            </div>
+          </div>
+          <p class="fs-12 text-black400 mb-0">Đồng ý = resolve, hủy (X / backdrop / nút trái) = reject. Nút trái trong demo dùng "Bỏ qua" / "Quay lại" theo quy ước kit.</p>
+        </sd-section>
+
+        <sd-section data-catalog-section="c-loading" title="SdLoadingService - Overlay loading" subtitle="start(selector) · stop(selector) · isLoading(selector) — selector mặc định 'body'">
+          <p class="fs-12 text-black400 mb-12">
+            <strong>Trên một phần tử</strong> — <code>start('#funding-plan-card')</code>. Phần tử
+            <strong>phải có <code>position: relative</code></strong>: service không tự đặt, lớp phủ
+            <code>absolute</code> 100% × 100% bám vào tổ tiên gần nhất có position. Lớp phủ trắng mờ 0.6 —
+            spinner cũng mờ theo. Mỗi phần tử chỉ có một lớp phủ.
+          </p>
+          <div class="flex gap-8 flex-wrap align-items-center mb-16">
+            <sd-button type="light" color="primary" size="sm" title="start()" onclick="demoLoadingStart()"></sd-button>
+            <sd-button type="light" color="secondary" size="sm" title="stop()" onclick="demoLoadingStop()"></sd-button>
+            <span class="fs-12 text-black400" id="ld-state">isLoading: false</span>
+          </div>
+          <div id="funding-plan-card" class="card p-16 position-relative mb-24">
+            <div class="T16M mb-8">Kế hoạch Funding quý IV/2026</div>
+            <p class="fs-12 text-black400 mb-0">Vay ngắn hạn — Vietcombank — 300,00 tỷ VND</p>
+            <p class="fs-12 text-black400 mb-0">Vay ngắn hạn — BIDV — 150,00 tỷ VND</p>
+            <p class="fs-12 text-black400 mb-0">Phát hành trái phiếu — 500,00 tỷ VND</p>
+          </div>
+          <p class="fs-12 text-black400 mb-12">
+            <strong>Toàn trang</strong> — <code>start()</code> không tham số phủ <code>body</code>. Demo tự gọi
+            <code>stop()</code> sau 2 giây trong <code>finally</code>, đúng cách mẫu của catalog.
+          </p>
+          <sd-button type="fill" color="primary" size="sm" title="Loading toàn trang 2 giây" onclick="demoLoadingBody()"></sd-button>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+
+        <sd-section title="Hướng dẫn BA / PO - SdNotifyService">
+          <div class="ds-guide">
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Phản hồi ngắn sau khi lưu, xoá, duyệt thành công hoặc thất bại</li>
+                  <li>Cảnh báo nhẹ mà không cần chặn luồng thao tác</li>
+                  <li>Kèm nút hành động (actionLabel) để dẫn người dùng đi tiếp</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Cần người dùng xác nhận trước khi xử lý - dùng SdConfirmService</li>
+                  <li>Hiển thị lỗi validation gắn với field - dùng helperText / error của sd-input</li>
+                  <li>Nội dung dài cần đọc kỹ, hoặc phải còn lại sau vài giây - dùng sd-inform / modal (toast tự tắt sau 3–5 giây)</li>
+                </ul>
+              </div>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Sau khi lưu nháp, hiện toast thành công 'Đã lưu nháp Kế hoạch Funding KH-2026-031.'. Khi gửi duyệt bị chặn bởi nhiều lỗi kiểm tra, gom tất cả vào MỘT toast lỗi nhiều dòng."</p>
+              </div>
+            </div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Hướng dẫn BA / PO - SdConfirmService">
+          <div class="ds-guide">
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Xác nhận một hành động hệ thống, cài đặt, xoá dữ liệu</li>
+                  <li>Cần nhập kèm lý do, chọn quyền, hoặc chọn ngày ngay trong hộp thoại</li>
+                  <li>Quy trình cần biết người dùng chọn Đồng ý hay bỏ qua để xử lý tiếp</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Chỉ muốn báo thông tin - dùng SdNotifyService hoặc sd-inform</li>
+                  <li>Form dài nhiều field - dùng trang Add/Edit hoặc sd-side-drawer</li>
+                  <li>Xác nhận nhiều bước có thứ tự - dùng sd-stepper</li>
+                </ul>
+              </div>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Khi bấm Áp dụng, mở hộp thoại xác nhận 'Bạn có chắc chắn...' với nút Đồng ý và Quay lại. Nếu chọn Đồng ý, hệ thống tiếp tục; nếu bỏ qua thì dừng. Trường hợp cần lý do thì dùng dialog withInput bắt buộc nhập."</p>
+              </div>
+            </div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Hướng dẫn BA / PO - SdLoadingService">
+          <div class="ds-guide">
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Thao tác đồng bộ dữ liệu, gọi API dài, xuất file, import dữ liệu</li>
+                  <li>Cần chặn tương tác trên một vùng cụ thể thay vì toàn trang</li>
+                  <li>Thời gian xử lý trên ~300ms (dưới ngưỡng này chỉ cần toast)</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Thao tác nhanh dưới 300ms - gây nháy hình không cần thiết</li>
+                  <li>Cần loading nằm trong nút - dùng thuộc tính loading của sd-button</li>
+                  <li>Cần thanh tiến trình phần trăm - dùng component progress riêng</li>
+                </ul>
+              </div>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Khi bấm Đồng bộ, hiển thị overlay loading phủ toàn màn hình. Khi xong thì dừng. Vùng danh mục con thì loading chỉ phủ đúng khung danh mục đó."</p>
+              </div>
+            </div>
+          </div>
+        </sd-section>
+
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+
+        <sd-section title="Hướng dẫn Dev - SdNotifyService">
+          <div class="ds-guide">
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">JavaScript</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">SdNotifyService.success('Đã lưu nháp Kế hoạch Funding KH-2026-031.');
+SdNotifyService.info('Hồ sơ đã được chuyển cho Kế toán trưởng phê duyệt.');
+SdNotifyService.warning('Dư nợ tại BIDV đã đạt 92% hạn mức được cấp.');
+SdNotifyService.error('Không thể giải ngân: hạn mức tín dụng còn lại không đủ.');
+
+// Nhiều lỗi → một toast "Lỗi (4)"; thông điệp trùng được gộp
+SdNotifyService.error([
+  'Ngày giải ngân phải sau ngày ký hợp đồng.',
+  'Số tiền giải ngân vượt hạn mức còn lại 180 tỷ VND.',
+  'Chưa chọn tài khoản nhận tiền.',
+  'Thiếu chứng từ: Giấy nhận nợ.',
+]);
+
+SdNotifyService.warning('Dư nợ tại Vietcombank đã dùng 460 / 500 tỷ VND.', {
+  title: 'Hạn mức sắp hết',
+  actionLabel: 'Xem hạn mức',
+  onAction: function () { location.href = 'han-muc.html'; },
+});
+
+// html: true chỉ cho markup tin cậy; mặc định render dạng text
+SdNotifyService.success('Đã gửi duyệt &lt;b&gt;3&lt;/b&gt; hồ sơ Kế hoạch Dòng tiền tháng 10.', { html: true });</pre>
+              </div>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Phương thức</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Phương thức</th><th>Tham số</th><th>Trả về</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>success(msg, opt?)</td><td>msg: string</td><td>id</td><td>Hiện ngay, tự tắt sau 3 giây</td></tr>
+                  <tr><td>info(msg, opt?)</td><td>msg: string</td><td>id</td><td>Hiện ngay, tự tắt sau 3 giây</td></tr>
+                  <tr><td>warning(msg | msg[], opt?)</td><td>string hoặc mảng</td><td>id</td><td>Gom trong 500 ms thành một toast, tự tắt sau 5 giây</td></tr>
+                  <tr><td>error(msg | msg[], opt?)</td><td>string hoặc mảng</td><td>id</td><td>Gom trong 500 ms thành một toast, tự tắt sau 5 giây</td></tr>
+                  <tr><td>remove(id)</td><td>id do các hàm trên trả về</td><td>void</td><td>Đóng một toast</td></tr>
+                  <tr><td>clearByType(type)</td><td>success | info | warning | error</td><td>void</td><td>Đóng mọi toast của một loại</td></tr>
+                  <tr><td>clearAll()</td><td>-</td><td>void</td><td>Đóng hết</td></tr>
+                </tbody>
+              </table>
+              <p class="fs-12 text-black400 mt-8 mb-0">Tối đa 5 toast, mới nhất ở trên; quá 5 thì bỏ toast cũ nhất. Rê chuột vào toast thì dừng đếm giờ.</p>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Tuỳ chọn (opt)</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Tuỳ chọn</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>title</td><td>string</td><td>Thành công / Thông tin / Cảnh báo / Lỗi</td><td>Tiêu đề; lỗi/cảnh báo nhiều dòng tự thêm số lượng "Lỗi (4)"</td></tr>
+                  <tr><td>duration</td><td>number (ms)</td><td>3000 · 5000</td><td>Thời gian tự tắt; 0 = không tự tắt</td></tr>
+                  <tr><td>actionLabel</td><td>string</td><td>-</td><td>Nhãn nút hành động (nền nhạt cùng màu loại toast)</td></tr>
+                  <tr><td>onAction</td><td>function</td><td>-</td><td>Gọi khi bấm nút hành động; toast không tự đóng</td></tr>
+                  <tr><td>html</td><td>boolean</td><td>false</td><td>Render thông điệp dạng HTML — chỉ cho markup tin cậy</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Hướng dẫn Dev - SdConfirmService">
+          <div class="ds-guide">
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">JavaScript</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">const value = await SdConfirmService.withInput('Vui lòng nhập lý do:', {
+  title: 'Nhập thông tin', yesTitle: 'Xác nhận', noTitle: 'Bỏ qua',
+  required: true, maxlength: 255, defaultValue: ''
+});</pre>
+              </div>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Phương thức</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Phương thức</th><th>Tham số</th><th>Trả về</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>confirm(message, options)</td><td>message: string, options</td><td>Promise&lt;void&gt;</td><td>Xác nhận đơn giản; chỉ phương thức này có tuỳ chọn width</td></tr>
+                  <tr><td>withInput(message, options)</td><td>message: string, options</td><td>Promise&lt;string&gt;</td><td>Nhập text trong dialog</td></tr>
+                  <tr><td>withRadio(message, options)</td><td>message: string, options</td><td>Promise&lt;string&gt;</td><td>Chọn 1 trong nhiều item; trả về value của mục được chọn</td></tr>
+                  <tr><td>withDate(message, options)</td><td>message: string, options</td><td>Promise&lt;string&gt;</td><td>Chọn/nhập ngày trong dialog</td></tr>
+                </tbody>
+              </table>
+              <p class="fs-12 text-black400 mt-8 mb-0">Đồng ý = resolve; hủy (X, backdrop, nút trái) = reject - giữ đúng ngữ nghĩa Portal.</p>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Tuỳ chọn dùng chung</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Tuỳ chọn</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>title</td><td>string</td><td>-</td><td>Tiêu đề dialog</td></tr>
+                  <tr><td>yesTitle</td><td>string</td><td>Đồng ý</td><td>Nhãn nút xác nhận</td></tr>
+                  <tr><td>noTitle</td><td>string</td><td>Bỏ qua</td><td>Nhãn nút bỏ qua - kit chỉ dùng Bỏ qua / Thoát / Quay lại</td></tr>
+                  <tr><td>yesButtonColor</td><td>primary, secondary, success, error, warning, info</td><td>primary</td><td>Màu nút xác nhận</td></tr>
+                  <tr><td>noButtonColor</td><td>primary, secondary, success, error, warning, info</td><td>secondary</td><td>Màu nút bỏ qua</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Tuỳ chọn chỉ có ở confirm</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Tuỳ chọn</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>width</td><td>CSS width</td><td>400px</td><td>Chỉ .confirm() hỗ trợ; 3 phương thức kia không có tuỳ chọn này</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Tuỳ chọn riêng của withInput</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Tuỳ chọn</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>maxlength</td><td>number</td><td>-</td><td>Giới hạn ký tự nhập</td></tr>
+                  <tr><td>defaultValue</td><td>string</td><td>''</td><td>Giá trị khởi tạo</td></tr>
+                  <tr><td>required</td><td>boolean</td><td>false</td><td>Nút Đồng ý bị vô hiệu tới khi có giá trị</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Tuỳ chọn riêng của withRadio</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Tuỳ chọn</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>items</td><td>array</td><td>-</td><td>Danh sách item nguồn</td></tr>
+                  <tr><td>valueField</td><td>string</td><td>value</td><td>Field lấy value của item</td></tr>
+                  <tr><td>displayField</td><td>string</td><td>label</td><td>Field hiển thị label của item</td></tr>
+                  <tr><td>display</td><td>column, row</td><td>column</td><td>Hướng xếp các radio</td></tr>
+                  <tr><td>defaultValue</td><td>string</td><td>-</td><td>Item được chọn sẵn</td></tr>
+                  <tr><td>required</td><td>boolean</td><td>false</td><td>Nút Đồng ý bị vô hiệu tới khi chọn</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Tuỳ chọn riêng của withDate</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Tuỳ chọn</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>placeholder</td><td>string</td><td>dd/MM/yyyy</td><td>Placeholder của ô ngày</td></tr>
+                  <tr><td>defaultValue</td><td>string</td><td>-</td><td>Ngày khởi tạo</td></tr>
+                  <tr><td>required</td><td>boolean</td><td>false</td><td>Nút Đồng ý bị vô hiệu tới khi có ngày</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Hướng dẫn Dev - SdLoadingService">
+          <div class="ds-guide">
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">JavaScript</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">SdLoadingService.start('#funding-plan-card');   // phần tử phải có position: relative
+try { await fetchSomething(); } finally { SdLoadingService.stop('#funding-plan-card'); }
+
+SdLoadingService.start();                    // phủ body
+const busy = SdLoadingService.isLoading();   // true
+SdLoadingService.stop();</pre>
+              </div>
+            </div>
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Phương thức</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Phương thức</th><th>Tham số</th><th>Trả về</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>start(selector = 'body')</td><td>CSS selector</td><td>-</td><td>Phủ lớp loading lên phần tử. Đã đang loading thì không làm gì — mỗi phần tử một lớp phủ</td></tr>
+                  <tr><td>stop(selector = 'body')</td><td>CSS selector</td><td>-</td><td>Gỡ lớp phủ khỏi phần tử đó</td></tr>
+                  <tr><td>isLoading(selector = 'body')</td><td>CSS selector</td><td>boolean</td><td>Phần tử có đang loading không</td></tr>
+                </tbody>
+              </table>
+              <p class="fs-12 text-black400 mt-8 mb-0">Service <strong>không</strong> tự đặt <code>position: relative</code> cho phần tử đích. Mọi lớp phủ dùng chung một id cố định.</p>
+            </div>
+          </div>
+        </sd-section>
+
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      showPanel(0);
+    }
+    initPreviewTabs();
+  })();
+
+  // ── SdNotifyService demos — thông điệp lấy nguyên từ catalog #c-notify ──
+  var NT_SAMPLE = {
+    success: ['Đã phê duyệt hồ sơ HS-2026-00125.'],
+    info: ['Kế hoạch Funding quý IV đã được đồng bộ từ hệ thống ngân hàng.'],
+    warning: ['Khoản vay KV-2026-0140 đến hạn trả gốc sau 3 ngày.'],
+    error: ['Không kết nối được cổng ngân hàng BIDV.', 'Tỷ giá USD/VND chưa được cập nhật cho ngày 08/10/2026.']
+  };
+  function demoNotify(type) {
+    var m = NT_SAMPLE[type];
+    SdNotifyService[type](m.length > 1 ? m : m[0]);
+  }
+
+  /* Toast mẫu trong khung demo: dựng bằng chính hàm vẽ của service
+     (`_build`), duration 0 để đứng yên — catalog cũng để toast mẫu không tự tắt. */
+  (function () {
+    var N = window.SdNotifyService;
+    if (!N || !N._build) return;
+    function put(boxId, type, title, msgs, opt) {
+      var box = document.getElementById(boxId);
+      if (!box) return null;
+      opt = opt || {}; opt.duration = 0;
+      var t = N._build('demo-' + boxId + '-' + type, type, title, msgs, opt);
+      box.appendChild(t);
+      return t;
+    }
+    put('nt-static-4', 'success', 'Thành công', ['Đã lưu nháp Kế hoạch Funding KH-2026-031.']);
+    put('nt-static-4', 'info', 'Thông tin', ['Hồ sơ đã được chuyển cho Kế toán trưởng phê duyệt.']);
+    put('nt-static-4', 'warning', 'Cảnh báo', ['Dư nợ tại BIDV đã đạt 92% hạn mức được cấp.']);
+    put('nt-static-4', 'error', 'Lỗi', ['Không thể giải ngân: hạn mức tín dụng còn lại không đủ.']);
+    var MULTI = ['Ngày giải ngân phải sau ngày ký hợp đồng.', 'Số tiền giải ngân vượt hạn mức còn lại 180 tỷ VND.',
+                 'Chưa chọn tài khoản nhận tiền.', 'Thiếu chứng từ: Giấy nhận nợ.'];
+    put('nt-static-multi', 'error', 'Lỗi (4)', MULTI);
+    var open = put('nt-static-multi-open', 'error', 'Lỗi (4)', MULTI);
+    if (open) open.querySelector('.toggle-more').click();
+    put('nt-static-action', 'warning', 'Hạn mức sắp hết', ['Dư nợ tại Vietcombank đã dùng 460 / 500 tỷ VND.'],
+        { title: 'Hạn mức sắp hết', actionLabel: 'Xem hạn mức', onAction: function () {} });
+    put('nt-static-html', 'success', 'Thành công', ['Đã gửi duyệt <b>3</b> hồ sơ Kế hoạch Dòng tiền tháng 10.'], { html: true });
+  })();
+
+  // ── SdConfirmService demos ─────────────────────────────
+  function showConfirmResult(text) {
+    var el = document.getElementById('confirm-result');
+    if (el) el.textContent = text;
+  }
+
+  function demoConfirm(kind) {
+    var promise;
+    if (kind === 'confirm') {
+      promise = SdConfirmService.confirm('Bạn có chắc chắn muốn áp dụng thay đổi mới nhất vào hệ thống không?', {
+        title: 'Xác nhận Cài đặt',
+        yesTitle: 'Đồng ý',
+        noTitle: 'Quay lại',
+        width: '400px'
+      });
+    } else if (kind === 'withInput') {
+      promise = SdConfirmService.withInput('Vui lòng nhập lý do thực hiện hành động:', {
+        title: 'Nhập thông tin',
+        yesTitle: 'Xác nhận',
+        noTitle: 'Bỏ qua',
+        required: true,
+        maxlength: 255,
+        defaultValue: ''
+      });
+    } else if (kind === 'withRadio') {
+      promise = SdConfirmService.withRadio('Vui lòng chọn quyền truy cập phù hợp:', {
+        title: 'Chọn quyền',
+        yesTitle: 'Áp dụng',
+        noTitle: 'Bỏ qua',
+        items: [
+          { id: '1', name: 'Hiển thị dữ liệu Vùng Cơ bản' },
+          { id: '2', name: 'Giới hạn danh sách nhân viên' },
+          { id: '3', name: 'Quản trị viên Cao Cấp' }
+        ],
+        valueField: 'id',
+        displayField: 'name',
+        display: 'column',
+        required: false
+      });
+    } else if (kind === 'withDate') {
+      promise = SdConfirmService.withDate('Vui lòng chọn ngày áp dụng:', {
+        title: 'Chọn ngày',
+        yesTitle: 'Xác nhận',
+        noTitle: 'Bỏ qua',
+        required: false,
+        placeholder: 'DD/MM/YYYY'
+      });
+    }
+    if (!promise) return;
+
+    showConfirmResult('Đang chờ người dùng chọn...');
+    promise.then(function (value) {
+      showConfirmResult('Đồng ý - kết quả: ' + (typeof value === 'string' ? value : '(void)'));
+    }).catch(function () {
+      showConfirmResult('Đã hủy');
+    });
+  }
+
+  // ── SdLoadingService demos ─────────────────────────────
+  function demoLoadingState() {
+    var el = document.getElementById('ld-state');
+    if (el) el.textContent = 'isLoading: ' + SdLoadingService.isLoading('#funding-plan-card');
+  }
+  function demoLoadingStart() {
+    SdLoadingService.start('#funding-plan-card');
+    demoLoadingState();
+  }
+  function demoLoadingStop() {
+    SdLoadingService.stop('#funding-plan-card');
+    demoLoadingState();
+  }
+  async function demoLoadingBody() {
+    SdLoadingService.start();
+    try { await new Promise(function (r) { setTimeout(r, 2000); }); }
+    finally { SdLoadingService.stop(); }
+  }
+</script>
+
+</body>
+</html>

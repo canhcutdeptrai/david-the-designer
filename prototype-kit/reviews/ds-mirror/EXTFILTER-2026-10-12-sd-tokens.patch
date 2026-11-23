@@ -1,0 +1,95 @@
+--- /tmp/sd-tokens.bak.ef	2026-10-12 10:43:29.027200500 +0000
++++ design-system/core/styles/sd-tokens.css	2026-10-12 10:47:42.153242016 +0000
+@@ -2000,6 +2000,26 @@
+ .sd-input-field-wrap ~ .sd-helper-text {
+   padding: 0 16px;
+ }
++/* Giãn chữ trong khung form — tìm ra khi đo external filter (2026-10-12):
++   bề ngang chữ "Mã hồ sơ" của kit hẹp hơn catalog 3px. Catalog
++   `.mat-mdc-form-field{letter-spacing:var(--mat-form-field-container-text-tracking,
++   var(--mat-sys-body-large-tracking))}` với `--mat-sys-body-large-tracking:
++   0.031rem` = 0.496px, kế thừa xuống ô nhập, placeholder, giá trị select, nhãn
++   nổi. Đo được ở #c-input · #c-textarea · #c-select · #c-date · #c-datetime ·
++   #c-chip · #c-input-number · #c-autocomplete · external filter của #c-table.
++   Dòng lỗi dưới khung: `mat-error` 0.4px (`body-small-tracking`).
++   Ba chỗ catalog đo ra `normal` nên trả về như cũ: ô lọc theo cột của sd-table,
++   sd-date-range, sd-query-bar. Kit trước để `normal` ở mọi nơi. */
++.sd-form-field { letter-spacing: 0.496px; }
++/* <input>/<textarea> KHÔNG kế thừa letter-spacing (trình duyệt đặt sẵn
++   `normal`); catalog có `.mat-mdc-input-element{letter-spacing:inherit}`. */
++.sd-form-field input,
++.sd-form-field textarea { letter-spacing: inherit; }
++.sd-form-field ~ .sd-error-text,
++.sd-input-field-wrap ~ .sd-error-text { letter-spacing: 0.4px; }
++sd-table .c-th-filter .sd-form-field,
++sd-date-range .sd-form-field,
++sd-query-bar .sd-form-field { letter-spacing: normal; }
+ 
+ /* --- Nút suffix/xoá/icon-lỗi dùng chung cho sd-date, sd-datetime,
+    sd-input-number (class đặt tên theo sd-date vì viết trước, các
+@@ -2160,16 +2180,44 @@
+   cursor: pointer;
+   caret-color: transparent;
+ }
++/* Mũi tên đuôi ô — rà soát external filter lần 2 (2026-10-12), đo ở cả
++   `#c-select` lẫn `#c-table external-filter`:
++     catalog `mat-icon.sd-suffix-icon` « keyboard_arrow_down », #757575, KHÔNG xoay
++     khi mở; `.sd-md … .mat-mdc-form-field-icon-suffix{padding:0 12px;gap:8px}`
++     + `.sd-suffix-icon{20px}`; `.sd-sm …{padding:0 8px;gap:4px}` + `{16px}`.
++   → md: icon 20px, cách mép phải 12px, cách chữ 12px; sm: 16px, 8px, 8px.
++   Bản trước của kit: « expand_more » 18px, cách mép phải 16px, cách chữ 4px,
++   xoay 180° khi mở (catalog không có rule xoay nào — đã gỡ theo Rule 18).
++   Ô kit có padding 15px + viền 1px = 16px, nên lùi bằng margin âm. */
+ sd-select .sd-select-arrow {
+-  font-size: 18px;
+-  color: var(--sd-black400);
+-  transition: transform 0.15s ease;
+-  margin-left: 4px;
++  flex-shrink: 0;
++  font-size: 20px;
++  width: 20px;
++  height: 20px;
++  line-height: 20px;
++  color: #757575;
++  margin: 0 -4px 0 12px;
+   user-select: none;
+ }
+-sd-select.sd-open .sd-select-arrow {
+-  transform: rotate(180deg);
++sd-select .sd-select-arrow:hover { color: #616161; }
++sd-select .sd-form-field.sd-sm .sd-select-arrow {
++  font-size: 16px;
++  width: 16px;
++  height: 16px;
++  line-height: 16px;
++  margin: 0 -8px 0 8px;
++}
++/* xs là cỡ riêng của kit (catalog không có) — giữ lề cũ: padding 11 + 1 = 12. */
++sd-select .sd-form-field.sd-xs .sd-select-arrow {
++  font-size: 16px;
++  width: 16px;
++  height: 16px;
++  line-height: 16px;
++  margin: 0 0 0 4px;
+ }
++/* Có icon lỗi đứng trước thì khe giữa hai icon là `gap` của catalog (8 / 4). */
++sd-select .sd-date-error-icon + .sd-select-arrow { margin-left: 8px; }
++sd-select .sd-form-field.sd-sm .sd-date-error-icon + .sd-select-arrow { margin-left: 4px; }
+ /* --- sd-input: các input bổ sung theo Core, rà soát 2026-10-10 ---
+    clearable (× xoá giá trị) và viewed="inline" (ô nhập không khung). */
+ /* Nút xoá của ô nhập — rà soát 2026-10-11 (lượt dựng nhóm 1).
+@@ -3031,6 +3079,14 @@
+    luật RIÊNG của bảng, không được đẩy lên token `--sd-input-height-sm` dùng chung
+    (đẩy lên là lệch mọi form khác). Rà soát 2026-10-12. */
+ sd-table .c-th-filter .sd-form-field { min-height: 36px; }
++/* Màu placeholder của MỌI ô lọc trong mục bảng — cả lọc theo cột lẫn external
++   filter (`.filter-bar` của kit). Catalog `#c-table` khai riêng
++   `.mdc-text-field__input::placeholder{color:rgba(0,0,0,.6)}` và
++   `--mat-select-placeholder-text-color:rgba(0,0,0,.6)`, đậm hơn mức .54 của
++   `#c-input` / `#c-select`. Đo điểm ảnh chữ "Mã hồ sơ" / "Ngân hàng" trên nền
++   #f8f9fa ra (99,100,100) = .6. Rà soát external filter lần 2, 2026-10-12. */
++sd-table .c-th-filter .sd-form-field .sd-input::placeholder,
++.filter-bar-grid .sd-form-field .sd-input::placeholder { color: rgba(0, 0, 0, .6); }
+ sd-table .c-header-title {
+   cursor: pointer;
+   user-select: none;

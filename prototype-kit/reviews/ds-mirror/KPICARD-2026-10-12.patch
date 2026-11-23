@@ -1,0 +1,132 @@
+--- /tmp/sdc.bak.kpi	2026-10-12 11:38:45.363734589 +0000
++++ design-system/sd-components/sd-components.js	2026-10-12 11:40:02.493009427 +0000
+@@ -14439,7 +14439,10 @@
+       var value = (raw === null || raw === '') ? '' : raw;
+       this.innerHTML = '<div class="kpi-card"' +
+           (key ? ' data-testid="work-center-kpi-' + escAttr(key) + '"' : '') + '>' +
+-          (icon ? '<span class="kpi-card__icon material-icons-outlined" aria-hidden="true">' + esc(icon) + '</span>' : '') +
++          /* Icon ĐẶC (`material-icons`) đúng catalog — QUYẾT ĐỊNH CỦA BUILDER
++             2026-10-12, ngoại lệ Rule 4 riêng cho bpm-kpi-card. Bản trước dùng
++             `material-icons-outlined`. */
++          (icon ? '<span class="kpi-card__icon material-icons" aria-hidden="true">' + esc(icon) + '</span>' : '') +
+           '<div class="kpi-card__body">' +
+             '<span class="kpi-card__label T12R">' + esc(this.getAttribute('label') || '') + '</span>' +
+             '<span class="kpi-card__value">' + esc(value) + '</span>' +
+--- /tmp/cmp.bak.kpi	2026-10-12 11:38:45.359926303 +0000
++++ design-system/core/styles/components.css	2026-10-12 11:38:45.384391829 +0000
+@@ -1530,8 +1530,13 @@
+   background: var(--surface-secondary);
+ }
+ 
+-/* KPI Card */
+-.kpi-card {
++/* KPI Card — mẫu HTML viết tay CŨ của kit ("KPI stat chip"), catalog không có.
++   Rà soát #c-kpi-card 2026-10-12: tên lớp `.kpi-card` TRÙNG với lớp bên trong
++   `bpm-kpi-card` (mirror catalog), và `flex-direction: column` ở đây rò sang làm
++   icon của bpm-kpi-card nhảy lên TRÊN nhãn (thẻ 104×112 thay vì 140×76).
++   Giữ lại cho trang cũ (build.md: không xoá class), nhưng loại trừ thẻ con của
++   bpm-kpi-card. Trang mới dùng `bpm-filter-scorecard` / `bpm-kpi-card`. */
++.kpi-card:not(bpm-kpi-card > .kpi-card) {
+   background: var(--surface-primary);
+   border: 1px solid var(--border-primary);
+   border-radius: var(--radius-lg);
+--- /tmp/sdt.bak.kpi	2026-10-12 11:38:45.361855341 +0000
++++ design-system/core/styles/sd-tokens.css	2026-10-12 11:38:45.388514445 +0000
+@@ -7799,7 +7799,8 @@
+    KHÔNG thuộc `@sd-angular/core` — component của **lib-bpm** (commit 68dfd6e).
+    Hàng thẻ chỉ là flex row `gap:16px`, catalog ghi rõ "không có component bọc".
+    ══════════════════════════════════════════════════════════ */
+-bpm-kpi-card { display: block; }
++/* Host KHÔNG khai display — catalog không có luật nào cho thẻ host (bản trước
++   kit tự thêm `display:block`; gỡ theo Rule 18, rà soát 2026-10-12). */
+ .kpi-card {
+   display: flex;
+   align-items: center;
+--- /tmp/wc.bak.kpi	2026-10-12 11:38:45.367396820 +0000
++++ design-system/preview/components/work-center.html	2026-10-12 11:40:34.274473071 +0000
+@@ -139,6 +139,19 @@
+             </div>
+ 
+             <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Attributes — bpm-kpi-card</p>
++              <table class="ds-guide-table">
++                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
++                <tbody>
++                  <tr><td>key</td><td>string</td><td>-</td><td>Sinh <code>data-testid="work-center-kpi-{key}"</code></td></tr>
++                  <tr><td>icon</td><td>tên Material Icon</td><td>-</td><td>Icon 24px màu primary, kiểu ĐẶC (<code>material-icons</code>) như catalog</td></tr>
++                  <tr><td>label</td><td>string</td><td>-</td><td>Nhãn 12px</td></tr>
++                  <tr><td>value</td><td>number</td><td>-</td><td>Con số 24px/600; <code>0</code> vẫn hiện</td></tr>
++                </tbody>
++              </table>
++            </div>
++
++            <div class="ds-guide-col ds-guide-col--full">
+               <p class="ds-guide-label">Attributes — bpm-filter-scorecard</p>
+               <table class="ds-guide-table">
+                 <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+--- /tmp/gc.bak.kpi	2026-10-12 11:38:45.365842898 +0000
++++ ai-instructions/generate-components.md	2026-10-12 11:40:13.317593783 +0000
+@@ -120,23 +120,25 @@
+ 
+ ---
+ 
+-## KPI stat chip (Browse page summary)
++## Thẻ số liệu / thẻ lọc phía trên bảng
+ 
+-Dùng `.kpi-card` cho các ô thống kê trạng thái phía trên bảng. Icon bên phải label dùng `filter_list`:
++Dùng **thẻ của catalog**, không viết HTML tay (Rule 0):
++
++- Bấm thẻ để lọc nhanh bảng → `bpm-filter-scorecard` (tối đa MỘT thẻ active, trang cha giữ).
++- Chỉ hiển thị số liệu, không bấm → `bpm-kpi-card`.
+ 
+ ```html
+-<div class="flex gap-3 mb-4">
+-  <div class="kpi-card">
+-    <div class="kpi-card-header">
+-      <span class="kpi-card-label">Chờ duyệt</span>
+-      <span class="material-icons-outlined mi-md text-muted">filter_list</span>
+-    </div>
+-    <div class="kpi-card-value">5</div>
+-  </div>
+-  <!-- thêm card... -->
++<div class="d-flex flex-wrap gap-16 mb-16">
++  <bpm-filter-scorecard key="soon" label="Gần đến hạn" value="7"></bpm-filter-scorecard>
++  <bpm-filter-scorecard key="overdue" label="Quá hạn" value="3" active></bpm-filter-scorecard>
++  <bpm-filter-scorecard key="done" label="Đã xử lý" value="125"></bpm-filter-scorecard>
+ </div>
+ ```
+ 
++Mẫu viết tay cũ "KPI stat chip" (`.kpi-card` + `.kpi-card-header/-label/-value`) **đã bỏ khỏi
++hướng dẫn 2026-10-12** — catalog không có. CSS cũ vẫn giữ để trang đã sinh từ trước không vỡ;
++**không dùng cho trang mới**. Ví dụ đầy đủ: `design-system/preview/components/work-center.html`.
++
+ ---
+ 
+ ## Patterns — Dùng cho page structure
+@@ -146,7 +148,7 @@
+ | Pattern | Dùng cho |
+ |---------|---------|
+ | `data-pattern="page-header"` | Header mọi trang (BREAD variants) |
+-| `data-pattern="filter-bar"` | "Outgrid filter" — filter bar **có header "Bộ lọc" + nút Tìm kiếm**. **Chỉ dùng khi Builder/PO yêu cầu tường minh**, không phải mặc định (xem mục "filter-bar" bên dưới) |
++| `data-pattern="filter-bar"` | "Outgrid filter" — filter bar **có header "Bộ lọc"** (nút "Tìm kiếm" đã gỡ 2026-10-12 — catalog không có). **Chỉ dùng khi Builder/PO yêu cầu tường minh**, không phải mặc định (xem mục "filter-bar" bên dưới) |
+ | `data-pattern="sidebar"` | Sidebar (auto-inject) |
+ | `.snackbar-batch` | **Bulk action bar** — fixed bottom-center, hiện khi sd-table có ≥1 dòng được chọn |
+ 
+@@ -185,12 +187,14 @@
+ 
+ > ⚠️ **Không phải mặc định cho Browse page.** Người dùng thường gọi 2 kiểu filter là: **"ingrid filter"** = ô filter dưới tiêu đề mỗi cột (mặc định, sd-table tự render — xem `sd-data.md`), và **"outgrid filter"** = filter-bar riêng phía trên bảng (2 variants dưới đây). **Mặc định luôn dùng ingrid filter. Chỉ thêm outgrid filter/filter-bar khi Builder/PO yêu cầu tường minh** bằng tên ("filter-bar", "outgrid filter", "thanh lọc riêng ngoài bảng") — không tự suy luận thêm chỉ vì bảng nhiều cột hoặc filter phức tạp. Xem preview `design-system/preview/patterns/browse-page-outgrid.html`.
+ 
+-**Variant A (có header + Tìm kiếm):** dùng `data-pattern="filter-bar"`.
++**Variant A (có header "Bộ lọc"):** dùng `data-pattern="filter-bar"`. Ô lọc viết như
++`externalFilters` của catalog: chỉ `placeholder` (= tên ô), không `label`, không `size`
++— pattern tự chuẩn hoá nếu lỡ viết `label`/`size`.
+ 
+ ```html
+ <div data-pattern="filter-bar" data-id="filter-main">
+-  <sd-input size="sm" label="Mã hoặc tên..." placeholder="Tìm kiếm"></sd-input>
+-  <sd-select size="sm" label="Trạng thái" items='[...]'></sd-select>
++  <sd-input placeholder="Mã hồ sơ"></sd-input>
++  <sd-select placeholder="Trạng thái" items='[...]'></sd-select>
+ </div>
+ ```
+ 

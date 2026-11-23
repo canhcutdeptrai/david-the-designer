@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-radio — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-radio"
+         data-subtitle="6 states &mdash; default, selected, disabled, error (1 cỡ duy nhất)"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <!-- ══ Mirror catalog #c-radio — 6 biến thể, cùng nội dung. sd-radio của
+             catalog LUÔN là một NHÓM (items + valueField/displayField). ══ -->
+        <sd-section title="Hàng ngang (mặc định)" subtitle="display='row', có nhãn + required — bấm để chọn">
+          <sd-radio label="Kỳ trả lãi" required valueField="code" displayField="name" value="MONTH" items='[{"code":"END","name":"Cuối kỳ"},{"code":"MONTH","name":"Hằng tháng"},{"code":"QUARTER","name":"Hằng quý"}]'></sd-radio>
+        </sd-section>
+        <sd-section title="Hàng dọc" subtitle="display='column'">
+          <sd-radio label="Loại hạn mức" display="column" valueField="code" displayField="name" value="SHORT" items='[{"code":"SHORT","name":"Hạn mức ngắn hạn"},{"code":"MID","name":"Hạn mức trung hạn"},{"code":"LONG","name":"Hạn mức dài hạn"}]'></sd-radio>
+        </sd-section>
+        <sd-section title="Disabled" subtitle="cả lựa chọn đang chọn và chưa chọn">
+          <sd-radio label="Kỳ trả lãi" disabled valueField="code" displayField="name" value="QUARTER" items='[{"code":"END","name":"Cuối kỳ"},{"code":"MONTH","name":"Hằng tháng"},{"code":"QUARTER","name":"Hằng quý"}]'></sd-radio>
+        </sd-section>
+        <sd-section title="Màu" subtitle="color: success · warning · error">
+          <div class="d-flex flex-column gap-16">
+            <sd-radio color="success" valueField="code" displayField="name" value="Y" items='[{"code":"Y","name":"Đồng ý"},{"code":"N","name":"Từ chối"}]'></sd-radio>
+            <sd-radio color="warning" valueField="code" displayField="name" value="Y" items='[{"code":"Y","name":"Đồng ý"},{"code":"N","name":"Từ chối"}]'></sd-radio>
+            <sd-radio color="error" valueField="code" displayField="name" value="Y" items='[{"code":"Y","name":"Đồng ý"},{"code":"N","name":"Từ chối"}]'></sd-radio>
+          </div>
+        </sd-section>
+        <sd-section title="Lỗi bắt buộc" subtitle="chưa chọn + touched → core.form.radio.required">
+          <sd-radio id="rd-cat-required" label="Ngân hàng giải ngân" required valueField="code" displayField="name" items='[{"code":"VCB","name":"Vietcombank"},{"code":"BIDV","name":"BIDV"},{"code":"TCB","name":"Techcombank"}]'></sd-radio>
+        </sd-section>
+        <sd-section title="Chế độ xem" subtitle="viewed: hiển thị displayField của mục đang chọn">
+          <sd-radio label="Kỳ trả lãi" viewed valueField="code" displayField="name" value="MONTH" items='[{"code":"END","name":"Cuối kỳ"},{"code":"MONTH","name":"Hằng tháng"},{"code":"QUARTER","name":"Hằng quý"}]'></sd-radio>
+        </sd-section>
+
+        <!-- ══ Nút radio ĐƠN (không có items) — chế độ RIÊNG của kit, catalog không
+             có. Giữ để tương thích ngược (Rule 18, ngoại lệ 3): 4 trang prototype,
+             sd-query-builder và SdConfirmService.withRadio đang dùng. Trang mới
+             dùng chế độ nhóm ở trên. ══ -->
+        <sd-section title="Nút đơn (kiểu cũ của kit) — States">
+          <p class="fs-12 text-black400 mb-12">Default / Selected</p>
+          <div class="flex gap-4 align-items-center flex-wrap mb-16">
+            <sd-radio name="state-demo-1" label="Chưa chọn"></sd-radio>
+            <sd-radio name="state-demo-2" label="Đã chọn" checked></sd-radio>
+          </div>
+
+          <p class="fs-12 text-black400 mb-12">Disabled</p>
+          <div class="flex gap-4 align-items-center flex-wrap mb-16">
+            <sd-radio name="state-demo-3" label="Disabled — chưa chọn" disabled></sd-radio>
+            <sd-radio name="state-demo-4" label="Disabled — đã chọn" checked disabled></sd-radio>
+          </div>
+
+          <p class="fs-12 text-black400 mb-12">Error</p>
+          <div class="flex flex-col gap-4">
+            <sd-radio name="state-demo-error" value="opt1" label="Chưa chọn phương án nào" error></sd-radio>
+            <p class="ds-guide-label" style="color: var(--sd-error); margin: 0;">Vui lòng chọn 1 phương án thanh toán</p>
+          </div>
+        </sd-section>
+
+        <sd-section title="Nút đơn (kiểu cũ của kit) — helper text">
+          <sd-radio name="helper-demo" label="Chuyển khoản ngân hàng" helperText="Xử lý trong 1-2 ngày làm việc"></sd-radio>
+        </sd-section>
+
+        <sd-section title="Nút đơn (kiểu cũ của kit) — nhóm tự ghép bằng name">
+          <p class="fs-12 text-black400 mb-12">Cùng thuộc tính <code>name</code> để đảm bảo chỉ chọn được 1 phương án. Khoảng cách giữa các item = group-gap token (16px)</p>
+          <div class="flex flex-col gap-4">
+            <sd-radio name="payment" value="card" label="Thẻ tín dụng / ghi nợ" checked></sd-radio>
+            <sd-radio name="payment" value="bank" label="Chuyển khoản ngân hàng"></sd-radio>
+            <sd-radio name="payment" value="ewallet" label="Ví điện tử" disabled></sd-radio>
+            <sd-radio name="payment" value="cod" label="Thanh toán khi nhận hàng"></sd-radio>
+          </div>
+        </sd-section>
+
+
+        <sd-section title="Chế độ NHÓM theo Core — rà soát 2026-10-10">
+          <p class="fs-12 text-black400 mb-12">
+            <code>sd-radio</code> của thư viện là <strong>một nhóm radio</strong>: nhận
+            <code>items</code> rồi tự dựng từng lựa chọn, <code>model</code> là
+            <strong>giá trị đang chọn</strong> chứ không phải boolean. Bản trước của kit là một
+            nút đơn lẻ — hai thứ khác hẳn nhau. Cách hoà: <strong>có <code>items</code> thì chạy
+            chế độ nhóm, không có thì giữ nguyên nút đơn cũ</strong>, nên 20 chỗ đang dùng nút
+            đơn không phải sửa.
+          </p>
+
+          <p class="fs-12 text-black400 mb-8"><code>items</code> · <code>display</code> · item có <code>disabled</code></p>
+          <div class="flex flex-col gap-4 mb-16">
+            <sd-radio label="Loại khách hàng" items='[{&quot;id&quot;:&quot;personal&quot;,&quot;name&quot;:&quot;Cá nhân&quot;},{&quot;id&quot;:&quot;business&quot;,&quot;name&quot;:&quot;Doanh nghiệp&quot;},{&quot;id&quot;:&quot;other&quot;,&quot;name&quot;:&quot;Khác&quot;,&quot;disabled&quot;:true}]' value="personal"></sd-radio>
+            <sd-radio label="Xếp dọc (display=&quot;column&quot;)" display="column" items='[{&quot;id&quot;:&quot;personal&quot;,&quot;name&quot;:&quot;Cá nhân&quot;},{&quot;id&quot;:&quot;business&quot;,&quot;name&quot;:&quot;Doanh nghiệp&quot;},{&quot;id&quot;:&quot;other&quot;,&quot;name&quot;:&quot;Khác&quot;,&quot;disabled&quot;:true}]' value="business"></sd-radio>
+          </div>
+
+          <p class="fs-12 text-black400 mb-8">
+            <code>valueField</code> / <code>displayField</code> đổi tên trường ·
+            <code>color</code> đổi màu chấm · <code>required</code> + <code>inlineError</code>
+          </p>
+          <div class="flex flex-col gap-4 mb-16">
+            <sd-radio label="Trường tuỳ biến" valueField="code" displayField="title" value="y"
+              items='[{&quot;code&quot;:&quot;x&quot;,&quot;title&quot;:&quot;Phương án A&quot;},{&quot;code&quot;:&quot;y&quot;,&quot;title&quot;:&quot;Phương án B&quot;}]'></sd-radio>
+            <sd-radio label="color=&quot;success&quot;" color="success" items='[{&quot;id&quot;:&quot;personal&quot;,&quot;name&quot;:&quot;Cá nhân&quot;},{&quot;id&quot;:&quot;business&quot;,&quot;name&quot;:&quot;Doanh nghiệp&quot;},{&quot;id&quot;:&quot;other&quot;,&quot;name&quot;:&quot;Khác&quot;,&quot;disabled&quot;:true}]' value="personal"></sd-radio>
+            <sd-radio label="inlineError" inlineError="Lựa chọn này không còn áp dụng" items='[{&quot;id&quot;:&quot;personal&quot;,&quot;name&quot;:&quot;Cá nhân&quot;},{&quot;id&quot;:&quot;business&quot;,&quot;name&quot;:&quot;Doanh nghiệp&quot;},{&quot;id&quot;:&quot;other&quot;,&quot;name&quot;:&quot;Khác&quot;,&quot;disabled&quot;:true}]' value="business"></sd-radio>
+          </div>
+
+          <p class="fs-12 text-black400 mb-8">
+            <code>viewed</code> — hiện chữ của lựa chọn đang chọn, chưa chọn gì thì "—";
+            <code>placeholder</code> hiện khi <code>items</code> rỗng.
+          </p>
+          <div class="flex flex-col gap-4">
+            <sd-radio label="viewed" viewed value="business" items='[{&quot;id&quot;:&quot;personal&quot;,&quot;name&quot;:&quot;Cá nhân&quot;},{&quot;id&quot;:&quot;business&quot;,&quot;name&quot;:&quot;Doanh nghiệp&quot;},{&quot;id&quot;:&quot;other&quot;,&quot;name&quot;:&quot;Khác&quot;,&quot;disabled&quot;:true}]'></sd-radio>
+            <sd-radio label="items rỗng" placeholder="Chưa có lựa chọn nào" items="[]"></sd-radio>
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Bắt buộc chọn đúng 1 trong số các lựa chọn loại trừ lẫn nhau</li>
+                  <li>Số lượng lựa chọn ít (2-5), cần hiển thị tất cả cùng lúc để so sánh</li>
+                  <li>Phương thức thanh toán, loại tài khoản, phương án xử lý</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Cho phép chọn nhiều lựa chọn cùng lúc — dùng Checkbox</li>
+                  <li>Danh sách lựa chọn dài (&gt;5 items) — dùng Select/Dropdown</li>
+                  <li>Bật/tắt một cài đặt duy nhất — dùng Switch/Toggle</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Radio Group 'Phương thức thanh toán' gồm 4 lựa chọn: Thẻ tín dụng, Chuyển khoản, Ví điện tử, COD. Mặc định chọn Thẻ tín dụng. Bắt buộc chọn 1, báo lỗi nếu bỏ trống khi Gửi."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-radio name="payment" value="card" label="Thẻ tín dụng / ghi nợ" checked&gt;&lt;/sd-radio&gt;
+&lt;sd-radio name="payment" value="bank" label="Chuyển khoản ngân hàng"&gt;&lt;/sd-radio&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>label</td><td>string</td><td>-</td><td>Label text bên phải control</td></tr>
+                  <tr><td>helperText</td><td>string</td><td>-</td><td>Text mô tả phụ bên dưới label</td></tr>
+                  <tr><td>checked</td><td>boolean</td><td>false</td><td>Trạng thái đã chọn</td></tr>
+                  <tr><td>disabled</td><td>boolean</td><td>false</td><td>Vô hiệu hóa</td></tr>
+                  <tr><td>error</td><td>boolean</td><td>false</td><td>Hiển thị viền đỏ — validation lỗi</td></tr>
+                  <tr><td>name</td><td>string</td><td>-</td><td>**Bắt buộc trùng nhau** giữa các sd-radio trong cùng 1 group</td></tr>
+                  <tr><td>value</td><td>string</td><td>-</td><td>Giá trị của lựa chọn trong group</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Events</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Event</th><th>detail</th><th>Khi nào fire</th></tr></thead>
+                <tbody>
+                  <tr><td>sd-change</td><td>{ checked: boolean, value: string }</td><td>Khi user click để chọn radio này</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      showPanel(0);
+    }
+    initPreviewTabs();
+  })();
+
+  // Khối catalog: nhóm bắt buộc hiện lỗi như đã chạm
+  (function () {
+    var r = document.getElementById('rd-cat-required');
+    if (r) { r._touched = true; r._render(); r._bind(); }
+  })();
+</script>
+
+</body>
+</html>

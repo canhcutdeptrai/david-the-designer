@@ -1,0 +1,2455 @@
+# STEPPER-22.3.1 2026-10-14 — sd-stepper/sd-step viết lại theo @sdcorejs/angular 22.3.1 + @angular/material 22.1.5 (DOM/CSS/logic MatStepper thật), preview dựng lại 9 ví dụ của trang tài liệu 3.1
+# Quyết định Builder: 'Cập nhật phần Stepper theo Core UI này https://sdcorejs.github.io/sdcorejs-angular/3.1/v/22.3.1/components/stepper/examples'
+# 7 file: sd-components.js, sd-tokens.css, preview/components/stepper.html, sd-layout.md, CHANGELOG, known-gaps, lessons (công cụ so sánh nằm ở reviews/ds-mirror/stepper-22.3.1/, không trong bản vá)
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/STEPPER-22.3.1-2026-10-14.patch
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-13 17:29:12.726520171 +0000
++++ b/CHANGELOG.md	2026-10-13 18:08:40.606832509 +0000
+@@ -8,6 +8,22 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `sd-stepper` theo Core UI `@sdcorejs/angular` 22.3.1 (Builder 2026-10-14)
++
++Builder: *„Cập nhật phần Stepper theo Core UI này https://sdcorejs.github.io/sdcorejs-angular/3.1/v/22.3.1/components/stepper/examples“*.
++
++- Mốc chuẩn của RIÊNG stepper đổi sang gói npm 22.3.1 + `@angular/material` 22.1.5. `sd-stepper` / `sd-step` viết lại:
++  DOM, class, aria, CSS và logic là MatStepper / CdkStepper thật (header 72px, vòng tròn 32px, bước đang chọn nền đặc,
++  bước xong nền `-light` + dấu tích, nhãn bước chọn màu + 600, dọc mở nội dung dưới bước, bàn phím như CDK).
++  Đối chiếu với trang demo tài liệu 3.1 dựng lại thật qua 8 kịch bản thao tác: 0 khác biệt ngoài các dòng known-gaps.
++- API thêm lại theo 22.3.1: `autoId`, `disableRipple`, `goTo(index)`; `sd-step` thêm `invalid` (≙ `stepControl.invalid`);
++  `sd-selection-change` mang đủ `{selectedIndex, previouslySelectedIndex, previousIndex, selectedStep, previouslySelectedStep}`.
++  `completed` / `state="completed"` giữ làm bí danh. `state="error"` vẫn không hiện gì (thư viện không bật `showError`).
++- `:root` thêm `--sd-{primary…error}-contrast: #ffffff`. Trang `preview/components/stepper.html` dựng lại đúng 9 ví dụ của
++  trang tài liệu (cơ bản, dọc, linear wizard có kiểm tra form, optional, error, vị trí nhãn, bảng màu, điều khiển từ
++  ngoài, editable=false); hai tab hướng dẫn cập nhật API. Docs `sd-layout.md`.
++- Bản vá: `reviews/ds-mirror/STEPPER-22.3.1-2026-10-14.patch`; công cụ so sánh: `reviews/ds-mirror/stepper-22.3.1/`.
++
+ ### Fixed — bảng trong section thiếu lề dưới; ô nhập trong dòng bảng lệch nút × (Builder 2026-10-14)
+ 
+ Builder: *„1. với table trong section thì không có padding bottom · 2. Với table khi Thêm dòng thì icon và các field
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-13 17:29:12.727438336 +0000
++++ b/_memory/known-gaps.md	2026-10-13 18:08:21.224423179 +0000
+@@ -19,14 +19,36 @@
+ | 2026-10-11 | `sd-table` — đường kẻ dòng | Catalog `#c-table` **bỏ hẳn** `border-bottom` của ô trong dòng dữ liệu (`tr.c-row td { border-bottom-width: 0 }`), phân tách dòng chỉ bằng nền hover và nền dòng đang chọn. Kit đã làm theo. **Builder nên xem lại:** bảng back-office dày đặc mất đường kẻ ngang thì dò theo hàng khó hơn, mà Data Density là một trong các nguyên tắc thiết kế của OMEU | Đã mirror đúng catalog theo yêu cầu "mọi thứ giống catalog". Muốn trả lại đường kẻ thì bỏ rule `sd-table tr.c-row .c-td { border-bottom-width: 0 }` trong `sd-tokens.css` — một dòng |
+ | 2026-10-11 | `sd-button` `color="secondary"` | Catalog cho `secondary` màu **#000 đen tuyền**, trùng hệt `black`; kit trước đây dùng `--sd-secondary` (#212121). Kéo theo: nút `fill secondary` nay **đen tuyền**, và nút `secondary` lúc `disabled` **vẫn giữ nền/chữ đen** (chuỗi `!important` của catalog thắng rule disabled). **Builder nên xem lại:** nút đen tuyền khá nặng trong giao diện back-office, và `secondary` disabled nhìn không giống đang bị khoá | Đã mirror đúng catalog theo yêu cầu "mọi thứ giống catalog". Muốn trả lại: đổi `#000` thành `var(--sd-secondary)` ở bốn rule `.c-{fill,light,outline,link}.mat-secondary` trong `sd-tokens.css` |
+ | 2026-10-11 | Ô nhập — viền khi hover / focus / lỗi | Catalog ghim màu viền ô nhập ở **mọi trạng thái** bằng `!important` (`.mat-mdc-notch-piece.mdc-notched-outline__leading{border-color:var(--sd-black200)!important}`), nên hover không đổi màu, focus chỉ **dày lên 2px** chứ không chuyển nâu, và **ô lỗi vẫn giữ viền xám** — chỉ `hideInlineError` mới cho viền đỏ. Kit đã làm theo. **Builder nên xem lại:** bản cũ của kit (hover xám đậm, focus nâu + quầng, lỗi viền đỏ) dễ thấy hơn nhiều khi điền form dài | Đã mirror đúng catalog theo yêu cầu "mọi thứ giống catalog". Từ 2026-10-13 mọi `sd-*` dùng DOM Material: luật nằm ở các khối `catalog #c-…` (`.mat-mdc-notch-piece… {border-color:var(--sd-black200)!important}`) trong `sd-tokens.css` — muốn trả lại thì sửa ở đó. Ba rule `.sd-form-field:hover` / `:focus-within` / `.sd-error` nay chỉ còn áp cho markup viết tay |
+-| 2026-10-11 | `sd-stepper` — nhãn bước đang làm | Catalog **có** rule tô nhãn bước đang làm màu brand + 600, nhưng rule `.mat-step-label-active` đứng trước lại nhiều class hơn nên luôn thắng → nhãn bước đang làm KHÔNG khác các bước khác. Kit chép lại đúng tương quan điểm đó. **Builder nên xem lại:** bước đang làm giờ chỉ phân biệt bằng vòng tròn (số, nền đặc), nhãn thì giống hệt bước khác | Đây là hành vi THẬT của catalog (nhiều khả năng là lỗi thứ tự rule của thư viện). Muốn trả lại: nâng điểm rule `sd-stepper .sd-stepper__label--selected` |
++| 2026-10-11 | **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]** `sd-stepper` — nhãn bước đang làm | Catalog **có** rule tô nhãn bước đang làm màu brand + 600, nhưng rule `.mat-step-label-active` đứng trước lại nhiều class hơn nên luôn thắng → nhãn bước đang làm KHÔNG khác các bước khác. Kit chép lại đúng tương quan điểm đó. **Builder nên xem lại:** bước đang làm giờ chỉ phân biệt bằng vòng tròn (số, nền đặc), nhãn thì giống hệt bước khác | Đây là hành vi THẬT của catalog (nhiều khả năng là lỗi thứ tự rule của thư viện). Muốn trả lại: nâng điểm rule `sd-stepper .sd-stepper__label--selected` |
+ | 2026-10-08 | `sd-table` — paginator | Ô chọn số dòng/trang là `<select>` thuần, Core dùng paginator có panel riêng. Sửa ở cấp DS là mọi bảng hết lệch cùng lúc | Chạm vào `sd-table`, cần một đợt riêng |
+ | 2026-10-08 | `prototypes/**` | Còn khoảng 60 `<select>` thuần chưa đổi sang `sd-select` | Rải rác nhiều trang, nên gom một đợt |
+ | 2026-09 | `filter-bar` | Không tự nối vào `sd-table`, phải viết tay JS ở từng trang | Có chủ ý cho tới khi chốt API |
+ | 2026-09 | Pagination | Còn là trang trí, chưa phân trang thật | Có chủ ý ở mức prototype |
+-| 2026-10-10 | Token màu | Thiếu bộ `--sd-*-contrast` (màu chữ hợp lệ trên nền từng màu). Hệ quả thấy được: chip `warning` của `sd-stepper` dùng chữ trắng trên nền vàng ≈ **2.4:1**, dưới ngưỡng WCAG AA 4.5:1 | Chạm vào bảng token gốc, ảnh hưởng mọi component dùng màu — cần một đợt riêng và phải đối chiếu lại giá trị thật của theme `portal-fins` |
++| 2026-10-10 | Token màu | **[2026-10-14: đã thêm `--sd-{primary…error}-contrast: #ffffff` vào `:root` vì stepper 22.3.1 đọc chúng — giá trị = theme mặc định của thư viện; vấn đề tương phản của `warning` vẫn còn]** Thiếu bộ `--sd-*-contrast` (màu chữ hợp lệ trên nền từng màu). Hệ quả thấy được: chip `warning` của `sd-stepper` dùng chữ trắng trên nền vàng ≈ **2.4:1**, dưới ngưỡng WCAG AA 4.5:1 | Chạm vào bảng token gốc, ảnh hưởng mọi component dùng màu — cần một đợt riêng và phải đối chiếu lại giá trị thật của theme `portal-fins` |
+ | 2026-10-11 | Catalog | **12 mục catalog kit chưa dựng** — nhóm A (dựng được đầy đủ) đã đóng hết; còn B/C/D. Dòng cũ ghi "25 mục" là của lượt trước, giữ nguyên phần diễn giải bên dưới để hiểu lịch sử: **25 mục catalog kit chưa dựng** (2026-10-11 đã dựng **7**: `sd-label`, `sd-view`, `sd-inline-text`, `sd-autocomplete`, `sd-date-range`, `sd-tree`, `sd-quick-action` — **hết nhóm "đáng làm trước cho back-office"**). Trước đó là **32 mục** (rà soát lại cả 63 mục: kit dựng 27, thêm 4 mục catalog xếp là directive/service mà kit có tương đương). Nhóm đáng làm trước đã xong hết; 25 mục còn lại là soạn thảo/chart/dựng form động/hạ tầng | Là việc dựng mới, không phải vá lệch — chờ Builder xếp thứ tự ưu tiên. Danh sách đầy đủ theo nhóm ở `reviews/ds-mirror/CORE-CATALOG-GAP.md` (mục cập nhật 2026-10-11) |
+ 
++## `sd-stepper` — theo @sdcorejs/angular 22.3.1 (2026-10-14, QUYẾT ĐỊNH CỦA BUILDER)
++
++Builder: *„Cập nhật phần Stepper theo Core UI này https://sdcorejs.github.io/sdcorejs-angular/3.1/v/22.3.1/components/stepper/examples“*
++→ mốc chuẩn của **riêng** stepper đổi từ catalog `@sd-angular/core` 19.0.10 sang gói npm `@sdcorejs/angular` 22.3.1 +
++`@angular/material` 22.1.5. Trang tài liệu là SPA nên đối chiếu bằng cách dựng lại thật trang demo
++(`showcase/…/stepper-demo.component.*`, nhánh `release/angular-3.1`) trong một app Angular 22 rồi so từng node với
++kit qua 8 kịch bản thao tác — **0 khác biệt** ngoài các dòng dưới. Mọi dòng stepper cũ (catalog 19.0.10) trong file này
++đã đánh dấu `[ĐÃ THAY THẾ 2026-10-14]`.
++
++| Chỗ | Thư viện 22.3.1 | Kit | Vì sao |
++|---|---|---|---|
++| `stepControl` | Input nhận `FormGroup`; completed = đã ghé && `valid` | boolean `invalid` trên `sd-step` (≙ `stepControl.invalid`) | Rule 18-2: object không truyền được qua HTML |
++| `completed` / `state="completed"` | không có | ép bước "đã xong" | Rule 18-3: bí danh cũ, trang đã tạo đang dùng |
++| Nội dung bước | dựng lần đầu khi bước được chọn (lazy `matStepContent`) | dựng sẵn, khung chưa chọn vẫn ẩn → `.mat-vertical-content` của bước dọc chưa ghé cao bằng nội dung (thư viện: rỗng 24px) | Nội dung là HTML trang viết sẵn; chuyển node để giữ listener |
++| Thẻ `<sd-step>` | không còn trong DOM (chỉ là template) | nằm lại trong host, `display:none` | Trang còn đọc/ghi attribute |
++| Ripple header | `MatRipple` chạy hiệu ứng | khối `.mat-step-header-ripple` có, không chạy hiệu ứng | Không mirror MatRipple |
++| Token `--mat-sys-*` | biến của `mat.theme` (azure) trên `html` | thay bằng giá trị thật ngay trong rule | Không để biến hệ thống Material tràn vào nội dung khác của kit |
++| `--sd-border` / `--sd-disabled-*` | theme mặc định 22.3.1 (`#c4c6d0`…) | dùng làm fallback (theme portal-fins của kit chưa có) | Thiếu token |
++| Bảng màu | theme mặc định 22.3.1 (`#005cbb`…) | bảng `--sd-*` của kit (portal-fins) | Màu thương hiệu là của kit; harness so sánh tiêm bảng kit vào trang thật |
++| `state="error"` / `errorMessage` | nhận nhưng không vẽ gì (không bật `showError`) | y vậy | Hành vi thật — trang tài liệu ghi "hiện X đỏ" nhưng chính nó cũng không hiện |
++| Nút trong ví dụ | sd-button 22.3.1 (dạng pill) | `sd-button` của kit | Nút là nội dung trang, không thuộc stepper |
++
+ ## `sd-table` trong `sd-section` — khung riêng (2026-10-14, QUYẾT ĐỊNH CỦA BUILDER)
+ 
+ Builder: *„table khi đặt ở ngoài (như trang danh sách) thì bình thường, còn nếu table đặt trong section thì để padding
+@@ -902,7 +924,7 @@
+ | Bí danh `slot="header-left/right"`, `slot="footer"` | không có | vẫn nhận; `slot="footer"` được căn phải sẵn | Ngoại lệ 3 — 3 trang prototype đang dùng |
+ | `.mb-4` / `.mb-12` trong `.side-drawer-body-custom` | 4px / 12px | thu hẹp phạm vi vào lớp đó | Thang `--space-*` của kit: `.mb-4` toàn cục = 16px |
+ 
+-## `sd-stepper` — đo lại `#c-stepper` 2026-10-12 (font catalog)
++## `sd-stepper` — đo lại `#c-stepper` 2026-10-12 (font catalog) **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]**
+ 
+ | Chỗ | Catalog | Kit | Vì sao |
+ |---|---|---|---|
+@@ -1191,7 +1213,7 @@
+ | `sd-select`/`sd-radio` `valueField`/`displayField` | mặc định **rỗng** | rỗng, nhưng dự phòng `'id'`/`'name'` khi item là OBJECT | Rỗng hoàn toàn thì 61 trang đang truyền object phải khai thêm 2 attribute mỗi chỗ. Nhánh quan trọng — **mảng chuỗi/số thuần: item chính là value và label** — nay đã mirror đúng (2026-10-10) |
+ | `sdReadStateChange` (`sd-select`, `sd-table`) | output báo trạng thái một lượt GỌI API | không mirror | **KHÔNG PHẢI lỗ hổng so với catalog** — rà lại 2026-10-11: chuỗi `sdReadStateChange` xuất hiện **0 lần** trong Core UI Catalog. Đây là input của gói npm `@sdcorejs/angular`, mà npm đã thôi làm mốc từ 2026-10-10. Giữ dòng này để khỏi ai lại đi tìm |
+ | `sdFocusForceBlur` | bật theo `EventEmitter.observed` — "có ai đang nghe output không" | bật tường minh bằng attribute/property `focusForceBlur` | DOM không hỏi được một `CustomEvent` đã có listener hay chưa. Hành vi SAU KHI bật thì giống hệt: blur rồi mới bắn (2026-10-10) |
+-| `sd-stepper` đường nối | Khai biến màu đường nối active nhưng **không rule nào dùng** | Để xám ở mọi màu | Tô theo tiến độ là kit tự thêm, đã bỏ |
++| **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]** `sd-stepper` đường nối | Khai biến màu đường nối active nhưng **không rule nào dùng** | Để xám ở mọi màu | Tô theo tiến độ là kit tự thêm, đã bỏ |
+ | `sd-badge` class `pointer` *(2026-10-13: kit cũng bỏ role/tabindex — xem mục sd-history)* | Gắn class cho badge bấm được nhưng **không khai CSS nào cho nó** | Gắn class, không đổi con trỏ | Đã grep cả bundle 22.2.12, không rule nào |
+ | `sd-badge` description | `--sd-text-secondary` | `--sd-black400` | Token đó là cấp theme, gói npm không ship |
+ | `sd-button` bo góc | SCSS **không khai** `border-radius`; thừa hưởng theme Material | `--sd-border-radius` (4px) | **Đã xác nhận 2026-10-10:** `src/theme.scss` của portal đặt `--mat-button-{filled,outlined,text}-container-shape: 4px`. Kit **khớp bản thật**, không còn là lệch |
+@@ -1224,7 +1246,7 @@
+ | Ô tìm kiếm trong panel `sd-select` — icon | Catalog dùng `<mat-icon class="material-icons">` (filled) | `<span class="material-icons-outlined">` | Rule 4 của `AGENTS.md` cấm `material-icons` filled. Số đo và màu (#dadada, 24px) thì giữ đúng catalog (2026-10-11) |
+ | Ô tìm kiếm `sd-select` — placeholder và lúc đóng panel | Markup catalog KHÔNG có placeholder; không có bằng chứng về việc giữ hay xoá từ khoá khi đóng | Ô để trống (chỉ có `aria-label`); **đóng panel thì xoá từ khoá** | Không đoán placeholder. Xoá từ khoá khi đóng là lựa chọn của kit để lần mở sau không còn bộ lọc ẩn (2026-10-11) |
+ | `showSelectAll` (sd-select) | Catalog 19.0.10 **không có** input này | Kit giữ, nhãn "Tất cả" | Tính năng riêng của kit từ trước; 2026-10-11 phát hiện chuỗi nhãn chưa bao giờ được khai nên render ra RỖNG — đã bổ sung |
+-| `sd-stepper` `stepControl` | Input nhận `FormGroup` | Thay bằng `state="completed"` | Reactive Forms không mirror được sang Web Component |
++| **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]** `sd-stepper` `stepControl` | Input nhận `FormGroup` | Thay bằng `state="completed"` | Reactive Forms không mirror được sang Web Component |
+ | **Lịch dùng locale enUS** (`sd-date`, `sd-datetime`, `sd-chip-calendar`, `sd-date-range`) | Catalog ghi rõ cuối mục `#c-date-range`: *"Lịch dùng locale enUS (component tự provide), nên tiêu đề tháng và thứ bằng tiếng Anh như app thật"*. Markup `<th>` của **cả ba** mục lịch là `Sunday S · Monday M · …` → tuần bắt đầu **Chủ nhật** | Kit dùng tiếng Việt (`Tháng 10, 2026`) và tuần bắt đầu **Thứ hai** (`T2…CN`) ở cả bốn component | **ĐÃ QUYẾT 2026-10-12 → đổi theo catalog (en-US, tuần bắt đầu Chủ nhật).** ~~CHỜ BUILDER QUYẾT.~~ Đổi sang enUS là đổi hành vi nhìn thấy được của ba component đã dựng, cho hệ back-office mà người dùng là nhân viên vận hành người Việt. AGENTS.md: "hai nguồn mâu thuẫn mà không quyết được thì hỏi Builder". `sd-date-range` dựng mới cũng theo bản tiếng Việt để ba lịch không khác nhau (2026-10-11) |
+ | `[addable]` + `(sdAdd)` (sd-autocomplete) | Cho phép thêm mục mới ngay trong panel gợi ý | **Không dựng** | Catalog chỉ nêu tên trong bảng API; không markup, không CSS, không ví dụ. Dựng là đoán (2026-10-11) |
+ | `sdItemDef` / `sdViewDef` (sd-autocomplete) · `[form]` (sd-autocomplete, sd-date-range) | `ng-template` tuỳ biến dòng gợi ý / mặt xem; `FormGroup` của Reactive Forms | **Không dựng** | Cơ chế template + form của Angular, không mirror được sang Web Component (2026-10-11) |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-13 17:29:12.727799914 +0000
++++ b/_memory/lessons.md	2026-10-13 18:08:40.597545493 +0000
+@@ -13,6 +13,23 @@
+ - Nhắc Worker rằng `AGENTS.md` ở root là nguồn quy ước, nhưng nó **không chứa bối cảnh phần việc đang giao** — cái đó chỉ nằm trong brief.
+ - **Cấm đọc, ghi, xoá `_memory/session-handoff.md`.** File đó thuộc về phiên đang đối thoại với Builder; Worker ghi vào là mất bàn giao. Ràng buộc này cố ý không nằm trong skill `orchestration` vì skill đó phải dùng được ở repo khác — nên brief của kit này phải tự mang theo.
+ 
++## Đối chiếu theo trang tài liệu SPA: dựng lại trang demo thật, đừng đoán (stepper 22.3.1, 2026-10-14)
++
++- Trang `sdcorejs.github.io/sdcorejs-angular/<ver>/…/examples` là SPA — WebFetch chỉ ra metadata. Nguồn thật:
++  `git clone` repo tài liệu (nhánh `release/angular-3.1`, demo ở `showcase/src/app/pages/components/<tên>/`) +
++  `npm pack @sdcorejs/angular@<ver>`. gh API bị chặn nhưng `git clone https://…` vẫn chạy.
++- Dựng một app Angular tối thiểu nạp đúng file demo (`provideAnimations`, `provideSdIcon({defaultFontSet:'material-icons-outlined'})`,
++  `SD_CORE_CONFIGURATION {language:'vi'}`, `sd-core.scss`) rồi build tĩnh. Angular CLI 22 đòi Node ≥ 22.22 → tải
++  `node-linux-x64` từ npm chạy thẳng, không cần nvm; TypeScript phải đúng dải CLI hỗ trợ (6.0).
++- So DOM + style tính toán node-theo-node giữa trang thật và trang kit, **sau cùng một chuỗi thao tác** (bấm, gõ,
++  bàn phím, chuột). Tiêm bảng màu kit vào trang thật để chỉ còn khác biệt cấu trúc.
++- CSS emulated của Angular (`[_nghost-x]` / `[_ngcontent-x]`) chép sang kit bằng `:is(host, .sd-ng)` / `:not(.sd-ng)`:
++  giữ đúng độ ưu tiên (0,1,0) của attribute nên thứ tự thắng/thua giữa các rule y như trang thật.
++- Component chuyển nội dung trang vào khung riêng: dựng khung **một lần** cho mỗi bố cục, các lần render sau chỉ thay
++  header / lớp / `inert`. Dựng lại khung mỗi lần là mất focus giữa lúc người dùng đang gõ.
++- Lớp `cdk-focused cdk-{keyboard|mouse|program}-focused` và `aria-disabled` của header đổi theo NGUỒN focus và lịch sử
++  chọn bước (quirk của Angular) — phải mô phỏng FocusMonitor thì mới khớp, đừng "dọn" cho gọn.
++
+ ## Đối chiếu DS: tra đúng nguồn
+ 
+ **Nguồn chuẩn là portal `https://sdcorejs.github.io/portal-template/`, không phải npm.** Trên npm có `@sd-angular/core` trông rất giống nhưng là package khác và API khác. Lấy nhầm nguồn đã gây hai lỗi trong cùng một phiên: báo động nhầm rằng mirror "lệch mặc định", và thêm vào mirror một input mà thư viện thật không có. Quy tắc nằm ở `AGENTS.md`.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-layout.md b/design-system/components/sd-layout.md
+--- a/design-system/components/sd-layout.md	2026-10-13 17:29:12.676230877 +0000
++++ b/design-system/components/sd-layout.md	2026-10-13 18:07:51.002269051 +0000
+@@ -321,62 +321,47 @@
+ 
+ ## sd-stepper
+ 
+-Wizard nhiều bước - container bọc nhiều `sd-step` để chia quy trình có thứ tự thành từng bước kiểm soát được. Portal: `/pattern/stepper/*`.
++Wizard nhiều bước - container bọc nhiều `sd-step` để chia quy trình có thứ tự thành từng bước kiểm soát được.
++
++> **Mốc chuẩn (Builder 2026-10-14):** *„Cập nhật phần Stepper theo Core UI này https://sdcorejs.github.io/sdcorejs-angular/3.1/v/22.3.1/components/stepper/examples“* → RIÊNG stepper theo gói npm **`@sdcorejs/angular` 22.3.1** (`fesm2022/sdcorejs-angular-components-stepper.mjs`) chạy trên **`@angular/material` 22.1.5** — không còn theo catalog `@sd-angular/core` 19.0.10. Đã đối chiếu từng node DOM, class, aria và style tính toán với trang demo tài liệu 3.1 dựng lại thật (`showcase/src/app/pages/components/stepper/stepper-demo.component.*`, nhánh `release/angular-3.1`), qua 8 kịch bản thao tác (bấm header, linear, reset, điều khiển từ ngoài, bàn phím, chuột…). Trang preview `preview/components/stepper.html` dựng lại đúng 9 ví dụ của trang tài liệu.
+ 
+ | Attribute | Values | Default |
+ |-----------|--------|---------|
+-| `selectedIndex` | number | `0` |
++| `selectedIndex` | number (≙ `[(selectedIndex)]`; đặt attribute để nhảy bước — vẫn theo luật linear / editable) | `0` |
+ | `linear` | boolean | `false` |
+ | `orientation` | `horizontal`, `vertical` | `horizontal` |
+-| `labelPosition` | `end`, `bottom` | **`end`** |
+-| `headerPosition` | `top`, `bottom` | `top` |
+-| `color` | `primary` \| `secondary` \| `info` \| `success` \| `warning` \| `error` | `primary` |
++| `labelPosition` | `end`, `bottom` (chỉ horizontal) | **`end`** |
++| `headerPosition` | `top`, `bottom` (chỉ horizontal) | `top` |
+ | `animationDuration` | string - ví dụ `"0ms"`, `"500ms"` | **`500ms`** |
+-| ~~`autoId`~~ | đã gỡ 2026-10-12 (catalog không có) | - |
++| `disableRipple` | boolean — nhận cho khớp API, kit không chạy hiệu ứng ripple | `false` |
++| `color` | `primary` \| `secondary` \| `info` \| `success` \| `warning` \| `error` | `primary` |
++| `autoId` | string → `data-autoId` trên host | - |
+ 
+-> **Hình thức (rà soát 2026-10-11 theo Core UI Catalog `@sd-angular/core` 19.0.10):**
+-> một bước cao **40px, không bo góc**; vòng tròn **24px, KHÔNG viền**; icon trong vòng tròn **16px**.
+-> Bước **đã xong** và bước **đang làm** đều tô **nền đặc màu brand + ký hiệu trắng** — phân biệt nằm ở
+-> **ký hiệu**: đã xong hiện bút chì (`create`, vì `editable` mặc định true) hoặc dấu tích (`done`, khi
+-> `editable="false"`), đang làm hiện **số thứ tự**. Bước **chưa tới** nền `#e0e0e0` chữ `rgba(0,0,0,.54)`.
+-> Bước **lỗi** nền đỏ đặc + icon cảnh báo trắng.
++> **DOM = MatStepper thật:** `sd-stepper[style=--sd-stepper-*] > mat-stepper.sd-stepper.mat-stepper-{horizontal|vertical}[.mat-stepper-label-position-{end|bottom}].mat-stepper-animations-enabled`.
++> Ngang: `.mat-horizontal-stepper-wrapper > .mat-horizontal-stepper-header-container[role=tablist]` (các `mat-step-header[role=tab]` + `.mat-stepper-horizontal-line`) rồi `.mat-horizontal-content-container > div.mat-horizontal-stepper-content-{previous|current|next}[role=tabpanel]`.
++> Dọc: `.mat-vertical-stepper-wrapper > .mat-step` × n, mỗi bước = `mat-step-header[role=button]` + `.mat-vertical-content-container[.mat-stepper-vertical-line]` (bước cuối không có đường kẻ) `> .mat-vertical-stepper-content[role=region] > .mat-vertical-content` — nội dung mở NGAY DƯỚI bước đang chọn.
++> Header: `.mat-step-header-ripple` + `.mat-step-icon.mat-step-icon-state-{number|edit|done}[.mat-step-icon-selected] > .mat-step-icon-content` (icon `sd-icon` 18px hoặc số) + `.mat-step-label > .mat-step-text-label > span.sd-step__label > span.sd-step__text` (+ `.mat-step-optional` "Optional").
+ >
+-> **Token màu (rà soát 2026-10-11 lần 2):** catalog có **một** token cho mỗi
+-> trạng thái vòng tròn và nó là **màu NỀN**, còn ký hiệu bên trong viết cứng
+-> `#fff`: `--sd-stepper-active-bg` (đang làm) · `--sd-stepper-completed-color`
+-> (đã qua) · `--sd-stepper-error-color` (lỗi) · `--sd-stepper-pending-bg` +
+-> `--sd-stepper-pending-color` (chưa tới). Bản trước kit đẻ thêm
+-> `--sd-stepper-completed-bg` / `-active-contrast` / `-error-bg` /
+-> `-error-contrast` và dùng `--sd-stepper-completed-color` làm **màu chữ** —
+-> tức chiếm tên của catalog với nghĩa ngược lại. Đã trả về đúng nghĩa.
++> **Màu (`color`):** host ghi inline `--sd-stepper-active-color/-active-bg = var(--sd-{color})`, `--sd-stepper-active-contrast = var(--sd-{color}-contrast)`, `--sd-stepper-completed-bg = var(--sd-{color}-light)`, `--sd-stepper-completed-color = var(--sd-{color})`, `--sd-stepper-line-active-color`. Bước **đang chọn**: nền đặc màu + số/icon trắng, nhãn màu đó 600. Bước **đã xong**: nền `-light` + dấu tích màu đó. Bước **chưa tới**: nền `#1a1b1f` 8% + chữ 60%. Nhãn khác 14/500 `#1a1b1f`. Đường nối 1px `--sd-border` (`#c4c6d0`), luôn xám.
+ >
+-> Kit chỉ ghi bộ token này thành inline style khi trang có khai `color`; không
+-> khai thì để nguyên trong CSS để trang đè được bằng inline style.
+->
+-> **Nhãn bước (rà soát 2026-10-11):** catalog dựng
+-> `<span class="sd-step__label">` chứa `.sd-step__icon` (khi khai `icon`) rồi
+-> `<span class="sd-step__text">` — `inline-flex`, `gap: 4px`, icon 18px, chữ
+-> `white-space: nowrap`. Bản trước kit nhét `icon` **vào vòng tròn** làm mất số
+-> bước; nay vòng tròn giữ số, icon nằm cạnh chữ đúng catalog.
+-> **Nhãn: mọi bước bấm được đều `#1a1a1a` / 500** — catalog CÓ rule tô nhãn bước đang làm màu brand + 600
+-> nhưng rule `.mat-step-label-active` đứng trước lại nhiều class hơn nên luôn thắng; kit giữ đúng tương
+-> quan đó. Xem `_memory/known-gaps.md` nếu muốn lệch đi.
+-> **Đường nối luôn giữ màu xám** `rgba(0,0,0,.12)`, min-width 32px — có khai biến màu đường nối active
+-> nhưng không rule nào dùng tới, nên tô theo tiến độ là sai.
+-
+-Ba mặc định dễ nhầm, đều đã đối chiếu `stepper.component.ts` thật:
+-
+-- **`labelPosition` mặc định là `end`** (nhãn nằm cạnh vòng tròn), không phải `bottom`.
+-- **`animationDuration` mặc định `500ms`**, không phải `300ms`.
+-- **`sd-step.editable` mặc định `true`** — phải khai `editable="false"` mới chặn quay lại.
++> **Số đo (22.3.1, density 0):** header ngang cao **72px**, đệm `0 24px`, bo **8px**; vòng tròn **32×32**, cách nhãn 8px; đường nối `margin: 0 -16px`, `min-width: 16px`; khung nội dung `0 24px 16px`. `labelPosition="bottom"`: đệm header `24px`, nhãn dưới vòng tròn. Dọc: header đệm `24px`, nội dung thụt `36px`, đệm `0 24px 24px`. Nền stepper `#faf9fd` (surface của theme Material).
++
++Logic = CdkStepper 22.1:
++
++- Bước **completed** = đã ghé và rời đi (`interacted`) **và** không `invalid` — hoặc ép bằng bí danh `completed` / `state="completed"`.
++- **`linear`**: chỉ tới được bước sau khi mọi bước trước completed hoặc `optional`; header bước chưa với tới mang `aria-disabled="true"`.
++- **Ký hiệu vòng tròn:** đang chọn hoặc chưa xong → số / `icon` của bước; đã xong → `check` (state `edit` nếu `editable`, `done` nếu `editable="false"`).
++- **`editable="false"`**: đã qua thì không quay lại được (cả khi không linear).
++- **`state="error"` / `errorMessage` không hiển thị gì** — thư viện không bật `STEPPER_GLOBAL_OPTIONS.showError` (trang tài liệu cũng vậy).
++- Bàn phím: ←/→ (dọc ↑/↓), Home/End, Enter/Space như `FocusKeyManager` của CDK.
+ 
+ **Events:**
+ 
+ | Event | detail | Khi nào fire |
+ |-------|--------|--------------|
+-| `sd-step-change` | `{ index: number }` | Bấm header bước hoặc gọi `next()` / `previous()` / `reset()` - bên Angular là `[(selectedIndex)]` |
+-| `sd-selection-change` | `{ previousIndex, selectedIndex }` | Ánh xạ output `selectionChange` của thư viện |
+-| `sd-select-change` | - | Bắn trên chính `sd-step` vừa được chọn - ánh xạ `selectChange` của SdStep |
++| `sd-step-change` | `{ index }` | Bước chọn đổi (≙ `selectedIndexChange`) |
++| `sd-selection-change` | `{ selectedIndex, previouslySelectedIndex, previousIndex, selectedStep, previouslySelectedStep }` | ≙ `(selectionChange)` |
++| `sd-select-change` | - | Bắn trên chính `sd-step` vừa được chọn, không nổi bọt (≙ `(selectChange)` của SdStep) |
+ 
+ **Methods:**
+ 
+@@ -384,47 +369,39 @@
+ |--------|-------|
+ | `next()` | Sang bước kế tiếp |
+ | `previous()` | Quay lại bước trước |
+-| `reset()` | Về bước đầu tiên |
++| `goTo(index)` | Nhảy tới bước `index` (kẹp 0 … n-1) |
++| `reset()` | Về bước đầu, xoá trạng thái đã ghé / đã xong |
+ 
+ ```html
+-<sd-stepper linear orientation="horizontal">
+-  <sd-step label="Thông tin chung" state="completed">...</sd-step>
+-  <sd-step label="Thẩm định">...</sd-step>
+-  <sd-step label="Phê duyệt" icon="star">...</sd-step>
+-  <sd-step label="Ghi chú" optional>...</sd-step>
++<sd-stepper id="wizard" linear>
++  <sd-step label="Tài khoản" icon="badge" invalid>...form...</sd-step>
++  <sd-step label="Khuyến mãi" icon="local_offer" optional>...</sd-step>
++  <sd-step label="Xác nhận" icon="task_alt" editable="false">...</sd-step>
+ </sd-stepper>
++<script>
++  // ≙ stepControl.invalid — gỡ `invalid` khi form của bước hợp lệ
++  form.addEventListener('input', () => step.toggleAttribute('invalid', !form.checkValidity()));
++</script>
+ ```
+ 
+-> **stepControl:** input thật CÓ (FormGroup để stepper tự biết bước đã hợp lệ) nhưng mirror CỐ Ý bỏ - Web Component không nhận FormGroup qua attribute. Thay bằng `state="completed"` (API thật của `sd-step`); `linear` dựa vào `state` để chặn nhảy bước.
++> **stepControl → `invalid` (Rule 18-2):** input thật nhận `FormGroup`; HTML không truyền được object nên kit trải phẳng thành boolean `invalid` trên `sd-step` (≙ `stepControl.invalid`). Trang tự bật/tắt `invalid` theo form của bước — xem ví dụ "Linear wizard".
+ >
+-> **Đã gỡ 2026-10-12 (Rule 18):** `autoId` và method `goTo(index)` — catalog không có; nhảy thẳng tới bước thì đặt attribute `selectedIndex`. Nhãn bước tuỳ chọn là **"Optional"** (chuỗi MatStepperIntl, catalog ghi rõ). Bấm **cả header bước** để chuyển; bước chưa với tới khi `linear` mang `aria-disabled="true"`.
+->
+-> **`disableRipple` ĐÃ BỎ 2026-10-12** — bảng API của catalog `#c-stepper` không có input này (nó đến từ gói npm 22.2.12, mốc chuẩn cũ), và kit vốn không vẽ ripple nên nó chẳng làm gì. Xem Rule 18 của `AGENTS.md`.
+-
+-> **`orientation="vertical"` — nội dung mở NGAY DƯỚI bước đang chọn**, không phải hai cột.
+-> Mỗi bước là một khối riêng: header (đệm `8px 24px`, cao `24px`, cách nhãn `12px`) rồi khối nội dung thụt `36px` mở/đóng bằng `grid-template-rows`. Đường kẻ dọc là `::before` của khối nội dung nên nối thẳng tâm vòng tròn này xuống tâm vòng tròn kế; **bước cuối không kéo kẻ xuống**. Bản trước của kit dựng thanh bước thành cột trái `240px` + nội dung cột phải — bố cục đó không có trong Core, đã dựng lại 2026-10-12.
+-
+-> **Số đo (đo bằng harness đối chiếu catalog, 2026-10-12):** header bước cao **40px**, đệm `0 24px` · vòng tròn **24×24** bo tròn, cách nhãn **8px** · nhãn **14/500** · đường nối **1px** `rgba(0,0,0,.12)`, `margin: 0 -16px`, `min-width: 32px` · thanh bước **không xuống dòng**.
+-> `labelPosition="bottom"`: đệm **`8px 24px`**, `box-sizing: border-box`, nhãn đệm trên **16px**, đường nối ở **`top: 20px`**.
++> **Khác thư viện, có lý do:** thẻ `<sd-step>` nằm lại trong host (ẩn) để trang đọc/ghi attribute; nội dung của nó được **chuyển** (không chép) vào khung nội dung → listener và dữ liệu đã gõ còn nguyên. Thư viện chỉ dựng nội dung bước lần đầu được chọn; kit dựng sẵn (khung chưa chọn vẫn ẩn). Ripple không chạy. Xem `_memory/known-gaps.md` mục `sd-stepper — theo 22.3.1`.
+ 
+ ## sd-step
+ 
+-Một bước bên trong `sd-stepper`. Nội dung (slot) giữ nguyên node DOM - không chép innerHTML, nên component và event listener bên trong bước vẫn sống, dữ liệu đã gõ không mất khi chuyển bước.
++Một bước bên trong `sd-stepper`.
+ 
+ | Attribute | Values | Default |
+ |-----------|--------|---------|
+-| `label` | string | - |
+-| `icon` | string - tên Material icon Outlined, hiện **cạnh chữ nhãn** (`.sd-step__icon`, 18px); vòng tròn vẫn giữ số thứ tự | - |
+-| `optional` | boolean | `false` |
++| `label` | string | - (bắt buộc) |
++| `icon` | string - Material icon Outlined, thay số thứ tự trong vòng tròn khi bước chưa xong / đang chọn | - |
++| `optional` | boolean — bỏ qua được khi linear, hiện "Optional" | `false` |
+ | `editable` | boolean | **`true`** |
+-| `state` | `pending`, `completed`, `error` | `pending` |
+-| `errorMessage` | string | - |
+-| `completed` | boolean | - (bí danh cũ) |
+-
+-`state` là API thật, thay cho `stepControl` của Angular. **`state="error"` / `errorMessage` không hiển thị gì** — catalog ghi portal không bật `showError` (STEPPER_GLOBAL_OPTIONS); kit làm y vậy từ 2026-10-12. `editable` **mặc định `true`** và chỉ có tác dụng khi `linear`: khai `editable="false"`
+-thì không quay lại sửa bước đó được nữa.
+-
+-> `completed` là **bí danh cũ** của `state="completed"` — giữ để trang đã tạo không vỡ, trang mới dùng `state`.
++| `invalid` | boolean — ≙ `stepControl.invalid` | `false` |
++| `state` | string — nhận cho khớp API, không hiển thị (xem trên) | - |
++| `errorMessage` | string — không hiển thị | - |
++| `completed` | boolean — bí danh cũ: ép "đã xong" (như `state="completed"`) | - |
+ 
+ Xem cú pháp ở mục `sd-stepper` phía trên.
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-13 17:29:12.728886324 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-13 17:49:32.570180005 +0000
+@@ -59,6 +59,14 @@
+   --sd-black300:        #bfbfbf;
+   --sd-black200:        #e6e6e6;
+   --sd-black100:        #f2f2f2;
++  /* `-contrast` (chữ trên nền màu đặc) — palette @sdcorejs/angular 22.3.1, theme mặc định đều #fff.
++     sd-stepper 22.3.1 đọc `--sd-{color}-contrast` cho số/icon của bước đang chọn (2026-10-14). */
++  --sd-primary-contrast:   #ffffff;
++  --sd-secondary-contrast: #ffffff;
++  --sd-info-contrast:      #ffffff;
++  --sd-success-contrast:   #ffffff;
++  --sd-warning-contrast:   #ffffff;
++  --sd-error-contrast:     #ffffff;
+ 
+   /* --- Component Dimensions (density -3, compact) --- */
+   /* Rà soát 2026-10-11 theo Core UI Catalog: ô nhập cỡ md (.sd-md) cao
+@@ -4785,360 +4793,138 @@
+ .tt-tpl b { display: block; font-weight: 500; }
+ .tt-hint { margin: 0; width: 100%; font-size: 12px; color: var(--sd-black400); }
+ 
+-/* --- sd-stepper + sd-step styles ---
+-   Rà soát 2026-10-11 — ĐỔI NGUỒN CHUẨN sang Core UI Catalog
+-   (@sd-angular/core 19.0.10, theme portal-fins). Bản 2026-10-08 dựng theo SCSS
+-   của @sdcorejs/angular v22.2.12; hai bản khác nhau thật, số đo dưới đây đo
+-   trực tiếp từ cột catalog:
+-
+-     Catalog 19.0.10                       Bản kit theo npm 22.2.12
+-     - header cao 40px, KHÔNG bo góc        - 72px, bo 8px
+-     - vòng tròn 24px                       - 32px
+-     - chữ trong vòng tròn 14px/400         - 14px/500
+-     - icon trong vòng tròn 16px            - 18px
+-     - chưa tới: nền #e0e0e0, chữ .54       - #f2f2f2 / #757575
+-     - đã qua: nền PRIMARY ĐẶC + chữ trắng  - nền primary-light + chữ primary
+-       và icon `create` (bút chì)             và icon `check`
+-     - đường nối min-width 32px, .12 đen    - 16px, #e6e6e6
+-     - MỌI nhãn active: #1a1a1a, 500        - đã qua 500, đang làm primary 600
+-
+-   Về nhãn bước đang làm: catalog CÓ rule `.mat-step-label-selected
+-   .mat-step-text-label{color:var(--sd-stepper-active-color);font-weight:600}`
+-   nhưng rule `.mat-step-label.mat-step-label-active .mat-step-text-label`
+-   đứng trước lại CAO ĐIỂM HƠN (4 class so với 3) nên luôn thắng → trên trang
+-   thật nhãn bước đang làm KHÔNG đổi màu. Kit chép lại y nguyên cả hai rule
+-   với đúng tương quan điểm đó để hành vi giống hệt.
+-
+-   Màu chạy qua bộ biến --sd-stepper-* đúng tên của Core, nên input `color`
+-   chỉ cần đổi biến là xong (cùng cơ chế sd-tab-group). */
+-sd-stepper {
+-  display: block;
+-  /* Rà soát 2026-10-11 (vòng 7): TÊN TOKEN theo đúng nghĩa của catalog.
+-     Catalog chỉ có MỘT token cho mỗi trạng thái và nó là MÀU NỀN, còn màu
+-     ký hiệu bên trong thì viết cứng `color:#fff!important`:
+-       .mat-step-icon-selected   { background: var(--sd-stepper-active-bg);       color:#fff }
+-       .mat-step-icon-state-done { background: var(--sd-stepper-completed-color); color:#fff }
+-       .mat-step-icon-state-error{ background: var(--sd-stepper-error-color);     color:#fff }
+-     Kit trước đây tự đẻ thêm `--sd-stepper-completed-bg` / `-active-contrast` /
+-     `-error-bg` / `-error-contrast`, và dùng `--sd-stepper-completed-color` với
+-     nghĩa NGƯỢC LẠI (màu chữ `#fff` thay vì màu nền). Nhìn thì giống nhau,
+-     nhưng ai đặt `--sd-stepper-completed-color: red` theo catalog sẽ ra chữ đỏ
+-     chứ không phải vòng tròn đỏ. */
+-  --sd-stepper-active-color:    var(--sd-primary);
+-  --sd-stepper-active-bg:       var(--sd-primary);
+-  --sd-stepper-completed-color: var(--sd-primary);
+-  --sd-stepper-line-color:      rgba(0, 0, 0, .12);
+-  --sd-stepper-line-active-color: var(--sd-primary);
+-  /* catalog: `.mat-step-icon-state-error{background-color:var(--sd-stepper-error-color)
+-     !important; color:#fff !important}` → vòng tròn lỗi tô ĐẶC đỏ, icon trắng
+-     (token --mat-stepper-header-error-state-icon-background-color:transparent của
+-     Material bị rule !important này đè). */
+-  --sd-stepper-error-color:     var(--sd-error);
+-  --sd-stepper-pending-bg:      #e0e0e0;
+-  --sd-stepper-pending-color:   rgba(0, 0, 0, .54);
+-  --sd-stepper-text-color:      var(--sd-text-primary, #1a1a1a);
+-}
+-sd-step { display: block; }
+-sd-stepper .sd-stepper { display: block; }
+-/* catalog `.mat-horizontal-content-container{overflow:hidden;padding:0 24px 24px 24px}` */
+-sd-stepper .sd-stepper__panels { display: block; overflow: hidden; padding: 0 24px 24px 24px; }
+-sd-stepper .sd-step-panel-hidden { display: none; }
+-/* headerPosition="bottom" — đảo thứ tự header xuống dưới nội dung */
+-sd-stepper .sd-stepper--header-bottom { display: flex; flex-direction: column; }
+-sd-stepper .sd-stepper--header-bottom .sd-stepper__header { order: 1; }
+-/* Rà soát 2026-10-12: BỎ `flex-wrap: wrap` + `row-gap`. Catalog khai
+-   `.mat-horizontal-stepper-header-container{white-space:nowrap;display:flex;align-items:center}`
+-   — KHÔNG có wrap, màn hẹp thì thanh bước tràn ngang chứ không xuống dòng.
+-   `flex-wrap:wrap` là phần kit tự thêm (Rule 18): nó đổi bố cục ở màn hẹp so
+-   với mốc chuẩn, và vì đường nối có `margin: 0 -16px` nên khi xuống dòng thì
+-   đoạn nối thừa thò ra đầu dòng dưới. */
+-sd-stepper .sd-stepper__header {
+-  display: flex;
+-  align-items: center;
+-  white-space: nowrap;
+-}
+-/* labelPosition mặc định của Core là "end" (nhãn nằm CẠNH vòng tròn), không
+-   phải "bottom" — bản trước để mặc định bottom nên bố cục lệch ngay từ đầu. */
+-sd-stepper .sd-stepper__step {
+-  display: flex;
+-  flex-direction: row;
+-  align-items: center;
+-  gap: 8px;
+-  padding: 0 24px;
+-  height: 40px;             /* catalog: --mat-stepper-header-height:40px (override của portal) */
+-  border-radius: 0;         /* catalog: --mat-stepper-header-hover-state-layer-shape:0 */
+-  box-sizing: content-box;  /* catalog: .mat-step-header{box-sizing:content-box} */
+-  cursor: pointer;
+-  /* Ba khai báo còn lại của `.mat-step-header` mà kit bỏ sót (bổ sung 2026-10-12).
+-     `position: relative` KHÔNG phải trang trí: biến thể `labelPosition="bottom"`
+-     vẽ hai nửa đường nối bằng `::before`/`::after` đặt tuyệt đối TRONG header —
+-     thiếu nó thì hai nửa đó neo nhầm vào tổ tiên khác. */
+-  position: relative;
+-  overflow: hidden;
+-  outline: none;
+-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+-}
+-sd-stepper .sd-stepper__step:hover { background: color-mix(in srgb, rgba(0, 0, 0, .87) 4%, transparent); }
+-/* bước chưa với tới (linear): `.mat-step-header:hover[aria-disabled=true]{cursor:default}` và
+-   chỉ còn lớp nền #00000005 của sd-stepper (luật hover 4% của Material bỏ qua aria-disabled=true) */
+-sd-stepper .sd-stepper__step[aria-disabled="true"]:hover { background: #00000005; cursor: default; }
+-sd-stepper .sd-stepper__step[aria-disabled="true"]:hover .sd-stepper__circle { cursor: default; }
+-/* Vùng nhãn ≈ `.mat-step-label` của catalog:
+-     `{display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+-       min-width:50px;vertical-align:middle}`
+-   Kit giữ `display:flex` cột vì còn xếp thêm dòng "Optional" / câu lỗi bên dưới
+-   (catalog để `.mat-step-optional` là thẻ con của cùng `.mat-step-label`).
+-   Bổ sung 2026-10-12: `min-width:50px` (nhãn ngắn không bị bóp) và
+-   `overflow:hidden` (nhãn dài bị cắt kèm `…` thay vì đẩy vỡ hàng). */
+-sd-stepper .sd-stepper__step-text {
+-  display: flex;
+-  flex-direction: column;
+-  align-items: flex-start;
+-  min-width: 50px;
+-  overflow: hidden;
+-}
+-/* labelPosition="bottom" — nhãn xuống dưới, căn giữa, đúng rule
+-   `.mat-stepper-label-position-bottom .mat-step-label { padding:16px 0 0 0 }` */
+-/* Rà soát 2026-10-12 — theo đúng catalog:
+-     `.mat-stepper-label-position-bottom .mat-horizontal-stepper-header{
+-        box-sizing:border-box; flex-direction:column; height:auto;
+-        padding: calc((40px - 24px)/2) 24px }`  → đệm 8px 24px
+-   Kit trước: đệm `12px 8px`, `box-sizing:content-box`, và tự thêm
+-   `min-width:96px` (catalog không có — Rule 18). */
+-sd-stepper .sd-stepper--label-bottom .sd-stepper__step {
+-  flex-direction: column;
+-  align-items: center;
+-  gap: 0;
+-  height: auto;
+-  box-sizing: border-box;
+-  padding: 8px 24px;
+-}
+-/* catalog: `.mat-stepper-label-position-bottom .mat-horizontal-stepper-header-container
+-   { align-items: flex-start }` */
+-sd-stepper .sd-stepper--label-bottom.sd-stepper .sd-stepper__header,
+-sd-stepper .sd-stepper--label-bottom .sd-stepper__header { align-items: flex-start; }
+-sd-stepper .sd-stepper--label-bottom .sd-stepper__step-text {
+-  align-items: center;
+-  padding-top: 16px;
+-  /* catalog: `.mat-stepper-label-position-bottom … .mat-step-label{width:100%}` */
+-  width: 100%;
+-}
+-sd-stepper .sd-stepper--label-bottom .sd-stepper__label { text-align: center; }
+-
+-/* Vòng tròn chỉ báo — 32px, KHÔNG viền, màu đổi theo trạng thái */
+-sd-stepper .sd-stepper__circle {
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  width: 24px;
+-  height: 24px;
+-  padding: 0;
+-  border: none;
+-  border-radius: 50%;
+-  background: var(--sd-stepper-pending-bg);
+-  color: var(--sd-stepper-pending-color);
+-  font-family: var(--sd-font-family);
+-  font-size: 14px;
+-  font-weight: 400;
+-  line-height: inherit;     /* catalog không khai — thừa hưởng dòng chữ của trang (đo 21px) */
+-  cursor: pointer;
+-  flex-shrink: 0;
+-  transition: background var(--sd-stepper-animation-duration, 500ms) ease,
+-              color var(--sd-stepper-animation-duration, 500ms) ease;
+-}
+-sd-stepper .sd-stepper__circle .material-icons-outlined,
+-sd-stepper .sd-stepper__circle .mat-icon,
+-sd-stepper .sd-stepper__circle .material-icons {
+-  font-size: 16px;
+-  width: 16px;
+-  height: 16px;
+-  line-height: 16px;
+-}
+-/* Đã hoàn tất: catalog tô NỀN PRIMARY ĐẶC + icon trắng, y hệt bước đang làm
+-   (`.mat-step-icon-state-done,.mat-step-icon-state-edit{background:primary;color:#fff}`).
+-   Phân biệt nằm ở KÝ HIỆU: đã qua là bút chì/check, đang làm là số. */
+-sd-stepper .sd-stepper__circle--completed {
+-  background: var(--sd-stepper-completed-color) !important;
+-  color: #fff !important;
+-}
+-/* Đang làm: nền đặc brand + chữ tương phản */
+-sd-stepper .sd-stepper__circle--current {
+-  background: var(--sd-stepper-active-bg) !important;
+-  color: #fff !important;
+-}
+-/* Lỗi: nền đỏ nhạt + chữ đỏ */
+-sd-stepper .sd-stepper__circle--error {
+-  background: var(--sd-stepper-error-color) !important;
+-  color: #fff !important;
+-}
+-/* catalog: `.mat-step-icon-state-error .mat-icon{font-size:24px;height:24px;width:24px}` */
+-sd-stepper .sd-stepper__circle--error .material-icons-outlined,sd-stepper .sd-stepper__circle--error .mat-icon,
+-sd-stepper .sd-stepper__circle--error .material-icons {
+-  font-size: 24px; width: 24px; height: 24px; line-height: 24px;
+-}
+-sd-stepper .sd-stepper__step:focus-within .sd-stepper__circle,
+-sd-stepper .sd-stepper__circle:focus-visible {
+-  outline: 2px solid var(--sd-stepper-active-color);
+-  outline-offset: 2px;
+-}
+-
+-/* Đường nối giữa các bước — 1px như Material, không phải 2px */
+-sd-stepper .sd-stepper__connector {
+-  flex: 1 1 auto;
+-  min-width: 32px;          /* catalog: .mat-stepper-horizontal-line{min-width:32px} */
+-  height: 0;
+-  border-top: 1px solid var(--sd-stepper-line-color);
+-  margin: 0 -16px;
+-  transition: border-color var(--sd-stepper-animation-duration, 500ms) ease;
+-}
+-/* Đường nối KHÔNG đổi màu theo tiến độ. Đã kiểm SCSS gốc: Core có khai biến
+-   `--sd-stepper-line-active-color` nhưng **không rule nào dùng tới nó** — mọi
+-   đường nối đều vẽ bằng `--sd-stepper-line-color` (xám). Bản trước tô nâu
+-   đoạn đã qua, đây là phần kit tự thêm nên đã bỏ. Vẫn giữ class
+-   `--active` làm chỗ bám cho trang nào thực sự muốn tô riêng. */
+-/* catalog vẽ đường nối của biến thể này bằng `::before`/`::after` của từng
+-   header, đặt ở `top: calc(calc((--mat-stepper-header-height - 24px)/2) + 12px)`.
+-   Với chiều cao thật của portal là **40px** thì ra `8 + 12 = 20px` tính từ mép
+-   trên header. Kit dùng một thẻ `.sd-stepper__connector` riêng nên quy về cùng
+-   toạ độ đó. Bản trước tính theo 72px (mặc định Material) nên lệch 12px. */
+-sd-stepper .sd-stepper--label-bottom .sd-stepper__connector {
+-  margin: 0;
+-  position: relative;
+-  top: 20px;
+-  align-self: flex-start;
+-}
+-/* ── HAI NỬA đường nối của `labelPosition="bottom"` (bổ sung 2026-10-12) ──
+-   Builder gửi ảnh chụp Core: đường nối ở đó CHẠY LIỀN từ mép vòng tròn này
+-   sang mép vòng tròn kia. Kit chỉ có thẻ `.sd-stepper__connector` nằm GIỮA hai
+-   header nên hở một khoảng đúng bằng nửa bề ngang nhãn ở mỗi đầu — nhìn như
+-   đường kẻ ngắn trôi lơ lửng.
+-
+-   Catalog bù hai khoảng hở đó bằng pseudo-element trên CHÍNH header:
+-
+-     .mat-stepper-label-position-bottom .mat-horizontal-stepper-header:not(:first-child)::before,
+-     .mat-stepper-label-position-bottom .mat-horizontal-stepper-header:not(:last-child)::after
+-       { border-top:1px solid; content:""; display:inline-block; height:0;
+-         position:absolute; width: calc(50% - 20px) }
+-     …:not(:first-child)::before { left: 0 }
+-     …:not(:last-child)::after  { right: 0 }
+-     …::before, …::after { top: calc(calc((--mat-stepper-header-height - 24px)/2) + 12px) }
+-
+-   `50% - 20px` = từ mép header tới cách TÂM vòng tròn 20px (nửa vòng tròn 12px
+-   + 8px thở). `top` với chiều cao thật 40px của portal ra đúng **20px**, tức
+-   ngang tâm vòng tròn. Chép nguyên văn. */
+-sd-stepper .sd-stepper--label-bottom .sd-stepper__step:not(:first-child)::before,
+-sd-stepper .sd-stepper--label-bottom .sd-stepper__step:not(:last-child)::after {
+-  border-top: 1px solid var(--sd-stepper-line-color);
+-  content: "";
+-  display: inline-block;
+-  height: 0;
+-  position: absolute;
+-  width: calc(50% - 20px);
+-}
+-sd-stepper .sd-stepper--label-bottom .sd-stepper__step:not(:first-child)::before { left: 0; }
+-sd-stepper .sd-stepper--label-bottom .sd-stepper__step:not(:last-child)::after { right: 0; }
+-sd-stepper .sd-stepper--label-bottom .sd-stepper__step::before,
+-sd-stepper .sd-stepper--label-bottom .sd-stepper__step::after { top: 20px; }
+-
+-/* Nhãn — bước đã qua đậm 500, bước đang làm đậm 600 + màu brand */
+-/* Nhãn — catalog: mọi bước "active" (stepper không linear thì là tất cả) đều
+-   #1a1a1a / 500. Bước chưa với tới được (linear) mới xám .54. */
+-/* Nhãn bước — catalog `#c-stepper`: `<span class="sd-step__label">` chứa
+-   `.sd-step__icon` (icon khai trên `<sd-step icon="…">`) rồi `.sd-step__text`. */
+-sd-stepper .sd-step__label { display: inline-flex; align-items: center; gap: 4px; }
+-sd-stepper .sd-step__icon { font-size: 18px; width: 18px; height: 18px; line-height: 18px; }
+-sd-stepper .sd-step__text { white-space: nowrap; }
+-sd-stepper .sd-stepper__label {
+-  font-size: 14px;
+-  line-height: inherit;     /* `.mat-step-label` không khai line-height — đo 21px = 1.5 của trang */
+-  font-weight: 500;
+-  color: rgba(0, 0, 0, .54);
+-  white-space: nowrap;
+-  overflow: hidden;
+-  text-overflow: ellipsis;
+-  transition: color var(--sd-stepper-animation-duration, 500ms) ease;
+-}
+-sd-stepper .sd-stepper__step--visited .sd-stepper__label,
+-sd-stepper .sd-stepper__step--selected .sd-stepper__label,
+-sd-stepper .sd-stepper__step--reachable .sd-stepper__label {
+-  color: var(--sd-stepper-text-color);
+-  font-weight: 500;
+-}
+-/* Rule này CÓ trong catalog nhưng luôn bị rule --visited/--selected ở trên
+-   (nhiều class hơn) đè — giữ nguyên tương quan để hành vi khớp catalog.
+-   Muốn nhãn bước đang làm đổi màu thì nâng điểm rule này ở trang dùng. */
+-sd-stepper .sd-stepper__label--selected {
+-  color: var(--sd-stepper-active-color);
+-  font-weight: 600;
+-}
+-sd-stepper .sd-stepper__step--error .sd-stepper__label { color: var(--sd-stepper-error-color); }
+-/* catalog `.mat-step-optional{font-size:12px;color:var(--mat-sys-on-surface-variant)}` —
+-   đậm 500 và dòng chữ thừa hưởng từ nhãn (đo 12px/18px/500, rgba(0,0,0,.54)). */
+-sd-stepper .sd-stepper__optional,
+-sd-stepper .sd-stepper__error-msg {
+-  font-size: 12px;
+-  white-space: nowrap;
+-}
+-sd-stepper .sd-stepper__optional { color: rgba(0, 0, 0, .54); font-weight: 500; }
+-sd-stepper .sd-stepper__error-msg { color: var(--sd-stepper-error-color); }
+-
+-/* ── Chế độ DỌC — dựng lại 2026-10-12 theo đúng `.mat-vertical-*` của catalog.
+-   Mỗi bước là một khối: header rồi NGAY DƯỚI là nội dung của chính bước đó.
+-   (Bản trước kit dựng header thành cột 240px bên trái + nội dung dồn sang cột
+-   phải — bố cục này không có trong mốc chuẩn.) */
+-sd-stepper .sd-stepper--vertical { display: block; }
+-sd-stepper .sd-stepper__vstep { display: block; }
+-/* catalog: `.mat-vertical-stepper-header{display:flex;align-items:center;height:24px;
+-   padding:calc((40px - 24px)/2) 24px}` → đệm 8px 24px, cao đúng 24px */
+-sd-stepper .sd-stepper--vertical .sd-stepper__step {
+-  flex-direction: row;
+-  align-items: center;
+-  min-width: 0;
+-  height: 24px;
+-  padding: 8px 24px;
+-  gap: 12px;            /* catalog: `.mat-vertical-stepper-header .mat-step-icon{margin-right:12px}` */
+-}
+-sd-stepper .sd-stepper--vertical .sd-stepper__step-text { align-items: flex-start; padding-top: 0; }
+-sd-stepper .sd-stepper--vertical .sd-stepper__label { text-align: left; }
+-/* catalog: `.mat-vertical-content-container{display:grid;grid-template-rows:0fr;
+-   grid-template-columns:100%;margin-left:36px;position:relative;height:0}` —
+-   36px = 24px đệm trái của header + nửa vòng tròn 12px, nên đường kẻ dọc rơi
+-   đúng tâm vòng tròn. */
+-sd-stepper .sd-stepper__vcontent-container {
+-  display: grid;
+-  grid-template-rows: 0fr;
+-  grid-template-columns: 100%;
+-  margin-left: 36px;
+-  border: 0;
+-  position: relative;
+-  height: 0;
+-}
+-sd-stepper .sd-stepper__vcontent-container--active { grid-template-rows: 1fr; height: auto; }
+-/* catalog: đường kẻ dọc là `::before` của chính khối nội dung
+-   (`.mat-stepper-vertical-line::before`), top/bottom = calc(8px - (40-24)/2) = 0 */
+-sd-stepper .sd-stepper__vcontent-container::before {
+-  content: "";
+-  position: absolute;
+-  left: 0;
+-  top: 0;
+-  bottom: 0;
+-  border-left: 1px solid var(--sd-stepper-line-color);
+-}
+-/* catalog: `.mat-step:last-child .mat-vertical-content-container{border:none}` —
+-   bước cuối không kéo đường kẻ xuống nữa. */
+-sd-stepper .sd-stepper__vstep:last-child .sd-stepper__vcontent-container::before { border-left: 0; }
+-/* catalog: `.mat-vertical-stepper-content{overflow:hidden;visibility:hidden}` +
+-   `.mat-vertical-content{padding:0 24px 24px 24px}` */
+-sd-stepper .sd-stepper__vcontent {
+-  overflow: hidden;
+-  outline: 0;
+-  visibility: hidden;
+-  padding: 0 24px 24px 24px;
+-}
+-sd-stepper .sd-stepper__vcontent-container--active > .sd-stepper__vcontent { visibility: visible; }
+-/* Trong bố cục dọc, `<sd-step>` của bước đang chọn phải hiện — lớp ẩn dùng cho
+-   bố cục ngang không áp ở đây vì khối nội dung tự đóng/mở bằng grid. */
+-sd-stepper .sd-stepper__vcontent > sd-step.sd-step-panel-hidden { display: block; }
++/* --- sd-stepper + sd-step — ĐỒNG BỘ @sdcorejs/angular 22.3.1 (2026-10-14) ---
++   Builder: *„Cập nhật phần Stepper theo Core UI này …/3.1/v/22.3.1/components/stepper/examples“*.
++   Mốc chuẩn của RIÊNG stepper: gói npm `@sdcorejs/angular` 22.3.1 + `@angular/material` 22.1.5
++   (mat.theme azure + typography Roboto của `assets/scss/themes/material-theme.scss`). Toàn bộ khối
++   dưới là CSS THẬT lấy từ trang demo tài liệu 3.1 dựng lại (showcase stepper-demo), đúng THỨ TỰ
++   chèn của Angular: style emulated của SdStepper → style của MatStepper/MatStepHeader → SdIcon.
++     - Phạm vi emulated `[_nghost-x]` / `[_ngcontent-x]` đổi thành `:is(sd-stepper, .sd-ng)` /
++       `:not(.sd-ng)` — hai dạng này có ĐÚNG độ ưu tiên của một attribute (0,1,0) nên thắng/thua
++       giữa các rule giữ nguyên như trang thật (`.sd-ng` là lớp không ai dùng).
++     - Token hệ thống Material `--mat-sys-*` đã thay bằng giá trị thật của theme thư viện (để không
++       tràn vào component khác trong nội dung bước); token `--mat-stepper-*` giữ nguyên làm điểm đè.
++     - Fallback của `--sd-border` / `--sd-disabled-bg` / `--sd-disabled-text` đổi sang giá trị của
++       theme mặc định 22.3.1 (#c4c6d0, …) — theme portal-fins của kit chưa có ba token đó.
++   Bảng so sánh với bản catalog 19.0.10 cũ: known-gaps mục `sd-stepper — theo 22.3.1`. */
++:is(sd-stepper, .sd-ng) { display: block; --sd-stepper-active-color: var(--sd-primary, #005cbb); --sd-stepper-active-bg: var(--sd-primary, #005cbb); --sd-stepper-active-contrast: var(--sd-primary-contrast, #ffffff); --sd-stepper-completed-bg: var(--sd-primary-light, #d7e3ff); --sd-stepper-line-color: var(--sd-border, #c4c6d0); --sd-stepper-completed-color: var(--sd-primary, #005cbb); --sd-stepper-line-active-color: var(--sd-primary, #005cbb); --sd-stepper-error-color: var(--sd-error, #ba1a1a); --sd-stepper-pending-bg: var(--sd-disabled-bg, color-mix(in srgb, #1a1b1f 8%, transparent)); --sd-stepper-pending-color: var(--sd-disabled-text, color-mix(in srgb, #1a1b1f 60%, transparent)); --sd-stepper-text-color: var(--sd-text, #1a1b1f); }
++.sd-step__label:not(.sd-ng) { display: inline-flex; align-items: center; gap: 4px; }
++.sd-step__icon:not(.sd-ng) { font-size: var(--sd-font-size-18, 18px); width: 18px; height: 18px; line-height: var(--sd-line-height-18, 18px); }
++.sd-step__text:not(.sd-ng) { white-space: nowrap; }
++:is(sd-stepper, .sd-ng) .mat-step-icon { background-color: var(--sd-stepper-pending-bg); color: var(--sd-stepper-pending-color); }
++:is(sd-stepper, .sd-ng) .mat-step-icon-state-done, :is(sd-stepper, .sd-ng) .mat-step-icon-state-edit { background-color: var(--sd-stepper-completed-bg) !important; color: var(--sd-stepper-completed-color) !important; }
++:is(sd-stepper, .sd-ng) .mat-step-icon-selected { background-color: var(--sd-stepper-active-bg) !important; color: var(--sd-stepper-active-contrast) !important; }
++:is(sd-stepper, .sd-ng) .mat-step-icon-state-error { background-color: var(--sd-error-light, #ffdad6) !important; color: var(--sd-stepper-error-color) !important; }
++:is(sd-stepper, .sd-ng) .mat-step-label.mat-step-label-active .mat-step-text-label { color: var(--sd-stepper-text-color); font-weight: var(--sd-font-weight-medium, 500); }
++:is(sd-stepper, .sd-ng) .mat-step-label.mat-step-label-selected .mat-step-text-label { color: var(--sd-stepper-active-color); font-weight: var(--sd-font-weight-semibold, 600); }
++:is(sd-stepper, .sd-ng) .mat-stepper-horizontal-line, :is(sd-stepper, .sd-ng) .mat-stepper-vertical-line::before, :is(sd-stepper, .sd-ng) .mat-stepper-label-position-bottom .mat-horizontal-stepper-header::before, :is(sd-stepper, .sd-ng) .mat-stepper-label-position-bottom .mat-horizontal-stepper-header::after { border-color: var(--sd-stepper-line-color); }
++:is(sd-stepper, .sd-ng) .mat-stepper-label-position-bottom .mat-stepper-horizontal-line, :is(sd-stepper, .sd-ng) .mat-stepper-label-position-bottom .mat-horizontal-stepper-header::before, :is(sd-stepper, .sd-ng) .mat-stepper-label-position-bottom .mat-horizontal-stepper-header::after { top: calc((var(--mat-stepper-header-height, 72px) - 24px) / 2 + 16px); }
++:is(sd-stepper, .sd-ng) .mat-stepper-label-position-bottom .mat-horizontal-stepper-header::before, :is(sd-stepper, .sd-ng) .mat-stepper-label-position-bottom .mat-horizontal-stepper-header::after { width: calc(50% - 24px); }
++:is(sd-stepper, .sd-ng) .mat-step-header.cdk-program-focused, :is(sd-stepper, .sd-ng) .mat-step-header:hover { background-color: rgba(0, 0, 0, 0.02); }
++:is(sd-stepper, .sd-ng) .mat-step-icon { width: 32px; height: 32px; border-radius: 50%; }
++:is(sd-stepper, .sd-ng) .mat-step-header { border-radius: var(--sd-radius-8, 8px); }
++:is(sd-stepper, .sd-ng) .mat-step-header:focus-visible { outline: var(--sd-focus-ring-width, 2px) solid var(--sd-stepper-active-color, var(--sd-focus-ring-color, var(--sd-primary))); outline-offset: -2px; }
++:is(sd-stepper, .sd-ng) .mat-step-label { min-width: 0px; }
++:is(sd-stepper, .sd-ng) .mat-horizontal-content-container { padding-bottom: 16px; }
++:is(sd-stepper, .sd-ng) .mat-stepper-horizontal-line { min-width: 16px; }
++@media (max-width: 600px) { :is(sd-stepper, .sd-ng) .mat-horizontal-stepper-header-container { overflow-x: auto; scrollbar-width: thin; } }
++@media (max-width: 600px) { :is(sd-stepper, .sd-ng) .mat-horizontal-stepper-header { padding: 12px; min-height: 64px; flex-shrink: 0; } }
++@media (max-width: 600px) { :is(sd-stepper, .sd-ng) .mat-horizontal-content-container { padding: 0px 12px 16px; } }
++@media (max-width: 600px) { :is(sd-stepper, .sd-ng) .mat-vertical-stepper-header { padding: 16px 12px; } }
++@media (max-width: 600px) { :is(sd-stepper, .sd-ng) .mat-vertical-content-container { margin-left: 28px; } }
++@media (max-width: 600px) { :is(sd-stepper, .sd-ng) .sd-step__text { white-space: normal; overflow-wrap: anywhere; } }
++@media (max-width: 600px) { :is(sd-stepper, .sd-ng) .mat-vertical-stepper-header .mat-step-label { white-space: normal; } }
++@media (prefers-reduced-motion: reduce) { :is(sd-stepper, .sd-ng) .mat-stepper-horizontal-line, :is(sd-stepper, .sd-ng) .mat-horizontal-content-container, :is(sd-stepper, .sd-ng) .mat-horizontal-stepper-content, :is(sd-stepper, .sd-ng) .mat-vertical-content-container { transition: none !important; animation: auto ease 0s 1 normal none running none !important; } }
++.mat-stepper-vertical, .mat-stepper-horizontal { display: block; font-family: var(--mat-stepper-container-text-font, Roboto); background: var(--mat-stepper-container-color, #faf9fd); }
++.mat-horizontal-stepper-header-wrapper { align-items: center; display: flex; }
++.mat-horizontal-stepper-header-container { white-space: nowrap; display: flex; align-items: center; flex-grow: 1; }
++.mat-stepper-label-position-bottom .mat-horizontal-stepper-header-container { align-items: flex-start; }
++.mat-stepper-header-position-bottom .mat-horizontal-stepper-header-container { order: 1; }
++.mat-stepper-horizontal-line { border-top-width: 1px; border-top-style: solid; flex: 1 1 auto; height: 0px; margin: 0px -16px; min-width: 32px; border-top-color: var(--mat-stepper-line-color, #74777f); }
++.mat-stepper-label-position-bottom .mat-stepper-horizontal-line { margin: 0px; min-width: 0px; position: relative; top: calc(calc((var(--mat-stepper-header-height, 72px) - 24px) / 2) + 12px); }
++.mat-stepper-label-position-bottom .mat-horizontal-stepper-header:not(:first-child)::before, [dir="rtl"] .mat-stepper-label-position-bottom .mat-horizontal-stepper-header:not(:last-child)::before, .mat-stepper-label-position-bottom .mat-horizontal-stepper-header:not(:last-child)::after, [dir="rtl"] .mat-stepper-label-position-bottom .mat-horizontal-stepper-header:not(:first-child)::after { border-top-width: 1px; border-top-style: solid; content: ""; display: inline-block; height: 0px; position: absolute; width: calc(50% - 20px); }
++.mat-horizontal-stepper-header { display: flex; overflow: hidden; align-items: center; padding: 0px 24px; height: var(--mat-stepper-header-height, 72px); }
++.mat-horizontal-stepper-header .mat-step-icon { margin-right: 8px; flex: 0 0 auto; }
++[dir="rtl"] .mat-horizontal-stepper-header .mat-step-icon { margin-right: 0px; margin-left: 8px; }
++.mat-horizontal-stepper-header.mat-step-header-empty-label .mat-step-icon { margin: 0px; }
++.mat-horizontal-stepper-header::before, .mat-horizontal-stepper-header::after { border-top-color: var(--mat-stepper-line-color, #74777f); }
++.mat-stepper-label-position-bottom .mat-horizontal-stepper-header { padding: calc((var(--mat-stepper-header-height, 72px) - 24px) / 2) 24px; }
++.mat-stepper-label-position-bottom .mat-horizontal-stepper-header::before, .mat-stepper-label-position-bottom .mat-horizontal-stepper-header::after { top: calc(calc((var(--mat-stepper-header-height, 72px) - 24px) / 2) + 12px); }
++.mat-stepper-label-position-bottom .mat-horizontal-stepper-header { box-sizing: border-box; flex-direction: column; height: auto; }
++.mat-stepper-label-position-bottom .mat-horizontal-stepper-header:not(:last-child)::after, [dir="rtl"] .mat-stepper-label-position-bottom .mat-horizontal-stepper-header:not(:first-child)::after { right: 0px; }
++.mat-stepper-label-position-bottom .mat-horizontal-stepper-header:not(:first-child)::before, [dir="rtl"] .mat-stepper-label-position-bottom .mat-horizontal-stepper-header:not(:last-child)::before { left: 0px; }
++[dir="rtl"] .mat-stepper-label-position-bottom .mat-horizontal-stepper-header:last-child::before, [dir="rtl"] .mat-stepper-label-position-bottom .mat-horizontal-stepper-header:first-child::after { display: none; }
++.mat-stepper-label-position-bottom .mat-horizontal-stepper-header .mat-step-icon { margin-right: 0px; margin-left: 0px; }
++.mat-stepper-label-position-bottom .mat-horizontal-stepper-header .mat-step-label { padding: 16px 0px 0px; text-align: center; width: 100%; }
++.mat-vertical-stepper-header { display: flex; align-items: center; height: 24px; padding: calc((var(--mat-stepper-header-height, 72px) - 24px) / 2) 24px; }
++.mat-vertical-stepper-header .mat-step-icon { margin-right: 12px; }
++[dir="rtl"] .mat-vertical-stepper-header .mat-step-icon { margin-right: 0px; margin-left: 12px; }
++.mat-horizontal-stepper-wrapper { display: flex; flex-direction: column; }
++.mat-horizontal-stepper-content { visibility: hidden; overflow: hidden; outline: 0px; height: 0px; }
++.mat-stepper-animations-enabled .mat-horizontal-stepper-content { transition: transform var(--mat-stepper-animation-duration, 0) cubic-bezier(0.35, 0, 0.25, 1); }
++.mat-horizontal-stepper-content.mat-horizontal-stepper-content-previous { transform: translate3d(-100%, 0px, 0px); }
++.mat-horizontal-stepper-content.mat-horizontal-stepper-content-next { transform: translate3d(100%, 0px, 0px); }
++.mat-horizontal-stepper-content.mat-horizontal-stepper-content-current { visibility: visible; transform: none; height: auto; }
++.mat-stepper-horizontal:not(.mat-stepper-animating) .mat-horizontal-stepper-content.mat-horizontal-stepper-content-current { overflow: visible; }
++.mat-horizontal-content-container { overflow: hidden; padding: 0px 24px 24px; }
++@media (forced-colors: active) { .mat-horizontal-content-container { outline: solid 1px; } }
++.mat-stepper-header-position-bottom .mat-horizontal-content-container { padding: 24px 24px 0px; }
++.mat-vertical-content-container { display: grid; grid-template-rows: 0fr; grid-template-columns: 100%; margin-left: 36px; border: 0px; position: relative; }
++.mat-stepper-animations-enabled .mat-vertical-content-container { transition: grid-template-rows var(--mat-stepper-animation-duration, 0) cubic-bezier(0.4, 0, 0.2, 1); }
++.mat-vertical-content-container.mat-vertical-content-container-active { grid-template-rows: 1fr; }
++.mat-step:last-child .mat-vertical-content-container { border: none; }
++@media (forced-colors: active) { .mat-vertical-content-container { outline: solid 1px; } }
++[dir="rtl"] .mat-vertical-content-container { margin-left: 0px; margin-right: 36px; }
++@media not (grid-template-rows: 0fr) { .mat-vertical-content-container { height: 0px; } }
++@media not (grid-template-rows: 0fr) { .mat-vertical-content-container.mat-vertical-content-container-active { height: auto; } }
++.mat-stepper-vertical-line::before { content: ""; position: absolute; left: 0px; border-left-width: 1px; border-left-style: solid; border-left-color: var(--mat-stepper-line-color, #74777f); top: calc(8px - calc((var(--mat-stepper-header-height, 72px) - 24px) / 2)); bottom: calc(8px - calc((var(--mat-stepper-header-height, 72px) - 24px) / 2)); }
++[dir="rtl"] .mat-stepper-vertical-line::before { left: auto; right: 0px; }
++.mat-vertical-stepper-content { overflow: hidden; outline: 0px; visibility: hidden; }
++.mat-stepper-animations-enabled .mat-vertical-stepper-content { transition: visibility var(--mat-stepper-animation-duration, 0) linear; }
++.mat-vertical-content-container-active > .mat-vertical-stepper-content { visibility: visible; }
++.mat-vertical-content { padding: 0px 24px 24px; }
++.mat-step-header { overflow: hidden; outline: none; cursor: pointer; position: relative; box-sizing: content-box; -webkit-tap-highlight-color: transparent; }
++.mat-step-header:focus-visible .mat-focus-indicator::before { content: ""; }
++.mat-step-header:hover[aria-disabled="true"] { cursor: default; }
++.mat-step-header:hover:not([aria-disabled]), .mat-step-header:hover[aria-disabled="false"] { background-color: var(--mat-stepper-header-hover-state-layer-color, color-mix(in srgb, #1a1b1f calc(0.08 * 100%), transparent)); border-radius: var(--mat-stepper-header-hover-state-layer-shape, 12px); }
++.mat-step-header:hover:not([aria-disabled]) .mat-step-header-ripple::before, .mat-step-header:hover[aria-disabled="false"] .mat-step-header-ripple::before { border-radius: var(--mat-stepper-header-hover-state-layer-shape, 12px); }
++.mat-step-header.cdk-keyboard-focused, .mat-step-header.cdk-program-focused { background-color: var(--mat-stepper-header-focus-state-layer-color, color-mix(in srgb, #1a1b1f calc(0.12 * 100%), transparent)); border-radius: var(--mat-stepper-header-focus-state-layer-shape, 12px); }
++.mat-step-header.cdk-keyboard-focused .mat-step-header-ripple::before, .mat-step-header.cdk-program-focused .mat-step-header-ripple::before { border-radius: var(--mat-stepper-header-focus-state-layer-shape, 12px); }
++@media (hover: none) { .mat-step-header:hover { background: none; } }
++@media (forced-colors: active) { .mat-step-header { outline: solid 1px; } }
++@media (forced-colors: active) { .mat-step-header[aria-selected="true"] .mat-step-label { text-decoration: underline; } }
++@media (forced-colors: active) { .mat-step-header[aria-disabled="true"] { outline-color: graytext; } }
++@media (forced-colors: active) { .mat-step-header[aria-disabled="true"] .mat-step-label, .mat-step-header[aria-disabled="true"] .mat-step-icon, .mat-step-header[aria-disabled="true"] .mat-step-optional { color: graytext; } }
++.mat-step-optional { font-size: 12px; color: var(--mat-stepper-header-optional-label-text-color, #44474e); }
++.mat-step-sub-label-error { font-size: 12px; font-weight: normal; }
++.mat-step-icon { border-radius: 50%; height: 24px; width: 24px; flex-shrink: 0; position: relative; color: var(--mat-stepper-header-icon-foreground-color, #faf9fd); background-color: var(--mat-stepper-header-icon-background-color, #44474e); }
++.mat-step-icon-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; }
++.mat-step-icon .mat-icon { font-size: 16px; height: 16px; width: 16px; }
++.mat-step-icon-state-error { background-color: var(--mat-stepper-header-error-state-icon-background-color, transparent); color: var(--mat-stepper-header-error-state-icon-foreground-color, #ba1a1a); }
++.mat-step-icon-state-error .mat-icon { font-size: 24px; height: 24px; width: 24px; }
++.mat-step-label { display: inline-block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 50px; vertical-align: middle; font-family: var(--mat-stepper-header-label-text-font, Roboto); font-size: var(--mat-stepper-header-label-text-size, 0.875rem); font-weight: var(--mat-stepper-header-label-text-weight, 500); color: var(--mat-stepper-header-label-text-color, #44474e); }
++.mat-step-label.mat-step-label-active { color: var(--mat-stepper-header-selected-state-label-text-color, #44474e); }
++.mat-step-label.mat-step-label-error { color: var(--mat-stepper-header-error-state-label-text-color, #ba1a1a); font-size: var(--mat-stepper-header-error-state-label-text-size, 0.875rem); }
++.mat-step-label.mat-step-label-selected { font-size: var(--mat-stepper-header-selected-state-label-text-size, 0.875rem); font-weight: var(--mat-stepper-header-selected-state-label-text-weight, 500); }
++.mat-step-header-empty-label .mat-step-label { min-width: 0px; }
++.mat-step-text-label { text-overflow: ellipsis; overflow: hidden; }
++.mat-step-header .mat-step-header-ripple { inset: 0px; position: absolute; pointer-events: none; }
++.mat-step-icon-selected { background-color: var(--mat-stepper-header-selected-state-icon-background-color, #005cbb); color: var(--mat-stepper-header-selected-state-icon-foreground-color, #ffffff); }
++.mat-step-icon-state-done { background-color: var(--mat-stepper-header-done-state-icon-background-color, #005cbb); color: var(--mat-stepper-header-done-state-icon-foreground-color, #ffffff); }
++.mat-step-icon-state-edit { background-color: var(--mat-stepper-header-edit-state-icon-background-color, #005cbb); color: var(--mat-stepper-header-edit-state-icon-foreground-color, #ffffff); }
++:is(sd-icon, .sd-ng) { display: inline-flex; align-items: center; justify-content: center; width: var(--sd-icon-size); height: var(--sd-icon-size); min-width: var(--sd-icon-size); color: currentcolor; font-size: var(--sd-icon-size); line-height: 1; vertical-align: middle; flex: 0 0 auto; }
++:is(sd-icon, .sd-ng) .sd-icon__material:not(.sd-ng) { display: inline-flex; align-items: center; justify-content: center; width: 100%; height: 100%; margin: 0px; color: currentcolor; font-size: inherit; line-height: 1; overflow: hidden; }
++.sd-icon__svg:not(.sd-ng) { display: block; width: 100%; height: 100%; color: currentcolor; stroke: currentcolor; flex: 0 0 auto; }
++/* kit: thẻ <sd-step> nằm lại trong host làm chỗ đọc/ghi attribute — nội dung đã được dời sang
++   khung nội dung của bước (xem SdStepper trong sd-components.js) */
++sd-stepper > sd-step { display: none; }
++/* Material core (`mat.core`) — kit chưa có rule nền của ripple; MatIcon 22 không còn `position`
++   (bản `.mat-icon` chung của kit theo catalog 20.2 có `position: relative`); font Material Icons
++   Outlined đúng `fonts.scss` của thư viện (không chuỗi dự phòng của kit). */
++.mat-ripple { overflow: hidden; position: relative; }
++.mat-ripple:not(:empty) { transform: translateZ(0); }
++:is(sd-icon, .sd-ng) .sd-icon__material.mat-icon { position: static; }
++:is(sd-icon, .sd-ng) .sd-icon__material.material-icons-outlined { font-family: 'Material Icons Outlined'; }
+ 
+ 
+ /* --- sd-anchor + sd-anchor-item styles ---
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/stepper.html b/design-system/preview/components/stepper.html
+--- a/design-system/preview/components/stepper.html	2026-10-13 17:29:12.680648843 +0000
++++ b/design-system/preview/components/stepper.html	2026-10-13 18:03:09.094228541 +0000
+@@ -18,10 +18,25 @@
+   <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+   <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+   <style>
+-    /* Nội dung mẫu trong bước — CHỈ của trang preview (catalog .demo-step). */
+-    .demo-step { display: flex; flex-direction: column; gap: 12px; color: #212529; line-height: 1.5; }
+-    .demo-step p { margin: 0; color: #757575; }
+-    .demo-step .demo-actions { display: flex; gap: 8px; }
++  /* = stepper-demo.component.scss của trang tài liệu 3.1 — CHỈ của trang preview.
++     Lớp đổi tiền tố stp- vì `.row` của kit là lưới (utilities.css). */
++  .stp-full { width: 100%; }
++  .stp-body { display: flex; flex-direction: column; gap: 12px; padding: 12px 0; }
++  .stp-form { display: flex; flex-direction: column; gap: 8px; padding: 12px 0; }
++  .stp-form label { font-size: 13px; color: #4a4a4a; display: flex; align-items: center; gap: 6px; }
++  .stp-form input[type='text'], .stp-form input:not([type]) { padding: 8px 10px; border: 1px solid #d0d4da; border-radius: 4px; font-size: 14px; width: 320px; }
++  .stp-form input[type='text']:focus, .stp-form input:not([type]):focus { border-color: var(--sd-primary, #005cbb); outline: none; }
++  .stp-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
++  .stp-hint { font-size: 13px; color: #6b6b6b; margin: 0; }
++  .stp-output { background: #f5f7fa; padding: 12px; border-radius: 6px; font-size: 12px; margin: 8px 0 0; }
++  .stp-color-stack { display: flex; flex-direction: column; gap: 16px; }
++  .stp-ex code { background: #f0f3f7; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
++  .stp-body > sd-button { align-self: flex-end; }
++  .stp-body > .stp-row, .stp-form > .stp-row { justify-content: flex-end; }
++  .stp-form input { max-width: 100%; box-sizing: border-box; }
++  @media (max-width: 600px) { .stp-form label { flex-wrap: wrap; } }
++  /* demo-section__body của tài liệu: cột, giãn ngang, gap 16px */
++  .stp-ex { display: flex; flex-direction: column; align-items: stretch; gap: 16px; }
+   </style>
+ </head>
+ <body>
+@@ -34,7 +49,7 @@
+ 
+     <div data-pattern="page-header" data-variant="browse"
+          data-title="sd-stepper"
+-         data-subtitle="Mirror SdStepper — labelPosition (end/bottom), headerPosition, color (6), state (pending/completed/error), linear, vertical"
++         data-subtitle="Theo @sdcorejs/angular 22.3.1 (MatStepper 22.1) — 9 ví dụ của trang tài liệu Core UI 3.1: horizontal, vertical, linear, optional, error, labelPosition, color, điều khiển từ ngoài, editable=false"
+          data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+ 
+     <div class="content-zone">
+@@ -42,209 +57,244 @@
+       <!-- ── Tab: Preview ──────────────────────────────────── -->
+       <div class="tab-panel" data-tab-panel="0">
+ 
+-        <!-- ── Theo Core UI Catalog #c-stepper — rà soát 2026-10-12 ── -->
+-        <sd-section title="Ngang (mặc định)" subtitle="labelPosition=&quot;end&quot;; bước đã qua hiện icon sửa; bấm header hoặc nút để chuyển">
+-          <sd-stepper class="cat-stepper" selectedIndex="1">
+-            <sd-step label="Thông tin khoản vay"><div class="demo-step"><p>Nhập ngân hàng cho vay, số tiền và kỳ hạn khoản vay.</p><div class="demo-actions"><sd-button type="light" color="primary" size="sm" title="Tiếp tục" data-step="next"></sd-button></div></div></sd-step>
+-            <sd-step label="Hạn mức &amp; tài sản"><div class="demo-step"><p>Chọn hạn mức tín dụng sử dụng và tài sản đảm bảo tương ứng.</p><div class="demo-actions"><sd-button type="outline" color="secondary" size="sm" title="Quay lại" data-step="prev"></sd-button><sd-button type="light" color="primary" size="sm" title="Tiếp tục" data-step="next"></sd-button></div></div></sd-step>
+-            <sd-step label="Hồ sơ đính kèm"><div class="demo-step"><p>Đính kèm tờ trình, hợp đồng tín dụng và bảng tính dòng tiền.</p><div class="demo-actions"><sd-button type="outline" color="secondary" size="sm" title="Quay lại" data-step="prev"></sd-button><sd-button type="light" color="primary" size="sm" title="Tiếp tục" data-step="next"></sd-button></div></div></sd-step>
+-            <sd-step label="Trình phê duyệt"><div class="demo-step"><p>Kiểm tra lại thông tin và gửi hồ sơ cho Trưởng phòng Nguồn vốn.</p><div class="demo-actions"><sd-button type="outline" color="secondary" size="sm" title="Quay lại" data-step="prev"></sd-button><sd-button type="fill" color="primary" size="sm" title="Hoàn tất" data-step="done"></sd-button></div></div></sd-step>
+-          </sd-stepper>
+-        </sd-section>
+-        <sd-section title="labelPosition=&quot;bottom&quot;" subtitle="bước [editable]=&quot;false&quot; đã qua hiện dấu tích">
+-          <sd-stepper class="cat-stepper" labelPosition="bottom" selectedIndex="2">
+-            <sd-step label="Lập kế hoạch" editable="false"><div class="demo-step"><p>Chuyên viên lập Kế hoạch Funding quý IV/2026.</p></div></sd-step>
+-            <sd-step label="Kiểm soát"><div class="demo-step"><p>Kiểm soát viên rà soát số liệu dòng tiền.</p></div></sd-step>
+-            <sd-step label="Phê duyệt"><div class="demo-step"><p>Giám đốc Tài chính phê duyệt kế hoạch.</p></div></sd-step>
+-            <sd-step label="Giải ngân"><div class="demo-step"><p>Thực hiện giải ngân theo lịch.</p></div></sd-step>
+-          </sd-stepper>
+-        </sd-section>
+-        <sd-section title="orientation=&quot;vertical&quot;" subtitle="nội dung mở dưới bước đang chọn">
+-          <sd-stepper class="cat-stepper" orientation="vertical" selectedIndex="1">
+-            <sd-step label="Chọn ngân hàng"><div class="demo-step"><p>Chọn ngân hàng: Vietcombank, BIDV, Techcombank…</p></div></sd-step>
+-            <sd-step label="Nhập điều khoản"><div class="demo-step"><p>Lãi suất, kỳ hạn, lịch trả nợ gốc và lãi.</p></div></sd-step>
+-            <sd-step label="Xác nhận"><div class="demo-step"><p>Xác nhận và lưu nháp hợp đồng vay.</p></div></sd-step>
+-          </sd-stepper>
+-        </sd-section>
+-        <sd-section title="linear + optional + icon" subtitle="bước chưa tới bị khoá; nhãn &quot;Optional&quot; là chuỗi MatStepperIntl mặc định">
+-          <sd-stepper class="cat-stepper" linear>
+-            <sd-step label="Thông tin chung" icon="description"><div class="demo-step"><p>Linear: phải hoàn thành bước hiện tại mới mở bước sau.</p><div class="demo-actions"><sd-button type="light" color="primary" size="sm" title="Tiếp tục" data-step="next"></sd-button></div></div></sd-step>
+-            <sd-step label="Dòng tiền" icon="payments"><div class="demo-step"><p>Khai báo các dòng tiền thu/chi dự kiến.</p><div class="demo-actions"><sd-button type="outline" color="secondary" size="sm" title="Quay lại" data-step="prev"></sd-button><sd-button type="light" color="primary" size="sm" title="Tiếp tục" data-step="next"></sd-button></div></div></sd-step>
+-            <sd-step label="Ghi chú nội bộ" icon="sticky_note_2" optional><div class="demo-step"><p>Bước tùy chọn: có thể bỏ qua.</p><div class="demo-actions"><sd-button type="outline" color="secondary" size="sm" title="Quay lại" data-step="prev"></sd-button><sd-button type="light" color="primary" size="sm" title="Tiếp tục" data-step="next"></sd-button></div></div></sd-step>
+-            <sd-step label="Gửi duyệt" icon="send"><div class="demo-step"><p>Gửi hồ sơ vào luồng phê duyệt.</p><div class="demo-actions"><sd-button type="outline" color="secondary" size="sm" title="Quay lại" data-step="prev"></sd-button><sd-button type="fill" color="primary" size="sm" title="Hoàn tất" data-step="done"></sd-button></div></div></sd-step>
+-          </sd-stepper>
+-        </sd-section>
+-
+-        <!-- ── Các ví dụ bổ sung của kit ── -->
+-        <sd-section title="Horizontal - cơ bản (non-linear)">
+-          <p class="fs-12 text-black400 mb-12">Bấm vào vòng tròn bước để nhảy tự do hoặc dùng nút bên dưới. Bước đã qua hiện icon bút chì (<code>create</code>) đúng catalog — dấu tích chỉ xuất hiện khi bước đó khai <code>editable="false"</code>.</p>
+-          <sd-stepper id="stepper-basic" animationDuration="300ms">
+-            <sd-step label="Thông tin chung">
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-12">Bước 1 - nội dung giữ nguyên node DOM nên dữ liệu đã nhập không mất khi chuyển bước.</p>
+-                <sd-input label="Tên hợp đồng" helperText="Bắt buộc"></sd-input>
+-              </div>
+-            </sd-step>
+-            <sd-step label="Phê duyệt">
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-12">Bước 2 - rà soát thông tin trước khi gửi duyệt.</p>
+-                <p class="fs-12 text-primary mb-0">Trạng thái: Chờ duyệt</p>
+-              </div>
+-            </sd-step>
+-            <sd-step label="Hoàn tất">
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-0">Bước 3 - toàn bộ quy trình đã hoàn tất.</p>
+-              </div>
+-            </sd-step>
+-          </sd-stepper>
+-          <div class="flex align-items-center gap-4 mt-16">
+-            <sd-button id="btn-basic-prev" title="Quay lại" type="link" color="primary"></sd-button>
+-            <sd-button id="btn-basic-next" title="Tiếp" type="fill" color="primary"></sd-button>
+-            <span id="stepper-basic-status" class="fs-12 text-black400"></span>
++        <!-- ── Theo https://sdcorejs.github.io/sdcorejs-angular/3.1/v/22.3.1/components/stepper/examples (2026-10-14) ── -->
++        <sd-section title="Cơ bản: horizontal" subtitle="orientation=horizontal · selectedIndex two-way">
++          <div class="stp-ex">
++            <div class="stp-full">
++              <sd-stepper id="st-basic">
++                <sd-step label="Chọn dịch vụ" icon="storefront">
++                  <div class="stp-body">
++                    <p>Khách hàng chọn dịch vụ muốn đăng ký.</p>
++                    <sd-button size="sm" type="fill" color="primary" title="Tiếp tục" data-go="st-basic:1"></sd-button>
++                  </div>
++                </sd-step>
++                <sd-step label="Cung cấp thông tin" icon="person">
++                  <div class="stp-body">
++                    <p>Nhập thông tin liên hệ.</p>
++                    <div class="stp-row">
++                      <sd-button size="sm" type="light" color="secondary" title="Quay lại" data-go="st-basic:0"></sd-button>
++                      <sd-button size="sm" type="fill" color="primary" title="Tiếp tục" data-go="st-basic:2"></sd-button>
++                    </div>
++                  </div>
++                </sd-step>
++                <sd-step label="Xác nhận" icon="check_circle">
++                  <div class="stp-body">
++                    <p>Kiểm tra thông tin trước khi xác nhận.</p>
++                    <sd-button size="sm" type="light" color="secondary" title="Bắt đầu lại" data-go="st-basic:0"></sd-button>
++                  </div>
++                </sd-step>
++              </sd-stepper>
++            </div>
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="Horizontal - linear + completed + optional + icon">
+-          <p class="fs-12 text-black400 mb-12">Linear: chỉ nhảy được tới bước mà các bước trước đã <code>completed</code>; bước đã qua chỉ bấm lại được khi có <code>editable</code>. Bước "Ghi chú" là optional.</p>
+-          <sd-stepper id="stepper-linear" linear animationDuration="300ms">
+-            <sd-step label="Thông tin chung">
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-0">Bước 1 - thông tin cơ bản của hồ sơ.</p>
+-              </div>
+-            </sd-step>
+-            <sd-step label="Phê duyệt sơ bộ" icon="star" editable>
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-0">Bước 2 - hiện icon Material thay cho số thứ tự, có thể quay lại sửa (editable).</p>
+-              </div>
+-            </sd-step>
+-            <sd-step label="Ghi chú" optional>
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-0">Bước 3 - optional, dưới nhãn hiện chữ "Không bắt buộc".</p>
+-              </div>
+-            </sd-step>
+-            <sd-step label="Hoàn tất">
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-0">Bước 4 - kết thúc quy trình.</p>
+-              </div>
+-            </sd-step>
+-          </sd-stepper>
+-          <div class="flex align-items-center gap-4 mt-16">
+-            <sd-button id="btn-linear-prev" title="Quay lại" type="link" color="primary"></sd-button>
+-            <sd-button id="btn-linear-next" title="Tiếp" type="fill" color="primary"></sd-button>
+-            <span id="stepper-linear-status" class="fs-12 text-black400"></span>
++        <sd-section title="Hướng dọc" subtitle="orientation=vertical · selectedIndex two-way">
++          <div class="stp-ex">
++            <div class="stp-full">
++              <sd-stepper orientation="vertical">
++                <sd-step label="Tạo tài khoản" icon="account_circle">
++                  <p>Form tạo tài khoản đặt ở đây.</p>
++                </sd-step>
++                <sd-step label="Liên kết ngân hàng" icon="account_balance">
++                  <p>Form liên kết tài khoản ngân hàng.</p>
++                </sd-step>
++                <sd-step label="Hoàn tất" icon="done_all">
++                  <p>Setup xong, bắt đầu sử dụng.</p>
++                </sd-step>
++              </sd-stepper>
++            </div>
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="labelPosition=&quot;bottom&quot; — nhãn xuống dưới vòng tròn">
+-          <p class="fs-12 text-black400 mb-12">
+-            Mặc định của thư viện là <code>end</code> (nhãn nằm CẠNH vòng tròn) — các demo phía trên đều đang
+-            dùng mặc định đó. Khai <code>labelPosition="bottom"</code> thì nhãn xuống dưới và căn giữa.
+-            Đường nối chạy <b>liền mạch</b> từ mép vòng tròn này sang mép vòng tròn kia: đoạn giữa hai bước là
+-            một thẻ riêng, còn hai nửa còn lại do <code>::before</code>/<code>::after</code> của chính header vẽ
+-            (rộng <code>calc(50% - 20px)</code>) — đúng cơ chế của catalog.
+-          </p>
+-          <p class="fs-12 text-black400 mb-12">
+-            Demo dựng đúng biến thể của catalog: <b>bước đã qua mà <code>editable="false"</code> hiện dấu tích</b>
+-            (<code>done</code>), còn bước đã qua mà vẫn sửa được thì hiện <b>bút chì</b> (<code>create</code>).
+-          </p>
+-          <sd-stepper labelPosition="bottom" selectedIndex="2" animationDuration="0ms">
+-            <sd-step label="Lập kế hoạch" editable="false">
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-0">Đã chốt, không sửa lại được — vòng tròn hiện dấu tích.</p>
+-              </div>
+-            </sd-step>
+-            <sd-step label="Kiểm soát">
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-0">Đã qua nhưng vẫn sửa được — vòng tròn hiện bút chì.</p>
+-              </div>
+-            </sd-step>
+-            <sd-step label="Phê duyệt">
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-0">Giám đốc Tài chính phê duyệt kế hoạch.</p>
+-              </div>
+-            </sd-step>
+-            <sd-step label="Giải ngân">
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-0">Chuyển tiền theo kế hoạch đã duyệt.</p>
+-              </div>
+-            </sd-step>
+-          </sd-stepper>
++        <sd-section title="Linear wizard" subtitle="linear=true · stepControl=FormGroup">
++          <div class="stp-ex">
++          <p class="stp-hint">Linear=true: chỉ qua được step sau khi step trước hợp lệ. Mỗi sd-step bind stepControl tới 1 FormGroup.</p>
++            <div class="stp-full">
++              <sd-stepper id="st-linear" linear="true" color="primary">
++                <sd-step label="Tài khoản" icon="badge" invalid>
++                  <form class="stp-form" data-form="account">
++                    <label>Tên đăng nhập</label>
++                    <input name="username" placeholder="ít nhất 3 ký tự" />
++                    <label>Email</label>
++                    <input name="email" placeholder="user@onemount.com" />
++                    <div class="stp-row">
++                      <sd-button size="sm" type="fill" color="primary" title="Tiếp tục" data-lin="next" disabled></sd-button>
++                    </div>
++                  </form>
++                </sd-step>
++
++                <sd-step label="Hồ sơ" icon="contact_page" invalid>
++                  <form class="stp-form" data-form="profile">
++                    <label>Họ và tên</label>
++                    <input name="fullName" />
++                    <label>Số điện thoại</label>
++                    <input name="phone" placeholder="09xx xxx xxx" />
++                    <div class="stp-row">
++                      <sd-button size="sm" type="light" color="secondary" title="Quay lại" data-lin="prev"></sd-button>
++                      <sd-button size="sm" type="fill" color="primary" title="Tiếp tục" data-lin="next" disabled></sd-button>
++                    </div>
++                  </form>
++                </sd-step>
++
++                <sd-step label="Xác nhận" icon="task_alt" invalid>
++                  <form class="stp-form" data-form="confirm">
++                    <label>
++                      <input type="checkbox" name="agree" />
++                      Tôi đồng ý với điều khoản dịch vụ
++                    </label>
++                    <div class="stp-row">
++                      <sd-button size="sm" type="light" color="secondary" title="Quay lại" data-lin="prev"></sd-button>
++                      <sd-button size="sm" type="fill" color="primary" title="Hoàn tất" data-lin="submit" disabled></sd-button>
++                      <sd-button size="sm" type="light" color="secondary" title="Bắt đầu lại" data-lin="reset"></sd-button>
++                    </div>
++                  </form>
++                </sd-step>
++
++                <sd-step label="Kết quả" icon="celebration">
++                  <div class="stp-body" data-result>
++                    <p class="stp-hint">Bấm Hoàn tất ở bước Xác nhận để xem dữ liệu tổng hợp.</p>
++                  </div>
++                </sd-step>
++              </sd-stepper>
++            </div>
++          </div>
+         </sd-section>
+ 
+-        <sd-section title="state — pending / completed (error không hiển thị)">
+-          <p class="fs-12 text-black400 mb-12">
+-            <code>state</code> là API thật của <code>sd-step</code>, thay cho <code>stepControl</code> của Angular.
+-            Bước <strong>đã xong</strong> và bước <strong>đang làm</strong> đều tô <strong>nền đặc màu brand</strong>
+-            đúng catalog; phân biệt nằm ở <strong>ký hiệu</strong> — đã xong hiện bút chì
+-            (<code>create</code>, vì <code>editable</code> mặc định true) hoặc dấu tích
+-            (<code>done</code>, khi <code>editable="false"</code>), còn đang làm hiện <strong>số thứ tự</strong>.
+-            <strong><code>state="error"</code> / <code>errorMessage</code> KHÔNG hiển thị gì</strong> — catalog
+-            ghi rõ portal không bật <code>showError</code> (STEPPER_GLOBAL_OPTIONS), nên bước "Thẩm định"
+-            dưới đây trông như bước thường (rà soát 2026-10-12; bản trước kit tô đỏ).
+-          </p>
+-          <sd-stepper id="stepper-state" selectedIndex="1" animationDuration="0ms">
+-            <sd-step label="Thông tin chung" state="completed">
+-              <div class="p-16"><p class="fs-12 text-black400 mb-0">Bước đã hoàn tất.</p></div>
+-            </sd-step>
+-            <sd-step label="Thẩm định" state="error" errorMessage="Thiếu chứng từ bắt buộc">
+-              <div class="p-16"><p class="fs-12 text-black400 mb-0">Bước đang lỗi.</p></div>
+-            </sd-step>
+-            <sd-step label="Phê duyệt">
+-              <div class="p-16"><p class="fs-12 text-black400 mb-0">Bước chưa tới.</p></div>
+-            </sd-step>
+-          </sd-stepper>
+-        </sd-section>
+-
+-        <sd-section title="color — 6 giá trị (mặc định primary)">
+-          <p class="fs-12 text-black400 mb-12">
+-            Đổi màu vòng tròn bước đang làm / đã xong và nhãn bước đang làm. Đường nối <strong>luôn giữ màu xám</strong>
+-            ở mọi màu — đúng thư viện (SCSS gốc có khai biến màu đường nối active nhưng không rule nào dùng tới).
+-          </p>
+-          <div class="flex flex-col gap-16">
+-            <sd-stepper color="success" selectedIndex="1" animationDuration="0ms">
+-              <sd-step label="Đã duyệt" state="completed"><div class="p-16"><p class="fs-12 text-black400 mb-0">color="success"</p></div></sd-step>
+-              <sd-step label="Đang xử lý"><div class="p-16"><p class="fs-12 text-black400 mb-0">Bước 2</p></div></sd-step>
+-              <sd-step label="Hoàn tất"><div class="p-16"><p class="fs-12 text-black400 mb-0">Bước 3</p></div></sd-step>
+-            </sd-stepper>
+-            <sd-stepper color="info" selectedIndex="1" animationDuration="0ms">
+-              <sd-step label="Tiếp nhận" state="completed"><div class="p-16"><p class="fs-12 text-black400 mb-0">color="info"</p></div></sd-step>
+-              <sd-step label="Xử lý"><div class="p-16"><p class="fs-12 text-black400 mb-0">Bước 2</p></div></sd-step>
+-              <sd-step label="Trả kết quả"><div class="p-16"><p class="fs-12 text-black400 mb-0">Bước 3</p></div></sd-step>
+-            </sd-stepper>
++        <sd-section title="Optional step" subtitle="optional=true">
++          <div class="stp-ex">
++          <p class="stp-hint">Step 2 đánh dấu optional — user có thể qua step 3 mà không cần điền.</p>
++            <div class="stp-full">
++              <sd-stepper id="st-optional">
++                <sd-step label="Cơ bản" icon="info">
++                  <div class="stp-body">
++                    <p>Thông tin bắt buộc.</p>
++                    <sd-button size="sm" type="fill" color="primary" title="Tiếp tục" data-go="st-optional:1"></sd-button>
++                  </div>
++                </sd-step>
++                <sd-step label="Khuyến mãi" icon="local_offer" optional>
++                  <div class="stp-body">
++                    <p>Mã giới thiệu (tùy chọn — có thể bỏ qua).</p>
++                    <div class="stp-row">
++                      <sd-button size="sm" type="light" color="secondary" title="Quay lại" data-go="st-optional:0"></sd-button>
++                      <sd-button size="sm" type="light" color="secondary" title="Bỏ qua" data-go="st-optional:2"></sd-button>
++                      <sd-button size="sm" type="fill" color="primary" title="Áp dụng" data-go="st-optional:2"></sd-button>
++                    </div>
++                  </div>
++                </sd-step>
++                <sd-step label="Hoàn tất" icon="done">
++                  <p>Xong.</p>
++                </sd-step>
++              </sd-stepper>
++            </div>
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="headerPosition=&quot;bottom&quot; — thanh bước nằm dưới nội dung">
+-          <p class="fs-12 text-black400 mb-12">Mặc định là <code>top</code>; khai <code>bottom</code> thì thanh bước xuống dưới phần nội dung.</p>
+-          <sd-stepper headerPosition="bottom" selectedIndex="1" animationDuration="0ms">
+-            <sd-step label="Bước một" state="completed"><div class="p-16"><p class="fs-12 text-black400 mb-0">Nội dung nằm TRÊN thanh bước.</p></div></sd-step>
+-            <sd-step label="Bước hai"><div class="p-16"><p class="fs-12 text-black400 mb-0">Nội dung bước hai.</p></div></sd-step>
+-          </sd-stepper>
+-        </sd-section>
+-
+-        <sd-section title="Vertical">
+-          <p class="fs-12 text-black400 mb-12">Nội dung mở ra <b>ngay dưới bước đang chọn</b>, đường kẻ dọc nối từ tâm vòng tròn này xuống tâm vòng tròn kế (thụt 36px). Dựng lại 2026-10-12 theo đúng catalog — bản trước kit chia hai cột, bố cục đó không có trong Core.</p>
+-          <sd-stepper id="stepper-vertical" orientation="vertical" animationDuration="300ms">
+-            <sd-step label="Thông tin chung">
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-0">Bước 1 - thông tin cơ bản.</p>
+-              </div>
+-            </sd-step>
+-            <sd-step label="Điều khoản">
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-0">Bước 2 - điều khoản thanh toán.</p>
+-              </div>
+-            </sd-step>
+-            <sd-step label="Ký duyệt" icon="edit_note">
+-              <div class="p-16">
+-                <p class="fs-12 text-black400 mb-0">Bước 3 - ký và hoàn tất.</p>
+-              </div>
+-            </sd-step>
+-          </sd-stepper>
+-          <div class="flex align-items-center gap-4 mt-16">
+-            <sd-button id="btn-vertical-prev" title="Quay lại" type="link" color="primary"></sd-button>
+-            <sd-button id="btn-vertical-next" title="Tiếp" type="fill" color="primary"></sd-button>
+-            <span id="stepper-vertical-status" class="fs-12 text-black400"></span>
++        <sd-section title="Error state" subtitle="state=error · errorMessage=text">
++          <div class="stp-ex">
++          <p class="stp-hint">Step có thể override state='error' để hiện icon X đỏ + errorMessage. (Thư viện 22.3.1 không bật showError nên trên thực tế không hiện X đỏ / errorMessage — trang tài liệu cũng vậy.)</p>
++            <div class="stp-row" style="margin-bottom: 12px">
++              <sd-button size="sm" type="light" color="warning" title="Bỏ lỗi step 2" data-toggle-error></sd-button>
++            </div>
++            <div class="stp-full">
++              <sd-stepper id="st-error" selectedIndex="1" color="error">
++                <sd-step label="Step OK" icon="check">
++                  <p>OK.</p>
++                </sd-step>
++                <sd-step label="Validate fail" icon="warning" state="error" errorMessage="Mã đơn không hợp lệ">
++                  <div class="stp-body">
++                    <p>Mã đơn không khớp với hệ thống. Vui lòng kiểm tra lại.</p>
++                    <sd-button size="sm" type="light" color="secondary" title="Quay lại" data-go="st-error:0"></sd-button>
++                  </div>
++                </sd-step>
++                <sd-step label="Step 3" icon="done">
++                  <p>Step cuối.</p>
++                </sd-step>
++              </sd-stepper>
++            </div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Vị trí nhãn" subtitle="labelPosition=end / bottom">
++          <div class="stp-ex">
++          <p class="stp-hint">Bước hiện tại dùng nền fill và icon tương phản; bước hoàn thành dùng nền light. Đường nối thẳng hàng với tâm icon khi nhãn nằm dưới.</p>
++            <div class="stp-row" style="margin-bottom: 12px">
++              <sd-button size="sm" type="light" color="secondary" title="end" data-lp="end"></sd-button>
++              <sd-button size="sm" type="light" color="secondary" title="bottom" data-lp="bottom"></sd-button>
++              <span class="stp-hint">Đang chọn: <code data-lp-out>bottom</code></span>
++            </div>
++            <div class="stp-full">
++              <sd-stepper id="st-labelpos" labelPosition="bottom">
++                <sd-step label="Đăng ký"><p>Bước 1.</p></sd-step>
++                <sd-step label="Xác minh"><p>Bước 2.</p></sd-step>
++                <sd-step label="Thanh toán"><p>Bước 3.</p></sd-step>
++                <sd-step label="Hoàn tất"><p>Xong.</p></sd-step>
++              </sd-stepper>
++            </div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Bảng màu" subtitle="color=primary / success / warning / error">
++          <div class="stp-ex">
++          <p class="stp-hint">primary / success / warning / error — driving indicator + connector màu.</p>
++            <div class="stp-color-stack">
++              <sd-stepper color="primary">
++                <sd-step label="primary"><p>...</p></sd-step>
++                <sd-step label="primary"><p>...</p></sd-step>
++                <sd-step label="primary"><p>...</p></sd-step>
++              </sd-stepper>
++              <sd-stepper color="success">
++                <sd-step label="success"><p>...</p></sd-step>
++                <sd-step label="success"><p>...</p></sd-step>
++                <sd-step label="success"><p>...</p></sd-step>
++              </sd-stepper>
++              <sd-stepper color="warning">
++                <sd-step label="warning"><p>...</p></sd-step>
++                <sd-step label="warning"><p>...</p></sd-step>
++                <sd-step label="warning"><p>...</p></sd-step>
++              </sd-stepper>
++              <sd-stepper color="error">
++                <sd-step label="error"><p>...</p></sd-step>
++                <sd-step label="error"><p>...</p></sd-step>
++                <sd-step label="error"><p>...</p></sd-step>
++              </sd-stepper>
++            </div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Điều khiển từ ngoài" subtitle="next() · previous() · goTo() · reset()">
++          <div class="stp-ex">
++            <div class="stp-row" style="margin-bottom: 12px">
++              <sd-button size="sm" type="light" color="secondary" title="Prev" data-ext="previous"></sd-button>
++              <sd-button size="sm" type="light" color="secondary" title="Next" data-ext="next"></sd-button>
++              <sd-button size="sm" type="light" color="secondary" title="Đến cuối" data-ext="last"></sd-button>
++              <sd-button size="sm" type="light" color="warning" title="Reset" data-ext="reset"></sd-button>
++            </div>
++            <div class="stp-full">
++              <sd-stepper id="st-external">
++                <sd-step label="Step A"><p>Step A.</p></sd-step>
++                <sd-step label="Step B"><p>Step B.</p></sd-step>
++                <sd-step label="Step C"><p>Step C.</p></sd-step>
++              </sd-stepper>
++            </div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Editable = false" subtitle="editable=false">
++          <div class="stp-ex">
++          <p class="stp-hint">Step 1 đặt editable=false. Sau khi qua step 2, click vào step 1 sẽ không trở lại.</p>
++            <div class="stp-full">
++              <sd-stepper id="st-noedit">
++                <sd-step label="Bước 1 (locked sau khi qua)" icon="lock" editable="false">
++                  <div class="stp-body">
++                    <p>Sau khi bấm Tiếp tục, bước này sẽ không click lại được.</p>
++                    <sd-button size="sm" type="fill" color="primary" title="Tiếp tục" data-go="st-noedit:1"></sd-button>
++                  </div>
++                </sd-step>
++                <sd-step label="Bước 2">
++                  <p>Đã ở bước 2. Thử click vào bước 1 trên header — sẽ không quay lại được.</p>
++                </sd-step>
++              </sd-stepper>
++            </div>
+           </div>
+         </sd-section>
+ 
+@@ -262,7 +312,7 @@
+                   Dùng khi
+                 </div>
+                 <ul class="ds-guide-list">
+-                  <li>Quy trình nhiều bước có thứ tự (wizard): khai báo rồi phê duyệt rồi hoàn tất</li>
++                  <li>Quy trình nhiều bước có thứ tự (wizard): khai báo rồi xác nhận rồi hoàn tất</li>
+                   <li>Form dài chia nhỏ thành từng bước để giảm tải nhận thức và kiểm soát hoàn tất từng bước</li>
+                   <li>Cần chặn người dùng nhảy cóc tới bước chưa hợp lệ (linear)</li>
+                 </ul>
+@@ -281,9 +331,20 @@
+             </div>
+ 
+             <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Hành vi cần biết khi viết yêu cầu</p>
++              <ul class="ds-guide-list">
++                <li>Bước đã đi qua (và hợp lệ) đổi vòng tròn thành dấu tích; bước đang chọn luôn hiện số thứ tự hoặc icon của bước.</li>
++                <li><strong>linear</strong>: chỉ sang được bước sau khi mọi bước trước đã hợp lệ hoặc là bước Optional (nhãn phụ "Optional").</li>
++                <li><strong>editable = false</strong>: đi qua rồi thì không bấm quay lại bước đó được nữa.</li>
++                <li>Trạng thái lỗi (<code>state="error"</code> + <code>errorMessage</code>) <strong>không hiện gì</strong> trên thư viện 22.3.1 - muốn báo lỗi thì hiện ngay trong nội dung bước.</li>
++                <li>Màu: <code>primary</code> (mặc định) · <code>secondary</code> · <code>info</code> · <code>success</code> · <code>warning</code> · <code>error</code>.</li>
++              </ul>
++            </div>
++
++            <div class="ds-guide-col ds-guide-col--full">
+               <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+               <div class="ds-guide-prd">
+-                <p>"Quy trình tạo hợp đồng 4 bước: Thông tin chung → Phê duyệt sơ bộ (bắt buộc) → Ghi chú (không bắt buộc) → Hoàn tất. Chỉ cho phép sang bước sau khi bước trước đã hợp lệ; bước Phê duyệt cho quay lại sửa."</p>
++                <p>"Quy trình đăng ký 4 bước dạng linear: Tài khoản → Hồ sơ → Xác nhận → Kết quả. Nút Tiếp tục chỉ bật khi bước hiện tại hợp lệ; bước Tài khoản không cho quay lại sửa (editable=false); bước Khuyến mãi là Optional."</p>
+               </div>
+             </div>
+ 
+@@ -303,11 +364,18 @@
+                   <span class="ds-guide-code-lang">HTML</span>
+                   <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                 </div>
+-                <pre class="ds-guide-code">&lt;sd-stepper linear orientation="horizontal" labelPosition="bottom" animationDuration="300ms"&gt;
+-  &lt;sd-step label="Thông tin chung" completed&gt;...&lt;/sd-step&gt;
+-  &lt;sd-step label="Phê duyệt" icon="star" editable&gt;...&lt;/sd-step&gt;
+-  &lt;sd-step label="Ghi chú" optional&gt;...&lt;/sd-step&gt;
+-&lt;/sd-stepper&gt;</pre>
++                <pre class="ds-guide-code">&lt;sd-stepper id="wizard" linear selectedIndex="0" color="primary"&gt;
++  &lt;sd-step label="Tài khoản" icon="badge" invalid&gt;...&lt;/sd-step&gt;
++  &lt;sd-step label="Khuyến mãi" icon="local_offer" optional&gt;...&lt;/sd-step&gt;
++  &lt;sd-step label="Xác nhận" icon="task_alt" editable="false"&gt;...&lt;/sd-step&gt;
++&lt;/sd-stepper&gt;
++&lt;script&gt;
++  // ≙ stepControl.invalid: gỡ `invalid` khi form của bước hợp lệ
++  form.addEventListener('input', function () {
++    step.toggleAttribute('invalid', !form.checkValidity());
++  });
++  wizard.addEventListener('sd-step-change', function (e) { console.log(e.detail.index); });
++&lt;/script&gt;</pre>
+               </div>
+             </div>
+ 
+@@ -316,15 +384,15 @@
+               <table class="ds-guide-table">
+                 <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                 <tbody>
+-                  <tr><td>selectedIndex</td><td>number</td><td>0</td><td>Bước đang hiển thị - mirror đọc qua <code>selectedindex</code></td></tr>
+-                  <tr><td>linear</td><td>boolean</td><td>false</td><td>Chặn nhảy bước: chỉ tới được bước có các bước trước đã <code>state="completed"</code> (hoặc <code>optional</code>)</td></tr>
+-                  <tr><td>orientation</td><td>horizontal, vertical</td><td>horizontal</td><td>Hướng thanh bước</td></tr>
+-                  <tr><td>labelPosition</td><td>end, bottom</td><td><strong>end</strong></td><td>Vị trí nhãn so với vòng tròn. Mặc định THẬT là <code>end</code> (nhãn nằm cạnh), không phải bottom</td></tr>
+-                  <tr><td>headerPosition</td><td>top, bottom</td><td>top</td><td>Thanh bước nằm trên hay dưới phần nội dung</td></tr>
+-                  <tr><td>color</td><td>primary | secondary | info | success | warning | error</td><td>primary</td><td>Màu vòng tròn bước đang làm / đã xong + nhãn bước đang làm</td></tr>
+-                  <tr><td>animationDuration</td><td>string - ví dụ "0ms", "500ms"</td><td><strong>500ms</strong></td><td>Tốc độ chuyển trạng thái vòng tròn</td></tr>
+-                  <tr><td>disableRipple</td><td>boolean</td><td>false</td><td>Nhận cho khớp API; kit không vẽ ripple ở stepper nên không có hiệu ứng</td></tr>
+-                  <tr><td><s>autoId</s></td><td>—</td><td>—</td><td>Đã gỡ 2026-10-12 — bảng API <code>#c-stepper</code> không có</td></tr>
++                  <tr><td>selectedIndex</td><td>number</td><td>0</td><td>Bước đang chọn (≙ <code>[(selectedIndex)]</code>). Đặt attribute để nhảy bước - vẫn tuân theo linear / editable</td></tr>
++                  <tr><td>linear</td><td>boolean</td><td>false</td><td>Chỉ tới được bước sau khi mọi bước trước completed (đã ghé, rời đi và không <code>invalid</code>) hoặc <code>optional</code></td></tr>
++                  <tr><td>orientation</td><td>horizontal | vertical</td><td>horizontal</td><td>Hướng stepper</td></tr>
++                  <tr><td>labelPosition</td><td>end | bottom</td><td>end</td><td>Nhãn cạnh vòng tròn hoặc dưới vòng tròn (chỉ horizontal)</td></tr>
++                  <tr><td>headerPosition</td><td>top | bottom</td><td>top</td><td>Thanh bước trên hay dưới nội dung (chỉ horizontal)</td></tr>
++                  <tr><td>animationDuration</td><td>string</td><td>500ms</td><td>Thời gian chuyển nội dung bước</td></tr>
++                  <tr><td>disableRipple</td><td>boolean</td><td>false</td><td>Tắt ripple của header (kit không chạy hiệu ứng ripple, chỉ giữ API)</td></tr>
++                  <tr><td>color</td><td>primary | secondary | info | success | warning | error</td><td>primary</td><td>Màu vòng tròn bước chọn / đã xong và đường nối</td></tr>
++                  <tr><td>autoId</td><td>string</td><td>-</td><td>Gắn <code>data-autoId</code> lên host cho automation test</td></tr>
+                 </tbody>
+               </table>
+             </div>
+@@ -334,25 +402,26 @@
+               <table class="ds-guide-table">
+                 <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                 <tbody>
+-                  <tr><td>label</td><td>string</td><td>-</td><td>Nhãn bước</td></tr>
+-                  <tr><td>icon</td><td>string</td><td>-</td><td>Tên Material icon Outlined hiện trong vòng tròn bước (thay số thứ tự)</td></tr>
+-                  <tr><td>optional</td><td>boolean</td><td>false</td><td>Bước không bắt buộc - hiện chữ phụ "Không bắt buộc"</td></tr>
+-                  <tr><td>editable</td><td>boolean</td><td><strong>true</strong></td><td>Cho quay lại sửa bước đã qua. Mặc định THẬT là <strong>true</strong> - phải khai <code>editable="false"</code> mới chặn</td></tr>
+-                  <tr><td>state</td><td>pending | completed | error</td><td>pending</td><td>Trạng thái bước - thay cho <code>stepControl</code> của Portal (xem ghi chú)</td></tr>
+-                  <tr><td>errorMessage</td><td>string</td><td>-</td><td>Dòng chữ đỏ dưới nhãn khi <code>state="error"</code></td></tr>
+-                  <tr><td>completed</td><td>boolean</td><td>-</td><td>Bí danh cũ của <code>state="completed"</code> - giữ để trang đã tạo không vỡ, trang mới dùng <code>state</code></td></tr>
++                  <tr><td>label</td><td>string</td><td>- (bắt buộc)</td><td>Nhãn bước</td></tr>
++                  <tr><td>icon</td><td>string</td><td>-</td><td>Material icon Outlined thay số thứ tự khi bước chưa xong / đang chọn</td></tr>
++                  <tr><td>optional</td><td>boolean</td><td>false</td><td>Bước bỏ qua được ở chế độ linear - hiện nhãn phụ "Optional"</td></tr>
++                  <tr><td>editable</td><td>boolean</td><td>true</td><td><code>editable="false"</code>: đã qua thì không quay lại được; bước xong hiện dấu tích kiểu done</td></tr>
++                  <tr><td>invalid</td><td>boolean</td><td>false</td><td>Trải phẳng của <code>stepControl.invalid</code> (FormGroup không truyền được qua HTML). Bước <code>invalid</code> chặn đi tiếp khi linear</td></tr>
++                  <tr><td>state</td><td>string</td><td>-</td><td>Nhận cho khớp API; thư viện không bật <code>showError</code> nên <code>state="error"</code> không hiện gì</td></tr>
++                  <tr><td>errorMessage</td><td>string</td><td>-</td><td>Như trên - không hiển thị</td></tr>
++                  <tr><td>completed</td><td>boolean</td><td>-</td><td>Bí danh cũ: ép bước "đã xong" (cũng như <code>state="completed"</code>) - giữ để trang đã tạo không vỡ</td></tr>
+                 </tbody>
+               </table>
+             </div>
+ 
+             <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Events - sd-stepper</p>
++              <p class="ds-guide-label">Events</p>
+               <table class="ds-guide-table">
+                 <thead><tr><th>Event</th><th>detail</th><th>Khi nào fire</th></tr></thead>
+                 <tbody>
+-                  <tr><td>sd-step-change</td><td>{ index: number }</td><td>Bấm header bước hoặc gọi <code>next()</code> / <code>previous()</code> / <code>reset()</code> - ánh xạ tới <code>[(selectedIndex)]</code> bên Angular</td></tr>
+-                  <tr><td>sd-selection-change</td><td>{ previousIndex, selectedIndex }</td><td>Ánh xạ tới output <code>selectionChange</code> của thư viện (mang thêm bước trước đó)</td></tr>
+-                  <tr><td>sd-select-change</td><td>-</td><td>Bắn trên chính thẻ <code>sd-step</code> được chọn - ánh xạ <code>selectChange</code> của SdStep</td></tr>
++                  <tr><td>sd-step-change</td><td>{ index }</td><td>Bước chọn đổi (≙ <code>selectedIndexChange</code>)</td></tr>
++                  <tr><td>sd-selection-change</td><td>{ selectedIndex, previouslySelectedIndex, previousIndex, selectedStep, previouslySelectedStep }</td><td>≙ <code>(selectionChange)</code> của MatStepper</td></tr>
++                  <tr><td>sd-select-change</td><td>-</td><td>Bắn trên chính <code>sd-step</code> vừa được chọn, không nổi bọt (≙ <code>(selectChange)</code> của SdStep)</td></tr>
+                 </tbody>
+               </table>
+             </div>
+@@ -362,26 +431,14 @@
+               <table class="ds-guide-table">
+                 <thead><tr><th>Method</th><th>Mô tả</th></tr></thead>
+                 <tbody>
+-                  <tr><td><s>goTo(index)</s></td><td>Đã gỡ 2026-10-12 — catalog chỉ có <code>next()</code> · <code>previous()</code> · <code>reset()</code>; nhảy thẳng tới bước thì đặt attribute <code>selectedIndex</code></td></tr>
+-                  <tr><td>next()</td><td>Sang bước kế tiếp</td></tr>
++                  <tr><td>next()</td><td>Sang bước kế tiếp (bị chặn nếu linear và bước hiện tại <code>invalid</code>)</td></tr>
+                   <tr><td>previous()</td><td>Quay lại bước trước</td></tr>
+-                  <tr><td>reset()</td><td>Về bước đầu tiên</td></tr>
++                  <tr><td>goTo(index)</td><td>Nhảy tới bước <code>index</code> (kẹp trong khoảng 0 … n-1)</td></tr>
++                  <tr><td>reset()</td><td>Về bước đầu, xoá trạng thái đã ghé / đã xong</td></tr>
+                 </tbody>
+               </table>
+             </div>
+ 
+-            <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Ghi chú stepControl</p>
+-              <div class="ds-guide-code-wrap">
+-                <div class="ds-guide-code-bar">
+-                  <span class="ds-guide-code-lang">Lưu ý mirror</span>
+-                </div>
+-                <pre class="ds-guide-code">stepControl (FormGroup) là input Portal CÓ nhưng mirror CỐ Ý bỏ: Web Component không nhận
+-FormGroup qua attribute. Thay thế: trang tự thêm boolean `completed` lên sd-step khi bước
+-hợp lệ, `linear` tự chặn nhảy dựa trên các bước `completed`.</pre>
+-              </div>
+-            </div>
+-
+           </div>
+         </sd-section>
+       </div><!-- /tab-panel: Dev -->
+@@ -427,69 +484,71 @@
+     }
+     initPreviewTabs();
+   })();
++</script>
+ 
+-  // Demo wiring: Tiếp / Quay lại + cập nhật trạng thái bước
++<script>
++  /* Nối dây các ví dụ = stepper-demo.component.ts của trang tài liệu 3.1 */
+   (function () {
+-    var demos = [
+-      { id: 'stepper-basic', next: 'btn-basic-next', prev: 'btn-basic-prev', status: 'stepper-basic-status' },
+-      { id: 'stepper-linear', next: 'btn-linear-next', prev: 'btn-linear-prev', status: 'stepper-linear-status' },
+-      { id: 'stepper-vertical', next: 'btn-vertical-next', prev: 'btn-vertical-prev', status: 'stepper-vertical-status' }
+-    ];
+-
+-    demos.forEach(function (d) {
+-      var stepper = document.getElementById(d.id);
+-      if (!stepper) return;
+-
+-      function steps() {
+-        return Array.prototype.slice.call(stepper.querySelectorAll('sd-step'));
+-      }
+-      function currentIndex() {
+-        return parseInt(stepper.getAttribute('selectedindex') || '0', 10);
+-      }
+-      function updateStatus() {
+-        var status = document.getElementById(d.status);
+-        if (status) status.textContent = 'Bước ' + (currentIndex() + 1) + ' / ' + steps().length;
+-      }
+-
+-      stepper.addEventListener('sd-step-change', updateStatus);
++    /* [(selectedIndex)] của trang demo: nút trong bước gán chỉ số */
++    document.addEventListener('click', function (e) {
++      var b = e.target.closest && e.target.closest('sd-button[data-go]');
++      if (b) { var p = b.getAttribute('data-go').split(':'); document.getElementById(p[0]).setAttribute('selectedIndex', p[1]); }
++      var x = e.target.closest && e.target.closest('sd-button[data-ext]');
++      if (x) { var st = document.getElementById('st-external'), a = x.getAttribute('data-ext');
++        if (a === 'last') st.goTo(2); else st[a](); }
++      var lp = e.target.closest && e.target.closest('sd-button[data-lp]');
++      if (lp) { var v = lp.getAttribute('data-lp'); document.getElementById('st-labelpos').setAttribute('labelPosition', v);
++        document.querySelector('[data-lp-out]').textContent = v; }
++      var te = e.target.closest && e.target.closest('sd-button[data-toggle-error]');
++      if (te) { var s2 = document.querySelectorAll('#st-error > sd-step')[1], on = s2.getAttribute('state') === 'error';
++        if (on) s2.removeAttribute('state'); else s2.setAttribute('state', 'error');
++        te.setAttribute('title', on ? 'Đặt lỗi step 2' : 'Bỏ lỗi step 2'); }
++    });
+ 
+-      var next = document.getElementById(d.next);
+-      if (next) next.addEventListener('click', function () {
+-        var list = steps();
+-        var idx = currentIndex();
+-        if (idx < list.length - 1) {
+-          list[idx].setAttribute('completed', '');
+-          stepper.next();
++    /* Linear wizard — `invalid` trên sd-step ≙ stepControl.invalid (FormGroup của trang tài liệu) */
++    var lin = document.getElementById('st-linear');
++    if (lin) {
++      var steps = lin.querySelectorAll(':scope > sd-step');
++      var RULES = {
++        account: function (f) { return f.username.value.length >= 3 && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email.value); },
++        profile: function (f) { return !!f.fullName.value && !!f.phone.value; },
++        confirm: function (f) { return f.agree.checked; }
++      };
++      var check = function () {
++        lin.querySelectorAll('form[data-form]').forEach(function (f) {
++          var ok = RULES[f.getAttribute('data-form')](f.elements);
++          var step = steps[['account', 'profile', 'confirm'].indexOf(f.getAttribute('data-form'))];
++          if (ok) step.removeAttribute('invalid'); else step.setAttribute('invalid', '');
++          f.querySelectorAll('sd-button[data-lin="next"], sd-button[data-lin="submit"]').forEach(function (b) {
++            if (ok) b.removeAttribute('disabled'); else b.setAttribute('disabled', '');
++          });
++        });
++      };
++      lin.addEventListener('input', check);
++      lin.addEventListener('change', check);
++      lin.addEventListener('click', function (e) {
++        var b = e.target.closest && e.target.closest('sd-button[data-lin]');
++        if (!b || b.hasAttribute('disabled')) return;
++        var a = b.getAttribute('data-lin');
++        if (a === 'next') lin.next();
++        else if (a === 'prev') lin.previous();
++        else if (a === 'submit') {
++          var v = {}; lin.querySelectorAll('form[data-form]').forEach(function (f) {
++            Array.prototype.forEach.call(f.elements, function (el) { if (el.name) v[el.name] = el.type === 'checkbox' ? el.checked : el.value; });
++          });
++          var out = lin.querySelector('[data-result]');
++          out.innerHTML = '<p>Đã gửi dữ liệu:</p><pre class="stp-output"></pre>' +
++            '<sd-button size="sm" type="light" color="secondary" title="Bắt đầu lại" data-lin="reset"></sd-button>';
++          out.querySelector('pre').textContent = JSON.stringify({ account: { username: v.username, email: v.email },
++            profile: { fullName: v.fullName, phone: v.phone }, agree: v.agree }, null, 2);
++        } else if (a === 'reset') {
++          lin.querySelectorAll('form[data-form]').forEach(function (f) { f.reset(); });
++          lin.querySelector('[data-result]').innerHTML = '<p class="stp-hint">Bấm Hoàn tất ở bước Xác nhận để xem dữ liệu tổng hợp.</p>';
++          check(); lin.reset();
+         }
+       });
+-
+-      var prev = document.getElementById(d.prev);
+-      if (prev) prev.addEventListener('click', function () {
+-        var idx = currentIndex();
+-        if (idx > 0) stepper.previous();
+-      });
+-
+-      updateStatus();
+-    });
++    }
+   })();
+ </script>
+-
+-
+-<script>
+-  /* Nút mẫu trong các bước của mục catalog — "Tiếp tục" coi như hợp lệ (catalog:
+-     "stepControl không được kiểm tra"), đánh dấu bước xong rồi next(). */
+-  document.querySelectorAll('sd-stepper.cat-stepper').forEach(function (st) {
+-    st.addEventListener('click', function (e) {
+-      var b = e.target.closest('[data-step]');
+-      if (!b) return;
+-      var steps = st.querySelectorAll('sd-step');
+-      var idx = parseInt(st.getAttribute('selectedindex') || '0', 10);
+-      var act = b.getAttribute('data-step');
+-      if (act === 'next') { if (steps[idx]) steps[idx].setAttribute('state', 'completed'); st.next(); }
+-      else if (act === 'prev') st.previous();
+-      else if (act === 'done') { if (steps[idx]) steps[idx].setAttribute('state', 'completed'); st.reset(); }
+-    });
+-  });
+-</script>
+ </body>
+ </html>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-13 17:29:12.672354790 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-13 17:58:38.474927693 +0000
+@@ -6123,491 +6123,464 @@
+ 
+ 
+   /* ══════════════════════════════════════════════════════════
+-     sd-step + sd-stepper — mirror SdStepper/SdStep của
+-     @sdcorejs/angular v22.2.12 (bọc MatStepper của Angular Material).
+-
+-     Nguồn đối chiếu (rà soát lại 2026-10-08, Portal /pattern/stepper/basic):
+-     `types/sdcorejs-angular-components-stepper.d.ts` + `stepper.component.ts`
+-     /`.html`/SCSS và `step.component.ts` lấy từ source map gói npm.
+-
+-     API THẬT:
+-       sd-stepper: selectedIndex (0), linear (false), orientation
+-         (horizontal), labelPosition ("end"), headerPosition ("top"),
+-         animationDuration ("500ms"), disableRipple (false),
+-         color (primary), autoId
+-         Outputs: selectedIndexChange, selectionChange
+-         Methods: next(), previous(), reset(), goTo(index)
+-       sd-step: label (bắt buộc), icon, optional (false), editable (TRUE),
+-         stepControl, state, errorMessage · Output: selectChange
+-
+-     Mấy chỗ bản mirror trước SAI, nay sửa:
+-     - `labelPosition` mặc định là **"end"** (nhãn cạnh vòng tròn), bản trước
+-       để "bottom" nên bố cục lệch ngay từ mặc định.
+-     - `animationDuration` mặc định **"500ms"**, bản trước để "300ms".
+-     - `editable` mặc định **true**, bản trước coi như attribute boolean nên
+-       vắng mặt = false — ngược hẳn, khiến linear chặn nhầm cả bước được sửa.
+-     - Thiếu hẳn `headerPosition`, `color`, `autoId`, và
+-       `state`/`errorMessage` của sd-step.
+-
+-     `stepControl` vẫn CỐ Ý không mirror — Web Component không nhận FormGroup
+-     qua attribute. Thay bằng `state="completed"` (API thật) để chặn nhảy bước
+-     khi linear; `completed` cũ giữ làm bí danh để trang đã tạo không vỡ.
+-     `disableRipple` ĐÃ BỎ 2026-10-12 (Rule 18) — bảng API của catalog
+-     `#c-stepper` không có input này, và kit vốn không vẽ ripple nên nhận vào
+-     cũng chẳng tắt được gì. Danh sách "API THẬT" ở trên là của gói npm
+-     22.2.12, giữ nguyên để đối chiếu; mốc chuẩn là catalog.
+-     Giữ nguyên node DOM của từng sd-step (ẩn bằng CSS, không chép innerHTML)
+-     để event listener và dữ liệu đã gõ bên trong bước không bị mất.
+-     Events: sd-step-change { index } ↔ [(selectedIndex)]; sd-selection-change
+-     { previousIndex, selectedIndex } ↔ (selectionChange).
++     sd-step + sd-stepper — ĐỒNG BỘ @sdcorejs/angular 22.3.1 (2026-10-14)
++     Builder: *„Cập nhật phần Stepper theo Core UI này
++       https://sdcorejs.github.io/sdcorejs-angular/3.1/v/22.3.1/components/stepper/examples“*
++     → mốc chuẩn của RIÊNG stepper đổi từ catalog @sd-angular/core 19.0.10 sang gói npm
++     `@sdcorejs/angular` 22.3.1 (fesm2022/sdcorejs-angular-components-stepper.mjs) chạy trên
++     `@angular/material` 22.1.5. Đối chiếu bằng trang demo của tài liệu 3.1 dựng lại thật
++     (showcase/src/app/pages/components/stepper/stepper-demo.component.*, nhánh release/angular-3.1).
++
++     DOM = MatStepper thật:
++       sd-stepper[style --sd-stepper-*] > mat-stepper.sd-stepper.mat-stepper-{horizontal|vertical}
++         ngang:  .mat-horizontal-stepper-wrapper
++                   > .mat-horizontal-stepper-header-container[role=tablist]
++                       > mat-step-header.mat-step-header.mat-horizontal-stepper-header × n (+ .mat-stepper-horizontal-line)
++                   > .mat-horizontal-content-container > div.mat-horizontal-stepper-content-{previous|current|next}[role=tabpanel]
++         dọc:    .mat-vertical-stepper-wrapper > .mat-step × n
++                   > mat-step-header.mat-vertical-stepper-header
++                   > .mat-vertical-content-container[.mat-stepper-vertical-line][.…-active] > .mat-vertical-stepper-content > .mat-vertical-content
++       mat-step-header > .mat-step-header-ripple + .mat-step-icon.mat-step-icon-state-{number|edit|done}[.mat-step-icon-selected]
++                         > .mat-step-icon-content > (sd-icon 18px | số bước)
++                       + .mat-step-label[.mat-step-label-active][.mat-step-label-selected]
++                         > .mat-step-text-label > span.sd-step__label > span.sd-step__text  (+ .mat-step-optional "Optional")
++     Logic = CdkStep/CdkStepper 22.1: completed = (đã ghé & rời bước) && hợp lệ; linear chỉ cho tới bước
++     sau khi mọi bước trước completed hoặc optional; editable=false thì không quay lại được; icon
++     number → `icon` của bước hoặc số, edit/done → `check`. `state` / `errorMessage` KHÔNG hiện gì
++     (thư viện không bật STEPPER_GLOBAL_OPTIONS.showError).
++
++     Khác thư viện, có lý do:
++       - `stepControl` (FormGroup) không truyền được qua HTML → trải phẳng thành attribute `invalid`
++         (≙ stepControl.invalid) trên sd-step (Rule 18-2). `completed` / `state="completed"` giữ làm
++         bí danh cũ = "đã xong" (Rule 18-3).
++       - Thẻ `<sd-step>` nằm lại trong host (ẩn) để trang còn đọc/ghi attribute; NỘI DUNG của nó được
++         chuyển (không chép) vào khung nội dung của bước → giữ nguyên listener / dữ liệu đã gõ. Thư
++         viện chỉ dựng nội dung bước lần đầu được chọn; kit dựng sẵn (khung chưa chọn vẫn ẩn).
++       - Không chạy hiệu ứng gợn (ripple) — khối `.mat-step-header-ripple` vẫn có trong DOM.
++     Sự kiện: `sd-step-change` { index } ≙ (selectedIndexChange); `sd-selection-change`
++     { selectedIndex, previouslySelectedIndex, previousIndex, selectedStep, previouslySelectedStep }
++     ≙ (selectionChange); `sd-select-change` trên chính sd-step (không nổi bọt) ≙ (selectChange).
+      ══════════════════════════════════════════════════════════ */
+-  var SD_STEPPER_COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error'];
++  var SD_STEPPER_SEQ = 0;
++  function sdBoolAttr(el, name) {   /* booleanAttribute của Angular */
++    var v = el.getAttribute(name);
++    return v !== null && v !== 'false';
++  }
++  function sdStepIconHtml(name, withNameAttr) {
++    return '<sd-icon' + (withNameAttr ? ' name="' + escAttr(name) + '"' : '') + ' size="18px" class="sd-icon sd-step__icon sd-icon--material sd-icon--material-icons-outlined" aria-hidden="true" style="--sd-icon-size: 18px;">' +
++      '<mat-icon role="img" class="mat-icon notranslate sd-icon__material material-icons-outlined mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font" data-mat-icon-namespace="material-icons-outlined"> ' + esc(name) + ' </mat-icon></sd-icon>';
++  }
+ 
+   class SdStep extends HTMLElement {
+     static get observedAttributes() {
+-      return ['label', 'icon', 'optional', 'editable', 'completed', 'state', 'errormessage'];
+-    }
+-    /* editable mặc định TRUE đúng thư viện — chỉ `editable="false"` mới tắt. */
+-    get isEditable() {
+-      var v = this.getAttribute('editable');
+-      return v === null ? true : v !== 'false';
+-    }
+-    /* state thật: pending | active | completed | error. `completed` là bí danh cũ. */
+-    get stepState() {
+-      var st = (this.getAttribute('state') || '').trim();
+-      if (st) return st;
+-      return this.hasAttribute('completed') ? 'completed' : 'pending';
+-    }
+-    connectedCallback() {
+-      this._notifyGroup();
+-    }
+-    attributeChangedCallback() {
+-      this._notifyGroup();
++      return ['label', 'icon', 'optional', 'editable', 'state', 'errormessage', 'invalid', 'completed'];
+     }
+-    _notifyGroup() {
+-      var parent = this.parentElement;
+-      var group = parent && parent.closest ? parent.closest('sd-stepper') : null;
+-      if (group && group._rebuildHeader) group._rebuildHeader();
++    constructor() { super(); this._interacted = false; }
++    get label() { return this.getAttribute('label') || ''; }
++    get icon() { return this.getAttribute('icon') || ''; }
++    get optional() { return sdBoolAttr(this, 'optional'); }
++    /* editable mặc định TRUE (input(true, booleanAttribute)) — chỉ `editable="false"` mới tắt */
++    get editable() { var v = this.getAttribute('editable'); return v === null ? true : v !== 'false'; }
++    get isEditable() { return this.editable; }
++    get state() { return this.getAttribute('state') || undefined; }
++    get errorMessage() { return this.getAttribute('errorMessage') || this.getAttribute('errormessage') || undefined; }
++    /* ≙ stepControl.invalid (trải phẳng) */
++    get invalid() { return sdBoolAttr(this, 'invalid'); }
++    get interacted() { return this._interacted; }
++    _completedOverride() {
++      if (this.hasAttribute('completed')) return this.getAttribute('completed') !== 'false';
++      if ((this.getAttribute('state') || '').trim() === 'completed') return true;
++      return null;
++    }
++    /* CdkStep.completed: override ?? (interacted && (!stepControl || valid)) */
++    get completed() {
++      var o = this._completedOverride();
++      if (o != null) return o;
++      return this._interacted && !this.invalid;
++    }
++    get stepState() { return this.completed ? 'completed' : 'pending'; }
++    connectedCallback() { this._notify(); }
++    attributeChangedCallback() { this._notify(); }
++    _notify() {
++      var g = this.parentElement;
++      if (g && g.tagName === 'SD-STEPPER' && g._schedule) g._schedule();
+     }
+   }
+   customElements.define('sd-step', SdStep);
+ 
+   class SdStepper extends HTMLElement {
+     static get observedAttributes() {
+-      /* `disableRipple` ĐÃ BỎ 2026-10-12: bảng API của catalog `#c-stepper`
+-         không có input này (nó đến từ gói npm 22.2.12 — mốc chuẩn CŨ), và kit
+-         vốn không vẽ ripple nên nó nhận attribute rồi chẳng làm gì. Rule 18. */
+-      /* `autoId` ĐÃ GỠ 2026-10-12 (Rule 18): bảng API `#c-stepper` không có. */
+       return ['selectedindex', 'linear', 'orientation', 'labelposition', 'headerposition',
+-              'animationduration', 'color'];
++              'animationduration', 'disableripple', 'color', 'autoid'];
+     }
+     constructor() {
+       super();
+-      this._internalSelect = false;
++      this._selected = null;      /* chỉ số đang chọn (CdkStepper._selectedIndex) */
++      this._focusIdx = null;      /* FocusKeyManager.activeItemIndex */
++      this._uid = 'cdk-stepper-' + (SD_STEPPER_SEQ++);
++      this._stepsSeen = [];
++      this._syncingAttr = false;
+     }
+     connectedCallback() {
+-      this._render();
+-      this._syncSelection();
++      var self = this;
+       if (!this._observer) {
+-        var self = this;
+-        this._observer = new MutationObserver(function () {
+-          self._rebuildHeader();
++        this._observer = new MutationObserver(function (muts) {
++          var hit = muts.some(function (m) { return m.target === self || (m.target.tagName === 'SD-STEP' && m.target.parentElement === self); });
++          if (hit) self._schedule();
+         });
+-        this._observer.observe(this, { childList: true, subtree: true });
+-      }
+-    }
+-    disconnectedCallback() {
+-      if (this._observer) {
+-        this._observer.disconnect();
+-        this._observer = null;
+       }
++      this._observer.observe(this, { childList: true, subtree: true });
++      if (!this._bound) this._bind();
++      this._render();
+     }
++    disconnectedCallback() { if (this._observer) this._observer.disconnect(); }
+     attributeChangedCallback(name) {
+       if (!this.isConnected) return;
+       if (name === 'selectedindex') {
+-        if (this._internalSelect) { this._internalSelect = false; return; }
+-        this._syncSelection();
++        if (this._syncingAttr) return;
++        /* [(selectedIndex)] từ ngoài → setter của CdkStepper (có chặn linear / editable) */
++        var v = parseInt(this.getAttribute('selectedindex'), 10);
++        if (isNaN(v)) return;
++        /* trước lần dựng đầu (input gán trước ngAfterContentInit) → gán thẳng, không đánh dấu đã ghé */
++        if (!this._inited) { this._selected = v; this._schedule(); return; }
++        this._setSelected(v, true);
+         return;
+       }
+-      this._applyAppearance();
+-      this._syncSelection();
++      this._schedule();
+     }
+ 
+-    /* Từ 2026-10-12 `<sd-step>` không còn luôn nằm trong `_panels`: chế độ DỌC
+-       rải mỗi bước xuống ngay dưới header của nó (đúng catalog). Nên tìm theo
+-       cây thay vì theo một thẻ cha cố định. `_stepHome` giữ các node khi vẽ lại. */
+-    _getSteps() {
+-      if (!this._wrapper) return [];
+-      return Array.prototype.slice.call(this._wrapper.querySelectorAll('sd-step'));
++    /* ── API công khai (đúng SdStepper 22.3.1) ── */
++    get steps() { return this._getSteps(); }
++    get selectedIndex() { return this._selected == null ? 0 : this._selected; }
++    set selectedIndex(v) { this._setSelected(parseInt(v, 10) || 0, true); }
++    get linear() { return sdBoolAttr(this, 'linear'); }
++    get orientation() { return this.getAttribute('orientation') === 'vertical' ? 'vertical' : 'horizontal'; }
++    next() { var n = this._getSteps().length; this._setSelected(Math.min(this.selectedIndex + 1, n - 1), true); }
++    previous() { this._setSelected(Math.max(this.selectedIndex - 1, 0), true); }
++    reset() {
++      /* CdkStepper.reset(): về bước 0 (không chặn) rồi xoá trạng thái đã ghé của mọi bước */
++      this._update(0);
++      this._getSteps().forEach(function (s) { s._interacted = false; });
++      this._render();
+     }
+-
+-    _getSelectedIndex() {
+-      var steps = this._getSteps();
+-      if (!steps.length) return 0;
+-      var raw = this.getAttribute('selectedIndex') || this.getAttribute('selectedindex') || '0';
+-      var selected = parseInt(raw, 10);
+-      if (isNaN(selected)) selected = 0;
+-      return Math.max(0, Math.min(selected, steps.length - 1));
++    goTo(index) {
++      var len = this._getSteps().length;
++      if (!len) { this._setSelected(0, false); return; }
++      this._setSelected(Math.max(0, Math.min(index, len - 1)), true);
+     }
+ 
+-    _render() {
++    _schedule() {
++      if (this._queued) return;
++      this._queued = true;
+       var self = this;
+-      if (!this._wrapper) {
+-        this._panels = document.createElement('div');
+-        this._panels.className = 'sd-stepper__panels';
+-        Array.from(this.childNodes).forEach(function (n) {
+-          if (n.nodeType === 1 && n.tagName === 'SD-STEP') {
+-            self._panels.appendChild(n);
+-          }
+-        });
+-        this._wrapper = document.createElement('div');
+-        this._wrapper.className = 'sd-stepper';
+-        this._header = document.createElement('div');
+-        this._header.className = 'sd-stepper__header';
+-        this._header.setAttribute('role', 'tablist');
+-        this._wrapper.appendChild(this._header);
+-        this._wrapper.appendChild(this._panels);
+-        this.innerHTML = '';
+-        this.appendChild(this._wrapper);
+-      }
+-      this._applyAppearance();
+-      this._rebuildHeader();
+-    }
+-
+-    _applyAppearance() {
+-      if (!this._wrapper) return;
+-      var orientation = this.getAttribute('orientation') || 'horizontal';
+-      // Mặc định THẬT của thư viện: labelPosition "end", animationDuration "500ms"
+-      var labelPosition = this.getAttribute('labelPosition') || this.getAttribute('labelposition') || 'end';
+-      var headerPosition = this.getAttribute('headerPosition') || this.getAttribute('headerposition') || 'top';
+-      var duration = this.getAttribute('animationDuration') || this.getAttribute('animationduration') || '500ms';
+-      var color = this.getAttribute('color') || 'primary';
+-      if (SD_STEPPER_COLORS.indexOf(color) === -1) color = 'primary';
+-
+-      this._wrapper.classList.toggle('sd-stepper--vertical', orientation === 'vertical');
+-      // "end" là mặc định nên chỉ gắn class khi là "bottom"
+-      this._wrapper.classList.toggle('sd-stepper--label-bottom', labelPosition === 'bottom');
+-      this._wrapper.classList.toggle('sd-stepper--header-bottom', headerPosition === 'bottom');
+-      this._wrapper.style.setProperty('--sd-stepper-animation-duration', duration);
+-
+-      /* color đổi bộ biến --sd-stepper-* — cùng cơ chế HostBinding của thư viện.
+-         CHỈ ghi khi trang có khai `color`: catalog khai mấy token này trong CSS
+-         của component chứ không phải inline trên host, nên trang vẫn đè được
+-         bằng inline style. Kit mà lúc nào cũng ghi inline thì mỗi lần vẽ lại là
+-         xoá mất giá trị trang đặt (rà soát 2026-10-11). */
+-      if (this.hasAttribute('color')) {
+-        this.style.setProperty('--sd-stepper-active-color', 'var(--sd-' + color + ')');
+-        this.style.setProperty('--sd-stepper-active-bg', 'var(--sd-' + color + ')');
+-        // catalog: `.mat-step-icon-state-done,.mat-step-icon-state-edit{
+-        //   background-color: var(--sd-stepper-completed-color); color:#fff }`
+-        // → bước đã qua tô ĐẶC màu chủ đạo + ký hiệu trắng, không phải nền nhạt.
+-        // 2026-10-11: `--sd-stepper-completed-color` của catalog là MÀU NỀN, ký
+-        // hiệu bên trong viết cứng #fff. Bản trước kit hiểu ngược tên token.
+-        this.style.setProperty('--sd-stepper-completed-color', 'var(--sd-' + color + ')');
+-        this.style.setProperty('--sd-stepper-line-active-color', 'var(--sd-' + color + ')');
+-      }
++      Promise.resolve().then(function () { self._queued = false; if (self.isConnected) self._render(); });
+     }
+-
+-    _isLinear() {
+-      return this.hasAttribute('linear');
+-    }
+-
+-    _rebuildHeader() {
+-      if (!this._header || !this.isConnected) return;
+-      /* CHỐNG ĐỆ QUY. `SdStep.connectedCallback` gọi ngược `_rebuildHeader()`
+-         của stepper cha; mà dựng lại thì phải DI CHUYỂN các `<sd-step>` (chế độ
+-         dọc rải chúng xuống dưới từng header), nên mỗi lần chuyển node là một
+-         `connectedCallback` nữa → đệ quy đồng bộ, tràn stack, trang treo cứng.
+-         Đã dẫm 2026-10-12. Ngắt MutationObserver KHÔNG đủ: callback vòng đời
+-         của custom element không đi qua observer. */
+-      if (this._rebuilding) return;
+-      this._rebuilding = true;
+-      try { this._doRebuild(); } finally { this._rebuilding = false; }
++    _getSteps() {
++      return Array.prototype.filter.call(this.children, function (c) { return c.tagName === 'SD-STEP'; });
+     }
+-
+-    _doRebuild() {
+-      if ((this.getAttribute('orientation') || 'horizontal') === 'vertical') return this._rebuildVertical();
+-      var self = this;
+-      /* NGẮT observer TRƯỚC khi chạm vào cây — việc gom `<sd-step>` về `_panels`
+-         ngay dưới đây cũng là mutation, không ngắt là vòng lặp vô hạn (trang
+-         treo cứng, đã dẫm 2026-10-12). */
+-      var observerEarly = this._observer;
+-      if (observerEarly) observerEarly.disconnect();
+-      /* Quay về bố cục NGANG: gom hết `<sd-step>` về lại `_panels` và treo
+-         `_panels` lại vào wrapper (chế độ dọc đã rải chúng ra). */
+-      var all = this._getSteps();
+-      if (this._panels) {
+-        all.forEach(function (st) { self._panels.appendChild(st); });
+-        if (this._panels.parentNode !== this._wrapper) this._wrapper.appendChild(this._panels);
+-      }
+-      Array.prototype.forEach.call(this._wrapper.querySelectorAll('.sd-stepper__vstep'), function (n) { n.remove(); });
+-      if (this._header.parentNode !== this._wrapper) this._wrapper.insertBefore(this._header, this._wrapper.firstChild);
+-      this._header.style.display = '';
++    _anyInvalidBefore(index) {   /* CdkStepper._anyControlsInvalidOrPending */
++      if (!this.linear || index < 0) return false;
++      return this._getSteps().slice(0, index).some(function (s) {
++        var incomplete = s.hasAttribute('invalid') ? (s.invalid || !s._interacted) : !s.completed;
++        return incomplete && !s.optional && !s._completedOverride();
++      });
++    }
++    _isNavigable(step, i) { return step.completed || i === this.selectedIndex || !this.linear; }
++    _indicator(step, i) {   /* CdkStep.indicatorType, displayDefaultIndicatorType = true */
++      if (!step.completed || i === this.selectedIndex) return 'number';
++      return step.editable ? 'edit' : 'done';
++    }
++    /* setter selectedIndex của CdkStepper */
++    _setSelected(index, gated) {
+       var steps = this._getSteps();
+-      var header = this._header;
+-      var observer = this._observer;
+-      if (observer) observer.disconnect();
+-      try {
+-        header.innerHTML = '';
+-        var frag = document.createDocumentFragment();
+-        steps.forEach(function (step, i) {
+-          if (i > 0) {
+-            var connector = document.createElement('div');
+-            connector.className = 'sd-stepper__connector';
+-            if (steps[i - 1].stepState === 'completed') {
+-              connector.classList.add('sd-stepper__connector--active');
+-            }
+-            frag.appendChild(connector);
+-          }
+-
+-          var stepEl = self._buildStepHeader(step, i, steps);
+-          frag.appendChild(stepEl);
+-        });
+-        header.appendChild(frag);
+-        this._syncSelection();
+-      } finally {
+-        if (observer) observer.observe(this, { childList: true, subtree: true });
+-      }
++      if (!steps.length) { this._selected = index; return; }
++      if (index < 0 || index >= steps.length) return;
++      var cur = this.selectedIndex;
++      if (!gated) { this._update(index); return; }
++      if (index === cur) { this._syncAttr(); return; }
++      var curStep = steps[cur];
++      if (curStep && !curStep._interacted) curStep._interacted = true;   /* _markAsInteracted() */
++      if (!this._anyInvalidBefore(index) && (index >= cur || steps[index].editable)) this._update(index);
++      else { this._syncAttr(); this._render(); }
++    }
++    _update(index) {   /* _updateSelectedItemIndex */
++      var steps = this._getSteps();
++      var prev = this.selectedIndex;
++      var changed = index !== prev;
++      this._selected = index;
++      this._focusIdx = index;
++      if (changed) this._everChanged = true;
++      this._syncAttr();
++      if (changed) this._animate();
++      /* _keyManager: focus đang ở trong stepper (vd. nút Tiếp tục trong bước) → setActiveItem = dời
++         focus sang header mới (nguồn 'program'); không thì chỉ updateActiveItem */
++      var inside = changed && this.contains(document.activeElement);
++      this._render();
++      if (inside) {
++        var nh = this.querySelector('#' + this._uid + '-label-' + index);
++        if (nh && document.activeElement === nh) {
++          this._fm = { idx: index, origin: 'program' };
++          nh.classList.remove('cdk-keyboard-focused', 'cdk-mouse-focused');
++          nh.classList.add('cdk-focused', 'cdk-program-focused');
++        } else if (nh) { this._fmOrigin = 'program'; nh.focus(); }
++      }
++      if (!changed) return;
++      var detail = { selectedIndex: index, previouslySelectedIndex: prev, previousIndex: prev,
++                     selectedStep: steps[index], previouslySelectedStep: steps[prev] };
++      this.dispatchEvent(new CustomEvent('sd-selection-change', { detail: detail, bubbles: true }));
++      this.dispatchEvent(new CustomEvent('sd-step-change', { detail: { index: index }, bubbles: true }));
++      if (steps[index]) steps[index].dispatchEvent(new CustomEvent('sd-select-change'));
++    }
++    _syncAttr() {
++      if (String(this.selectedIndex) === this.getAttribute('selectedindex')) return;
++      this._syncingAttr = true;
++      this.setAttribute('selectedindex', String(this.selectedIndex));
++      this._syncingAttr = false;
++    }
++    _duration() {
++      var d = this.getAttribute('animationDuration') || this.getAttribute('animationduration') || '500ms';
++      return /^\d+(\.\d+)?$/.test(d) ? d + 'ms' : d;
++    }
++    _animate() {
++      var mat = this._mat;
++      if (!mat) return;
++      var d = this._duration(), ms = /ms$/.test(d) ? parseFloat(d) : parseFloat(d) * 1000;
++      mat.classList.add('mat-stepper-animating');
++      clearTimeout(this._animT);
++      this._animT = setTimeout(function () { mat.classList.remove('mat-stepper-animating'); }, (ms || 0) + 20);
+     }
+ 
+-    /* Dựng MỘT header bước — dùng chung cho cả bố cục ngang lẫn dọc.
+-       Tách ra 2026-10-12 khi dựng lại chế độ dọc (trước đó code nằm lồng trong
+-       vòng lặp của `_rebuildHeader`, không tái dùng được). */
+-    _buildStepHeader(step, i, steps) {
++    _bind() {
++      this._bound = true;
+       var self = this;
+-      /* catalog `#c-stepper`: "Portal không khai STEPPER_GLOBAL_OPTIONS (showError)
+-         nên state="error"/errorMessage của sd-step không hiển thị gì" → kit cũng
+-         KHÔNG vẽ gì cho trạng thái lỗi (rà soát 2026-10-12; bản trước tô đỏ). */
+-      var isError = false;
+-      var icon = step.getAttribute('icon') || '';
+-      var stepEl = document.createElement('div');
+-      stepEl.className = 'sd-stepper__step';
+-      if (isError) stepEl.classList.add('sd-stepper__step--error');
+-
+-      var circle = document.createElement('button');
+-      circle.type = 'button';
+-      circle.className = 'sd-stepper__circle';
+-      circle.setAttribute('aria-label', step.getAttribute('label') || ('Bước ' + (i + 1)));
+-      // Nội dung vòng tròn phụ thuộc bước đang chọn (bước đã đi qua đổi
+-      // sang icon sửa), nên để _paintCircle lo và gọi lại ở _syncSelection.
+-      this._paintCircle(circle, i, steps, self._getSelectedIndex());
+-
+-      var textEl = document.createElement('div');
+-      textEl.className = 'sd-stepper__step-text';
+-      var labelEl = document.createElement('div');
+-      labelEl.className = 'sd-stepper__label';
+-      /* Catalog dựng nhãn là `<span class="sd-step__label">` chứa
+-         `.sd-step__icon` (nếu khai `icon`) rồi `<span class="sd-step__text">`.
+-         Rà soát 2026-10-11: bản trước kit nhét `icon` vào VÒNG TRÒN và đặt
+-         chữ thẳng vào `.sd-stepper__label` — catalog để vòng tròn giữ SỐ
+-         bước và đặt icon CẠNH CHỮ. */
+-      var stepLabelEl = document.createElement('span');
+-      stepLabelEl.className = 'sd-step__label';
+-      if (icon) {
+-        stepLabelEl.appendChild(sdMatIconEl(icon, 'sd-step__icon'));
+-      }
+-      var stepTextEl = document.createElement('span');
+-      stepTextEl.className = 'sd-step__text';
+-      stepTextEl.textContent = step.getAttribute('label') || ('Bước ' + (i + 1));
+-      stepLabelEl.appendChild(stepTextEl);
+-      labelEl.appendChild(stepLabelEl);
+-      textEl.appendChild(labelEl);
+-      if (step.hasAttribute('optional')) {
+-        var optEl = document.createElement('div');
+-        optEl.className = 'sd-stepper__optional';
+-        optEl.textContent = 'Optional';   // chuỗi MatStepperIntl mặc định — catalog ghi rõ
+-        textEl.appendChild(optEl);
+-      }
+-      var errMsg = step.getAttribute('errorMessage') || step.getAttribute('errormessage') || '';
+-      if (isError && errMsg) {
+-        var errEl = document.createElement('div');
+-        errEl.className = 'sd-stepper__error-msg';
+-        errEl.textContent = errMsg;
+-        textEl.appendChild(errEl);
+-      }
+-
+-      stepEl.appendChild(circle);
+-      stepEl.appendChild(textEl);
+-      /* catalog: bấm CẢ header bước (mat-step-header) để chuyển, không chỉ vòng tròn. */
+-      stepEl.addEventListener('click', function () {
+-        self._select(i);
++      if (!SdStepper._fmBound) {   /* nguồn focus (FocusMonitor rút gọn) */
++        SdStepper._fmBound = true;
++        document.addEventListener('keydown', function () { SdStepper._origin = 'keyboard'; }, true);
++        document.addEventListener('mousedown', function () { SdStepper._origin = 'mouse'; }, true);
++      }
++      this.addEventListener('focusin', function (e) {
++        var h = e.target;
++        if (!h || h.tagName !== 'MAT-STEP-HEADER' || self._rendering) return;
++        var origin = self._fmOrigin || SdStepper._origin || 'program';
++        self._fmOrigin = null; SdStepper._origin = null;
++        self._fm = { idx: parseInt(h.getAttribute('data-index'), 10), origin: origin };
++        h.classList.add('cdk-focused', 'cdk-' + origin + '-focused');
++      });
++      this.addEventListener('focusout', function (e) {
++        var h = e.target;
++        if (!h || h.tagName !== 'MAT-STEP-HEADER' || self._rendering) return;
++        h.classList.remove('cdk-focused', 'cdk-keyboard-focused', 'cdk-mouse-focused', 'cdk-program-focused');
++        self._fm = null;
++      });
++      this.addEventListener('click', function (e) {
++        var h = e.target.closest && e.target.closest('mat-step-header');
++        if (!h || !self.contains(h) || h.closest('sd-stepper') !== self) return;
++        var i = parseInt(h.getAttribute('data-index'), 10);
++        /* bấm chuột KHÔNG dời FocusKeyManager — chỉ phím mũi tên / đổi bước mới dời */
++        self._setSelected(i, true);   /* step.select() */
++      });
++      this.addEventListener('keydown', function (e) {
++        var h = e.target.closest && e.target.closest('mat-step-header');
++        if (!h || h.closest('sd-stepper') !== self) return;
++        var n = self._getSteps().length, i = parseInt(h.getAttribute('data-index'), 10), to = null;
++        var vert = self.orientation === 'vertical';
++        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); self._setSelected(i, true); return; }
++        if (e.key === (vert ? 'ArrowDown' : 'ArrowRight')) to = (i + 1) % n;
++        else if (e.key === (vert ? 'ArrowUp' : 'ArrowLeft')) to = (i - 1 + n) % n;
++        else if (e.key === 'Home') to = 0;
++        else if (e.key === 'End') to = n - 1;
++        if (to == null) return;
++        e.preventDefault();
++        self._focusIdx = to;
++        self._fm = { idx: to, origin: 'keyboard' };   /* FocusKeyManager.setFocusOrigin('keyboard') */
++        self._render();
++        var t = self.querySelector('#' + self._uid + '-label-' + to);
++        if (t) { self._fmOrigin = 'keyboard'; t.focus(); }
+       });
+-      return stepEl;
+     }
+ 
+-    /* ══════════════════════════════════════════════════════════════════
+-       Chế độ DỌC — dựng lại 2026-10-12 theo ĐÚNG cấu trúc catalog `#c-stepper`.
++    _headerHtml(step, i, n, vert) {
++      var sel = i === this.selectedIndex;
++      var st = this._indicator(step, i);
++      var nav = this._isNavigable(step, i);
++      var focus = (this._focusIdx == null ? this.selectedIndex : this._focusIdx) === i;
++      var icon = st === 'number'
++        ? (step.icon ? sdStepIconHtml(step.icon, false) : ' ' + (i + 1) + ' ')
++        : sdStepIconHtml('check', true);
++      var attrs = vert
++        ? ' role="button" class="mat-step-header mat-vertical-stepper-header mat-primary"'
++        : ' role="tab" class="mat-step-header mat-horizontal-stepper-header mat-primary"';
++      attrs += ' tabindex="' + (focus ? 0 : -1) + '" id="' + this._uid + '-label-' + i + '"';
++      if (vert) attrs += (sel ? ' aria-current="step"' : '') + ' aria-expanded="' + sel + '"';
++      else attrs += ' aria-posinset="' + (i + 1) + '" aria-setsize="' + n + '" aria-selected="' + sel + '"';
++      /* MatStepper khai `[attr.aria-disabled]` HAI lần cho header dọc ('true' khi đang chọn, rồi
++         theo isNavigable). Angular chỉ ghi binding nào vừa đổi → bước dọc được chọn SAU lần đổi bước
++         đầu tiên mang aria-disabled="true" (nên không có nền rê chuột / con trỏ default), bước chọn
++         sẵn lúc đầu thì không. Chép đúng hành vi đó. */
++      var ariaDis = !nav || (vert && sel && this._everChanged);
++      attrs += ' aria-controls="' + this._uid + '-content-' + i + '"' + (ariaDis ? ' aria-disabled="true"' : '');
++      return '<mat-step-header' + attrs + ' data-index="' + i + '">' +
++        '<div matripple="" class="mat-ripple mat-step-header-ripple mat-focus-indicator"></div>' +
++        '<div class="mat-step-icon mat-step-icon-state-' + st + (sel ? ' mat-step-icon-selected' : '') + '"><div class="mat-step-icon-content">' + icon + '</div></div>' +
++        '<div class="mat-step-label' + (nav ? ' mat-step-label-active' : '') + (sel ? ' mat-step-label-selected' : '') + '">' +
++          '<div class="mat-step-text-label"><span class="sd-step__label"><span class="sd-step__text">' + esc(step.label) + '</span></span></div>' +
++          (step.optional ? '<div class="mat-step-optional">Optional</div>' : '') +
++        '</div></mat-step-header>';
++    }
+ 
+-       Catalog (`orientation="vertical"`) KHÔNG chia hai cột. Mỗi bước là một
+-       khối độc lập, nội dung mở ra NGAY DƯỚI header của chính bước đó — đúng
+-       như nhãn biến thể của catalog ghi: *"nội dung mở dưới bước đang chọn"*:
+-
+-           .mat-stepper-vertical            (display:block)
+-             .mat-step
+-               mat-step-header.mat-vertical-stepper-header
+-               .mat-vertical-content-container.mat-stepper-vertical-line [.…-active]
+-                 .mat-vertical-stepper-content > .mat-vertical-content
+-
+-       Bản trước của kit dựng header thành MỘT CỘT 240px bên trái và dồn toàn
+-       bộ nội dung sang cột phải — một bố cục khác hẳn, không có trong mốc
+-       chuẩn. Đường kẻ dọc do `::before` của khối nội dung vẽ (lề trái 36px =
+-       24px đệm header + nửa vòng tròn 12px), nên nó nối thẳng từ tâm vòng tròn
+-       này xuống tâm vòng tròn kế.
+-       ══════════════════════════════════════════════════════════════════ */
+-    _rebuildVertical() {
++    _render() {
++      if (this._rendering) return;
++      this._rendering = true;
++      var obs = this._observer;
++      if (obs) obs.disconnect();
++      try { this._doRender(); } finally {
++        this._rendering = false;
++        if (obs && this.isConnected) obs.observe(this, { childList: true, subtree: true });
++      }
++    }
++    _doRender() {
+       var self = this;
+-      var observer = this._observer;
+-      if (observer) observer.disconnect();     // NGẮT TRƯỚC mọi thao tác cây
+       var steps = this._getSteps();
+-      try {
+-        Array.prototype.forEach.call(this._wrapper.querySelectorAll('.sd-stepper__vstep'), function (n) { n.remove(); });
+-        if (this._header.parentNode) this._header.parentNode.removeChild(this._header);
+-        if (this._panels && this._panels.parentNode) this._panels.parentNode.removeChild(this._panels);
+-
+-        steps.forEach(function (step, i) {
+-          var block = document.createElement('div');
+-          block.className = 'sd-stepper__vstep';
+-
+-          var stepEl = self._buildStepHeader(step, i, steps);
+-          block.appendChild(stepEl);
+-
+-          var box = document.createElement('div');
+-          box.className = 'sd-stepper__vcontent-container';
+-          var inner = document.createElement('div');
+-          inner.className = 'sd-stepper__vcontent';
+-          inner.appendChild(step);           // node thật, không chép chuỗi
+-          box.appendChild(inner);
+-          block.appendChild(box);
+-
+-          self._wrapper.appendChild(block);
++      var n = steps.length;
++      /* selectedIndex khởi tạo (trước khi có bước: gán thẳng, không chặn) */
++      if (this._selected == null) {
++        var a = parseInt(this.getAttribute('selectedIndex') || this.getAttribute('selectedindex') || '0', 10);
++        this._selected = isNaN(a) ? 0 : a;
++      }
++      if (n && (this._selected < 0 || this._selected >= n)) this._selected = Math.max(0, n - 1);  /* effect kẹp chỉ số */
++      if (!this._inited && n) {
++        this._inited = true;
++        /* ngAfterViewInit: linear mà mở sẵn ở bước > 0 thì các bước trước coi như đã ghé */
++        if (this.linear && this._selected > 0) steps.slice(0, this._selected).forEach(function (s) { s._interacted = true; });
++      }
++      this._syncAttr();
++      var color = this.getAttribute('color') || 'primary';
++      /* HostBinding style.--sd-stepper-* (luôn gắn, như thư viện) */
++      this.style.setProperty('--sd-stepper-active-color', 'var(--sd-' + color + ')');
++      this.style.setProperty('--sd-stepper-active-bg', 'var(--sd-' + color + ')');
++      this.style.setProperty('--sd-stepper-active-contrast', 'var(--sd-' + color + '-contrast)');
++      this.style.setProperty('--sd-stepper-completed-bg', 'var(--sd-' + color + '-light)');
++      this.style.setProperty('--sd-stepper-completed-color', 'var(--sd-' + color + ')');
++      this.style.setProperty('--sd-stepper-line-active-color', 'var(--sd-' + color + ')');
++      var autoId = this.getAttribute('autoId') || this.getAttribute('autoid');
++      if (autoId) this.setAttribute('data-autoId', autoId); else this.removeAttribute('data-autoid');
++
++      var vert = this.orientation === 'vertical';
++      var lp = (this.getAttribute('labelPosition') || this.getAttribute('labelposition')) === 'bottom' ? 'bottom' : 'end';
++      var hpBottom = (this.getAttribute('headerPosition') || this.getAttribute('headerposition')) === 'bottom';
++      if (!this._mat || this._mat.parentNode !== this) {
++        this._mat = document.createElement('mat-stepper');
++        this.insertBefore(this._mat, this.firstChild);
++      }
++      var mat = this._mat;
++      /* host class binding của MatStepper — bật/tắt TỪNG lớp (không ghi lại cả chuỗi) để thứ tự lớp
++         giống Angular: lớp bật muộn nằm cuối danh sách */
++      if (!mat.classList.contains('sd-stepper')) mat.classList.add('sd-stepper');
++      mat.classList.toggle('mat-stepper-horizontal', !vert);
++      mat.classList.toggle('mat-stepper-vertical', vert);
++      mat.classList.toggle('mat-stepper-label-position-end', !vert && lp === 'end');
++      mat.classList.toggle('mat-stepper-label-position-bottom', !vert && lp === 'bottom');
++      mat.classList.toggle('mat-stepper-header-position-bottom', hpBottom);
++      mat.classList.add('mat-stepper-animations-enabled');
++      mat.style.setProperty('--mat-stepper-animation-duration', this._duration());
++
++      /* Khung nội dung của từng bước: tạo một lần, dời nội dung thật của sd-step vào */
++      var key = (vert ? 'v' : 'h') + n;
++      var rebuild = this._key !== key || steps.some(function (s, i) { return !s._sdPanel || self._stepsSeen[i] !== s; });
++      this._stepsSeen = steps.slice();
++      if (rebuild) {
++        this._key = key;
++        steps.forEach(function (s) {
++          var holder = vert ? document.createElement('div') : document.createElement('div');
++          holder.className = vert ? 'mat-vertical-content' : 'mat-horizontal-stepper-content';
++          var from = s._sdPanel;
++          while (from && from.firstChild) holder.appendChild(from.firstChild);
++          s._sdPanel = holder;
+         });
+-        this._syncSelection();
+-      } finally {
+-        if (observer) observer.observe(this, { childList: true, subtree: true });
+       }
+-    }
++      /* nội dung mới trang gắn thẳng vào <sd-step> → dời sang khung */
++      steps.forEach(function (s) { while (s.firstChild) s._sdPanel.appendChild(s.firstChild); });
+ 
+-    /* Chọn ký hiệu trong vòng tròn ĐÚNG `_getDefaultIndicatorLogic` của
+-       MatStepHeader mà catalog @sd-angular/core 19.0.10 dùng:
+-         lỗi (và không phải bước đang làm) → icon error
+-         bước đang làm                      → SỐ
+-         chưa hoàn tất                      → SỐ (hoặc icon riêng của bước)
+-         đã hoàn tất                        → editable ? `create` : `done`
+-       Bản trước luôn vẽ `check` và chỉ coi là hoàn tất khi stepState==='completed',
+-       nên bước vừa bấm Tiếp tục vẫn hiện số xám — catalog hiện bút chì nền nâu. */
+-    _paintCircle(circle, i, steps, selected) {
+-      var step = steps[i];
+-      var st = step ? step.stepState : 'pending';
+-      var isCurrent = i === selected;
+-      // "đã hoàn tất" = khai completed HOẶC người dùng đã đi qua bước đó
+-      var completed = st === 'completed' || i < selected;
+-      var editable = step ? step.isEditable : true;
+-
+-      circle.classList.remove('sd-stepper__circle--error', 'sd-stepper__circle--completed', 'sd-stepper__circle--current');
+-      circle.textContent = '';
+-
+-      var glyph = null;
+-      // Material giấu dấu lỗi ở bước ĐANG LÀM (`&& !isCurrentStep`) vì ở đó lỗi
+-      // được suy ra từ form. Ở kit `state="error"` là người viết trang khai TAY,
+-      // nên khai gì hiện nấy — catalog không có ví dụ lỗi để đối chiếu.
+-      /* state="error" không có hiệu ứng (showError tắt ở portal) — xem _buildStepHeader. */
+-      if (isCurrent) {
+-        circle.classList.add('sd-stepper__circle--current');
+-      } else if (!completed) {
+-        /* vòng tròn giữ SỐ bước — catalog đặt `icon` cạnh chữ, không vào đây */
+-      } else {
+-        circle.classList.add('sd-stepper__circle--completed');
+-        glyph = editable ? 'create' : 'done';
++      var activeEl = document.activeElement;
++      var hadHeaderFocus = activeEl && activeEl.tagName === 'MAT-STEP-HEADER' && this.contains(activeEl);
++      var sel = this.selectedIndex;
++      /* Khung (wrapper, khung nội dung) dựng MỘT lần cho mỗi bố cục; các lần sau chỉ thay header và
++         cập nhật lớp / thuộc tính tại chỗ — dời khung nội dung đi là ô nhập đang gõ mất focus. */
++      if (rebuild || !mat.firstElementChild) {
++        if (vert) {
++          var wrap = document.createElement('div');
++          wrap.className = 'mat-vertical-stepper-wrapper';
++          steps.forEach(function (s, i) {
++            var stepDiv = document.createElement('div');
++            stepDiv.className = 'mat-step';
++            stepDiv.appendChild(document.createElement('mat-step-header'));
++            var cont = document.createElement('div');
++            var region = document.createElement('div');
++            region.setAttribute('role', 'region');
++            region.className = 'mat-vertical-stepper-content';
++            region.appendChild(s._sdPanel);
++            cont.appendChild(region);
++            stepDiv.appendChild(cont);
++            wrap.appendChild(stepDiv);
++          });
++          mat.replaceChildren(wrap);
++        } else {
++          var hw = document.createElement('div');
++          hw.className = 'mat-horizontal-stepper-wrapper';
++          var hc = document.createElement('div');
++          hc.setAttribute('aria-orientation', 'horizontal');
++          hc.setAttribute('role', 'tablist');
++          hc.className = 'mat-horizontal-stepper-header-container';
++          var cc = document.createElement('div');
++          cc.className = 'mat-horizontal-content-container';
++          steps.forEach(function (s) { cc.appendChild(s._sdPanel); });
++          hw.appendChild(hc);
++          hw.appendChild(cc);
++          mat.replaceChildren(hw);
++        }
+       }
+-
+-      if (glyph) {
+-        circle.appendChild(sdMatIconEl(glyph));
++      if (vert) {
++        Array.prototype.forEach.call(mat.firstElementChild.children, function (stepDiv, i) {
++          var s = steps[i];
++          var tmp = document.createElement('div');
++          tmp.innerHTML = self._headerHtml(s, i, n, true);
++          stepDiv.replaceChild(tmp.firstChild, stepDiv.firstElementChild);
++          var cont = stepDiv.children[1];
++          cont.className = 'mat-vertical-content-container' + (i < n - 1 ? ' mat-stepper-vertical-line' : '') + (i === sel ? ' mat-vertical-content-container-active' : '');
++          if (i !== sel) cont.setAttribute('inert', ''); else cont.removeAttribute('inert');
++          var region = cont.firstElementChild;
++          region.id = self._uid + '-content-' + i;
++          region.setAttribute('aria-labelledby', self._uid + '-label-' + i);
++        });
+       } else {
+-        circle.appendChild(document.createTextNode(String(i + 1)));
++        var hc2 = mat.firstElementChild.firstElementChild;
++        hc2.innerHTML = steps.map(function (s, i) {
++          return self._headerHtml(s, i, n, false) + (i < n - 1 ? '<div class="mat-stepper-horizontal-line"></div>' : '');
++        }).join('');
++        steps.forEach(function (s, i) {
++          var p = s._sdPanel;
++          p.setAttribute('role', 'tabpanel');
++          p.className = 'mat-horizontal-stepper-content mat-horizontal-stepper-content-' + (i < sel ? 'previous' : i > sel ? 'next' : 'current');
++          p.id = self._uid + '-content-' + i;
++          p.setAttribute('aria-labelledby', self._uid + '-label-' + i);
++          if (i === sel) p.removeAttribute('inert'); else p.setAttribute('inert', '');
++        });
+       }
+-      circle.setAttribute('aria-current', isCurrent ? 'step' : 'false');
+-    }
+-
+-    _canReach(i) {
+-      var steps = this._getSteps();
+-      var selected = this._getSelectedIndex();
+-      if (i === selected) return true;
+-      if (i < selected) {
+-        // Quay lại bước cũ: chỉ cấm khi bước đó khai editable="false"
+-        // (mặc định THẬT của editable là true — bản trước hiểu ngược).
+-        return steps[i].isEditable;
++      if (hadHeaderFocus) {
++        var fi = this._focusIdx == null ? sel : this._focusIdx;
++        var t = this.querySelector('#' + this._uid + '-label-' + fi);
++        if (t) {
++          t.focus({ preventScroll: true });
++          /* focus dời sang header khác bằng code → nguồn 'program' (giữ nguồn cũ nếu vẫn header đó) */
++          this._fm = { idx: fi, origin: (this._fm && this._fm.idx === fi) ? this._fm.origin : 'program' };
++        }
+       }
+-      for (var j = 0; j < i; j++) {
+-        if (steps[j].stepState !== 'completed' && !steps[j].hasAttribute('optional')) return false;
++      /* FocusMonitor: header đang focus mang `cdk-focused cdk-{keyboard|mouse|program}-focused` */
++      if (this._fm) {
++        var fh = this.querySelector('#' + this._uid + '-label-' + this._fm.idx);
++        if (fh && document.activeElement === fh) fh.classList.add('cdk-focused', 'cdk-' + this._fm.origin + '-focused');
++        else this._fm = null;
+       }
+-      return true;
+-    }
+-
+-    _select(i) {
+-      var steps = this._getSteps();
+-      if (i < 0 || i >= steps.length) return;
+-      if (this._isLinear() && !this._canReach(i)) return;
+-      this._goTo(i);
+-    }
+-
+-    /* `goTo()` công khai ĐÃ GỠ 2026-10-12: API catalog chỉ có next() · previous() · reset(). */
+-    _goTo(index) {
+-      var steps = this._getSteps();
+-      if (index < 0 || index >= steps.length) return;
+-      var prev = this._getSelectedIndex();
+-      this._internalSelect = true;
+-      this.setAttribute('selectedindex', String(index));
+-      this._internalSelect = false;
+-      this._syncSelection();
+-      this.dispatchEvent(new CustomEvent('sd-step-change', { detail: { index: index }, bubbles: true }));
+-      // selectionChange của thư viện mang cả previousIndex — mirror bắn riêng
+-      this.dispatchEvent(new CustomEvent('sd-selection-change', {
+-        detail: { previousIndex: prev, selectedIndex: index }, bubbles: true
+-      }));
+-      var selStep = steps[index];
+-      if (selStep) selStep.dispatchEvent(new CustomEvent('sd-select-change', { bubbles: true }));
+-    }
+-
+-    /* Methods imperative đúng thư viện: next / previous / reset / goTo */
+-    next() { this._goTo(this._getSelectedIndex() + 1); }
+-    previous() { this._goTo(this._getSelectedIndex() - 1); }
+-    reset() { this._goTo(0); }
+-
+-    _syncSelection() {
+-      var self = this;
+-      var steps = this._getSteps();
+-      if (!steps.length) return;
+-      var selected = this._getSelectedIndex();
+-      steps.forEach(function (step, i) {
+-        if (i === selected) {
+-          step.classList.remove('sd-step-panel-hidden');
+-        } else {
+-          step.classList.add('sd-step-panel-hidden');
+-        }
+-      });
+-      if (!this._wrapper) return;
+-      /* Chế độ dọc không còn `_header` trong cây — quét từ wrapper cho cả hai. */
+-      var boxes = this._wrapper.querySelectorAll('.sd-stepper__vcontent-container');
+-      Array.prototype.forEach.call(boxes, function (box, i) {
+-        box.classList.toggle('sd-stepper__vcontent-container--active', i === selected);
+-      });
+-      var stepEls = this._wrapper.querySelectorAll('.sd-stepper__step');
+-      Array.prototype.forEach.call(stepEls, function (el, i) {
+-        var active = i === selected;
+-        var st = steps[i] ? steps[i].stepState : 'pending';
+-        // Nhãn: bước đang làm đậm 600 + màu brand, bước đã qua/đã xong đậm 500
+-        el.classList.toggle('sd-stepper__step--selected', active);
+-        el.classList.toggle('sd-stepper__step--visited', !active && (st === 'completed' || i < selected));
+-        // catalog: mọi bước BẤM ĐƯỢC đều mang `mat-step-label-active` → nhãn
+-        // #1a1a1a/500. Stepper không linear thì là tất cả các bước.
+-        var reach = !self._isLinear() || self._canReach(i);
+-        el.classList.toggle('sd-stepper__step--reachable', reach);
+-        /* catalog: bước chưa với tới (linear) mang `aria-disabled="true"` → không
+-           đổi con trỏ, nền rê chuột chỉ còn #00000005. */
+-        if (reach) el.removeAttribute('aria-disabled'); else el.setAttribute('aria-disabled', 'true');
+-        var circle = el.querySelector('.sd-stepper__circle');
+-        if (circle) self._paintCircle(circle, i, steps, selected);
+-      });
+     }
+   }
+   customElements.define('sd-stepper', SdStepper);

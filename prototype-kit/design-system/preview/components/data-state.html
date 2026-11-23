@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-data-state — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-data-state"
+         data-subtitle="Loading / Empty / Error - trạng thái vùng nội dung"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <div class="mb-16">
+          <sd-inform color="warning" title="Cảnh báo mirror" closable>
+            Portal chưa công bố trang API riêng cho sd-data-state. API đang mirror được suy ra từ mã nguồn pattern mà Portal công bố (tab-group.component.html), nên có thể còn thuộc tính chưa được mirror.
+          </sd-inform>
+        </div>
+
+        <sd-section title="3 trạng thái">
+          <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:1100px;">
+            <sd-data-state state="loading" title="Đang tải dữ liệu…"></sd-data-state>
+            <sd-data-state state="empty" title="Chưa có dữ liệu trong nhóm này" message="Dữ liệu sẽ hiển thị tại đây khi có bản ghi."></sd-data-state>
+            <sd-data-state state="error" title="Không tải được dữ liệu" message="Vui lòng thử lại để tải nội dung của tab này." retryable></sd-data-state>
+          </div>
+        </sd-section>
+
+        <sd-section title="Error - có retryable và không có">
+          <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px;max-width:800px;">
+            <sd-data-state id="ds-retry" state="error" title="Không tải được dữ liệu" message="Vui lòng thử lại để tải nội dung của tab này." retryable retryLabel="Thử lại"></sd-data-state>
+            <sd-data-state state="error" title="Không có quyền xem dữ liệu" message="Liên hệ quản trị viên nếu cần truy cập."></sd-data-state>
+          </div>
+          <p class="fs-12 text-black400 mt-16 mb-0">Sự kiện sd-retry: <span id="ds-retry-output" class="text-black500">chưa bấm</span></p>
+        </sd-section>
+
+        <sd-section title="Đặt trong sd-section">
+          <p class="fs-12 text-black400 mb-12">sd-data-state nằm vừa khung nội dung của sd-section.</p>
+          <sd-data-state state="empty" title="Chưa có dữ liệu" message="Thêm bản ghi đầu tiên để bắt đầu."></sd-data-state>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Vùng nội dung (tab, panel, section) đang tải dữ liệu - state loading</li>
+                  <li>Danh sách / bảng chưa có bản ghi nào - state empty</li>
+                  <li>Tải dữ liệu thất bại, cần câu thông báo và nút Thử lại - state error + retryable</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Lỗi tác vụ submit form - dùng sd-inform hoặc notification</li>
+                  <li>Trạng thái một dòng / một ô cụ thể - dùng sd-badge hoặc table status</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p class="mb-0">"Tab chi tiết khi chưa tải xong hiện 'Đang tải dữ liệu…'; nếu tải lỗi hiện thông báo kèm nút 'Thử lại'; khi chưa có bản ghi hiện 'Chưa có dữ liệu trong nhóm này'."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-data-state state="error" title="Không tải được dữ liệu"
+  message="Vui lòng thử lại để tải nội dung của tab này."
+  retryable retryLabel="Thử lại"&gt;&lt;/sd-data-state&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>state</td><td>loading, empty, error</td><td>-</td><td>Trạng thái hiển thị - bắt buộc</td></tr>
+                  <tr><td>title</td><td>string</td><td>-</td><td>Dòng chính</td></tr>
+                  <tr><td>message</td><td>string</td><td>-</td><td>Dòng phụ</td></tr>
+                  <tr><td>retryable</td><td>boolean</td><td>false</td><td>Hiện nút Thử lại - chỉ dùng với state error</td></tr>
+                  <tr><td>retryLabel</td><td>string</td><td>Thử lại</td><td>Nhãn nút thử lại (đọc cả retryLabel lẫn retrylabel)</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Events</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Event</th><th>detail</th><th>Khi nào fire</th></tr></thead>
+                <tbody>
+                  <tr><td>sd-retry</td><td>-</td><td>Bấm nút Thử lại - ánh xạ (sdRetry) bên Angular</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">GHI CHÚ mirror</p>
+              <div class="ds-guide-note">
+                <p class="mb-0">Portal không công bố trang API riêng; API hiện tại suy ra từ mã nguồn pattern mà Portal công bố (tab-group.component.html), nên có thể còn thuộc tính chưa được mirror. Mirror cố ý không thêm icon / image / size vì Portal không cho thấy chúng.</p>
+                <p class="mb-0">state="empty" theo quy ước kit dùng SVG từ design-system/core/assets/ (empty-state-illustration.svg) - đây là quy ước của kit, không phải của Portal.</p>
+                <p class="mb-0">Thuộc tính title là attribute HTML toàn cục; mirror gỡ nó khỏi thẻ host để không hiện tooltip gốc của trình duyệt (cơ chế giống SdInform).</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      showPanel(0);
+    }
+    initPreviewTabs();
+  })();
+
+  // Demo sự kiện sd-retry
+  (function () {
+    var ds = document.getElementById('ds-retry');
+    var out = document.getElementById('ds-retry-output');
+    if (!ds || !out) return;
+    ds.addEventListener('sd-retry', function () {
+      out.textContent = 'sd-retry fired - Thử lại';
+    });
+  })();
+</script>
+
+</body>
+</html>

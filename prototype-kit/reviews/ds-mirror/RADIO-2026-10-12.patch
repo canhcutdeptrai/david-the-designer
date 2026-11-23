@@ -1,0 +1,224 @@
+--- /tmp/sdc.bak.rd	2026-10-12 12:41:04.159763731 +0000
++++ design-system/sd-components/sd-components.js	2026-10-12 12:43:02.914254174 +0000
+@@ -964,6 +964,7 @@
+      ══════════════════════════════════════════════════════════ */
+   /* Chuỗi vi lấy nguyên văn từ bundle i18n (core.form.radio.*). */
+   var SD_RADIO_TEXT = { required: 'Vui lòng nhập thông tin' };
++  var sdRadioSeq = 0;
+ 
+   /* Mirror theo radio.component.ts của @sdcorejs/angular v22.2.12.
+      Rà soát 2026-10-10 — hai bản KHÔNG cùng một thứ:
+@@ -1039,6 +1040,10 @@
+       return (v === undefined || v === null) ? '' : String(v);
+     }
+     _itemDisabled(it) { return it && (it.disabled === true || it.disabled === 'true'); }
++    _autoName() {
++      if (!this._sdAutoName) this._sdAutoName = 'g' + (++sdRadioSeq);
++      return this._sdAutoName;
++    }
+ 
+     _computeError() {
+       var ext = this.inlineError;
+@@ -1075,10 +1080,15 @@
+         var v = self._itemValue(it);
+         var dis = disabled || self._itemDisabled(it);
+         var on = (v === value);
+-        return '<label class="c-radio-wrap' + (dis ? ' c-disabled' : '') + (showError ? ' c-error' : '') + '">' +
++        /* Lỗi KHÔNG tô đỏ vòng tròn — catalog giữ viền xám .54, chỉ hiện dòng
++           lỗi bên dưới (rà soát 2026-10-12). */
++        return '<label class="c-radio-wrap' + (dis ? ' c-disabled' : '') + '">' +
+           '<span class="c-radio-hit">' +
+             '<input type="radio" class="c-radio-input"' +
+-              ' name="' + escAttr(self.getAttribute('name') || ('sd-radio-' + (self.id || 'group'))) + '"' +
++              /* name riêng cho TỪNG nhóm khi trang không đặt — bản trước mọi nhóm
++                 không có id đều chung `sd-radio-group`, nên trình duyệt chỉ giữ
++                 MỘT ô được chọn trên cả trang (bắt được 2026-10-12). */
++              ' name="' + escAttr(self.getAttribute('name') || ('sd-radio-' + (self.id || self._autoName()))) + '"' +
+               ' value="' + escAttr(v) + '"' +
+               (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
+             '<span class="c-radio-box"><span class="c-radio-dot"></span></span>' +
+@@ -1087,9 +1097,15 @@
+           '</label>';
+       }).join('');
+ 
++      /* Nhãn nhóm — catalog dựng bằng <sd-label> (span.T14M + span.text-error
++         .mb-2.T14M "*"). Bản trước kit tự dựng div + span.sd-required, dấu *
++         ra màu chữ thường (.sd-required chỉ được tô đỏ trong khung form). */
+       var labelHtml = label
+-        ? '<div class="c-radio-group-label T14M">' + esc(label) +
+-          (required ? '<span class="sd-required">*</span>' : '') + '</div>'
++        ? '<sd-label label="' + escAttr(label) + '"' + (required ? ' required' : '') + '>' +
++            '<div class="mb-0 d-flex"><div class="d-flex align-items-center gap-4">' +
++              '<span class="T14M">' + esc(label) + '</span></div>' +
++              (required ? '<span class="text-error mb-2 T14M">*</span>' : '') +
++            '</div></sd-label>'
+         : '';
+       var placeholderHtml = (!items.length && placeholder)
+         ? '<div class="c-radio-placeholder T14R text-black400">' + esc(placeholder) + '</div>'
+--- /tmp/sdt.bak.rd	2026-10-12 12:41:04.162564862 +0000
++++ design-system/core/styles/sd-tokens.css	2026-10-12 12:41:38.580617375 +0000
+@@ -854,6 +854,9 @@
+ /* --- sd-radio styles --- */
+ /* 1 cỡ duy nhất — cùng nguyên tắc kích thước cố định như sd-checkbox ở trên. */
+ sd-radio { display: inline-block; vertical-align: middle; }
++/* Chế độ NHÓM — catalog `sd-radio{height:100%;display:flex;flex-direction:column}`
++   (rà soát 2026-10-12). Nút đơn kiểu cũ của kit giữ inline-block. */
++sd-radio[items] { height: 100%; display: flex; flex-direction: column; }
+ /* --- sd-radio chế độ NHÓM (có attribute items) — rà soát 2026-10-10 ---
+    Thư viện `sd-radio` là một NHÓM radio nhận `items` rồi tự dựng từng lựa
+    chọn, không phải một nút đơn như bản trước của kit. Không có `items` thì
+@@ -873,16 +876,13 @@
+ sd-radio .c-radio-group.c-row { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 0; }
+ sd-radio .c-radio-group.c-row .c-radio-wrap { margin-right: 16px; }
+ sd-radio .c-radio-group.c-column { flex-direction: column; align-items: flex-start; gap: 0; }
+-sd-radio .c-radio-group-label {
+-  margin-bottom: 1px;
+-  color: rgba(0, 0, 0, .87);
+-}
++/* (nhãn nhóm nay là markup sd-label — không còn `.c-radio-group-label`) */
+ sd-radio .c-radio-placeholder { padding: 4px 0; }
+ 
+ /* color đổi màu chấm và viền ô đã chọn — 6 màu hệ thống */
+ sd-radio .c-radio-group.c-color-primary   { --sd-radio-on: var(--sd-primary); }
+-sd-radio .c-radio-group.c-color-secondary { --sd-radio-on: var(--sd-secondary); }
+-sd-radio .c-radio-group.c-color-info      { --sd-radio-on: var(--sd-info); }
++/* secondary / info: catalog KHÔNG khai (chỉ primary · success · warning · error)
++   → ra màu primary như catalog. Gỡ theo Rule 18, rà soát 2026-10-12. */
+ sd-radio .c-radio-group.c-color-success   { --sd-radio-on: var(--sd-success); }
+ sd-radio .c-radio-group.c-color-warning   { --sd-radio-on: var(--sd-warning); }
+ sd-radio .c-radio-group.c-color-error     { --sd-radio-on: var(--sd-error); }
+@@ -897,6 +897,7 @@
+   align-items: center;
+   gap: 4px;
+   font-family: var(--sd-font-family);
++  cursor: pointer;          /* catalog `.mat-mdc-radio-button label{cursor:pointer}` */
+ }
+ sd-radio .c-radio-hit {
+   position: relative;
+@@ -999,12 +1000,22 @@
+ sd-radio .c-radio-wrap.c-disabled .c-radio-label {
+   color: color-mix(in srgb, rgba(0, 0, 0, .87) 38%, transparent);
+ }
++/* catalog `.mat-mdc-radio-disabled{cursor:default;pointer-events:none}` —
++   bản trước kit dùng con trỏ "cấm" (not-allowed). Chấm của ô ĐÃ chọn cũng về
++   rgba(0,0,0,.87): luật màu theo `color` ở trên mạnh hơn nên phải viết lại. */
+ sd-radio .c-radio-wrap.c-disabled {
+-  cursor: not-allowed;
++  cursor: default;
++  pointer-events: none;
+ }
+ sd-radio .c-radio-wrap.c-disabled .c-radio-hit,
+ sd-radio .c-radio-wrap.c-disabled .c-radio-input {
+-  cursor: not-allowed;
++  cursor: default;
++}
++sd-radio .c-radio-group .c-radio-wrap.c-disabled .c-radio-input:checked ~ .c-radio-box {
++  border-color: rgba(0, 0, 0, .87);
++}
++sd-radio .c-radio-group .c-radio-wrap.c-disabled .c-radio-input:checked ~ .c-radio-box .c-radio-dot {
++  background: rgba(0, 0, 0, .87);
+ }
+ 
+ /* Label + helper text */
+@@ -1013,12 +1024,33 @@
+   flex-direction: column;
+   justify-content: center;
+ }
++/* catalog `.mat-internal-form-field{color:rgba(0,0,0,.87);font:body-medium}` =
++   14px / line-height 20px / giãn chữ 0.016rem. Bản trước line-height 1.5
++   (21px), không giãn chữ. Rà soát 2026-10-12. */
+ sd-radio .c-radio-label {
+   font-size: 14px;
+   font-weight: 400;
+-  line-height: 1.5;
++  line-height: 20px;
++  letter-spacing: 0.016rem;
+   color: rgba(0, 0, 0, .87);
+ }
++/* Dòng lỗi của nhóm — catalog `mat-error` đứng ngay dưới nhóm, kế thừa chữ
++   14px / 21px, màu #f44336, không thụt lề. */
++sd-radio[items] > .sd-error-text {
++  font-size: 14px;
++  line-height: 21px;
++  margin-top: 0;
++  color: #f44336;
++}
++/* catalog `.mat-mdc-form-field-bottom-align::before{content:"";display:inline-block;
++   height:16px;font:12px/16px}` — nâng dòng lỗi lên cao 22px. */
++sd-radio[items] > .sd-error-text::before {
++  content: "";
++  display: inline-block;
++  height: 16px;
++  font-size: 12px;
++  line-height: 16px;
++}
+ sd-radio .c-radio-helper {
+   font-size: 12px;
+   line-height: 1.5;
+--- /tmp/rd.bak.rd	2026-10-12 12:41:04.165173041 +0000
++++ design-system/preview/components/radio.html	2026-10-12 12:42:45.506234744 +0000
+@@ -36,7 +36,36 @@
+       <!-- ── Tab: Preview ──────────────────────────────────── -->
+       <div class="tab-panel" data-tab-panel="0">
+ 
+-        <sd-section title="States">
++        <!-- ══ Mirror catalog #c-radio — 6 biến thể, cùng nội dung. sd-radio của
++             catalog LUÔN là một NHÓM (items + valueField/displayField). ══ -->
++        <sd-section title="Hàng ngang (mặc định)" subtitle="display='row', có nhãn + required — bấm để chọn">
++          <sd-radio label="Kỳ trả lãi" required valueField="code" displayField="name" value="MONTH" items='[{"code":"END","name":"Cuối kỳ"},{"code":"MONTH","name":"Hằng tháng"},{"code":"QUARTER","name":"Hằng quý"}]'></sd-radio>
++        </sd-section>
++        <sd-section title="Hàng dọc" subtitle="display='column'">
++          <sd-radio label="Loại hạn mức" display="column" valueField="code" displayField="name" value="SHORT" items='[{"code":"SHORT","name":"Hạn mức ngắn hạn"},{"code":"MID","name":"Hạn mức trung hạn"},{"code":"LONG","name":"Hạn mức dài hạn"}]'></sd-radio>
++        </sd-section>
++        <sd-section title="Disabled" subtitle="cả lựa chọn đang chọn và chưa chọn">
++          <sd-radio label="Kỳ trả lãi" disabled valueField="code" displayField="name" value="QUARTER" items='[{"code":"END","name":"Cuối kỳ"},{"code":"MONTH","name":"Hằng tháng"},{"code":"QUARTER","name":"Hằng quý"}]'></sd-radio>
++        </sd-section>
++        <sd-section title="Màu" subtitle="color: success · warning · error">
++          <div class="d-flex flex-column gap-16">
++            <sd-radio color="success" valueField="code" displayField="name" value="Y" items='[{"code":"Y","name":"Đồng ý"},{"code":"N","name":"Từ chối"}]'></sd-radio>
++            <sd-radio color="warning" valueField="code" displayField="name" value="Y" items='[{"code":"Y","name":"Đồng ý"},{"code":"N","name":"Từ chối"}]'></sd-radio>
++            <sd-radio color="error" valueField="code" displayField="name" value="Y" items='[{"code":"Y","name":"Đồng ý"},{"code":"N","name":"Từ chối"}]'></sd-radio>
++          </div>
++        </sd-section>
++        <sd-section title="Lỗi bắt buộc" subtitle="chưa chọn + touched → core.form.radio.required">
++          <sd-radio id="rd-cat-required" label="Ngân hàng giải ngân" required valueField="code" displayField="name" items='[{"code":"VCB","name":"Vietcombank"},{"code":"BIDV","name":"BIDV"},{"code":"TCB","name":"Techcombank"}]'></sd-radio>
++        </sd-section>
++        <sd-section title="Chế độ xem" subtitle="viewed: hiển thị displayField của mục đang chọn">
++          <sd-radio label="Kỳ trả lãi" viewed valueField="code" displayField="name" value="MONTH" items='[{"code":"END","name":"Cuối kỳ"},{"code":"MONTH","name":"Hằng tháng"},{"code":"QUARTER","name":"Hằng quý"}]'></sd-radio>
++        </sd-section>
++
++        <!-- ══ Nút radio ĐƠN (không có items) — chế độ RIÊNG của kit, catalog không
++             có. Giữ để tương thích ngược (Rule 18, ngoại lệ 3): 4 trang prototype,
++             sd-query-builder và SdConfirmService.withRadio đang dùng. Trang mới
++             dùng chế độ nhóm ở trên. ══ -->
++        <sd-section title="Nút đơn (kiểu cũ của kit) — States">
+           <p class="text-sm text-secondary mb-3">Default / Selected</p>
+           <div class="flex gap-4 items-center flex-wrap mb-4">
+             <sd-radio name="state-demo-1" label="Chưa chọn"></sd-radio>
+@@ -56,11 +85,11 @@
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="Với helper text">
++        <sd-section title="Nút đơn (kiểu cũ của kit) — helper text">
+           <sd-radio name="helper-demo" label="Chuyển khoản ngân hàng" helperText="Xử lý trong 1-2 ngày làm việc"></sd-radio>
+         </sd-section>
+ 
+-        <sd-section title="Radio Group (vertical)">
++        <sd-section title="Nút đơn (kiểu cũ của kit) — nhóm tự ghép bằng name">
+           <p class="text-sm text-secondary mb-3">Cùng thuộc tính <code>name</code> để đảm bảo chỉ chọn được 1 phương án. Khoảng cách giữa các item = group-gap token (16px)</p>
+           <div class="flex flex-col gap-4">
+             <sd-radio name="payment" value="card" label="Thẻ tín dụng / ghi nợ" checked></sd-radio>
+@@ -238,6 +267,12 @@
+     }
+     initPreviewTabs();
+   })();
++
++  // Khối catalog: nhóm bắt buộc hiện lỗi như đã chạm
++  (function () {
++    var r = document.getElementById('rd-cat-required');
++    if (r) { r._touched = true; r._render(); r._bind(); }
++  })();
+ </script>
+ 
+ </body>

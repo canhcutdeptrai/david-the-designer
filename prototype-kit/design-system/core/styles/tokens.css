@@ -1,0 +1,328 @@
+/* Font icon của thư viện (Material Icons / Symbols) — vendor/sd-fonts/. Roboto trong đó không còn dùng (2026-11-18). */
+@import url('../../vendor/sd-fonts/fonts.css');
+/* Theme components.build — NGUỒN của mọi giá trị màu / font / bo góc / bóng (2026-11-18) */
+@import url('./theme.css');
+
+/* ============================================================
+   PROTOTYPE KIT DESIGN SYSTEM — Design Tokens
+   Version: theme components.build (2026-11-18)
+
+   Lớp TÊN VAI TRÒ của kit (--color-*, --surface-*, --text-*, --border-*…).
+   File này KHÔNG chứa giá trị màu — mọi bậc đều trỏ về theme.css
+   (token shadcn của components.build + thang Tailwind v4). Pattern riêng
+   của kit (page-header, sidebar, filter-bar…) đọc các tên ở đây; component
+   sd-* đọc --sd-* trong sd-tokens.css — cả hai cùng về theme.css.
+
+   Lịch sử: v2.x trỏ về bảng màu Core UI (theme portal-fins, nâu MH #AE7129,
+   Roboto) — xem CHANGELOG v2.12.0, mục „THEME components.build“.
+   ============================================================ */
+
+/* ────────────────────────────────────────────────────────────
+   1. COLOR SYSTEM — components.build (neutral + primary xanh #006bff)
+   ──────────────────────────────────────────────────────────── */
+
+:root {
+  /* --- Neutral Scale --- */
+  --color-neutral-0:    var(--background);     /* #ffffff */
+  --color-neutral-50:   var(--neutral-50);     /* #fafafa — nền vùng nội dung */
+  --color-neutral-100:  var(--neutral-100);    /* #f5f5f5 — muted / hover */
+  --color-neutral-150:  var(--muted);          /* #f5f5f5 */
+  --color-neutral-200:  var(--neutral-200);    /* #e5e5e5 */
+  --color-neutral-300:  var(--border);         /* #e5e5e5 — viền mặc định */
+  --color-neutral-400:  var(--neutral-300);    /* #d4d4d4 — viền hover */
+  --color-neutral-500:  var(--neutral-400);    /* #a1a1a1 — placeholder, icon nhạt */
+  --color-neutral-600:  var(--neutral-500);    /* #737373 */
+  --color-neutral-700:  var(--neutral-600);    /* #525252 */
+  --color-neutral-800:  var(--muted-foreground); /* #737373 — chữ phụ */
+  --color-neutral-850:  var(--neutral-600);    /* #525252 — icon mặc định */
+  --color-neutral-900:  var(--foreground);     /* #0a0a0a — chữ chính */
+  --color-neutral-950:  var(--neutral-950);    /* #0a0a0a */
+
+  /* --- Primary (components.build blue) --- */
+  --color-primary-50:   var(--primary-subtle);                      /* #eff6ff */
+  --color-primary-100:  oklch(0.932 0.032 255.585);                 /* blue-100 */
+  --color-primary-200:  oklch(0.882 0.059 254.128);                 /* blue-200 */
+  --color-primary-300:  oklch(0.809 0.105 251.813);                 /* blue-300 */
+  --color-primary-400:  oklch(0.707 0.165 254.624);                 /* blue-400 */
+  --color-primary-500:  var(--primary);                             /* #006bff */
+  --color-primary-600:  var(--primary-strong);                      /* #0051ed — hover */
+  --color-primary-700:  oklch(0.488 0.243 264.376);                 /* blue-700 — nhấn */
+  --color-primary-800:  oklch(0.424 0.199 265.638);                 /* blue-800 */
+  --color-primary-900:  oklch(0.379 0.146 265.522);                 /* blue-900 */
+
+  /* --- Semantic: Success --- */
+  --color-success-50:   var(--success-subtle);
+  --color-success-100:  oklch(0.962 0.044 156.743);
+  --color-success-200:  oklch(0.925 0.084 155.995);
+  --color-success-500:  var(--success);
+  --color-success-600:  var(--success-strong);
+  --color-success-700:  var(--success-strong);
+
+  /* --- Semantic: Warning --- */
+  --color-warning-50:   var(--warning-subtle);
+  --color-warning-100:  oklch(0.962 0.059 95.617);
+  --color-warning-200:  oklch(0.924 0.12 95.746);
+  --color-warning-500:  var(--warning);
+  --color-warning-600:  var(--warning-strong);
+  --color-warning-700:  var(--warning-strong);
+
+  /* --- Semantic: Error --- */
+  --color-error-50:     var(--destructive-subtle);
+  --color-error-100:    oklch(0.936 0.032 17.717);
+  --color-error-200:    oklch(0.885 0.062 18.334);
+  --color-error-500:    var(--destructive);
+  --color-error-600:    var(--destructive-strong);
+  --color-error-700:    var(--destructive-strong);
+
+  /* --- Semantic: Info --- */
+  --color-info-50:      var(--info-subtle);
+  --color-info-100:     oklch(0.932 0.032 255.585);
+  --color-info-200:     oklch(0.882 0.059 254.128);
+  --color-info-500:     var(--info);
+  --color-info-600:     var(--info-strong);
+  --color-info-700:     var(--info-strong);
+
+  /* --- Brand Extension --- */
+  --color-brand-navy:   var(--neutral-900);
+
+  /* --- Surface & Background Roles --- */
+  --surface-page:       var(--neutral-50);     /* #fafafa */
+  --surface-primary:    var(--card);           /* #ffffff — card, modal, input */
+  --surface-secondary:  var(--neutral-50);     /* #fafafa — tiêu đề bảng */
+  --surface-tertiary:   var(--muted);          /* #f5f5f5 */
+  --surface-inverse:    var(--foreground);
+  --surface-sidebar:    var(--sidebar);        /* #fafafa */
+  --surface-hover:      var(--accent);         /* #f5f5f5 */
+  --surface-active:     var(--primary-subtle);
+  --surface-selected:   var(--primary-subtle);
+  --surface-disabled:   var(--muted);
+  --surface-page-alt:   var(--background);
+  --surface-overlay:    rgb(0 0 0 / 0.5);      /* shadcn dialog overlay bg-black/50 */
+
+  /* --- Text Roles --- */
+  --text-primary:       var(--foreground);
+  --text-secondary:     var(--muted-foreground);
+  --text-tertiary:      var(--neutral-400);
+  --text-inverse:       var(--primary-foreground);
+  --text-disabled:      var(--neutral-400);
+  --text-link:          var(--primary);
+  --text-link-hover:    var(--primary-strong);
+  --text-on-primary:    var(--primary-foreground);
+  --text-success:       var(--success);
+  --text-warning:       var(--warning-strong);
+  --text-error:         var(--destructive);
+  --text-info:          var(--info);
+
+  /* --- Icon Roles --- */
+  --icon-default:       var(--neutral-600);
+  --icon-placeholder:   var(--neutral-400);
+  --icon-primary:       var(--primary);
+  --icon-on-primary:    var(--primary-foreground);
+  --icon-on-color:      var(--primary-foreground);
+  --icon-inverse:       var(--foreground);
+  --icon-disabled:      var(--neutral-300);
+  --icon-success:       var(--success);
+  --icon-warning:       var(--warning);
+  --icon-error:         var(--destructive);
+  --icon-info:          var(--info);
+
+  /* --- Border Roles --- */
+  --border-primary:     var(--border);
+  --border-secondary:   var(--border);
+  --border-strong:      var(--neutral-300);
+  --border-focus:       var(--ring);
+  --border-focus-light: var(--primary-subtle);
+  --border-error:       var(--destructive);
+  --border-success:     var(--success);
+
+  /* --- Data Visualization Palette — 5 màu chart của components.build + 3 bậc nối --- */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --chart-6: var(--primary);
+  --chart-7: oklch(0.627 0.265 303.9);
+  --chart-8: var(--neutral-500);
+  --chart-grey: var(--neutral-300);  /* nhãn trục, lưới */
+
+
+  /* ──────────────────────────────────────────────────────────
+     2. TYPOGRAPHY — Geist (chữ) + Geist Mono (dữ liệu dạng code)
+     ────────────────────────────────────────────────────────── */
+
+  --font-family-sans:   var(--font-sans);
+  --font-family-mono:   var(--font-mono);
+
+  /* --- Font Sizes (from primitive.json font-size) --- */
+  --text-2xs:    0.625rem;   /* 10px — micro labels */
+  --text-xs:     0.75rem;    /* 12px — badges, captions (Text SM) */
+  --text-sm:     0.75rem;    /* 12px — table cells, metadata (Text SM) */
+  --text-base:   0.875rem;   /* 14px — default body (Text Base) */
+  --text-md:     0.875rem;   /* 14px — form inputs, navigation */
+  --text-lg:     1rem;       /* 16px — section headers (Text LG / H6) */
+  --text-xl:     1.125rem;   /* 18px — page titles (H5) */
+  --text-2xl:    1.25rem;    /* 20px — major headings (H4) */
+  --text-3xl:    1.5rem;     /* 24px — dashboard KPI values (H3) */
+  --text-4xl:    2rem;       /* 32px — hero numbers (H2) */
+  --text-5xl:    2.5rem;     /* 40px — display (primitive 4xl) */
+  --text-6xl:    3rem;       /* 48px — display large (H1) */
+
+  /* --- Font Weights --- */
+  --font-regular:   400;
+  --font-medium:    500;
+  --font-semibold:  600;
+  --font-bold:      700;
+
+  /* --- Line Heights (ratio) --- */
+  --leading-none:    1;
+  --leading-tight:   1.25;
+  --leading-snug:    1.375;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.625;
+
+  /* --- Line Heights (px — heading scale per Figma DS) --- */
+  --leading-body:    1.25rem;  /* 20px — T14R/T14M body text */
+  --leading-lg:      1.5rem;   /* 24px — T16R/T16M, H6 */
+  --leading-h5:      1.75rem;  /* 28px — H5 (18px/500) */
+  --leading-h4:      1.75rem;  /* 28px — H4 (20px/500) */
+  --leading-h3:      2rem;     /* 32px — H3 (24px/500) */
+  --leading-h2:      2.5rem;   /* 40px — H2 (32px/500) */
+  --leading-h1:      3.5rem;   /* 56px — H1 (48px/500) */
+
+  /* --- Letter Spacing --- */
+  --tracking-tight:  -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide:   0.025em;
+  --tracking-wider:  0.05em;
+  --tracking-widest: 0.1em;
+
+
+  /* ──────────────────────────────────────────────────────────
+     3. SPACING SCALE
+
+     4px base unit. Compact for data-dense layouts.
+     ────────────────────────────────────────────────────────── */
+
+  --space-0:    0;
+  --space-px:   1px;
+  --space-0-5:  0.125rem;  /* 2px */
+  --space-1:    0.25rem;   /* 4px */
+  --space-1-5:  0.375rem;  /* 6px */
+  --space-2:    0.5rem;    /* 8px */
+  --space-2-5:  0.625rem;  /* 10px */
+  --space-3:    0.75rem;   /* 12px */
+  --space-4:    1rem;      /* 16px */
+  --space-5:    1.25rem;   /* 20px */
+  --space-6:    1.5rem;    /* 24px */
+  --space-8:    2rem;      /* 32px */
+  --space-10:   2.5rem;    /* 40px */
+  --space-12:   3rem;      /* 48px */
+  --space-16:   4rem;      /* 64px */
+  --space-20:   5rem;      /* 80px */
+  --space-24:   6rem;      /* 96px */
+
+
+  /* ──────────────────────────────────────────────────────────
+     4. LAYOUT DIMENSIONS
+     ────────────────────────────────────────────────────────── */
+
+  --sidebar-width:          300px;
+  --sidebar-width-collapsed: 60px;
+  --sidebar-rail-width:     60px;
+  --page-header-height:     56px;
+  --table-row-height:       48px;
+  --table-row-height-compact: 32px;
+  --border-table-row:       var(--border);
+  --input-height:           36px;
+  --input-height-sm:        28px;
+  --input-height-lg:        44px;
+  --button-height:          32px;
+  --button-height-sm:       28px;
+  --button-height-lg:       44px;
+
+
+  /* ──────────────────────────────────────────────────────────
+     5. BORDER RADIUS — theme.css (components.build: --radius 0.625rem)
+     ────────────────────────────────────────────────────────── */
+
+  --radius-none:  0;
+  /* --radius-sm / -md / -lg / -xl / -full khai trong theme.css (6 · 8 · 10 · 14px — @theme inline của components.build) */
+
+
+  /* ──────────────────────────────────────────────────────────
+     6. SHADOWS
+     ────────────────────────────────────────────────────────── */
+
+  /* --shadow-xs / -sm / -md / -lg / -xl khai trong theme.css (thang Tailwind v4 của shadcn) */
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+  --shadow-focus: var(--focus-ring);                    /* ring-[3px] ring-ring/50 */
+  --shadow-focus-error: var(--focus-ring-destructive);  /* ring-destructive/20 */
+
+
+  /* ──────────────────────────────────────────────────────────
+     7. Z-INDEX SCALE
+     ────────────────────────────────────────────────────────── */
+
+  --z-base:      0;
+  --z-dropdown:  10;
+  --z-sticky:    20;
+  --z-sidebar:   30;
+  --z-overlay:   50;
+  --z-modal:     60;
+  --z-popover:   70;
+  --z-toast:     80;
+  --z-tooltip:   90;
+  --z-max:       100;
+
+
+  /* ──────────────────────────────────────────────────────────
+     8. TRANSITIONS & ANIMATION
+     ────────────────────────────────────────────────────────── */
+
+  --duration-instant:  0ms;
+  --duration-fast:     100ms;
+  --duration-normal:   200ms;
+  --duration-slow:     300ms;
+  --duration-slower:   500ms;
+
+  --ease-default:      cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in:           cubic-bezier(0.4, 0, 1, 1);
+  --ease-out:          cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out:       cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:       cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --transition-colors: color var(--duration-normal) var(--ease-default),
+                        background-color var(--duration-normal) var(--ease-default),
+                        border-color var(--duration-normal) var(--ease-default);
+  --transition-shadow: box-shadow var(--duration-normal) var(--ease-default);
+  --transition-transform: transform var(--duration-normal) var(--ease-default);
+  --transition-all:    all var(--duration-normal) var(--ease-default);
+
+
+  /* ──────────────────────────────────────────────────────────
+     9. BREAKPOINTS (reference — use in media queries)
+     ────────────────────────────────────────────────────────── */
+
+  /* --bp-sm:   640px   */
+  /* --bp-md:   768px   */
+  /* --bp-lg:   1024px  */
+  /* --bp-xl:   1280px  */
+  /* --bp-2xl:  1440px  */
+  /* --bp-3xl:  1920px  */
+}
+
+
+/* ────────────────────────────────────────────────────────────
+   REDUCED MOTION
+   ──────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast:    0ms;
+    --duration-normal:  0ms;
+    --duration-slow:    0ms;
+    --duration-slower:  0ms;
+  }
+}

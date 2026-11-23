@@ -1,0 +1,1886 @@
+# MIGRATE-COMPONENTS 2026-10-14 — migrate-prototype.mjs v4: đổi mọi markup tự dựng (nút, badge, ô nhập, select, textarea, checkbox, radio, switch, bảng, modal, drawer, tab, card, header) + tên cũ của kit sang component Core; legacy-shim.js nối JS cũ; migrate-components.md; kit: 3 hộp tự dựng → sd-modal, slot=footer → sdFooter, sd-modal overlay z 1250
+# Builder: 'giờ tôi cần tất cả các component phải đổi được vì tôi cần đưa bộ prototype kit này cho những người khác dùng nữa' — 'Đổi hết, kể cả bảng/modal' · 'Đổi sang tên Core'
+# 18 file — xem danh sách 'diff' bên dưới
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/MIGRATE-COMPONENTS-2026-10-14.patch (sau INFORM-CORE-2026-10-14.patch)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/AGENTS.md b/AGENTS.md
+--- a/AGENTS.md	2026-10-14 14:42:24.239631851 +0000
++++ b/AGENTS.md	2026-10-14 16:48:46.632676931 +0000
+@@ -148,7 +148,7 @@
+     - Mọi utility sd-core đều `!important` (trừ `T*`, `grid-cols-*`, `col-*`). Hệ quả: phần tử có `d-flex` / `d-block` thì **không ẩn được** bằng `style.display = 'none'` hay `[hidden]` — muốn bật/tắt bằng JS thì dùng bí danh `flex` / `hidden` của kit (không `!important`) hoặc thêm/bớt chính class `d-none`.
+     - Chữ phụ màu xám: `text-black400` (**không phải** `text-secondary` — trong sd-core đó là màu `--sd-secondary` #212121 gần đen). Cỡ chữ: `T12R`, `T14M`… hoặc `fs-12`; đậm: `font-weight-medium` (500) / `font-weight-bold` (600). Bo góc `rounded-8`, viền `border` / `border-bottom`, bóng `mat-elevation-z1…z8`.
+     - Nền trang là **reboot của sd-core**: `p` có lề dưới 16px, `h1–h6` 8px, `ul/ol` thụt 40px + lề dưới 16px, `label` lề dưới 8px, link `#007bff`. Muốn sát thì khai `mb-0` / `m-0` / `pl-0`.
+-    - Trang dựng bằng kit **cũ** (trước 2026-10-13, reset `*{margin:0;padding:0}`, khoảng cách Tailwind ×4) → **không sửa tay**: chạy `node ai-instructions/tools/migrate-prototype.mjs prototypes/<feature>/` (xem `generate.md` Mode C bước 1b). Trang mới không nạp `legacy-reset.css`.
++    - Trang dựng bằng kit **cũ** (trước 2026-10-13, reset `*{margin:0;padding:0}`, khoảng cách Tailwind ×4) → **không sửa tay**: chạy `node ai-instructions/tools/migrate-prototype.mjs prototypes/<feature>/` (xem `generate.md` Mode C bước 1b). Công cụ đổi cả markup tự dựng sang component Core (`ai-instructions/migrate-components.md`). Trang mới không nạp `legacy-reset.css` / `legacy-shim.js`.
+ 16. **Cancel button label** — nút hủy/thoát chỉ được dùng đúng 1 trong 3 label: **"Bỏ qua"**, **"Thoát"**, **"Quay lại"**. **Không dùng** "Hủy", "Huỷ", "Cancel", "Đóng" hay bất kỳ biến thể nào khác.
+ 17. **Cụm nút trong hộp thoại phân cấp ba bậc, cùng `color="primary"`** - bậc 1 hành động chính dùng `type="fill"`, bậc 2 hành động phụ trong cùng cụm CTA dùng `type="light"`, bậc 3 thoát ra không làm gì (Bỏ qua / Thoát / Quay lại) dùng `type="link"`. Nút thoát **không dùng** `light`/`outline` vì nó nổi ngang hàng các bậc trên; `link color="secondary"` thì chữ quá mờ nhìn như bị disable, nên luôn là `type="link" color="primary"`. **Ngoại lệ — nút huỷ MẶC ĐỊNH của `SdConfirmService`** theo thư viện / catalog `#c-confirm`: `light` · `secondary`, chữ vẫn "Bỏ qua" (Builder 2026-10-13: *"Kiểu catalog, giữ chữ Bỏ qua"*). Rule 17 áp cho hộp thoại AI tự dựng trên trang.
+ 18. **KHÔNG tự thêm thứ mốc chuẩn không có.** Nếu `@sd-angular/core` 19.0.10 không có một slot / biến thể / attribute, thì **kit cũng không có**. Thấy kit đang có mà catalog không có thì mặc định là **GỠ**, không phải "ghi known-gaps rồi giữ lại".
+@@ -208,6 +208,8 @@
+ │   ├── dev-spec.md          ← Mẫu + quy tắc `_dev-spec.md` của feature (Rule 20)
+ │   ├── tools/spec-scan.mjs  ← Quét trang → nháp số liệu cho `_dev-spec.md` (Node thuần, không cần cài)
+ │   ├── tools/migrate-prototype.mjs ← Nâng trang dựng bằng kit cũ (trước 2026-10-13) lên kit hiện tại + báo phần phải sửa tay
++│   ├── tools/lib/           ← html-lite.mjs (đọc HTML giữ nguyên văn) · components.mjs (markup tự dựng → component Core)
++│   ├── migrate-components.md ← Bảng đổi markup tự dựng → component Core + cách sửa tay các dòng `!` của công cụ
+ │   ├── build.md             ← Năng lực 2: PD mở rộng boilerplate
+ │   └── export.md            ← Năng lực 3: Builder export prototype
+ │
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-14 15:41:51.155542601 +0000
++++ b/CHANGELOG.md	2026-10-14 16:57:45.121593264 +0000
+@@ -8,6 +8,32 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Added — `migrate-prototype.mjs` v4: đổi MỌI markup tự dựng sang component Core (Builder 2026-10-14: *„giờ tôi cần tất cả các component phải đổi được vì tôi cần đưa bộ prototype kit này cho những người khác dùng nữa. Bộ sẽ apply được cho các prototype cũ của họ“* — chọn *„Đổi hết, kể cả bảng/modal“*, *„Đổi sang tên Core“*)
++
++- **`ai-instructions/tools/lib/components.mjs`** (+ `lib/html-lite.mjs`: đọc HTML trên chuỗi nguồn, phần không đổi giữ nguyên từng ký tự;
++  hiểu cả markup trong chuỗi JS, đoán đúng dấu nháy của chuỗi). Tự đổi: nút `.btn*` / `<button>` trần → `sd-button` · `span.badge` → `sd-badge` ·
++  `<input>` text / number / date / datetime-local (+ `<label for>` / `<label>` bọc, `datalist` → `sd-autocomplete`) · `<select>` · `<textarea>` ·
++  checkbox / radio / `role=switch` / `button.toggle` · `<table>` tĩnh → `sd-table` · modal / drawer tự dựng → `sd-modal` / `sd-side-drawer` (tiêu đề,
++  phụ đề có id → `[sdHeaderLeft]`, nút trên đầu → `[sdHeaderRight]`, chân → `[sdFooter]`) · thanh tab + khối nội dung → `sd-tab-group` ·
++  `.card` / `.form-card` / `.detail-section` → `sd-section` · `.detail-info-item` → `sd-section-item` · header viết tay → khung header `sd-page` ·
++  tên cũ của kit → tên Core (`sd-inform type/dismissible/cta`, `collapsable`, `sd-button type="text"`, `slot="header-*|footer"`).
++- **`design-system/core/js/legacy-shim.js`** (chỉ trang đã nâng nạp, tự gắn): JS cũ chạy tiếp trên component mới — `change` cho sd-select / sd-date…,
++  `el.disabled` / `el.focus()`, mở / đóng modal & drawer bằng `style.display` / lớp `open|show|active` / `hidden`, onclick nút X cũ khi đóng bằng
++  component, lớp `active` của toggle, onclick nút tab khi chọn tab, `<select>` có option dựng bằng JS (giữ làm nguồn, vẽ `sd-select` thay hình).
++  `legacy-reset.css` thêm: bỏ hình lớp trang trên ô đã đổi (`data-legacy-ctl`), host modal / drawer, select gốc đã thay.
++- **An toàn**: widget riêng của trang (nút có CSS trang — hàng cây, thẻ chọn…) giữ nguyên, báo; JS dùng thứ component không có (`.innerHTML`
++  của nút, `.select()`…) → không đổi, báo; `<script>` nào vốn chạy mà hỏng cú pháp sau khi đổi → đổi lại chỉ HTML tĩnh. Cờ mới `--components`
++  (chỉ bước này, chạy được trên trang mới). Trang đã nâng v1–v3 chạy lại là được nâng tiếp.
++- **Kiểm tra**: 29 trang cẩm nang bản 2026-10-12 (150+ component đổi: 43 select + 26 select dựng bằng JS, 33 ô nhập, 16 ô ngày, 12 checkbox,
++  7 bảng, 6 modal, 3 drawer…) + 67 trang preview cũ + một trang mẫu đủ mọi kiểu tự dựng: 0 lỗi JS, cấu trúc thẻ không lệch, kịch bản mở / đóng
++  modal / drawer bằng JS cũ và bằng nút X, chọn tab, đổi select (cả select dựng bằng JS), toggle, khoá nút, nút sinh bằng JS — đều chạy.
++- **`ai-instructions/migrate-components.md`** (MỚI): bảng đổi từng loại + cách sửa tay từng dòng `!` + ghi chú dịch sang Angular.
++- **Kit**: `chi-tiet-workitem` (hộp phiên bản), `danh-sach-workitem` (Clone, Nhập nguồn) → `sd-modal` + `open()` / `close()` (không dùng shim);
++  `tra-cuu-cam-nang-v2`, `uy-quyen-noi-bo`: `slot="footer"` → `sdFooter`. **Sửa lỗi kit**: overlay của `sd-modal` z 100 → ô dính của sd-table (z 103)
++  nổi trên nền mờ / hộp — nay 1250 (trên khay drawer, dưới overlay dùng chung ở body). Tài liệu: `generate.md` (Mode C 1b, bước 10 tự kiểm
++  `--components --dry`), AGENTS (Rule 15, cây thư mục), `export.md`, `html-to-angular.md` (bỏ `data-legacy-*`).
++- Bản vá: `reviews/ds-mirror/MIGRATE-COMPONENTS-2026-10-14.patch`.
++
+ ### Fixed — dải thông báo (inform) chưa khớp Core khi sinh giao diện (Builder 2026-10-14: *„Khi lên giao diện UI inform đang chưa khớp với Core UI“*)
+ 
+ - **Nguyên nhân**: `sd-inform` của kit đã khớp catalog `#c-inform` (đo lại: viền + nền màu chủ đề, icon đặc 20px, tiêu đề 14px/600 màu chủ đề, thân
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-14 15:41:51.157365164 +0000
++++ b/_memory/known-gaps.md	2026-10-14 16:57:45.125593264 +0000
+@@ -21,6 +21,8 @@
+ | 2026-10-11 | Ô nhập — viền khi hover / focus / lỗi | Catalog ghim màu viền ô nhập ở **mọi trạng thái** bằng `!important` (`.mat-mdc-notch-piece.mdc-notched-outline__leading{border-color:var(--sd-black200)!important}`), nên hover không đổi màu, focus chỉ **dày lên 2px** chứ không chuyển nâu, và **ô lỗi vẫn giữ viền xám** — chỉ `hideInlineError` mới cho viền đỏ. Kit đã làm theo. **Builder nên xem lại:** bản cũ của kit (hover xám đậm, focus nâu + quầng, lỗi viền đỏ) dễ thấy hơn nhiều khi điền form dài | Đã mirror đúng catalog theo yêu cầu "mọi thứ giống catalog". Từ 2026-10-13 mọi `sd-*` dùng DOM Material: luật nằm ở các khối `catalog #c-…` (`.mat-mdc-notch-piece… {border-color:var(--sd-black200)!important}`) trong `sd-tokens.css` — muốn trả lại thì sửa ở đó. Ba rule `.sd-form-field:hover` / `:focus-within` / `.sd-error` nay chỉ còn áp cho markup viết tay |
+ | 2026-10-11 | **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]** `sd-stepper` — nhãn bước đang làm | Catalog **có** rule tô nhãn bước đang làm màu brand + 600, nhưng rule `.mat-step-label-active` đứng trước lại nhiều class hơn nên luôn thắng → nhãn bước đang làm KHÔNG khác các bước khác. Kit chép lại đúng tương quan điểm đó. **Builder nên xem lại:** bước đang làm giờ chỉ phân biệt bằng vòng tròn (số, nền đặc), nhãn thì giống hệt bước khác | Đây là hành vi THẬT của catalog (nhiều khả năng là lỗi thứ tự rule của thư viện). Muốn trả lại: nâng điểm rule `sd-stepper .sd-stepper__label--selected` |
+ | 2026-10-14 | Kit có, `.d.ts` 19.0.10 không có (phát hiện khi sinh `html-to-angular-api.md`) | `sd-select showSelectAll` / `hideReadError` · `sd-input-number clearable` · `sd-radio helperText` · `sd-date-range inlineError` · `autoId` trên `sd-label` / `sd-view` / `sd-history` / `sd-import-excel` / `sd-form-builder` / `sd-document-builder` / `sd-header-footer-builder` · `sd-table addable` / `filterRequired` / cột number `option.precision`. Ngược lại `.d.ts` CÓ mà kit đã gỡ theo bảng API catalog: `sd-tab-group disableRipple` / `autoId`; `sd-side-drawer` 19.0.10 chỉ có `[sdFooter]` (không `sdFooterLeft/Right`) | Rule 18 đo theo **bảng API catalog**, còn `.d.ts` là mã thật — hai nguồn lệch nhau. Chờ Builder chọn nguồn khi rà Rule 18. Bảng dịch đã ghi "Kit-only — bỏ khi dịch" |
++| 2026-10-14 | **`migrate-prototype.mjs` v4 — đổi component tự dựng** | Chưa tự đổi (chỉ báo `!`, cách sửa ở `ai-instructions/migrate-components.md`): bảng dựng bằng JS / JS đọc ghi bảng / dòng có onclick / rowspan; modal dựng bằng JS; nút có lớp CSS của trang (widget riêng — đúng Rule 0b); tab dựng bằng JS hoặc nội dung không liền sau thanh tab; phân trang, toast, menu thả xuống, avatar, chấm trạng thái, khối trống, thanh bước, `input type=file` tự dựng. `<select>` dựng bằng JS đổi LÚC CHẠY (select gốc ẩn làm nguồn) — markup nguồn vẫn là `<select data-legacy-upgrade>`. Các bảng tài liệu API trong `design-system/preview/**` cũng là `<table>` tĩnh (`--components --dry` liệt kê) — là trang tài liệu của kit, không phải prototype, để nguyên. Bản đóng băng `tra-cuu-cam-nang` không đổi | Mỗi chỗ cần hiểu JS của trang; tự đổi dễ làm hỏng hành vi mà không báo lỗi |
++| 2026-10-14 | **`sd-modal` overlay z-index** | Kit đặt 1250 (CDK: 1000) để hộp mở từ khay drawer (1200) nằm trên khay; overlay dùng chung ở body 1300 | Kit để overlay trong host thay vì một container chung như CDK |
+ | 2026-10-14 | **Dải thông báo → `sd-inform`** | Thân `sd-inform` là chữ thuần như Core — các dải cũ có `<strong>` / `<br>` trong thân nay mất đậm / xuống dòng (`lich-su-sync`, `sua-position`, `tao-position`, `sua/tao-workitem`). Còn tự dựng có chủ ý: khối trống "Chưa cấu hình ApprovalTier" của `quan-ly-cam-nang` (căn giữa + nút — trạng thái trống, không phải dải báo); bản đóng băng `tra-cuu-cam-nang` không sửa | Core không nhận HTML trong thân; muốn nhấn mạnh thì tách tiêu đề (`title`) |
+ | 2026-10-14 | **Trang dựng bằng kit cũ** — sau `migrate-prototype.mjs` (v2) | Khoảng cách của thẻ do trang viết khớp bản cũ (đo computed style trên 96 trang + trang mẫu; chỗ còn lệch là của component theo Core: đệm trên ô có nhãn trong bộ lọc, `sd-table` lề 16px trong trang read cũ, khung `div.sd-form-field` viết tay). Chưa bắt được: lớp ghép trong chuỗi JS không gần chữ `class`/`cls`, JS đặt `el.style.X` lúc chạy lên phần tử mang tiện ích !important (trừ `d-flex` + display none), luật CSS trang có selector ghép đè tiện ích (chỉ báo `!`). Công cụ chỉ đổi cách viết, KHÔNG đổi component: phần còn lệch so với bản 2026-10-12 là kích thước theo Core (ô nhập + khoảng 20px dưới mỗi ô, textarea cao hơn, header có nút quay lại, mất `avatar` số thứ tự của sd-section, bảng không còn cột `#` tự đánh số, bộ lọc `filter-bar` không còn nút Tìm kiếm của kit cũ). Chưa tự sửa (chỉ báo `!`): sd-button-item / sd-scorecard (đã gỡ, phải dựng lại), `slot="footer"` (đổi sang `sdFooter` thì mất căn phải sẵn — phải thêm lớp), `color="black"`, thuộc tính đã gỡ của sd-input / sd-checkbox / sd-date…, lớp site-tab*. `legacy-reset.css` không có catalog tương ứng — lớp tương thích (Rule 18 ngoại lệ 3), chỉ trang đã nâng nạp | Mỗi chỗ cần người quyết cách thay; tự đổi thì sai hình hoặc mất chức năng |
+ | 2026-10-14 | **Đối chiếu tổng kit ↔ catalog** — `reviews/ds-mirror/DOI-CHIEU-TONG-2026-10-14.md` | Khớp hẳn: button, badge, avatar, radio, anchor, history, org-chart, preview-image, inform, tooltip, tab-group, kpi-card, filter-scorecard. **Lệch cấu trúc thật:** ~~`sd-checkbox` / `sd-switch`~~ (**ĐÃ SỬA 2026-10-14** — DOM Material, 13/13 + 13/13 khớp), ~~`sd-tree` (ô chọn / nút lệnh / spinner)~~ (**ĐÃ SỬA 2026-10-14**), ~~khối popup ẩn trong thẻ của select / autocomplete / date / date-range / datetime / chip-calendar~~ (**ĐÃ SỬA 2026-10-14** — ra overlay), ~~`sd-upload-file` thiếu `<preview>`~~ (**ĐÃ SỬA**), ~~`sd-chip` viewed~~ (ghép nhầm mẫu — trang preview thiếu mẫu "Đang nhập thêm", đã thêm), ~~`sd-query-builder`~~ (**ĐÃ SỬA** mũi tên select + mẫu menu "+" mở; dòng dưới ô là bản dựng giản lược của catalog — xem dòng `data-ff`). Lệch nhỏ: `sd-label` cao 22 thay 20px, dòng lỗi form-generic, lớp `<table>` của sd-table. Chưa so được: modal / drawer / confirm (overlay), stepper, splitter, chart, import-excel | **Đã sửa 4 nhóm 2026-10-14** (checkbox/switch · popup overlay · tree/upload/chip/qb · lệch nhỏ): khớp hẳn 146 → 232 / 360 mẫu ghép được. Phần còn lại đã phân loại ở mục "Cập nhật sau vòng sửa" cuối báo cáo |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-14 15:41:51.157794300 +0000
++++ b/_memory/lessons.md	2026-10-14 16:57:45.130206380 +0000
+@@ -13,6 +13,16 @@
+ - Nhắc Worker rằng `AGENTS.md` ở root là nguồn quy ước, nhưng nó **không chứa bối cảnh phần việc đang giao** — cái đó chỉ nằm trong brief.
+ - **Cấm đọc, ghi, xoá `_memory/session-handoff.md`.** File đó thuộc về phiên đang đối thoại với Builder; Worker ghi vào là mất bàn giao. Ràng buộc này cố ý không nằm trong skill `orchestration` vì skill đó phải dùng được ở repo khác — nên brief của kit này phải tự mang theo.
+ 
++## Đổi markup tự động trên trang có JS: ba lưới an toàn (migrate-components 2026-10-14)
++
++- **Kiểm cú pháp sau khi đổi**: mỗi `<script>` vốn chạy được phải còn chạy (`vm.Script`) — đổi markup trong chuỗi JS mà đoán sai dấu nháy
++  là JS chết cả trang, không báo gì trên màn hình. Hỏng → đổi lại chỉ HTML tĩnh.
++- **Lexer JS tối thiểu phải biết chú thích và regex literal** — bản đầu đổi cả markup nằm TRONG chú thích JS vì một `/'/g` phía trước làm lệch trạng thái chuỗi.
++- **`classList.add/remove` luôn ghi lại thuộc tính** (sinh mutation dù không đổi) → MutationObserver tự kích chính nó, treo trang. Luôn kiểm `contains` trước.
++- Đổi phần tử mà JS cũ còn giữ tham chiếu / gắn listener (select dựng bằng `innerHTML` rồi `addEventListener` ngay sau) → đừng THAY phần tử;
++  giữ nó làm nguồn dữ liệu (ẩn) và vẽ component Core cạnh nó (proxy).
++- Kiểm hành vi bằng chính JS cũ của trang (gọi `openDrawer()`, `classList.add('open')`…), không chỉ nhìn ảnh: ảnh chụp không thấy nút X không đóng được.
++
+ ## AI chép prototype mẫu trong kit — mẫu lệch Core thì trang sinh ra lệch theo (inform 2026-10-14)
+ 
+ - Component đã khớp catalog chưa đủ: nếu prototype trong kit còn khối tự dựng cùng chức năng (dải báo bằng `div` tô `--color-*-50`), AI sinh trang mới
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/export.md b/ai-instructions/export.md
+--- a/ai-instructions/export.md	2026-10-14 14:42:24.242802125 +0000
++++ b/ai-instructions/export.md	2026-10-14 16:48:46.633374114 +0000
+@@ -74,7 +74,7 @@
+ 
+ - **1 file HTML duy nhất** — zero dependencies, mở offline được
+ - **Inline tất cả CSS** — không reference external files
+-- **Trang đã qua `migrate-prototype.mjs`** (có `<!-- kit-migrated … -->`) → inline thêm `core/styles/legacy-reset.css` NGAY SAU CSS của kit, TRƯỚC `<style>` của trang (thứ tự quyết định độ ưu tiên — xem đầu file đó). Trang mới không có file này
++- **Trang đã qua `migrate-prototype.mjs`** (có `<!-- kit-migrated … -->`) → inline thêm `core/styles/legacy-reset.css` NGAY SAU CSS của kit, TRƯỚC `<style>` của trang (thứ tự quyết định độ ưu tiên — xem đầu file đó), và `core/js/legacy-shim.js` ngay SAU `sd-components.js` nếu trang có nạp nó. Trang mới không có hai file này
+ - **Inline tất cả JS tối thiểu** — chỉ giữ interaction (dropdown toggle, tab switch, checkbox select)
+ - **KHÔNG cần** pattern-loader.js, shared-nav.js, pattern definitions — tất cả đã render thành HTML tĩnh
+ - **Google Fonts + Material Icons** — giữ `<link>` external (cần internet, chấp nhận được)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/generate.md b/ai-instructions/generate.md
+--- a/ai-instructions/generate.md	2026-10-14 15:41:51.158441181 +0000
++++ b/ai-instructions/generate.md	2026-10-14 16:48:46.631937906 +0000
+@@ -138,6 +138,9 @@
+    với inline style / CSS của trang, và bật `hideInlineError` cho ô sd-* trong `<td>`. Form giữ 20px dưới mỗi ô như Core.
+    Trang đã có dấu `kit-migrated v2` thì công cụ bỏ qua — chạy lại không sao; trang mang dấu v1 (bản đầu) được nâng tiếp các bước mới.
+    Trang MỚI dựng **không** nạp `legacy-reset.css`. Riêng `--inform` (chỉ đổi khối thông báo tự dựng → `<sd-inform>`) chạy được cả trên trang mới.
++   Công cụ còn đổi MỌI markup tự dựng sang component Core (nút, badge, ô nhập, select, checkbox, radio, switch, bảng, modal, drawer,
++   tab, card, header…) + tên cũ của kit → tên Core; `--components` chỉ làm phần này (an toàn cả trên trang mới). Bảng đổi và cách
++   xử lý dòng `!`: **`ai-instructions/migrate-components.md`** — đọc trước khi sửa tay phần còn lại.
+ 
+ 2. **Tóm tắt cho Builder:**
+ 
+@@ -209,7 +212,7 @@
+ 8. **Cập nhật `prototypes/index.html`** — thêm/cập nhật feature card
+ 9. **Cập nhật BREAD Matrix** trong `memory.md` với trạng thái mới
+ 10. **Validate:** không custom CSS, không class ngoài DS, mọi màu từ token, mọi component từ sd-*
+-    — riêng dải thông báo: chạy `node ai-instructions/tools/migrate-prototype.mjs --inform --dry prototypes/{slug}/` — có dòng `✓` / `!` nghĩa là
+-    còn khối thông báo tự dựng (`div` tô `--color-*-50` + viền / icon) → phải là `<sd-inform>` (bỏ `--dry` để công cụ tự đổi)
++    — tự kiểm markup: chạy `node ai-instructions/tools/migrate-prototype.mjs --components --dry prototypes/{slug}/` — có dòng `✓` / `!`
++    nghĩa là trang còn markup tự dựng thay cho component (nút, ô nhập, bảng, modal, dải thông báo…) → sửa theo `migrate-components.md`
+ 11. **Cập nhật `_dev-spec.md`** (AGENTS Rule 20) — chạy `node ai-instructions/tools/spec-scan.mjs prototypes/{slug}/{trang}.html`,
+     điền / sửa mục của trang theo mẫu `ai-instructions/dev-spec.md`; chưa có nguồn thì ghi "giả định — PD xác nhận"
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/html-to-angular.md b/ai-instructions/html-to-angular.md
+--- a/ai-instructions/html-to-angular.md	2026-10-14 14:01:23.195104780 +0000
++++ b/ai-instructions/html-to-angular.md	2026-10-14 16:48:46.633809099 +0000
+@@ -45,6 +45,10 @@
+ | `checked` (checkbox / switch) | **`[(model)]`** | — |
+ | Tên viết gạch nối | tên camelCase của thư viện | `hide-inline-error` → `hideInlineError` |
+ 
++**Trang đã qua `migrate-prototype.mjs`** (có `<!-- kit-migrated … -->`): mọi thuộc tính `data-legacy-*` và `data-legacy-reset` chỉ là
++móc cho `legacy-shim.js` / `legacy-reset.css` của prototype → **bỏ**; `<select data-legacy-upgrade>` → `<sd-select [items] [(model)]>`;
++modal mở bằng `style.display` / lớp `open` → `SdModal` mở bằng code. Xem `ai-instructions/migrate-components.md` mục 4.
++
+ **Bí danh tên cũ** kit còn nhận nhưng Angular **không** nhận (Rule 18 ngoại lệ 3): `sd-inform type` → `color` ·
+ `dismissible` → `closable`. Gặp tên cũ thì dịch sang tên catalog. (`sd-section collapsable` thư viện 19.0.10 vẫn nhận song song
+ `collapsible` — viết `collapsible`.)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/migrate-components.md b/ai-instructions/migrate-components.md
+--- a/ai-instructions/migrate-components.md	1970-01-01 00:00:00.000000000 +0000
++++ b/ai-instructions/migrate-components.md	2026-10-14 16:44:28.575415193 +0000
+@@ -0,0 +1,71 @@
++# Nâng prototype cũ — đổi markup tự dựng sang component Core
++
++Dùng khi mở một prototype dựng bằng kit cũ (trước 2026-10-13) hoặc do AI tự viết HTML thay cho component. Builder 2026-10-14:
++*„giờ tôi cần tất cả các component phải đổi được vì tôi cần đưa bộ prototype kit này cho những người khác dùng nữa“* —
++chọn *„Đổi hết, kể cả bảng/modal“* và *„Đổi sang tên Core“*.
++
++## 1. Chạy công cụ trước, sửa tay sau
++
++```
++node ai-instructions/tools/migrate-prototype.mjs <thư mục prototype>/ --dry        # xem trước
++node ai-instructions/tools/migrate-prototype.mjs <thư mục prototype>/              # nâng cả trang (kit cũ)
++node ai-instructions/tools/migrate-prototype.mjs <thư mục>/ --components           # CHỈ đổi component — chạy được cả trang mới
++```
++
++- Bản gốc chép vào `_pre-migrate/` (bản đã nâng lần trước vào `_pre-migrate/v1..v3/`, chạy `--components` vào `_pre-migrate/inform/`).
++- Mỗi dòng `✓` liệt kê số component đã đổi; mỗi dòng `!` là một chỗ **công cụ không chắc nên chưa đổi** — sửa tay theo bảng
++  ở mục 3, rồi chạy lại công cụ (chạy lại không đổi lần hai).
++- Công cụ không bao giờ trả về trang có JS hỏng cú pháp: đổi trong chuỗi JS làm hỏng thì nó bỏ phần đó, chỉ đổi HTML tĩnh, và báo `!`.
++
++## 2. Công cụ tự đổi những gì
++
++| Markup cũ | Thành (Core) | Ghi chú |
++|---|---|---|
++| `<button class="btn btn-primary">` (+ `btn-secondary` / `tertiary` / `danger` / `ghost*` / `outline*`, bootstrap `btn-*`), `<a class="btn">`, `<button>` trần | `<sd-button type color size title prefixIcon suffixIcon>` | Icon `<span class="material-icons*">` đầu / cuối → prefixIcon / suffixIcon; chữ → `title`; `title` cũ (tooltip trình duyệt) → `tooltip`; `type="submit"` → `htmlType`. **Nút có lớp CSS của trang** (hàng cây, thẻ chọn, ô thả tệp…) là widget riêng → giữ, báo |
++| `<span class="badge badge-X">` | `<sd-badge type="round" color>` | Là TRẠNG THÁI vòng đời → đổi tay sang kiểu icon theo STATUS_MAP |
++| `<input type="text\|search\|email\|password\|tel\|url">` (+ `<label for>` / `<label>` bọc) | `<sd-input label placeholder value required…>` | `<label>` gộp vào thuộc tính `label` (dấu `*` → `required`); `list=` + `<datalist>` → `<sd-autocomplete items>` |
++| `<input type="number">` / `date` / `datetime-local` | `<sd-input-number>` / `<sd-date>` / `<sd-datetime>` | |
++| `<select>` + `<option>` tĩnh | `<sd-select items='[{"id","name"}]' value placeholder>` | option `value=""` disabled / hidden → `placeholder` |
++| `<select>` có option dựng bằng JS, hoặc JS dùng `.options` / `.selectedIndex` / `.add()` | giữ `<select data-legacy-upgrade>` | legacy-shim vẽ `<sd-select>` Core thay hình; select gốc ẩn, vẫn là nơi JS cũ đọc / ghi |
++| `<textarea>` | `<sd-textarea rows value>` | |
++| `<input type="checkbox">` (+ `<label>`) · `role="switch"` | `<sd-checkbox label checked>` · `<sd-switch>` | |
++| `<input type="radio">` | `<sd-radio name value label checked>` | |
++| `<button class="toggle">` (kit cũ) | `<sd-switch data-legacy-toggle>` | lớp `active` ↔ `checked` |
++| `div` tô `background:var(--color-X-50)` + viền / icon · `div.alert.alert-X` | `<sd-inform color title description>` | Thân là chữ thuần như Core |
++| `<table>` tĩnh có `<thead>` | `<sd-table columns data hide-inline-filter>` bọc trong `<div>` | Ô có HTML → cột `type: raw` |
++| Modal tự dựng (`.modal-overlay > .modal` / `role="dialog"` / lớp `*-overlay` bọc một hộp) | `<sd-modal id title width lazyLoadContent="false">` + `[sdHeaderLeft]` (tiêu đề có id / phụ đề) + `[sdFooter]` | Nút X cũ bỏ (component có X) — onclick của nó chạy khi đóng |
++| Drawer tự dựng (`.drawer`, `.side-panel`, `.offcanvas`…) | `<sd-side-drawer id width>` | như trên |
++| Thanh tab `.tabs > .tab` / `role="tablist"` + khối nội dung (theo id / `data-tab` / `href="#…"` / onclick `showTab('x')`) | `<sd-tab-group selectedIndex><sd-tab label id>…</sd-tab>` | onclick cũ của nút tab chạy khi chọn tab |
++| `.card` / `.form-card` / `.detail-section` (header + title + body) | `<sd-section title icon [collapsible]>` | nút trên đầu card → `[sdHeaderRight]` |
++| `.detail-info-item` / `.info-item` (label + value) | `<sd-section-item label>` | |
++| Header viết tay `.page-header` (`.page-title`, `.record-id`, `.page-subtitle`, `.back-link`, `.page-header-actions`) | khung header của `sd-page` (như pattern page-header) | Trang mới: `data-pattern="page-header"` |
++| Tên cũ của kit: `sd-inform type=` · `dismissible` · `cta` · sự kiện `sd-inform-dismiss` · `sd-section collapsable` · `sd-button type="text"` · `slot="header-right\|left\|footer"` | `color` (+ `hideIcon` nếu kiểu cũ không icon) · `closable` · `actionLabel` · `sd-closed` · `collapsible` · `type="link"` · `sdHeaderRight` / `sdHeaderLeft` / `sdFooter` (+ lớp căn phải) | Hình không đổi |
++
++**JS cũ vẫn chạy** — `core/js/legacy-shim.js` (chỉ trang đã nâng nạp) nối:
++`onchange` / `addEventListener('change')` của sd-select / sd-date… · `el.disabled = …` / `el.focus()` trên sd-* · mở / đóng
++modal, drawer bằng `style.display` / `classList.add('open'|'show'|'active')` / `hidden` · lớp `active` của toggle · onclick của nút
++tab · `<select>` dựng bằng JS. `this.value`, `this.checked`, `event.target.value`, `oninput`, `onkeyup` chạy thẳng (component có
++ô nhập thật bên trong). `onfocus` / `onblur` được đổi thành `onfocusin` / `onfocusout` (sự kiện focus không nổi lên host).
++
++## 3. Phần báo `!` — đổi tay thế nào
++
++| Dòng `!` | Làm gì |
++|---|---|
++| ô chọn / ô nhập — JS dùng `.innerHTML`, `.select()`, `.files`… | Viết lại đoạn JS theo API component: `el.value`, `el.setAttribute('items', JSON.stringify([...]))`, sự kiện `sd-change` (`e.detail.value`) |
++| bảng `<table>` dựng bằng JS / JS đọc ghi bảng / dòng có onclick / rowspan | `<sd-table columns='[…]'>` + `el.setAttribute('data', JSON.stringify(rows))` (thuộc tính `data` được theo dõi — gán lại là vẽ lại); hành động dòng → `commands` / cột `type: menu` (sự kiện `sd-table-command` / `sd-table-menu-click`) — xem `design-system/components/sd-data.md` |
++| modal / drawer dựng bằng JS | `<sd-modal>` / `<sd-side-drawer>` đặt sẵn trong HTML, JS gọi `el.open()` / `el.close()`, nghe `sd-closed` |
++| nút là WIDGET riêng của trang | Thực chất là nút bấm thường → `<sd-button>`; là hàng cây / thẻ chọn / ô thả tệp (Rule 0b nhóm B) → giữ, nhưng nút BÊN TRONG widget phải là sd-button |
++| thanh tab chưa đổi được | `<sd-tab-group><sd-tab label="…">nội dung</sd-tab>…</sd-tab-group>`; bỏ JS bật / tắt tab cũ, nghe `sd-tab-change` (`e.detail.index`) nếu cần |
++| phân trang tự dựng | Bỏ; `<sd-table paginated pageSize="20">` |
++| toast | `SdNotifyService` (xem `design-system/components/sd-overlay.md`) |
++| menu thả xuống | Cột command / menu của sd-table; catalog 19.0.10 không có menu của nút |
++| avatar / chấm trạng thái / khối trống | `<sd-avatar name src>` · `<sd-badge color icon title>` theo STATUS_MAP · ảnh trống của kit (Rule 12) |
++| thanh bước | `<sd-stepper>` |
++| `<input type="file">` | `<sd-upload-file>` |
++| `sd-badge type="tag"`, sd-button-item, sd-scorecard, thuộc tính đã gỡ… | Theo gợi ý ngay trên dòng `!` |
++
++## 4. Chuyển sang Angular
++
++Thuộc tính `data-legacy-*` (`-change`, `-modal`, `-onclose`, `-toggle`, `-title`, `-onselect`, `-panel`, `-ctl`, `-upgrade`) và
++`data-legacy-reset` chỉ là móc cho legacy-shim / legacy-reset của prototype — **bỏ hết** khi dịch. `<select data-legacy-upgrade>` →
++`<sd-select [items]="…" [(model)]="…">`. Mở / đóng modal → `SdModal` theo `html-to-angular.md`.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/tools/lib/components.mjs b/ai-instructions/tools/lib/components.mjs
+--- a/ai-instructions/tools/lib/components.mjs	1970-01-01 00:00:00.000000000 +0000
++++ b/ai-instructions/tools/lib/components.mjs	2026-10-14 16:49:09.665452140 +0000
+@@ -0,0 +1,851 @@
++/* components.mjs — đổi markup tự dựng / tên cũ sang component Core (sd-*) cho migrate-prototype.mjs.
++ *
++ * Builder 2026-10-14: *„giờ tôi cần tất cả các component phải đổi được vì tôi cần đưa bộ prototype kit này cho những người
++ * khác dùng nữa. Bộ sẽ apply được cho các prototype cũ của họ“* — chọn *„Đổi hết, kể cả bảng/modal“* và *„Đổi sang tên Core“*.
++ *
++ * Nguyên tắc (vẫn giữ lệnh „phần nào không chắc thì không sửa“):
++ *   · Đổi khi CẤU TRÚC rõ: biết chắc nhãn / giá trị / tiêu đề lấy từ đâu. Không rõ → dòng `!` kèm markup Core gợi ý.
++ *   · JS của trang còn chạy: thuộc tính / sự kiện component kit hỗ trợ (value, checked, disabled, change, click) được giữ
++ *     nguyên; chỗ JS dùng thứ component không có (`.options`, `.selectedIndex`, `.innerHTML` của nút…) → không đổi, báo.
++ *     Phần nối hành vi cũ (bật/tắt modal bằng style / class, sự kiện `change` của sd-select…) do `core/js/legacy-shim.js`
++ *     lo — chỉ trang đã nâng nạp, như legacy-reset.css.
++ *   · Khối là WIDGET riêng của trang (nút / bảng có lớp CSS của trang: hàng cây, thẻ chọn, ô thả tệp…) KHÔNG phải component
++ *     Core cùng tên — giữ nguyên (AGENTS Rule 0b nhóm B), chỉ báo.
++ */
++import vm from 'vm';
++import { VOID, regions, ctxAt, OPEN_TAG, parseAttrs, getAttr, hasAttr, setAttr, delAttr, buildAttrs, findClose,
++  isDynamic, textOf, attrText, eachTag, jsQuoteAt } from './html-lite.mjs';
++
++/* ───────────────────────────── tiện ích chung ───────────────────────────── */
++const ICON_SPAN = /<(span|i|mat-icon)\b[^>]*class\s*=\s*"[^"]*\bmaterial-(?:icons|symbols)(?:-(outlined|round|sharp))?\b[^"]*"[^>]*>\s*([a-z0-9_]+)\s*<\/\1>/i;
++const ICON_SPAN_G = new RegExp(ICON_SPAN.source, 'gi');
++const clsOf = attrs => (getAttr(attrs, 'class') || '').split(/\s+/).filter(Boolean);
++const setCls = (attrs, list) => { if (list.length) setAttr(attrs, 'class', list.join(' ')); else delAttr(attrs, 'class'); };
++const isMargin = c => /^-?m[tbrlxy]?-(\d+|auto)$/.test(c);
++
++/* JS của trang có chạm phần tử này bằng thứ component KHÔNG có không */
++function jsRisk(js, id, props) {
++  if (!id || !js) return null;
++  const e = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
++  const refs = ['document\\.getElementById\\(\\s*[\'"]' + e + '[\'"]\\s*\\)', 'querySelector\\(\\s*[\'"]#' + e + '[\'"]\\s*\\)', '\\$\\(\\s*[\'"]#' + e + '[\'"]\\s*\\)'];
++  const vars = [...js.matchAll(new RegExp('(?:const|let|var)\\s+([\\w$]+)\\s*=\\s*(?:' + refs.join('|') + ')', 'g'))].map(m => m[1]);
++  const heads = [...refs, ...vars.map(v => '\\b' + v.replace(/\$/g, '\\$'))];
++  const m = js.match(new RegExp('(?:' + heads.join('|') + ')\\s*\\.\\s*(' + props + ')\\b'));
++  return m ? m[1] : null;
++}
++/* như jsRisk nhưng theo LỚP móc: JS chọn phần tử bằng `.lớp` rồi dùng thứ component không có trong ~400 ký tự sau đó */
++function jsRiskCls(js, cls, props) {
++  if (!js) return null;
++  for (const c of cls) {
++    const e = c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
++    const re = new RegExp('[\'"`][^\'"`\\n]*\\.' + e + '(?![\\w-])', 'g'); let m;
++    while ((m = re.exec(js))) { const r = js.slice(m.index, m.index + 400).match(new RegExp('\\.\\s*(' + props + ')\\b')); if (r) return r[1] + ' (qua .' + c + ')'; }
++  }
++  return null;
++}
++const referenced = (js, id) => !!id && js && new RegExp('[\'"`]#?' + id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\'"`]').test(js);
++
++/* Lớp do CSS của TRANG định nghĩa (không phải tiện ích / lớp kit) → khối là widget riêng */
++function pageClasses(cls, ctx) {
++  return cls.filter(c => ctx.pc.tokens.has(c) && !isMargin(c) && !ctx.NEW_UTIL[c]);
++}
++
++/* ───────────────────────── 1. Tên cũ của kit → tên Core ───────────────────────── */
++const INFORM_TYPE = { neutral: 'secondary', inform: 'info', positive: 'success', warning: 'warning', negative: 'error' };
++export function fixAliases(s, st) {
++  /* sd-section collapsable → collapsible (thư viện 19.0.10 nhận cả hai, catalog ghi collapsible) */
++  s = s.replace(/(<sd-section\b[^>]*?\s)collapsable(?=[\s>=\/])/g, (m, a) => { st.alias++; return a + 'collapsible'; });
++  /* sd-button type="text" → type="link" (catalog không có "text") */
++  s = s.replace(/(<sd-button\b[^>]*?\stype=)(["'])text\2/g, (m, a, q) => { st.alias++; return a + q + 'link' + q; });
++  /* sd-inform: type → color (+ hideIcon khi kiểu cũ không có icon — giữ hình), dismissible → closable, cta → actionLabel */
++  s = s.replace(/<sd-inform\b([^>]*)>/g, (m, a) => {
++    const attrs = parseAttrs(a);
++    let changed = false;
++    const t = getAttr(attrs, 'type');
++    if (t !== null && !hasAttr(attrs, 'color') && INFORM_TYPE[t]) {
++      delAttr(attrs, 'type'); setAttr(attrs, 'color', INFORM_TYPE[t]);
++      const ic = getAttr(attrs, 'icon');
++      if (ic === null) setAttr(attrs, 'hideIcon', null);
++      else if (ic === '' || ic === 'true') delAttr(attrs, 'icon');
++      changed = true;
++    }
++    if (hasAttr(attrs, 'dismissible')) { delAttr(attrs, 'dismissible'); setAttr(attrs, 'closable', null); changed = true; }
++    const cta = getAttr(attrs, 'cta');
++    if (cta !== null) { delAttr(attrs, 'cta'); if (!hasAttr(attrs, 'actionLabel')) setAttr(attrs, 'actionLabel', cta); changed = true; }
++    if (!changed) return m;
++    st.alias++;
++    const q0 = (attrs.find(x => x.src && x.q) || {}).q || '"';
++    for (const x of attrs) if (!x.src && x.value !== null) x.q = q0;
++    return '<sd-inform' + buildAttrs(attrs) + '>';
++  });
++  s = s.replace(/(['"])sd-inform-dismiss\1/g, (m, q) => { st.alias++; return q + 'sd-closed' + q; });
++  /* slot="header-right|header-left" — đã có sdHeaderRight / sdHeaderLeft (bước 7) → bỏ bí danh */
++  s = s.replace(/(\ssd(?:HeaderRight|HeaderLeft)\b[^>]*?)\s+slot=(\\?["'])header-(?:right|left)\2/gi, (m, a) => { st.alias++; return a; });
++  /* slot="footer" của sd-side-drawer → sdFooter. Bí danh cũ được căn phải sẵn, sdFooter thì không (catalog) → thêm lớp căn. */
++  s = s.replace(/<(div|footer|section)\b([^>]*?)\sslot=(["'])footer\3([^>]*)>/gi, (m, tag, a, q, b, off, all) => {
++    const before = all.slice(0, off);
++    if (before.lastIndexOf('<sd-side-drawer') <= before.lastIndexOf('</sd-side-drawer')) return m;   // chỉ sd-side-drawer có bí danh này
++    const attrs = parseAttrs(a + b);
++    const cls = clsOf(attrs);
++    for (const c of ['d-flex', 'align-items-center', 'justify-content-end', 'gap-8']) if (!cls.includes(c) && !(c === 'd-flex' && cls.includes('flex')) && !(c === 'gap-8' && cls.some(x => /^gap-/.test(x)))) cls.push(c);
++    const q0 = (attrs.find(x => x.src && x.q) || {}).q || '"';
++    setCls(attrs, cls);
++    const ca = attrs.find(x => x.name === 'class'); if (ca && !ca.src) ca.q = q0;
++    st.alias++;
++    return '<' + tag + ' sdFooter' + buildAttrs(attrs) + '>';
++  });
++  return s;
++}
++
++/* ─────────────────────────────── 2. Nút ─────────────────────────────── */
++const BTN_MAP = {
++  'btn-primary': ['fill', 'primary'], 'btn-secondary': ['light', 'primary'], 'btn-tertiary': ['light', 'secondary'],
++  'btn-danger': ['fill', 'error'], 'btn-success': ['fill', 'success'], 'btn-warning': ['fill', 'warning'], 'btn-info': ['fill', 'info'],
++  'btn-light': ['light', 'secondary'], 'btn-dark': ['fill', 'secondary'], 'btn-link': ['link', 'primary'],
++  'btn-ghost': ['link', 'primary'], 'btn-ghost-primary': ['link', 'primary'], 'btn-ghost-danger': ['link', 'error'], 'btn-ghost-tertiary': ['link', 'secondary'], 'btn-ghost-secondary': ['link', 'secondary'],
++  'btn-outline': ['outline', 'primary'], 'btn-outline-primary': ['outline', 'primary'], 'btn-outline-danger': ['outline', 'error'],
++  'btn-outline-tertiary': ['outline', 'secondary'], 'btn-outline-secondary': ['outline', 'secondary'], 'btn-outline-success': ['outline', 'success'],
++  'btn-outline-warning': ['outline', 'warning'], 'btn-outline-info': ['outline', 'info']
++};
++const BTN_DROP = /^(btn|btn-[\w-]+)$/;
++const keepClsFor = cls => cls.filter(x => !BTN_DROP.test(x) && !isMargin(x));
++function convertButtons(s, ctx) {
++  const { st, js } = ctx;
++  return eachTag(s, /^(button|a)$/i, (t, c, src) => {
++    const tag = t.name.toLowerCase();
++    const attrs = parseAttrs(t.attrsRaw);
++    const clsRaw = getAttr(attrs, 'class') || '';
++    const cls = clsRaw.split(/\s+/).filter(Boolean);
++    const isBtnCls = cls.some(x => x === 'btn' || BTN_MAP[x]);
++    if (tag === 'a' && !isBtnCls) return null;
++    if (isDynamic(clsRaw)) { if (isBtnCls) ctx.note('nút có lớp ghép bằng JS (' + clsRaw.slice(0, 40) + ') — đổi tay sang <sd-button>'); return null; }
++    if (hasAttr(attrs, 'role') && !/^button$/i.test(getAttr(attrs, 'role'))) return null;   // role=switch / tab… → bộ đổi riêng
++    if (cls.includes('toggle')) return null;
++    const own = pageClasses(cls.filter(x => !BTN_DROP.test(x)), ctx);
++    if (own.length) { ctx.widget('button', own); return null; }
++    const close = findClose(src, tag, t.end);
++    if (!close) return null;
++    let inner = src.slice(close.innerStart, close.innerEnd);
++    if (ctxAt(regions(src), close.innerEnd) !== c) return null;
++    /* icon đầu / cuối */
++    let prefix = '', suffix = '', fontSet = '';
++    const icons = [...inner.matchAll(ICON_SPAN_G)];
++    if (icons.length > 2) { ctx.note('nút có hơn 2 icon — đổi tay'); return null; }
++    let rest = inner;
++    for (const ic of icons) {
++      const before = textOf(rest.slice(0, rest.indexOf(ic[0])));
++      if (!before && !prefix) { prefix = ic[3]; fontSet = ic[2] ? 'material-icons-' + ic[2] : 'material-icons'; }
++      else suffix = ic[3];
++      rest = rest.replace(ic[0], '');
++    }
++    if (/<(?!\/?(span|strong|b|em|small)\b)[a-z]/i.test(rest)) { ctx.note('nút có nội dung phức tạp ("' + textOf(inner).slice(0, 30) + '") — đổi tay sang <sd-button>'); return null; }
++    const label = isDynamic(rest) ? rest.replace(/<\/?(span|strong|b|em|small)\b[^>]*>/gi, '').trim() : textOf(rest);
++    const id = getAttr(attrs, 'id');
++    const risk = jsRisk(js, id, 'textContent|innerText|innerHTML|appendChild|insertAdjacentHTML|form|type|value') || jsRiskCls(js, keepClsFor(cls), 'innerHTML|innerText|textContent\\s*=|appendChild|insertAdjacentHTML');
++    if (risk) { ctx.note('nút #' + id + ' — JS dùng .' + risk + ' (sd-button không có) → đổi tay'); return null; }
++    /* loại / màu / cỡ */
++    let type = '', color = '', size = '';
++    for (const x of cls) if (BTN_MAP[x]) [type, color] = BTN_MAP[x];
++    if (cls.includes('btn-sm') || cls.includes('btn-xs')) size = 'sm';
++    if (cls.includes('btn-lg')) size = 'lg';
++    const out = attrs.filter(a => !/^(class|type|href|title)$/i.test(a.name));
++    for (const a of out) { if (/^onfocus$/i.test(a.name)) a.name = 'onfocusin'; if (/^onblur$/i.test(a.name)) a.name = 'onfocusout'; }
++    const keepCls = cls.filter(x => !BTN_DROP.test(x));
++    const pre = [];
++    if (type) pre.push({ name: 'type', value: type, q: '"' });
++    if (color) pre.push({ name: 'color', value: color, q: '"' });
++    if (size) pre.push({ name: 'size', value: size, q: '"' });
++    if (prefix) pre.push({ name: 'prefixIcon', value: prefix, q: '"' });
++    if (suffix) pre.push({ name: 'suffixIcon', value: suffix, q: '"' });
++    if ((prefix || suffix) && fontSet && fontSet !== 'material-icons-outlined') pre.push({ name: 'fontSet', value: fontSet, q: '"' });
++    pre.push({ name: 'title', value: label ? attrText(label, c) : '', q: '"' });
++    const tip = getAttr(attrs, 'title');
++    if (tip) { pre.push({ name: 'tooltip', value: tip, q: '"' }); if (!label && !hasAttr(attrs, 'aria-label')) pre.push({ name: 'aria-label', value: tip, q: '"' }); }
++    const tp = getAttr(attrs, 'type'); if (tp && /^(submit|reset)$/i.test(tp)) pre.push({ name: 'htmlType', value: tp.toLowerCase(), q: '"' });
++    const href = getAttr(attrs, 'href'); if (href && href !== '#' && !/^javascript:/i.test(href)) pre.push({ name: 'href', value: href, q: '"' });  // bước 4 đổi sang onclick
++    const all = [...pre, ...out];
++    if (keepCls.length) all.push({ name: 'class', value: keepCls.join(' '), q: '"' });
++    st.comp.button = (st.comp.button || 0) + 1;
++    return { from: t.index, to: close.end, text: '<sd-button' + buildAttrs(all, t.quote) + '></sd-button>' };
++  });
++}
++
++/* ─────────────────────────────── 3. Badge ─────────────────────────────── */
++const BADGE_COLOR = { primary: 'primary', secondary: 'secondary', neutral: 'secondary', info: 'info', success: 'success', warning: 'warning', error: 'error', danger: 'error', dark: 'secondary', light: 'secondary' };
++function convertBadges(s, ctx) {
++  const { st } = ctx;
++  return eachTag(s, /^span$/i, (t, c, src) => {
++    const attrs = parseAttrs(t.attrsRaw);
++    const clsRaw = getAttr(attrs, 'class') || '';
++    if (isDynamic(clsRaw)) return null;
++    const cls = clsRaw.split(/\s+/);
++    if (!cls.includes('badge')) return null;
++    const close = findClose(src, 'span', t.end); if (!close) return null;
++    const inner = src.slice(close.innerStart, close.innerEnd);
++    if (/<(?!\/?(strong|b|span)\b)[a-z]/i.test(inner.replace(ICON_SPAN_G, ''))) return null;
++    let color = 'secondary';
++    for (const x of cls) { const k = x.replace(/^(badge|bg|text)-/, ''); if (x !== 'badge' && BADGE_COLOR[k]) color = BADGE_COLOR[k]; }
++    const ic = inner.match(ICON_SPAN);
++    const label = isDynamic(inner) ? inner.replace(ICON_SPAN, '').replace(/<\/?\w+[^>]*>/g, '').trim() : textOf(inner.replace(ICON_SPAN, ''));
++    const keep = cls.filter(x => x && x !== 'badge' && !/^(badge|bg|rounded)-/.test(x) && !/^text-/.test(x));
++    const out = [{ name: 'type', value: 'round', q: '"' }, { name: 'color', value: color, q: '"' }];
++    if (ic) out.push({ name: 'icon', value: ic[3], q: '"' });
++    out.push({ name: 'title', value: attrText(label, c), q: '"' });
++    for (const a of attrs) if (!/^(class|title)$/i.test(a.name)) out.push(a);
++    if (keep.length) out.push({ name: 'class', value: keep.join(' '), q: '"' });
++    st.comp.badge = (st.comp.badge || 0) + 1;
++    ctx.once('badge', 'span.badge → sd-badge type="round" (nhãn phân loại). Nếu là TRẠNG THÁI vòng đời thì đổi sang kiểu icon theo STATUS_MAP (bỏ type, thêm color + icon)');
++    return { from: t.index, to: close.end, text: '<sd-badge' + buildAttrs(out, t.quote) + '></sd-badge>' };
++  });
++}
++
++/* ────────────────────── 4. Ô nhập / select / textarea / checkbox / radio / switch ────────────────────── */
++const TEXT_TYPES = { '': 'sd-input', text: 'sd-input', search: 'sd-input', email: 'sd-input', tel: 'sd-input', url: 'sd-input', password: 'sd-input',
++  number: 'sd-input-number', date: 'sd-date', 'datetime-local': 'sd-datetime' };
++const FIELD_CLS = /^(form-control|form-input|form-input-sm|form-select|form-textarea|form-field-input|sd-input|sd-select|input|select|textarea|form-control-sm)$/;
++const KEEP_ON_HOST = /^(id|name|placeholder|required|disabled|readonly|maxlength|minlength|pattern|min|max|on[a-z]+|data-[\w-]+|aria-[\w-]+|autoid|style|title)$/i;
++
++/* nhãn: <label for=id>…</label> ở bất kỳ đâu (HTML tĩnh) */
++function takeLabelFor(src, id, regs) {
++  if (!id) return null;
++  const re = new RegExp('<label\\b[^>]*\\bfor\\s*=\\s*["\']' + id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '["\'][^>]*>([\\s\\S]*?)</label\\s*>', 'i');
++  const m = src.match(re);
++  if (!m || ctxAt(regs, m.index) !== 'html' || /<(input|select|textarea|button|sd-)/i.test(m[1])) return null;
++  return { index: m.index, len: m[0].length, html: m[1] };
++}
++function labelInfo(html) {
++  const req = /\*\s*(<\/span>)?\s*$/.test(html.trim()) || /class\s*=\s*"[^"]*(required|text-error|text-danger)[^"]*"/.test(html);
++  const text = textOf(html.replace(/<span\b[^>]*>\s*\*\s*<\/span>/gi, '')).replace(/\s*\*$/, '').trim();
++  return { text, req };
++}
++/* ô nằm trong <td>/<th> (gần nhất) → bảng tự dựng: size sm + hideInlineError */
++function inCell(src, i) {
++  const before = src.slice(Math.max(0, i - 3000), i);
++  const lt = Math.max(before.lastIndexOf('<td'), before.lastIndexOf('<th'));
++  const lc = Math.max(before.lastIndexOf('</td'), before.lastIndexOf('</th'));
++  return lt > lc;
++}
++
++/* thêm min-width vào style của host (trừ khi style / lớp đã định bề rộng) */
++function minWidth(out, w) {
++  const sa = out.find(a => a.name.toLowerCase() === 'style');
++  if (sa && /(^|;)\s*(min-)?width\s*:/.test(sa.value || '')) return;
++  if (sa) { if (isDynamic(sa.value)) return; sa.value = (sa.value || '').replace(/;?\s*$/, '; ') + 'min-width:' + w; }
++  else out.push({ name: 'style', value: 'min-width:' + w, q: '"' });
++}
++function controlAttrs(attrs, c, extraDrop) {
++  const out = [];
++  for (const a of attrs) {
++    const n = a.name.toLowerCase();
++    if (/^(type|class|value|size|autocomplete|list|form|step|spellcheck|autofocus|rows|cols|multiple|checked)$/.test(n) || (extraDrop && extraDrop.test(n))) continue;
++    if (!KEEP_ON_HOST.test(a.name)) continue;
++    const b = { ...a };
++    if (n === 'onfocus') b.name = 'onfocusin';
++    if (n === 'onblur') b.name = 'onfocusout';
++    if (n === 'readonly') b.name = 'readonly';
++    out.push(b);
++  }
++  return out;
++}
++function hostClass(attrs, ctx, out) {
++  const cls = clsOf(attrs).filter(x => !FIELD_CLS.test(x));
++  if (cls.length) out.push({ name: 'class', value: cls.join(' '), q: '"' });
++  /* lớp của trang từng vẽ viền / đệm cho ô trần → legacy-reset.css bỏ hình của lớp đó trên host (giữ width / margin / flex) */
++  if (pageClasses(cls, ctx).length) out.push({ name: 'data-legacy-ctl', value: null, q: '' });
++}
++const RISK_INPUT = 'select|setSelectionRange|selectionStart|selectionEnd|files|type\\s*=|options|selectedIndex|add|remove\\(|innerHTML|appendChild|valueAsDate|valueAsNumber|validity|checkValidity|setCustomValidity|indeterminate|labels';
++
++function convertInputs(s, ctx) {
++  const { st, js } = ctx;
++  return eachTag(s, /^input$/i, (t, c, src, regs) => {
++    const attrs = parseAttrs(t.attrsRaw);
++    const type = (getAttr(attrs, 'type') || '').toLowerCase();
++    if (isDynamic(getAttr(attrs, 'type') || '')) return null;
++    if (type === 'checkbox' || type === 'radio') return convertCheck(t, c, src, regs, attrs, type, ctx);
++    const comp = TEXT_TYPES[type];
++    if (!comp) return null;   // hidden / file / range / color / time / month… giữ nguyên
++    const id = getAttr(attrs, 'id');
++    const risk = jsRisk(js, id, RISK_INPUT) || jsRiskCls(js, clsOf(attrs).filter(x => !FIELD_CLS.test(x)), RISK_INPUT);
++    if (risk) { ctx.note('ô nhập ' + (id ? '#' + id : '.' + clsOf(attrs).join('.')) + ' — JS dùng .' + risk.replace(/\\s.*$/, '') + ' (sd-* không có) → đổi tay'); return null; }
++    let tag = comp;
++    const out = [];
++    let from = t.index, to = t.end, labelHtml = null;
++    /* nhãn: <label for> hoặc <label> bọc ô */
++    const lf = c === 'html' ? takeLabelFor(src, id, regs) : null;
++    const wrapStart = src.lastIndexOf('<label', t.index);
++    if (c === 'html' && wrapStart >= 0 && !/<\/label>/i.test(src.slice(wrapStart, t.index)) && /^<label\b(?![^>]*\bfor=)[^>]*>/i.test(src.slice(wrapStart))) {
++      const cl = findClose(src, 'label', src.indexOf('>', wrapStart) + 1);
++      if (cl && cl.end > t.end) {
++        const whole = src.slice(cl.innerStart, cl.innerEnd).replace(t.raw, '');
++        if (!/<(input|select|textarea|button)\b/i.test(whole)) { labelHtml = whole; from = wrapStart; to = cl.end; }
++      }
++    }
++    const list = getAttr(attrs, 'list');
++    if (list && comp === 'sd-input') {
++      const dl = src.match(new RegExp('<datalist\\b[^>]*\\bid\\s*=\\s*["\']' + list + '["\'][^>]*>([\\s\\S]*?)</datalist>', 'i'));
++      if (dl && !isDynamic(dl[1])) {
++        const items = [...dl[1].matchAll(/<option\b([^>]*)>([^<]*)<\/option>|<option\b([^>]*)\/?>/gi)].map(o => {
++          const oa = parseAttrs(o[1] || o[3] || ''); const v = getAttr(oa, 'value') ?? textOf(o[2] || ''); const l = textOf(o[2] || '') || v; return { value: v, label: l };
++        });
++        tag = 'sd-autocomplete';
++        out.push({ name: 'items', value: JSON.stringify(items).replace(/'/g, '&#39;'), q: "'" });
++      }
++    }
++    if (labelHtml === null && lf) labelHtml = lf.html;
++    if (labelHtml !== null) {
++      const li = labelInfo(labelHtml);
++      if (li.text) out.push({ name: 'label', value: attrText(li.text, c), q: '"' });
++      if (li.req && !hasAttr(attrs, 'required')) out.push({ name: 'required', value: null, q: '' });
++    }
++    if (['password', 'email', 'tel', 'url'].includes(type) && tag === 'sd-input') out.push({ name: 'type', value: type, q: '"' });
++    const v = getAttr(attrs, 'value'); if (v !== null && v !== '') out.push({ name: 'value', value: v, q: '"' });
++    out.push(...controlAttrs(attrs, c));
++    if (tag === 'sd-input-number' && /^\d+$/.test(getAttr(attrs, 'step') || '') === false && getAttr(attrs, 'step')) out.push({ name: 'precision', value: String(((getAttr(attrs, 'step').split('.')[1]) || '').length), q: '"' });
++    hostClass(attrs, ctx, out);
++    if (inCell(src, t.index)) out.push({ name: 'size', value: 'sm', q: '"' }, { name: 'hideInlineError', value: null, q: '' });
++    else if (!clsOf(attrs).some(x => pageClasses([x], ctx).length)) minWidth(out, tag === 'sd-date' || tag === 'sd-datetime' ? '160px' : '180px');
++    if (tag !== 'sd-input') out.push({ name: 'data-legacy-change', value: null, q: '' });
++    st.comp[tag] = (st.comp[tag] || 0) + 1;
++    const text = '<' + tag + buildAttrs(out, t.quote) + '></' + tag + '>';
++    if (lf && labelHtml === lf.html && from === t.index) ctx.later.push({ raw: src.substr(lf.index, lf.len), index: lf.index });   // xoá <label for> ở cuối
++    return { from, to, text };
++  });
++}
++
++function convertCheck(t, c, src, regs, attrs, type, ctx) {
++  const { st, js } = ctx;
++  const id = getAttr(attrs, 'id');
++  const risk = jsRisk(js, id, 'indeterminate|labels|form|type\\s*=');
++  if (risk) { ctx.note('ô ' + type + ' #' + id + ' — JS dùng .' + risk + ' → đổi tay'); return null; }
++  const isSwitch = /^switch$/i.test(getAttr(attrs, 'role') || '');
++  const tag = type === 'radio' ? 'sd-radio' : isSwitch ? 'sd-switch' : 'sd-checkbox';
++  let from = t.index, to = t.end, labelHtml = null, wrapAttrs = null;
++  const wrapStart = src.lastIndexOf('<label', t.index);
++  if (wrapStart >= 0 && !/<\/label>/i.test(src.slice(wrapStart, t.index)) && /^<label\b(?![^>]*\bfor=)/i.test(src.slice(wrapStart))) {
++    const openEnd = src.indexOf('>', wrapStart) + 1;
++    const cl = findClose(src, 'label', openEnd);
++    if (cl && cl.end > t.end) {
++      const whole = src.slice(cl.innerStart, cl.innerEnd).replace(t.raw, '');
++      if (!/<(input|select|textarea|button|sd-)\b/i.test(whole)) { labelHtml = whole; from = wrapStart; to = cl.end; wrapAttrs = parseAttrs(src.slice(wrapStart + 6, openEnd - 1)); }
++    }
++  }
++  const lf = labelHtml === null && c === 'html' ? takeLabelFor(src, id, regs) : null;
++  if (lf) labelHtml = lf.html;
++  const out = [];
++  if (labelHtml !== null) {
++    const txt = isDynamic(labelHtml) ? labelHtml.replace(/<\/?\w+[^>]*>/g, '').trim() : textOf(labelHtml);
++    if (txt) out.push({ name: 'label', value: attrText(txt, c), q: '"' });
++  }
++  const v = getAttr(attrs, 'value'); if (v !== null && type === 'radio') out.push({ name: 'value', value: v, q: '"' });
++  else if (v !== null && v !== 'on') out.push({ name: 'value', value: v, q: '"' });
++  if (hasAttr(attrs, 'checked')) out.push({ name: 'checked', value: null, q: '' });
++  out.push(...controlAttrs(attrs, c, /^(placeholder|maxlength|minlength|pattern|min|max)$/));
++  const wcls = wrapAttrs ? clsOf(wrapAttrs).filter(x => !/^(form-check|form-check-label|checkbox|radio|form-check-inline)$/.test(x)) : [];
++  const cls = [...clsOf(attrs).filter(x => !/^(form-check-input|checkbox|radio)$/.test(x)), ...wcls];
++  if (cls.length) out.push({ name: 'class', value: cls.join(' '), q: '"' });
++  st.comp[tag] = (st.comp[tag] || 0) + 1;
++  const text = '<' + tag + buildAttrs(out, t.quote) + '></' + tag + '>';
++  if (lf) ctx.later.push({ raw: src.substr(lf.index, lf.len), index: lf.index });
++  return { from, to, text };
++}
++
++/* <button class="toggle" role="switch"> (kit cũ) → sd-switch; legacy-shim đồng bộ lớp .active ↔ checked */
++function convertToggles(s, ctx) {
++  const { st } = ctx;
++  return eachTag(s, /^button$/i, (t, c, src) => {
++    const attrs = parseAttrs(t.attrsRaw);
++    const clsRaw = getAttr(attrs, 'class') || '';
++    if (!/(^|\s)toggle(\s|'|$)/.test(clsRaw) && !/^switch$/i.test(getAttr(attrs, 'role') || '')) return null;
++    const close = findClose(src, 'button', t.end); if (!close) return null;
++    if (textOf(src.slice(close.innerStart, close.innerEnd))) return null;
++    const out = [];
++    const dyn = isDynamic(clsRaw);
++    if (!dyn && /(^|\s)active(\s|$)/.test(clsRaw)) out.push({ name: 'checked', value: null, q: '' });
++    for (const a of attrs) if (/^(id|name|disabled|on[a-z]+|data-[\w-]+|aria-label)$/i.test(a.name)) out.push(a);
++    out.push({ name: 'class', value: clsRaw, q: '"' }, { name: 'data-legacy-toggle', value: null, q: '' });
++    st.comp['sd-switch'] = (st.comp['sd-switch'] || 0) + 1;
++    return { from: t.index, to: close.end, text: '<sd-switch' + buildAttrs(out, t.quote) + '></sd-switch>' };
++  });
++}
++
++function convertSelects(s, ctx) {
++  const { st, js } = ctx;
++  return eachTag(s, /^select$/i, (t, c, src, regs) => {
++    const attrs = parseAttrs(t.attrsRaw);
++    const id = getAttr(attrs, 'id');
++    const close = findClose(src, 'select', t.end); if (!close) return null;
++    const inner = src.slice(close.innerStart, close.innerEnd);
++    const what = 'ô chọn' + (id ? ' #' + id : '');
++    /* Không đổi tĩnh được (option dựng bằng JS, hoặc JS dùng .options / .selectedIndex / .add…) → đánh dấu
++       data-legacy-upgrade: legacy-shim dựng một <sd-select> Core thay hình, <select> gốc ẩn đi nhưng VẪN là nơi JS cũ đọc /
++       ghi (value, options, sự kiện change) — chọn trên sd-select ghi ngược vào <select> và phát change. */
++    const proxy = why => {
++      if (hasAttr(attrs, 'data-legacy-upgrade')) return null;
++      st.comp['sd-select (lúc chạy)'] = (st.comp['sd-select (lúc chạy)'] || 0) + 1;
++      ctx.once('select-proxy', 'ô chọn có option dựng bằng JS / JS dùng .options… → giữ <select> làm nguồn dữ liệu, legacy-shim vẽ <sd-select> Core thay hình (data-legacy-upgrade). Trang mới: <sd-select items=…> + sự kiện sd-change');
++      return { from: t.index, to: t.end, text: '<select' + t.attrsRaw + ' data-legacy-upgrade>' };
++    };
++    if (isDynamic(inner) || !/<option\b/i.test(inner)) return proxy('dyn');
++    const risk = jsRisk(js, id, RISK_INPUT) || jsRiskCls(js, clsOf(attrs).filter(x => !FIELD_CLS.test(x)), RISK_INPUT);
++    if (risk) return proxy(risk);
++    if (/<optgroup\b/i.test(inner)) return proxy('optgroup');
++    const items = []; let value = null; let placeholder = '';
++    for (const o of inner.matchAll(/<option\b([^>]*)>([\s\S]*?)<\/option\s*>/gi)) {
++      const oa = parseAttrs(o[1]); const text = textOf(o[2]); const val = getAttr(oa, 'value') ?? text;
++      if (val === '' && (hasAttr(oa, 'disabled') || hasAttr(oa, 'hidden'))) { placeholder = text; continue; }
++      const it = { id: val, name: text }; if (hasAttr(oa, 'disabled')) it.disabled = true;
++      items.push(it);
++      if (hasAttr(oa, 'selected')) value = hasAttr(attrs, 'multiple') ? [...(value || []), val] : val;
++    }
++    const out = [];
++    const lf = c === 'html' ? takeLabelFor(src, id, regs) : null;
++    if (lf) { const li = labelInfo(lf.html); if (li.text) out.push({ name: 'label', value: attrText(li.text, c), q: '"' }); if (li.req) out.push({ name: 'required', value: null, q: '' }); ctx.later.push({ raw: src.substr(lf.index, lf.len), index: lf.index }); }
++    if (placeholder) out.push({ name: 'placeholder', value: attrText(placeholder, c), q: '"' });
++    out.push({ name: 'items', value: JSON.stringify(items).replace(/&(?![\w#]+;)/g, '&amp;').replace(/'/g, '&#39;'), q: "'" });
++    if (hasAttr(attrs, 'multiple')) out.push({ name: 'multiple', value: null, q: '' });
++    if (value !== null) out.push(Array.isArray(value) ? { name: 'value', value: JSON.stringify(value).replace(/'/g, '&#39;'), q: "'" } : { name: 'value', value: attrText(value, c), q: '"' });
++    else if (items.length && !placeholder && !hasAttr(attrs, 'multiple')) out.push({ name: 'value', value: attrText(items[0].id, c), q: '"' });  // <select> trần luôn chọn option đầu
++    out.push(...controlAttrs(attrs, c, /^(placeholder)$/));
++    hostClass(attrs, ctx, out);
++    if (inCell(src, t.index)) out.push({ name: 'size', value: 'sm', q: '"' }, { name: 'hideInlineError', value: null, q: '' });
++    /* <select> trần tự rộng theo option dài nhất; sd-select rộng 100% vật chứa → trong hàng flex nó co về ~0. Giữ bề rộng tối thiểu cũ. */
++    minWidth(out, Math.max(...items.map(i => String(i.name).length), placeholder.length, 4) + 7 + 'ch');
++    out.push({ name: 'data-legacy-change', value: null, q: '' });
++    st.comp['sd-select'] = (st.comp['sd-select'] || 0) + 1;
++    return { from: t.index, to: close.end, text: '<sd-select' + buildAttrs(out, t.quote) + '></sd-select>' };
++  });
++}
++
++function convertTextareas(s, ctx) {
++  const { st, js } = ctx;
++  /* <textarea> là vùng 'skip' của regions() (nội dung là chữ) — quét riêng */
++  const regs = regions(s);
++  return s.replace(/<textarea\b([^>]*)>([\s\S]*?)<\/textarea\s*>/gi, (m, a, body, i) => {
++    const c = ctxAt(regs, i); if (c === 'skip') return m;
++    if (c === 'js' && /\\["']/.test(a)) return m;
++    let quote = null;
++    if (c === 'js') { if (eachTag.noJs) return m; const reg = regs.find(r => i >= r.start && i < r.end); quote = jsQuoteAt(s, reg.start, i); if (!quote) return m; }
++    const t = { quote };
++    const attrs = parseAttrs(a); const id = getAttr(attrs, 'id');
++    const risk = jsRisk(js, id, 'select|setSelectionRange|selectionStart|selectionEnd');
++    if (risk) { ctx.note('ô textarea #' + id + ' — JS dùng .' + risk + ' → đổi tay'); return m; }
++    const out = [];
++    const lf = c === 'html' ? takeLabelFor(s, id, regs) : null;
++    if (lf) { const li = labelInfo(lf.html); if (li.text) out.push({ name: 'label', value: attrText(li.text, c), q: '"' }); if (li.req) out.push({ name: 'required', value: null, q: '' }); ctx.later.push({ raw: s.substr(lf.index, lf.len), index: lf.index }); }
++    const rows = getAttr(attrs, 'rows'); if (rows) out.push({ name: 'rows', value: rows, q: '"' });
++    if (body.trim()) out.push({ name: 'value', value: isDynamic(body) ? body : attrText(body.trim(), c), q: '"' });
++    out.push(...controlAttrs(attrs, c));
++    hostClass(attrs, ctx, out);
++    st.comp['sd-textarea'] = (st.comp['sd-textarea'] || 0) + 1;
++    return '<sd-textarea' + buildAttrs(out, t.quote) + '></sd-textarea>';
++  });
++}
++
++/* ─────────────────────────────── 5. Bảng ─────────────────────────────── */
++function convertTables(s, ctx) {
++  const { st, js } = ctx;
++  return eachTag(s, /^table$/i, (t, c, src) => {
++    if (c !== 'html') { ctx.once('table-js', 'bảng <table> dựng bằng JS — đổi tay sang <sd-table columns=…> và gán el.setAttribute(\'data\', JSON.stringify(rows))'); return null; }
++    const attrs = parseAttrs(t.attrsRaw); const id = getAttr(attrs, 'id'); const cls = clsOf(attrs);
++    const close = findClose(src, 'table', t.end); if (!close) return null;
++    const inner = src.slice(close.innerStart, close.innerEnd);
++    const what = 'bảng' + (id ? ' #' + id : cls.length ? ' .' + cls[0] : '');
++    if (/<table\b/i.test(inner)) { ctx.note(what + ' lồng bảng con — đổi tay'); return null; }
++    if (/\b(rowspan|colspan)\s*=/.test(inner)) { ctx.note(what + ' có rowspan/colspan — sd-table không gộp ô → đổi tay'); return null; }
++    const hooked = (id && referenced(js, id)) || cls.some(x => ctx.pc.hooks.has(x)) || (id && new RegExp('#' + id + '\\s+(tbody|tr|td)').test(js));
++    if (hooked) { ctx.note(what + ' — JS của trang đọc / ghi bảng này (thêm dòng, đổi ô…) → đổi tay sang <sd-table> (gán thuộc tính data / sự kiện sd-table-command)'); return null; }
++    if (/<tr\b[^>]*\son[a-z]+=/.test(inner)) { ctx.note(what + ' — dòng có onclick → đổi tay (sd-table: cột command / sự kiện)'); return null; }
++    const thead = inner.match(/<thead\b[^>]*>([\s\S]*?)<\/thead>/i);
++    const headRow = thead ? thead[1] : (inner.match(/<tr\b[^>]*>((?:(?!<\/tr>)[\s\S])*?<th\b[\s\S]*?)<\/tr>/i) || [])[1];
++    if (!headRow) { ctx.note(what + ' không có hàng tiêu đề — bảng bố cục? → giữ nguyên'); return null; }
++    const ths = [...headRow.matchAll(/<th\b([^>]*)>([\s\S]*?)<\/th\s*>/gi)];
++    if (!ths.length) return null;
++    const bodyPart = thead ? inner.slice(inner.indexOf(thead[0]) + thead[0].length) : inner.replace(headRow, '');
++    const rows = [...bodyPart.matchAll(/<tr\b([^>]*)>([\s\S]*?)<\/tr\s*>/gi)].map(r => [...r[2].matchAll(/<td\b([^>]*)>([\s\S]*?)<\/td\s*>/gi)].map(x => x[2].trim()));
++    if (rows.some(r => r.length && r.length !== ths.length)) { ctx.note(what + ' — số ô mỗi dòng không đều → đổi tay'); return null; }
++    if (/<tfoot\b/i.test(inner)) ctx.note(what + ' có tfoot — sd-table không có chân bảng tự do, phần tfoot đã bỏ (xem bản gốc)');
++    const cols = ths.map((th, i) => {
++      const ta = parseAttrs(th[1]);
++      const col = { field: 'c' + i, title: textOf(th[2]).replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ') };
++      const hasHtml = rows.some(r => /<[a-z]/i.test(r[i] || ''));
++      col.type = hasHtml ? 'raw' : 'string';
++      const w = ((getAttr(ta, 'style') || '').match(/(?:^|;)\s*width\s*:\s*([^;]+)/) || [])[1] || getAttr(ta, 'width');
++      if (w) col.width = /^\d+$/.test(w.trim()) ? w.trim() + 'px' : w.trim();
++      if (/text-align\s*:\s*right|\btext-right\b/.test(th[1])) col.align = 'right';
++      return col;
++    });
++    const dec = t => t.replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
++    const data = rows.filter(r => r.length).map(r => Object.fromEntries(r.map((v, i) => [cols[i].field, cols[i].type === 'raw' ? v : dec(textOf(v))])));
++    const enc = o => JSON.stringify(o).replace(/&/g, '&amp;').replace(/'/g, '&#39;');
++    const out = [];
++    if (id) out.push({ name: 'id', value: id, q: '"' });
++    const keep = cls.filter(x => !/^(table|data-table|table-striped|table-bordered|table-hover|table-sm)$/.test(x));
++    if (keep.length) out.push({ name: 'class', value: keep.join(' '), q: '"' });
++    out.push({ name: 'hide-inline-filter', value: null, q: '' });
++    out.push({ name: 'columns', value: enc(cols), q: "'" }, { name: 'data', value: enc(data), q: "'" });
++    st.comp['sd-table'] = (st.comp['sd-table'] || 0) + 1;
++    /* bọc <div>: sd-table là con trực tiếp của .content-zone thì layout chuyển sang chế độ "bảng chiếm hết chiều cao"
++       (Browse) — bảng tĩnh cũ nằm giữa trang không phải vậy, giữ dòng chảy như cũ */
++    return { from: t.index, to: close.end, text: '<div><sd-table' + buildAttrs(out, t.quote) + '></sd-table></div>' };
++  });
++}
++
++/* ───────────────────────── 6. Modal / drawer tự dựng ───────────────────────── */
++const MODAL_OVERLAY = /^(overlay|backdrop|[\w-]+-(?:overlay|backdrop|mask)|modal-wrapper|modal-container)$/;
++const MODAL_BOX = /^(modal|modal-dialog|modal-content|dialog|popup|modal-box|modal-panel)$/;
++const DRAWER = /^(drawer|side-drawer|side-panel|offcanvas|slide-panel|drawer-panel|sidesheet|side-sheet)$/;
++function pickPart(html, re) {
++  const m = html.match(new RegExp('<(div|header|footer|section|h[1-6])\\b([^>]*class\\s*=\\s*"[^"]*\\b(?:' + re + ')\\b[^"]*"[^>]*)>', 'i'));
++  if (!m) return null;
++  const tag = m[1]; const start = html.indexOf(m[0]); const cl = findClose(html, tag, start + m[0].length);
++  if (!cl) return null;
++  return { start, end: cl.end, attrs: parseAttrs(m[2]), inner: html.slice(cl.innerStart, cl.innerEnd), tag };
++}
++function convertOverlays(s, ctx) {
++  const { st, js } = ctx;
++  return eachTag(s, /^(div|section|aside)$/i, (t, c, src) => {
++    const attrs = parseAttrs(t.attrsRaw); const cls = clsOf(attrs);
++    const role = (getAttr(attrs, 'role') || '').toLowerCase();
++    const isOverlay = cls.some(x => MODAL_OVERLAY.test(x));
++    const isBox = cls.some(x => MODAL_BOX.test(x)) || role === 'dialog' || hasAttr(attrs, 'aria-modal');
++    const isDrawer = cls.some(x => DRAWER.test(x));
++    if (!isOverlay && !isBox && !isDrawer) return null;
++    if (c !== 'html') { ctx.once('modal-js', 'modal / drawer dựng bằng JS — đổi tay sang <sd-modal> / <sd-side-drawer> và gọi .open() / .close()'); return null; }
++    const close = findClose(src, t.name, t.end); if (!close) return null;
++    let inner = src.slice(close.innerStart, close.innerEnd);
++    let boxAttrs = attrs, ids = [getAttr(attrs, 'id')].filter(Boolean);
++    if (isOverlay && !isBox && !isDrawer) {
++      /* lớp phủ bọc hộp: lấy hộp bên trong */
++      /* hộp = phần tử con DUY NHẤT của lớp phủ (lớp gì cũng được: .import-dialog, .modal-dialog…) */
++      const bm = inner.replace(/<!--[\s\S]*?-->/g, m => ' '.repeat(m.length)).match(/^\s*<(div|section|aside|form)\b((?:[^>"']|"[^"]*"|'[^']*')*)>/i);
++      if (!bm) return null;
++      const bs = bm[0].search(/\S/); const bc = findClose(inner, bm[1], bm[0].length); if (!bc) return null;
++      if (textOf(inner.slice(0, bs) + inner.slice(bc.end))) return null;
++      boxAttrs = parseAttrs(bm[2]); const bid = getAttr(boxAttrs, 'id'); if (bid) ids.push(bid);
++      inner = inner.slice(bc.innerStart, bc.innerEnd);
++    }
++    const drawer = isDrawer || clsOf(boxAttrs).some(x => DRAWER.test(x));
++    const kind = drawer ? 'sd-side-drawer' : 'sd-modal';
++    if (ids.length > 1 && ids.every(i => referenced(js, i))) { ctx.note('modal #' + ids.join(' / #') + ' — JS gọi cả lớp phủ lẫn hộp → đổi tay sang <' + kind + '>'); return null; }
++    const id = ids.find(i => referenced(js, i)) || ids[0];
++    /* đầu / thân / chân */
++    const head = pickPart(inner, '[\\w-]*(?:modal|dialog|drawer|panel|popup|sheet)-header|header');
++    let title = '', headLeft = '', headRight = '', onClose = '';
++    let rest = inner;
++    const CLOSE_BTN = /<(button|sd-button|a)\b[^>]*>[\s\S]*?<\/\1>/gi;
++    const openTag = b => b.slice(0, b.indexOf('>') + 1);
++    /* nút đóng góc hộp (X) — KHÔNG phải nút có nhãn ("Bỏ qua", "Thoát"…) ở chân hộp */
++    const isClose = b => {
++      const o = openTag(b), oa = parseAttrs(o.replace(/^<[\w-]+|\/?>$/g, ''));
++      const label = /^<sd-button/i.test(o) ? (getAttr(oa, 'title') || '') : textOf(b.replace(ICON_SPAN_G, ''));
++      if (label && !/^(×|&times;|✕|x)$/i.test(label.trim())) return false;
++      if (/(^|\s)(close|modal-close|drawer-close|btn-close|panel-close|dialog-close)(\s|$)/.test(getAttr(oa, 'class') || '')) return true;
++      if (/^close$/i.test(getAttr(oa, 'prefixIcon') || '')) return true;
++      if (/>\s*(×|&times;|✕)\s*</.test(b)) return true;
++      if (/material-(icons|symbols)[^>]*>\s*close\s*</.test(b)) return true;
++      return /^(Đóng|Close|Thoát|Bỏ qua)$/i.test(getAttr(oa, 'aria-label') || '');
++    };
++    const ocOf = b => getAttr(parseAttrs(openTag(b).replace(/^<[\w-]+|\/?>$/g, '')), 'onclick');
++    if (head) {
++      let h = head.inner;
++      /* nút đóng → component đã có nút X; onclick cũ giữ ở data-legacy-onclose, legacy-shim gọi khi đóng */
++      h = h.replace(CLOSE_BTN, b => { if (!isClose(b)) return b; const oc = ocOf(b); if (oc) onClose = oc; return ''; });
++      const tEl = h.match(/<(h[1-6])\b([^>]*)>([\s\S]*?)<\/\1>/i) || h.match(/<(div|span|p)\b([^>]*class\s*=\s*"[^"]*title[^"]*"[^>]*)>((?:(?!<div\b)[\s\S])*?)<\/\1>/i);
++      let tid = '';
++      if (tEl) { title = textOf(tEl[3].replace(ICON_SPAN_G, '')); tid = getAttr(parseAttrs(tEl[2]), 'id') || ''; h = h.replace(tEl[0], ''); }
++      h = h.replace(ICON_SPAN_G, '');
++      const btns = []; h = h.replace(/<(sd-button|button)\b[\s\S]*?<\/\1>/gi, b => { btns.push(b); return ''; });
++      /* phần còn lại của đầu hộp (phụ đề, mã…) hoặc tiêu đề có id JS ghi vào → vùng trái [sdHeaderLeft] */
++      const leftHasContent = textOf(h) || /\sid\s*=/.test(h);
++      if (leftHasContent || (tid && referenced(js, tid))) {
++        const subs = [...h.matchAll(/<(span|div|p|small)\b([^>]*)>((?:(?!<\/?(?:span|div|p|small)\b)[\s\S])*?)<\/\1>/gi)].filter(x => textOf(x[3]) || /\sid\s*=/.test(x[2]))
++          .map(x => { const xa = parseAttrs(x[2]).filter(a => /^(id|data-[\w-]+)$/i.test(a.name)); return '<div class="T14R text-secondary"' + buildAttrs(xa) + '>' + x[3] + '</div>'; });
++        headLeft = '<div sdHeaderLeft><div class="T20M"' + (tid ? ' id="' + tid + '"' : '') + '>' + (tEl ? tEl[3].replace(ICON_SPAN_G, '').trim() : '') + '</div>' + subs.join('') + '</div>';
++      }
++      if (btns.length) headRight = '<div sdHeaderRight class="d-flex align-items-center gap-8">' + btns.join('') + '</div>';
++      rest = rest.slice(0, head.start) + rest.slice(head.end);
++    } else {
++      const h = rest.match(/^\s*<(h[1-6])\b([^>]*)>([\s\S]*?)<\/\1>/i);
++      if (h) { title = textOf(h[3]); const tid = getAttr(parseAttrs(h[2]), 'id'); if (tid) headLeft = '<div sdHeaderLeft><div class="T20M" id="' + tid + '">' + h[3] + '</div></div>'; rest = rest.replace(h[0], ''); }
++    }
++    /* nút đóng ở góc hộp, ngoài đầu hộp */
++    {
++      const cut = rest.search(/<[a-z][\w-]*\b[^>]*class\s*=\s*"[^"]*(?:modal|dialog|drawer|panel|popup|sheet)-(?:body|content|footer)\b/i);
++      const top = cut < 0 ? rest.slice(0, 400) : rest.slice(0, cut);
++      const topNew = top.replace(CLOSE_BTN, b => { if (!isClose(b)) return b; const oc = ocOf(b); if (oc && !onClose) onClose = oc; return ''; });
++      rest = topNew + rest.slice(top.length);
++    }
++    if (!title) { ctx.note('hộp ' + (id ? '#' + id : '') + ' không thấy tiêu đề — sd-modal không tiêu đề sẽ mất cả nút X (catalog) → kiểm tra'); }
++    const foot = pickPart(rest, '[\\w-]*(?:modal|dialog|drawer|panel|popup)-footer|footer|modal-actions|dialog-actions');
++    let footer = '';
++    if (foot) { footer = foot.inner; rest = rest.slice(0, foot.start) + rest.slice(foot.end); }
++    const out = [];
++    if (id) out.push({ name: 'id', value: id, q: '"' });
++    /* sd-side-drawer vẽ CẢ title lẫn [sdHeaderLeft] cạnh nhau (catalog) → có vùng trái thì bỏ title; sd-modal thì vùng trái
++       thay chỗ tiêu đề mặc định, còn title rỗng là mất cả header + nút X → giữ title */
++    out.push({ name: 'title', value: drawer && headLeft ? '' : attrText(title, c), q: '"' });
++    const st0 = getAttr(boxAttrs, 'style') || '';
++    const w = (st0.match(/(?:^|;)\s*(?:max-)?width\s*:\s*([^;]+)/) || [])[1];
++    const bcls = clsOf(boxAttrs);
++    const wcls = bcls.includes('modal-sm') ? '40vw' : bcls.includes('modal-lg') ? '80vw' : bcls.includes('modal-xl') ? '80vw' : '';
++    if (w || wcls) out.push({ name: 'width', value: (w || wcls).trim(), q: '"' });
++    for (const a of [...attrs, ...boxAttrs]) if (/^(data-[\w-]+|aria-label)$/i.test(a.name) && !out.some(o => o.name === a.name)) out.push(a);
++    const hook = [...new Set([...cls, ...bcls])].filter(x => !MODAL_OVERLAY.test(x) && !MODAL_BOX.test(x) && !DRAWER.test(x) && !/^(open|show|active|hidden|modal-(sm|lg|xl)|fade|in)$/.test(x));
++    if (hook.length) out.push({ name: 'class', value: hook.join(' '), q: '"' });
++    const visible = /(^|\s)(open|show|active)(\s|$)/.test(getAttr(attrs, 'class') || '');
++    if (kind === 'sd-modal') out.push({ name: 'lazyLoadContent', value: 'false', q: '"' });   // JS cũ ghi vào nội dung TRƯỚC khi mở
++    out.push({ name: 'data-legacy-modal', value: visible ? 'open' : '', q: '"' });
++    if (onClose) out.push({ name: 'data-legacy-onclose', value: onClose, q: '"' });
++    const bodyPart = pickPart(rest, '[\\w-]*(?:modal|dialog|drawer|panel|popup)-body|body');
++    let body = rest;
++    if (!bodyPart) body = '<div class="' + (drawer ? 'p-16' : 'pb-16') + '">' + rest + '</div>';
++    const text = '<' + kind + buildAttrs(out, t.quote) + '>' + headLeft + headRight + body +
++      (footer.trim() ? '<div sdFooter class="d-flex align-items-center justify-content-end gap-8">' + footer + '</div>' : '') + '</' + kind + '>';
++    st.comp[kind] = (st.comp[kind] || 0) + 1;
++    ctx.once('modal', 'modal / drawer tự dựng → <sd-modal> / <sd-side-drawer>: mở / đóng bằng JS cũ (style.display, classList open/show/active, hidden) vẫn chạy nhờ legacy-shim.js; trang mới gọi el.open() / el.close()');
++    return { from: t.index, to: close.end, text };
++  });
++}
++
++/* ───────────────────── 6b. Thanh tab tự dựng → sd-tab-group ───────────────────── */
++const TABBAR = /^(tabs|tab-list|tab-bar|nav-tabs|tabs-nav|tab-header|tab-nav|tab-buttons|page-tabs)$/;
++const TABITEM = /^(tab|tab-btn|tab-button|tab-item|nav-link|tab-link)$/;
++function convertTabs(s, ctx) {
++  const { st, js } = ctx;
++  return eachTag(s, /^(div|nav|ul)$/i, (t, c, src) => {
++    if (c !== 'html') return null;
++    const attrs = parseAttrs(t.attrsRaw); const cls = clsOf(attrs);
++    if (!cls.some(x => TABBAR.test(x)) && !/^tablist$/i.test(getAttr(attrs, 'role') || '')) return null;
++    const close = findClose(src, t.name, t.end); if (!close) return null;
++    const bar = src.slice(close.innerStart, close.innerEnd);
++    /* nút tab */
++    const items = [];
++    for (const m of bar.matchAll(/<(button|a|div|span|li)\b((?:[^>"']|"[^"]*"|'[^']*')*)>([\s\S]*?)<\/\1\s*>/gi)) {
++      const ia = parseAttrs(m[2]); const icl = clsOf(ia);
++      const inner = m[3].replace(/^\s*<(a|button)\b[^>]*>([\s\S]*?)<\/\1>\s*$/i, '$2');
++      const linkAttrs = m[1].toLowerCase() === 'li' ? parseAttrs(((m[3].match(/<(?:a|button)\b([^>]*)>/i) || [])[1]) || '') : ia;
++      const all = [...ia, ...linkAttrs];
++      if (![...icl, ...clsOf(linkAttrs)].some(x => TABITEM.test(x)) && !/^tab$/i.test(getAttr(all, 'role') || '')) continue;
++      let target = (getAttr(all, 'data-tab') || getAttr(all, 'data-target') || getAttr(all, 'data-panel') || getAttr(all, 'aria-controls') || (getAttr(all, 'href') || '').replace(/^#/, '') || '').replace(/^#/, '');
++      if (!target) {
++        /* onclick="showTab('info')" → khối có id info / info-panel / panel-info / tab-info-panel… nằm sau thanh tab */
++        const arg = ((getAttr(all, 'onclick') || '').match(/\(\s*['"]([\w-]+)['"]/) || [])[1];
++        if (arg) target = [arg, arg + '-panel', 'panel-' + arg, arg + '-tab', 'tab-' + arg, arg + '-content', 'tab-panel-' + arg].find(x => new RegExp('\\sid\\s*=\\s*["\']' + x + '["\']').test(src.slice(close.end))) || '';
++      }
++      const ic = inner.match(ICON_SPAN);
++      const badge = (inner.match(/<span\b[^>]*class\s*=\s*"[^"]*(count|badge|tab-count)[^"]*"[^>]*>([^<]*)<\/span>/i) || [])[2];
++      const label = textOf(inner.replace(ICON_SPAN_G, '').replace(/<span\b[^>]*class\s*=\s*"[^"]*(count|badge|tab-count)[^"]*"[^>]*>[^<]*<\/span>/gi, ''));
++      items.push({ label, icon: ic && ic[3], badge, target, id: getAttr(all, 'id'), onclick: getAttr(all, 'onclick'), active: /(^|\s)(active|selected|is-active)(\s|$)/.test(getAttr(all, 'class') || '') || getAttr(all, 'aria-selected') === 'true',
++        hook: [...new Set([...icl, ...clsOf(linkAttrs)])].filter(x => !TABITEM.test(x) && !/^(active|selected|is-active|nav-item)$/.test(x)), disabled: hasAttr(all, 'disabled') });
++    }
++    if (items.length < 2) return null;
++    if (items.some(i => isDynamic(i.label) || !i.label)) { ctx.note('thanh tab có nhãn dựng bằng JS / rỗng → đổi tay sang <sd-tab-group>'); return null; }
++    /* thân tab: theo id đích, hoặc khối .tab-content/.tab-panels liền sau với số ô bằng số tab */
++    const after = src.slice(close.end);
++    let panels = [], spanEnd = close.end;
++    const byId = items.every(i => i.target) && items.map(i => {
++      const m = after.match(new RegExp('<(div|section|article)\\b([^>]*\\sid\\s*=\\s*["\']' + i.target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '["\'][^>]*)>', 'i'));
++      if (!m) return null;
++      const st0 = close.end + after.indexOf(m[0]); const cl = findClose(src, m[1], st0 + m[0].length); if (!cl) return null;
++      return { start: st0, end: cl.end, open: m[0], tag: m[1], attrs: parseAttrs(m[2]), inner: src.slice(cl.innerStart, cl.innerEnd) };
++    });
++    if (byId && byId.every(Boolean)) panels = byId;
++    else {
++      const wm = after.match(/^\s*<(div|section)\b([^>]*class\s*=\s*"[^"]*(?<![\w-])(tab-content|tab-panels|tab-body|tabs-content)(?![\w-])[^"]*"[^>]*)>/i);
++      if (wm) {
++        const ws = close.end + wm[0].search(/<\S/); const wc = findClose(src, wm[1], close.end + wm[0].length);
++        if (wc) {
++          const wi = src.slice(wc.innerStart, wc.innerEnd); const ps = []; let mm; const re = /<(div|section)\b((?:[^>"']|"[^"]*"|'[^']*')*)>/gi;
++          while ((mm = re.exec(wi))) { const pc0 = findClose(wi, mm[1], mm.index + mm[0].length); if (!pc0) break; ps.push({ start: wc.innerStart + mm.index, end: wc.innerStart + pc0.end, attrs: parseAttrs(mm[2]), inner: wi.slice(pc0.innerStart, pc0.innerEnd) }); re.lastIndex = pc0.end; }
++          if (ps.length === items.length) { panels = ps; panels.wrap = { start: ws, end: wc.end }; }
++        }
++      }
++    }
++    if (panels.length !== items.length) { ctx.note('thanh tab "' + items.map(i => i.label).join(' / ') + '" — không ghép được nút tab với khối nội dung → đổi tay sang <sd-tab-group>'); return null; }
++    /* các khối thân phải nằm liền nhau ngay sau thanh tab (chỉ cách nhau khoảng trắng / chú thích) */
++    const order = panels.slice().sort((a, b) => a.start - b.start);
++    const region = panels.wrap || { start: order[0].start, end: order[order.length - 1].end };
++    let gap = src.slice(close.end, region.start);
++    for (let i = 1; i < order.length && !panels.wrap; i++) gap += src.slice(order[i - 1].end, order[i].start);
++    if (textOf(gap.replace(/<!--[\s\S]*?-->/g, '')) || /<[a-z]/i.test(gap.replace(/<!--[\s\S]*?-->/g, ''))) { ctx.note('thanh tab "' + items.map(i => i.label).join(' / ') + '" — giữa thanh tab và nội dung có khối khác → đổi tay sang <sd-tab-group>'); return null; }
++    /* JS gọi id nút tab bằng getElementById … → id chuyển sang sd-tab (vẫn tồn tại). Khối thân giữ nguyên id/lớp bên trong sd-tab. */
++    const sel = Math.max(0, items.findIndex(i => i.active));
++    const tabs = items.map((it, k) => {
++      const p = panels[k];
++      const a = [{ name: 'label', value: attrText(it.label, c), q: '"' }];
++      if (it.icon) a.push({ name: 'icon', value: it.icon, q: '"' });
++      if (it.badge && textOf(it.badge)) a.push({ name: 'badge', value: textOf(it.badge), q: '"' });
++      if (it.disabled) a.push({ name: 'disabled', value: null, q: '' });
++      if (it.id) a.push({ name: 'id', value: it.id, q: '"' });
++      if (it.hook.length) a.push({ name: 'class', value: it.hook.join(' '), q: '"' });
++      if (it.onclick) a.push({ name: 'data-legacy-onselect', value: it.onclick, q: '"' });
++      const pa = p.attrs.filter(x => /^(id|class|data-[\w-]+)$/i.test(x.name)).map(x => x.name.toLowerCase() === 'class' ? { ...x, value: clsOf([x]).filter(y => !/^(active|show|hidden|d-none|tab-pane|tab-panel|fade|in)$/.test(y)).concat(['legacy-tab-panel']).join(' ') } : x);
++      return '<sd-tab' + buildAttrs(a) + '><div' + buildAttrs(pa) + ' data-legacy-panel>' + p.inner + '</div></sd-tab>';
++    });
++    const ga = [{ name: 'selectedIndex', value: String(sel), q: '"' }];
++    const id = getAttr(attrs, 'id'); if (id) ga.push({ name: 'id', value: id, q: '"' });
++    const hook = cls.filter(x => !TABBAR.test(x)); if (hook.length) ga.push({ name: 'class', value: hook.join(' '), q: '"' });
++    const text = '<sd-tab-group' + buildAttrs(ga) + '>' + tabs.join('') + '</sd-tab-group>';
++    st.comp['sd-tab-group'] = (st.comp['sd-tab-group'] || 0) + 1;
++    /* thay thanh tab bằng nhóm tab, xoá khối thân ở chỗ cũ */
++    const tail = src.slice(region.end);
++    ctx.once('tabs', 'thanh tab tự dựng → <sd-tab-group>: onclick cũ của nút tab chạy khi chọn tab (legacy-shim), khối thân giữ id / lớp');
++    return { from: t.index, to: region.end, text };
++  });
++}
++
++/* ───────────────────── 7. Card / section / info item (kit cũ) ───────────────────── */
++function convertCards(s, ctx) {
++  const { st } = ctx;
++  return eachTag(s, /^(div|section)$/i, (t, c, src) => {
++    if (c !== 'html') return null;
++    const attrs = parseAttrs(t.attrsRaw); const cls = clsOf(attrs);
++    const kind = cls.find(x => /^(card|form-card|detail-section)$/.test(x));
++    if (!kind) return null;
++    const close = findClose(src, t.name, t.end); if (!close) return null;
++    const inner = src.slice(close.innerStart, close.innerEnd);
++    const head = pickPart(inner, kind + '-header');
++    const body = pickPart(inner, kind + '-body');
++    if (!head || !body) return null;
++    const titleM = head.inner.match(new RegExp('<(\\w+)\\b[^>]*class\\s*=\\s*"[^"]*\\b' + kind + '-title\\b[^"]*"[^>]*>([\\s\\S]*?)<\\/\\1>', 'i'));
++    if (!titleM) return null;
++    const ic = head.inner.match(ICON_SPAN);
++    let extra = head.inner.replace(titleM[0], '').replace(ICON_SPAN, '');
++    const collapsible = /chevron|expand_(more|less)|-chevron/.test(extra);
++    extra = extra.replace(/<(span|i|button)\b[^>]*(chevron|toggle)[^>]*>[\s\S]*?<\/\1>/gi, '');
++    const footerPart = pickPart(inner, kind + '-footer');
++    const out = [{ name: 'title', value: attrText(textOf(titleM[2]), c), q: '"' }];
++    if (ic) out.push({ name: 'icon', value: ic[3], q: '"' });
++    if (collapsible) out.push({ name: 'collapsible', value: null, q: '' });
++    if (/(^|\s)collapsed(\s|$)/.test(getAttr(attrs, 'class') || '')) out.push({ name: 'collapsed', value: null, q: '' });
++    for (const a of attrs) if (/^(id|data-[\w-]+)$/i.test(a.name)) out.push(a);
++    const keep = cls.filter(x => x !== kind && !/^(collapsed|open)$/.test(x));
++    if (keep.length) out.push({ name: 'class', value: keep.join(' '), q: '"' });
++    const right = textOf(extra) || /<sd-|<button/i.test(extra) ? '<div sdHeaderRight class="d-flex align-items-center gap-8">' + extra.trim() + '</div>' : '';
++    const text = '<sd-section' + buildAttrs(out, t.quote) + '>' + right + body.inner + (footerPart ? footerPart.inner : '') + '</sd-section>';
++    st.comp['sd-section'] = (st.comp['sd-section'] || 0) + 1;
++    return { from: t.index, to: close.end, text, resume: ('<sd-section' + buildAttrs(out, t.quote) + '>').length };
++  });
++}
++function convertInfoItems(s, ctx) {
++  const { st } = ctx;
++  return eachTag(s, /^div$/i, (t, c, src) => {
++    const attrs = parseAttrs(t.attrsRaw); const clsRaw = getAttr(attrs, 'class') || '';
++    if (isDynamic(clsRaw) || !/(^|\s)(detail-info-item|info-item)(\s|$)/.test(clsRaw)) return null;
++    const close = findClose(src, 'div', t.end); if (!close) return null;
++    const inner = src.slice(close.innerStart, close.innerEnd);
++    const lab = pickPart(inner, 'detail-info-label|info-label'); const val = pickPart(inner, 'detail-info-value|info-value');
++    if (!lab || !val) return null;
++    const out = [{ name: 'label', value: attrText(isDynamic(lab.inner) ? lab.inner.trim() : textOf(lab.inner), c), q: '"' }];
++    for (const a of attrs) if (/^(id|data-[\w-]+)$/i.test(a.name)) out.push(a);
++    const vid = getAttr(val.attrs, 'id');
++    const content = vid ? '<span id="' + vid + '">' + val.inner + '</span>' : val.inner;
++    st.comp['sd-section-item'] = (st.comp['sd-section-item'] || 0) + 1;
++    return { from: t.index, to: close.end, text: '<sd-section-item' + buildAttrs(out, t.quote) + '>' + content + '</sd-section-item>' };
++  });
++}
++
++/* ───────────────────── 8. Header trang viết tay → DOM header của sd-page ───────────────────── */
++function convertHandHeader(s, ctx) {
++  const { st } = ctx;
++  return eachTag(s, /^(div|header)$/i, (t, c, src) => {
++    if (c !== 'html') return null;
++    const attrs = parseAttrs(t.attrsRaw); const cls = clsOf(attrs);
++    if (!cls.includes('page-header') || hasAttr(attrs, 'data-pattern')) return null;
++    const close = findClose(src, t.name, t.end); if (!close) return null;
++    let inner = src.slice(close.innerStart, close.innerEnd);
++    if (/c-page-header/.test(inner)) return null;
++    const titleM = inner.match(/<(h[1-6]|div|span)\b([^>]*class\s*=\s*"[^"]*(?<![\w-])page-title(?![\w-])[^"]*"[^>]*)>([\s\S]*?)<\/\1>/i);
++    if (!titleM) { ctx.note('header viết tay không có .page-title — đổi tay sang data-pattern="page-header"'); return null; }
++    const tAttrs = parseAttrs(titleM[2]); const tid = getAttr(tAttrs, 'id');
++    const actM = inner.match(/<div\b([^>]*class\s*=\s*"[^"]*(?<![\w-])page-header-actions(?![\w-])[^"]*"[^>]*)>/i);
++    let actions = '';
++    if (actM) { const as = inner.indexOf(actM[0]); const ac = findClose(inner, 'div', as + actM[0].length); if (ac) { actions = inner.slice(ac.innerStart, ac.innerEnd); inner = inner.slice(0, as) + inner.slice(ac.end); } }
++    const rid = inner.match(/<(span|div)\b([^>]*class\s*=\s*"[^"]*(?<![\w-])record-id(?![\w-])[^"]*"[^>]*)>([\s\S]*?)<\/\1>/i);
++    const sub = inner.match(/<(p|div|span)\b([^>]*class\s*=\s*"[^"]*(?<![\w-])page-subtitle(?![\w-])[^"]*"[^>]*)>([\s\S]*?)<\/\1>/i);
++    const back = inner.match(/<a\b([^>]*class\s*=\s*"[^"]*(?<![\w-])back-link(?![\w-])[^"]*"[^>]*)>[\s\S]*?<\/a>/i) || inner.match(/<sd-button\b[^>]*prefixIcon="arrow_back"[^>]*><\/sd-button>/i);
++    const badges = [...inner.matchAll(/<sd-badge\b[\s\S]*?<\/sd-badge>/gi)].map(m => m[0]).join('');
++    let backBtn = '';
++    if (back) {
++      if (back[0].startsWith('<sd-button')) backBtn = back[0];
++      else { const href = getAttr(parseAttrs(back[1]), 'href') || ''; backBtn = '<sd-button prefixIcon="arrow_back" tooltip="Quay lại" type="link" aria-label="Quay lại" onclick="' + (href && href !== '#' ? "location.href='" + href.replace(/'/g, "\\'") + "'" : 'history.back()') + '"></sd-button>'; }
++    }
++    const ttl = '<div class="T20M page-title"' + (tid ? ' id="' + tid + '"' : '') + '>' + titleM[3].trim() + '</div>';
++    const left = '<div class="d-flex"><div headerLeft class="d-flex align-items-center gap-8">' + backBtn + '<div><div class="d-flex align-items-center flex-wrap gap-8">' + ttl +
++      (rid ? '<span class="T20M text-primary record-id"' + buildAttrs(parseAttrs(rid[2]).filter(a => a.name !== 'class')) + '>' + rid[3] + '</span>' : '') + badges + '</div>' +
++      (sub ? '<div class="T14R text-secondary \u2063mt-4 page-subtitle"' + buildAttrs(parseAttrs(sub[2]).filter(a => a.name !== 'class')) + '>' + sub[3] + '</div>' : '') + '</div></div></div>';
++    const right = '<div headerRight class="d-flex align-items-center flex-wrap gap-8 justify-content-end page-header-actions">' + actions + '</div>';
++    const keep = attrs.filter(a => a.name.toLowerCase() !== 'class');
++    const text = '<div class="' + cls.join(' ') + '"' + buildAttrs(keep) + '><div class="c-page-header bg-white"><div class="p-16 d-flex align-items-center w-full justify-content-between page-header-content">' + left + right + '</div></div></div>';
++    st.comp['page-header'] = (st.comp['page-header'] || 0) + 1;
++    ctx.once('header', 'header viết tay → khung header của sd-page (như pattern page-header). Trang mới: dùng data-pattern="page-header"');
++    return { from: t.index, to: close.end, text, resume: text.indexOf('<div headerRight') };
++  });
++}
++
++/* ───────────────────── 9. Báo phần còn lại (tab, phân trang, toast, dropdown, avatar…) ───────────────────── */
++function reportRest(s, ctx) {
++  const regs = regions(s);
++  const has = re => { const m = s.match(re); return m && ctxAt(regs, s.indexOf(m[0])) !== 'skip'; };
++  const R = [
++    [/class\s*=\s*"[^"]*(?<![\w-])(tabs|tab-list|nav-tabs|tab-bar|tab-header|tab-nav|tab-buttons)(?![\w-])/, 'thanh tab tự dựng (chưa đổi được) → <sd-tab-group><sd-tab label="…">nội dung</sd-tab>…</sd-tab-group>'],
++    [/class\s*=\s*"[^"]*\b(pagination|table-footer|pager)\b/, 'phân trang tự dựng → bỏ; dùng `paginated` + `pageSize` của <sd-table>'],
++    [/class\s*=\s*"[^"]*\b(toast|snackbar)(-container)?\b/, 'toast tự dựng → SdNotifyService của kit (xem design-system/components/sd-overlay.md)'],
++    [/class\s*=\s*"[^"]*\bdropdown-menu\b/, 'menu thả xuống tự dựng → cột command / menu của sd-table, hoặc sd-button + danh sách (catalog 19.0.10 không có menu nút)'],
++    [/class\s*=\s*"[^"]*\b(user-avatar|avatar)\b(?!-)/, 'avatar tự dựng → <sd-avatar name="…" src="…">'],
++    [/class\s*=\s*"[^"]*\bstatus-dot\b/, 'chấm trạng thái tự dựng → <sd-badge color="…" icon="…" title="…"> theo STATUS_MAP'],
++    [/class\s*=\s*"[^"]*\b(empty-state|no-data)\b/, 'khối trống tự dựng → ảnh trống của kit (design-system/core/assets/) theo Rule 12'],
++    [/class\s*=\s*"[^"]*\b(stepper|steps|wizard-steps)\b/, 'thanh bước tự dựng → <sd-stepper>'],
++    [/<progress\b|class\s*=\s*"[^"]*\bprogress-bar\b/, 'thanh tiến độ tự dựng → giữ (catalog không có progress) hoặc hỏi PD'],
++    [/<input\b[^>]*type\s*=\s*["']file/i, 'ô chọn tệp <input type="file"> → <sd-upload-file>'],
++    [/<input\b[^>]*type\s*=\s*["'](time|month|week|range|color)/i, 'ô <input type="time|month|week|range|color"> → sd-datetime / sd-input-color / hỏi PD (catalog không có slider)']
++  ];
++  for (const [re, msg] of R) if (has(re)) ctx.note('còn ' + msg);
++}
++
++/* ─────────────────────────────── chạy ─────────────────────────────── */
++const scriptsOf = s => [...s.matchAll(/<script\b(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/gi)].filter(m => !/type\s*=\s*["']?module/i.test(m[1])).map(m => m[2]);
++const compiles = code => { try { new vm.Script(code); return true; } catch (e) { return false; } };
++export function convertComponents(src, st, env) {
++  /* Đổi lần 1 (cả HTML tĩnh lẫn markup trong chuỗi JS). Nếu một <script> vốn chạy được mà sau khi đổi hỏng cú pháp → đổi lại
++     lần 2 CHỈ phần HTML tĩnh, markup trong JS để nguyên (báo `!`). Không bao giờ trả về trang có JS hỏng. */
++  const before = scriptsOf(src).map(compiles);
++  const snap = JSON.stringify(st);
++  let out = convertOnce(src, st, env);
++  const after = scriptsOf(out);
++  if (after.length !== before.length || after.some((c, i) => before[i] && !compiles(c))) {
++    Object.assign(st, JSON.parse(snap));
++    eachTag.noJs = true;
++    try { out = convertOnce(src, st, env); } finally { eachTag.noJs = false; }
++    st.notes.push('markup component trong chuỗi JS chưa đổi (đổi tự động làm hỏng cú pháp JS) → đổi tay theo ai-instructions/migrate-components.md');
++  }
++  return out;
++}
++function convertOnce(src, st, env) {
++  const js = [...src.matchAll(/<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1]).join('\n');
++  const seen = new Set();
++  const ctx = { ...env, st, js, later: [],
++    note: m => st.notes.push(m),
++    once: (k, m) => { if (!seen.has(k)) { seen.add(k); st.notes.push(m); } },
++    widget: (k, cls) => { const key = k + ':' + cls.join('.'); if (!seen.has(key)) { seen.add(key); st.widgets.push('<' + k + ' class="' + cls.join(' ') + '">'); } } };
++  st.comp = st.comp || {}; st.widgets = st.widgets || [];
++  let s = src;
++  s = fixAliases(s, st);
++  s = convertOverlays(s, ctx);
++  s = convertTabs(s, ctx);
++  s = convertCards(s, ctx);
++  s = convertInfoItems(s, ctx);
++  s = convertToggles(s, ctx);
++  s = convertButtons(s, ctx);
++  s = convertBadges(s, ctx);
++  s = convertSelects(s, ctx);
++  s = convertTextareas(s, ctx);
++  s = convertInputs(s, ctx);
++  s = convertTables(s, ctx);
++  s = convertHandHeader(s, ctx);
++  /* nhãn <label for> đã chuyển vào thuộc tính `label` → xoá (từ cuối lên) */
++  for (const lf of ctx.later) { const i = s.indexOf(lf.raw); if (i >= 0) s = s.slice(0, i) + s.slice(i + lf.raw.length); }
++  reportRest(s, ctx);
++  if (st.widgets.length) st.notes.push('giữ nguyên ' + st.widgets.length + ' kiểu nút là WIDGET riêng của trang (có CSS của trang, Rule 0b nhóm B): ' + st.widgets.slice(0, 6).join(' ') + (st.widgets.length > 6 ? ' …' : '') + ' — nếu thực chất là nút bấm thường thì đổi tay sang <sd-button>');
++  return s;
++}
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/tools/lib/html-lite.mjs b/ai-instructions/tools/lib/html-lite.mjs
+--- a/ai-instructions/tools/lib/html-lite.mjs	1970-01-01 00:00:00.000000000 +0000
++++ b/ai-instructions/tools/lib/html-lite.mjs	2026-10-14 16:25:48.169862853 +0000
+@@ -0,0 +1,143 @@
++/* html-lite.mjs — công cụ đọc HTML tối giản cho migrate-prototype.mjs (Node thuần, không cần cài).
++ *
++ * Làm việc thẳng trên CHUỖI nguồn (không dựng lại toàn trang) để phần không đổi giữ nguyên từng ký tự — kể cả CRLF,
++ * khoảng trắng, chú thích. Hiểu được hai ngữ cảnh:
++ *   · 'html' — HTML tĩnh của trang;
++ *   · 'js'   — markup nằm trong chuỗi JS (`'<button class="x">' + label + '</button>'`). Giá trị thuộc tính trong ngoặc kép
++ *              có thể chứa đoạn nối chuỗi (`"tab' + cls + '"`) — được giữ NGUYÊN VĂN, không giải mã.
++ * Vùng bỏ qua: <style>, chú thích HTML, <pre>, <code>, <textarea> (nội dung là chữ), <template>, <xmp>.
++ */
++
++export const VOID = new Set(['input', 'br', 'img', 'hr', 'meta', 'link', 'area', 'base', 'col', 'embed', 'source', 'track', 'wbr']);
++
++/* Các vùng của tài liệu: [{start, end, kind}] — kind 'js' (nội dung <script> không có src) | 'skip' */
++export function regions(s) {
++  const out = [];
++  const re = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>|<style\b[\s\S]*?<\/style\s*>|<!--[\s\S]*?-->|<(pre|code|xmp|template)\b[\s\S]*?<\/\3\s*>/gi;
++  let m;
++  while ((m = re.exec(s))) {
++    if (m[0].startsWith('<script')) {
++      const st = m.index + m[0].indexOf('>') + 1;
++      if (!/\bsrc\s*=/.test(m[1]) && !/type\s*=\s*["'](?!text\/javascript|module)/i.test(m[1])) out.push({ start: st, end: st + m[2].length, kind: 'js' });
++      else out.push({ start: m.index, end: m.index + m[0].length, kind: 'skip' });
++    } else out.push({ start: m.index, end: m.index + m[0].length, kind: 'skip' });
++  }
++  return out;
++}
++export function ctxAt(regs, i) {
++  for (const r of regs) if (i >= r.start && i < r.end) return r.kind;
++  return 'html';
++}
++
++/* Thẻ mở: <name attrs> — thuộc tính trong "…" hoặc '…' (giá trị không qua giải mã) */
++export const OPEN_TAG = /<([a-zA-Z][\w-]*)((?:\s+[^\s"'<>\/=]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s"'=<>`]+))?)*)\s*(\/?)>/g;
++
++export function parseAttrs(str) {
++  const out = [];
++  const re = /([^\s"'<>\/=]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
++  let m;
++  while ((m = re.exec(str))) {
++    const q = m[2] !== undefined ? '"' : m[3] !== undefined ? "'" : '';
++    out.push({ name: m[1], value: m[2] ?? m[3] ?? m[4] ?? null, q, src: true });
++  }
++  return out;
++}
++export const getAttr = (attrs, n) => { const a = attrs.find(x => x.name.toLowerCase() === n.toLowerCase()); return a ? (a.value ?? '') : null; };
++export const hasAttr = (attrs, n) => attrs.some(x => x.name.toLowerCase() === n.toLowerCase());
++export function setAttr(attrs, n, v) {
++  const a = attrs.find(x => x.name.toLowerCase() === n.toLowerCase());
++  if (a) { a.value = v; if (v !== null && !a.q) a.q = '"'; } else attrs.push({ name: n, value: v, q: v === null ? '' : '"' });
++}
++export const delAttr = (attrs, ...ns) => { for (const n of ns) { const i = attrs.findIndex(x => x.name.toLowerCase() === n.toLowerCase()); if (i >= 0) attrs.splice(i, 1); } };
++/* `quote` = dấu nháy của chuỗi JS đang chứa markup (null khi là HTML tĩnh). Thuộc tính lấy từ nguồn giữ nguyên dấu nháy
++   (vốn đã hợp lệ ở đó); thuộc tính sinh mới chọn dấu nháy KHÁC dấu của chuỗi JS và thoát dấu đó trong giá trị. */
++export function buildAttrs(attrs, quote) {
++  return attrs.map(a => {
++    if (a.value === null) return ' ' + a.name;
++    if (a.src && a.q) return ' ' + a.name + '=' + a.q + a.value + a.q;
++    let q = a.q || '"';
++    if (quote === "'" && q === "'") q = '"';
++    if (quote === '"' && q === '"') q = "'";
++    const v = isDynamic(a.value) ? a.value : String(a.value).replace(q === '"' ? /"/g : /'/g, q === '"' ? '&quot;' : '&#39;');
++    return ' ' + a.name + '=' + q + v + q;
++  }).join('');
++}
++
++/* Dấu nháy của chuỗi JS bao vị trí i (quét từ đầu khối script). Bỏ qua chú thích; regex literal hiếm khi có nháy — nếu
++   đoán sai, bước kiểm cú pháp sau cùng sẽ phát hiện và bỏ đổi trong JS. */
++export function jsQuoteAt(s, start, i) {
++  let q = null, prev = '';                 // prev = ký tự có nghĩa gần nhất ngoài chuỗi / chú thích (đoán regex literal)
++  for (let k = start; k < i; k++) {
++    const ch = s[k];
++    if (q) {
++      if (ch === '\\') { k++; continue; }
++      if (ch === q) { q = null; prev = 'x'; }
++      else if (q === '`' && ch === '$' && s[k + 1] === '{') { /* biểu thức trong template: coi như vẫn trong chuỗi */ }
++      continue;
++    }
++    if (ch === '/' && s[k + 1] === '/') { const e = s.indexOf('\n', k); if (e < 0 || e >= i) return null; k = e; continue; }
++    if (ch === '/' && s[k + 1] === '*') { const e = s.indexOf('*/', k + 2); if (e < 0 || e + 2 > i) return null; k = e + 1; continue; }
++    if (ch === '/' && (prev === '' || /[(,=:[!&|?{};+\-*%<>~^]/.test(prev) || /\b(return|typeof|case|in|of|new|delete|void|throw)$/.test(s.slice(Math.max(start, k - 8), k).trimEnd()))) {
++      /* regex literal: bỏ qua tới dấu / đóng (tôn trọng \ và [...]) */
++      let cls = false, e = k + 1;
++      for (; e < i && s[e] !== '\n'; e++) { const c = s[e]; if (c === '\\') { e++; continue; } if (c === '[') cls = true; else if (c === ']') cls = false; else if (c === '/' && !cls) break; }
++      if (e >= i) return null;
++      k = e; prev = 'x'; continue;
++    }
++    if (ch === "'" || ch === '"' || ch === '`') { q = ch; continue; }
++    if (!/\s/.test(ch)) prev = ch;
++  }
++  return q;
++}
++
++/* Tìm thẻ đóng khớp với thẻ mở `tag` kết thúc tại `from`. Trả {innerStart, innerEnd, end} hoặc null. */
++export function findClose(s, tag, from, limit) {
++  const re = new RegExp('<(/?)' + tag + '\\b[^>]*>', 'gi');
++  re.lastIndex = from;
++  let depth = 1, m;
++  while ((m = re.exec(s))) {
++    if (limit !== undefined && m.index >= limit) return null;
++    if (m[1]) { if (--depth === 0) return { innerStart: from, innerEnd: m.index, end: m.index + m[0].length }; }
++    else if (!m[0].endsWith('/>')) depth++;
++  }
++  return null;
++}
++
++/* Có đoạn nối chuỗi JS / template literal không */
++export const isDynamic = t => /'\s*\+|\+\s*'|\$\{|"\s*\+|\+\s*"/.test(t);
++
++/* Chữ thuần của một đoạn HTML (bỏ thẻ, <br> → khoảng trắng, gộp khoảng trắng). Không giải mã thực thể. */
++export const textOf = h => h.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
++
++/* Chuỗi đưa vào giá trị thuộc tính "…": giữ thực thể sẵn có, thoát & và " (và ' khi markup nằm trong chuỗi JS nháy đơn) */
++export const attrText = (t, ctx) => {
++  let v = t.replace(/&(?![\w#]+;)/g, '&amp;').replace(/"/g, '&quot;');
++  if (ctx === 'js' && !isDynamic(t)) v = v.replace(/'/g, '&#39;');
++  return v;
++};
++
++/* Lặp mọi thẻ mở `tagRe` (RegExp tên thẻ) trong s; cb(match, ctx) trả {from, to, text} để thay hoặc null. Tự dời vị trí. */
++export function eachTag(s, tagRe, cb) {
++  let regs = regions(s);
++  const re = new RegExp(OPEN_TAG.source, 'g');
++  let m;
++  while ((m = re.exec(s))) {
++    if (!tagRe.test(m[1])) continue;
++    const ctx = ctxAt(regs, m.index);
++    if (ctx === 'skip') continue;
++    if (ctx === 'js' && /\\["']/.test(m[0])) continue;      // thuộc tính thoát kiểu \" — không đụng
++    let quote = null;
++    if (ctx === 'js') {
++      if (eachTag.noJs) continue;
++      const reg = regs.find(r => m.index >= r.start && m.index < r.end);
++      quote = jsQuoteAt(s, reg.start, m.index);
++      if (!quote) continue;                                  // markup không nằm trong chuỗi — không đụng
++    }
++    const r = cb({ name: m[1], attrsRaw: m[2], selfClose: !!m[3], index: m.index, end: m.index + m[0].length, raw: m[0], quote }, ctx, s, regs);
++    if (!r) continue;
++    s = s.slice(0, r.from) + r.text + s.slice(r.to);
++    re.lastIndex = r.from + (r.resume ?? r.text.length);
++    regs = regions(s);
++  }
++  return s;
++}
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/tools/migrate-prototype.mjs b/ai-instructions/tools/migrate-prototype.mjs
+--- a/ai-instructions/tools/migrate-prototype.mjs	2026-10-14 15:41:51.158584192 +0000
++++ b/ai-instructions/tools/migrate-prototype.mjs	2026-10-14 16:48:46.631263052 +0000
+@@ -6,6 +6,8 @@
+  *   thêm --dry   : chỉ in báo cáo, không ghi file
+  *   thêm --force : chạy cả trang không có dấu hiệu kit cũ (mặc định bỏ qua để không đổi nhầm trang mới)
+  *   --inform     : CHỈ đổi khối thông báo tự dựng → <sd-inform> (bước 12), chạy được cả trên trang MỚI (không đụng gì khác)
++ *   --components : CHỈ đổi markup tự dựng / tên cũ → component Core (bước 12 + 14) + nạp legacy-shim.js khi cần — chạy được cả trên trang MỚI
++ *   Kiểm an toàn: <script> nào vốn chạy được mà sau khi đổi hỏng cú pháp → đổi lại, chỉ phần HTML tĩnh (không bao giờ trả trang hỏng JS).
+  *
+  * Node thuần (fs, path) — không cần cài gì. Viết 2026-10-14 (Builder: „các prototypes khác khi áp kit này vào vẫn bị lỗi“).
+  * Bản gốc của mỗi trang được chép sang `<thư mục trang>/_pre-migrate/` trước khi ghi.
+@@ -35,6 +37,9 @@
+  *      hàng công cụ / ô bảng). Form vẫn giữ 20px dưới mỗi ô như Core (Builder 2026-10-14: "Theo Core").
+  *  12. Khối thông báo tự dựng (`div` tô `background:var(--color-X-50)` + viền / icon, `div.alert.alert-X`) → `<sd-inform color="X"
+  *      title="…" description="…">` như Core (chữ thuần; có nút / ô nhập / id bên trong thì chỉ báo).
++ *  14. (lib/components.mjs) Markup tự dựng → component Core: nút, badge, ô nhập / select / textarea / checkbox / radio / switch,
++ *      bảng, modal, drawer, thanh tab, card, info item, header viết tay; tên cũ của kit → tên Core. Bảng chi tiết + cách xử lý
++ *      dòng `!`: ai-instructions/migrate-components.md. JS cũ vẫn chạy nhờ design-system/core/js/legacy-shim.js (tự nạp khi cần).
+  *  13. Đánh dấu `<!-- kit-migrated … -->` để lần sau không chạy lại.
+  *
+  * Việc BÁO, không tự sửa (cần người quyết): header viết tay (Rule 10 — layout.css đã có lưới an toàn), `sd-badge type="tag"`
+@@ -43,9 +48,10 @@
+  * của sd-input…). Mỗi dòng `!` kèm cách sửa theo catalog. */
+ import fs from 'fs';
+ import path from 'path';
++import { convertComponents } from './lib/components.mjs';
+ 
+ const argv = process.argv.slice(2);
+-const DRY = argv.includes('--dry'), FORCE = argv.includes('--force'), ONLY_INFORM = argv.includes('--inform');
++const DRY = argv.includes('--dry'), FORCE = argv.includes('--force'), ONLY_INFORM = argv.includes('--inform'), ONLY_COMP = argv.includes('--components');
+ const inputs = argv.filter(a => !a.startsWith('--'));
+ if (!inputs.length) { console.error('Cách dùng: node migrate-prototype.mjs <file.html | thư mục> … [--dry] [--force]'); process.exit(1); }
+ const SKIP = /^(memory|CHANGELOG)\.html$/i;
+@@ -54,7 +60,7 @@
+ 
+ const KIT_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
+ const MARK = 'kit-migrated';
+-const VERSION = 3;            // v1 = chưa gỡ lớp chết / !important / hideInlineError · v2 = chưa đổi dải thông báo tự dựng → sd-inform
++const VERSION = 4;            // v1 = chưa gỡ lớp chết / !important / hideInlineError · v2 = chưa đổi dải thông báo · v3 = chưa đổi component tự dựng / tên cũ
+ const TODAY = new Date().toISOString().slice(0, 10);
+ 
+ /* 1. 20 lớp khoảng cách của kit cũ (utilities.css cũ: var(--space-N), --space-1 = 4px…) → lớp px của sd-core */
+@@ -414,6 +420,19 @@
+   return parts.join('');
+ }
+ 
++/* 14. (lib/components.mjs) markup tự dựng → component Core; tên cũ của kit → tên Core. legacy-shim.js nối JS cũ. */
++function compSummary(st) {
++  const parts = Object.entries(st.comp || {}).map(([k, v]) => k + ' ' + v);
++  return 'component: ' + (parts.length ? parts.join(', ') : '0') + ' · tên cũ → Core ' + (st.alias || 0);
++}
++function linkShim(s, st) {
++  if (!/data-legacy-(change|modal|toggle|title|onselect|panel|onclose|upgrade)/.test(s) || /legacy-shim\.js/.test(s)) return s;
++  const m = s.match(/<script[^>]+src=["']([^"']*?)sd-components\/sd-components\.js["'][^>]*><\/script>/i);
++  if (!m) { st.notes.push('không thấy <script> sd-components.js — tự thêm design-system/core/js/legacy-shim.js'); return s; }
++  st.shim = true;
++  return s.replace(m[0], m[0] + '\n<script src="' + m[1] + 'core/js/legacy-shim.js"></script>   <!-- ' + MARK + ': nối JS cũ với component Core -->');
++}
++
+ /* Thẻ / thuộc tính / lớp kit cũ có mà kit hiện tại (= catalog 19.0.10) không có. Chỉ BÁO — cách thay tuỳ ngữ cảnh. */
+ const GONE = [
+   [/<sd-button-item\b/, 'sd-button-item / sd-button-item-divider (menu của sd-button, đã gỡ 2026-10-13)', 'dựng menu bằng sd-button + danh sách tự viết, hoặc cột command/menu của sd-table'],
+@@ -444,7 +463,7 @@
+ 
+ /* báo cáo — không tự sửa */
+ function report(s, st) {
+-  const handHeader = /<div[^>]*class=["'][^"']*\bpage-header\b(?![\w-])[^"']*["']/.test(s) && !/data-pattern=["']page-header["']/.test(s);
++  const handHeader = /<div[^>]*class=["'][^"']*\bpage-header\b(?![\w-])[^"']*["']/.test(s) && !/data-pattern=["']page-header["']/.test(s) && !/c-page-header/.test(s);
+   if (handHeader) st.notes.push('header VIẾT TAY (Rule 10) — đã có lưới an toàn trong layout.css; nên đổi sang data-pattern="page-header"');
+   const tag = (s.match(/<sd-badge\b[^>]*\btype=["']tag["']/g) || []).length;
+   if (tag) st.notes.push(tag + ' sd-badge type="tag" — từ 2026-10-10 "tag" là khung viền 1px; muốn viên thuốc thì đổi sang type="round"');
+@@ -463,11 +482,14 @@
+ let total = { files: 0, skipped: 0 };
+ for (const f of files) {
+   const src = fs.readFileSync(f, 'utf8');
+-  const st = { spacing: {}, noop: {}, inform: 0, inline: 0, collide: 0, pagedef: 0, hie: 0, reset: 0, badge: 0, href: 0, precision: 0, slot: 0, label: 0, css: false, notes: [] };
+-  if (ONLY_INFORM) {
+-    const st = { inform: 0, notes: [] };
+-    const s = fixHandBanner(src, st);
+-    console.log((st.inform ? '✓ ' : '· ') + f + ' — dải thông báo → sd-inform ' + st.inform);
++  const st = { spacing: {}, noop: {}, inform: 0, alias: 0, comp: {}, widgets: [], inline: 0, collide: 0, pagedef: 0, hie: 0, reset: 0, badge: 0, href: 0, precision: 0, slot: 0, label: 0, css: false, notes: [] };
++  if (ONLY_INFORM || ONLY_COMP) {
++    const st = { inform: 0, alias: 0, comp: {}, widgets: [], notes: [] };
++    let s = fixHandBanner(src, st);
++    if (ONLY_COMP) { s = convertComponents(s, st, { pc: pageCss(src, f), NEW_UTIL, OLD_KNOWN }); s = linkShim(s, st); s = s.split(KEEP).join(''); }
++    const nC = Object.values(st.comp).reduce((a, b) => a + b, 0) + st.inform + st.alias;
++    console.log((nC ? '✓ ' : '· ') + f + ' — dải thông báo → sd-inform ' + st.inform + (ONLY_COMP ? ' · ' + compSummary(st) : ''));
++    st.inform = nC;
+     for (const n of st.notes) console.log('    ! ' + n);
+     if (!DRY && s !== src) {
+       const bak = path.join(path.dirname(f), '_pre-migrate', 'inform'); fs.mkdirSync(bak, { recursive: true });
+@@ -486,6 +508,7 @@
+   let s = src;
+   const pc = pageCss(src, f);
+   s = fixHandBanner(s, st);
++  s = convertComponents(s, st, { pc, NEW_UTIL, OLD_KNOWN });
+   s = fixCollisions(s, st, pc);
+   s = fixPageUtilDefs(s, st);
+   s = remapSpacing(s, st, pc);
+@@ -498,15 +521,16 @@
+   s = fixButtonLabel(s, st);
+   s = markReset(s, st);
+   s = linkLegacyCss(s, st);
++  s = linkShim(s, st);
+   report(s, st);
+   const stamp = '<!-- ' + MARK + ' v' + VERSION + ' ' + TODAY + ' (ai-instructions/tools/migrate-prototype.mjs) -->';
+   s = UPGRADE ? s.replace(/<!-- kit-migrated (?!:)[^>]*-->/, stamp) : s.replace(/(<head[^>]*>)/i, '$1\n  ' + stamp);
+   const nSp = Object.values(st.spacing).reduce((a, b) => a + b, 0);
+   const nNo = Object.values(st.noop).reduce((a, b) => a + b, 0);
+   console.log((UPGRADE ? '↑ ' : '✓ ') + f + (UPGRADE ? ' (nâng tiếp từ v' + ver + ')' : '') + ' — khoảng cách ' + nSp + ' · lớp chết gỡ ' + nNo + ' · inline !important ' + st.inline + ' · lớp đè CSS trang gỡ ' + st.collide +
+-    ' · luật trang trùng tên lớp ' + st.pagedef + ' · hideInlineError ' + st.hie + ' · dải thông báo → sd-inform ' + st.inform + ' · reset ' + st.reset + ' thẻ · badge status ' + st.badge + ' · sd-button href ' + st.href + ' · cột số ' + st.precision +
++    ' · luật trang trùng tên lớp ' + st.pagedef + ' · hideInlineError ' + st.hie + ' · dải thông báo → sd-inform ' + st.inform + ' · ' + compSummary(st) + ' · reset ' + st.reset + ' thẻ · badge status ' + st.badge + ' · sd-button href ' + st.href + ' · cột số ' + st.precision +
+     ' · slot→sdHeader* ' + st.slot + ' · nhãn sd-button ' + st.label +
+-    (st.css ? ' · nạp legacy-reset.css' : ''));
++    (st.css ? ' · nạp legacy-reset.css' : '') + (st.shim ? ' · nạp legacy-shim.js' : ''));
+   if (nNo) console.log('    · lớp kit cũ KHÔNG có (vô tác dụng) nay sd-core có nghĩa px → đã gỡ để giữ hình: ' + Object.entries(st.noop).map(([k, v]) => k + (v > 1 ? '×' + v : '')).join(' ') +
+     ' — muốn có khoảng thì thêm lại theo px (vd p-12)');
+   for (const n of st.notes) console.log('    ! ' + n);
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/js/legacy-shim.js b/design-system/core/js/legacy-shim.js
+--- a/design-system/core/js/legacy-shim.js	1970-01-01 00:00:00.000000000 +0000
++++ b/design-system/core/js/legacy-shim.js	2026-10-14 16:40:13.365401595 +0000
+@@ -0,0 +1,239 @@
++/* ============================================================
++   LEGACY SHIM — chỉ cho prototype dựng bằng kit CŨ, đã qua ai-instructions/tools/migrate-prototype.mjs
++   ─────────────────────────────────────────────────────────────
++   Công cụ nâng đổi markup tự dựng sang component Core (`<select>` → `<sd-select>`, modal viết tay → `<sd-modal>`…).
++   Hình theo Core; còn JS CŨ của trang vẫn viết theo phần tử HTML thường. File này nối hai bên, KHÔNG đổi hình
++   hay hành vi của component:
++     1. [data-legacy-change]  sd-select / sd-date / sd-datetime / sd-autocomplete / sd-input-number… chỉ phát `sd-change`
++        → phát thêm sự kiện `change` thường (onchange="…" và addEventListener('change') của trang cũ chạy như trước).
++        Ô có ô nhập thật bên trong (đã tự phát `change`) thì không phát lặp.
++     2. `el.disabled = true/false` và `el.focus()` trên sd-* — thuộc tính / hàm của phần tử HTML thường mà vài component
++        kit chỉ có getter → thêm setter / focus() phản chiếu đúng thuộc tính `disabled` của component.
++     3. [data-legacy-modal]  sd-modal / sd-side-drawer từ modal viết tay: JS cũ mở / đóng bằng `style.display`,
++        `classList.add/remove('open'|'show'|'active')`, `hidden` → gọi open() / close() của component. Đóng bằng nút X / nền
++        của component → chạy lại onclick của nút đóng cũ ([data-legacy-onclose]) để trang dọn trạng thái như trước.
++     4. [data-legacy-toggle] sd-switch từ `<button class="toggle">`: lớp `active` ↔ `checked`.
++     5. [data-legacy-title]  thẻ ẩn giữ id tiêu đề modal cũ: JS ghi textContent vào đó → đổi `title` của modal.
++     6. [data-legacy-onselect] / [data-legacy-panel]  sd-tab-group từ thanh tab viết tay: chọn tab → chạy onclick cũ của nút
++        tab; khối thân cũ luôn hiện (ẩn / hiện do sd-tab-group).
++     7. select[data-legacy-upgrade]  <select> có option dựng bằng JS: giữ làm nguồn dữ liệu (ẩn), vẽ <sd-select> Core thay hình.
++   Trang MỚI không nạp file này — dùng thẳng API của component (sd-change, open(), close()).
++   ============================================================ */
++(function () {
++  'use strict';
++  if (window.__sdLegacyShim) return;
++  window.__sdLegacyShim = true;
++
++  /* 1. change */
++  document.addEventListener('change', function (e) {
++    if (!e.isTrusted) return;
++    var host = e.target && e.target.closest && e.target.closest('[data-legacy-change]');
++    if (host && host !== e.target) host.__legacyNativeChange = Date.now();
++  }, true);
++  document.addEventListener('sd-change', function (e) {
++    var host = e.target;
++    if (!host || !host.hasAttribute || !host.hasAttribute('data-legacy-change')) return;
++    setTimeout(function () {
++      if (host.__legacyNativeChange && Date.now() - host.__legacyNativeChange < 300) return;
++      host.dispatchEvent(new Event('change', { bubbles: true }));
++      host.dispatchEvent(new Event('input', { bubbles: true }));
++    }, 0);
++  });
++
++  /* 2. disabled / focus */
++  var TAGS = ['sd-button', 'sd-input', 'sd-input-number', 'sd-select', 'sd-textarea', 'sd-date', 'sd-datetime', 'sd-date-range',
++    'sd-autocomplete', 'sd-checkbox', 'sd-radio', 'sd-switch', 'sd-chip', 'sd-chip-calendar'];
++  function patch(tag) {
++    var C = customElements.get(tag);
++    if (!C || C.__legacyPatched) return;
++    C.__legacyPatched = true;
++    var proto = C.prototype, d = Object.getOwnPropertyDescriptor(proto, 'disabled');
++    if (!d || !d.set) {
++      Object.defineProperty(proto, 'disabled', {
++        configurable: true,
++        get: d && d.get ? d.get : function () { var v = this.getAttribute('disabled'); return v !== null && v !== 'false'; },
++        set: function (v) { if (v) this.setAttribute('disabled', ''); else this.removeAttribute('disabled'); }
++      });
++    }
++    if (!Object.prototype.hasOwnProperty.call(proto, 'focus')) {
++      proto.focus = function () {
++        var f = this.querySelector('input:not([type=hidden]), textarea, button, [tabindex]:not([tabindex="-1"])');
++        if (f) f.focus(); else HTMLElement.prototype.focus.apply(this, arguments);
++      };
++    }
++  }
++  TAGS.forEach(function (t) { if (customElements.get(t)) patch(t); else customElements.whenDefined(t).then(function () { patch(t); }); });
++
++  /* 3. modal / drawer */
++  function wantOpen(el) {
++    if (el.hasAttribute('hidden')) return false;
++    var d = el.style.display;
++    if (d && d !== 'none') return true;
++    if (d === 'none') return false;
++    return /(^|\s)(open|show|active|is-open|visible)(\s|$)/.test(el.className);
++  }
++  function syncModal(el) {
++    if (el.__legacySyncing) return;
++    var open = wantOpen(el), hadSignal = el.hasAttribute('hidden') || !!el.style.display;
++    el.__legacySyncing = true;
++    /* host là display:contents — không để style / hidden của JS cũ đè lên host */
++    if (el.style.display) el.style.removeProperty('display');
++    if (el.hasAttribute('hidden')) el.removeAttribute('hidden');
++    el.__legacySyncing = false;
++    var isOpen = !!el.isOpened;
++    if (open && !isOpen && typeof el.open === 'function') el.open();
++    else if (!open && isOpen && (hadSignal || el.__legacyClassOpen) && typeof el.close === 'function') { el.__legacyClosingByJs = true; el.close(); }
++    el.__legacyClassOpen = /(^|\s)(open|show|active|is-open|visible)(\s|$)/.test(el.className);
++  }
++  function bindModal(el) {
++    if (el.__legacyModal) return;
++    el.__legacyModal = true;
++    new MutationObserver(function () { syncModal(el); }).observe(el, { attributes: true, attributeFilter: ['style', 'class', 'hidden'] });
++    /* đóng bằng X / nền: bỏ lớp mở cũ để lần mở sau của JS cũ lại có tác dụng */
++    el.addEventListener('sd-closed', function () {
++      var cl = ['open', 'show', 'active', 'is-open', 'visible'].filter(function (c) { return el.classList.contains(c); });
++      if (cl.length) { el.__legacySyncing = true; el.classList.remove.apply(el.classList, cl); el.__legacySyncing = false; }
++      el.__legacyClassOpen = false;
++      /* đóng bằng nút X / nền của component → chạy onclick của nút đóng cũ (dọn trạng thái của trang) */
++      var code = el.getAttribute('data-legacy-onclose');
++      if (el.__legacyClosingByJs) { el.__legacyClosingByJs = false; return; }
++      if (code) { try { new Function('event', code).call(el, new Event('click')); } catch (e) { console.error(e); } }
++    });
++    if (el.getAttribute('data-legacy-modal') === 'open') setTimeout(function () { if (typeof el.open === 'function') el.open(); }, 0);
++  }
++
++  /* 4. toggle */
++  function bindToggle(el) {
++    if (el.__legacyToggle) return;
++    el.__legacyToggle = true;
++    var fromClass = function () {
++      var on = el.classList.contains('active');
++      if (!!el.checked !== on) el.checked = on;
++      el.setAttribute('aria-checked', on ? 'true' : 'false');
++    };
++    fromClass();
++    new MutationObserver(fromClass).observe(el, { attributes: true, attributeFilter: ['class'] });
++    if (!el.hasAttribute('onclick')) el.addEventListener('sd-change', function () { if (el.classList.contains('active') !== !!el.checked) el.classList.toggle('active', !!el.checked); });
++  }
++
++  /* 6. tab: sd-tab-group từ thanh tab viết tay — chọn tab thì chạy onclick cũ của nút tab ([data-legacy-onselect]);
++        khối thân cũ ([data-legacy-panel]) luôn hiện — ẩn / hiện do sd-tab-group lo, JS cũ có ẩn bằng style / lớp cũng bỏ qua */
++  function clearPanel(p) {
++    if (p.__legacyClearing) return;
++    p.__legacyClearing = true;
++    if (p.style.display === 'none') p.style.removeProperty('display');
++    if (p.hasAttribute('hidden')) p.removeAttribute('hidden');
++    /* chỉ đụng khi cần — classList.add/remove luôn ghi lại thuộc tính (sinh mutation) dù không đổi gì */
++    if (p.classList.contains('d-none')) p.classList.remove('d-none');
++    if (p.classList.contains('hidden')) p.classList.remove('hidden');
++    if (!p.classList.contains('active')) p.classList.add('active');
++    p.__legacyClearing = false;
++  }
++  function bindPanel(p) {
++    if (p.__legacyPanel) return;
++    p.__legacyPanel = true;
++    clearPanel(p);
++    new MutationObserver(function () { clearPanel(p); }).observe(p, { attributes: true, attributeFilter: ['style', 'class', 'hidden'] });
++  }
++  document.addEventListener('sd-tab-change', function (e) {
++    var g = e.target; if (!g || !g.querySelectorAll) return;
++    var tabs = Array.prototype.filter.call(g.querySelectorAll('sd-tab'), function (t) { return t.closest('sd-tab-group') === g; });
++    var tab = tabs[e.detail && e.detail.index];
++    var code = tab && tab.getAttribute('data-legacy-onselect');
++    if (code) { try { new Function('event', code).call(tab, new Event('click')); } catch (err) { console.error(err); } }
++    tabs.forEach(function (t) { var p = t.querySelector('[data-legacy-panel]'); if (p) clearPanel(p); });
++  });
++
++  /* 7. <select data-legacy-upgrade> — option dựng bằng JS / JS dùng .options: <select> gốc ẩn, vẫn là nguồn dữ liệu;
++        một <sd-select> Core đứng trước nó thay hình. Đổi option / value / disabled / ẩn hiện của select → đồng bộ sang;
++        chọn trên sd-select → ghi value vào select + phát change / input (listener cũ chạy như trước). */
++  var proxies = [];
++  function selItems(sel) {
++    var out = [];
++    Array.prototype.forEach.call(sel.options, function (o) {
++      if (o.value === '' && (o.disabled || o.hidden)) return;
++      var it = { id: o.value, name: o.text }; if (o.disabled) it.disabled = true; out.push(it);
++    });
++    return out;
++  }
++  function selPlaceholder(sel) {
++    var o = Array.prototype.find.call(sel.options, function (x) { return x.value === '' && (x.disabled || x.hidden); });
++    return o ? o.text : '';
++  }
++  function selValue(sel) {
++    return sel.multiple ? Array.prototype.filter.call(sel.options, function (o) { return o.selected; }).map(function (o) { return o.value; }) : sel.value;
++  }
++  function syncProxy(sel, p) {
++    var items = JSON.stringify(selItems(sel));
++    if (p.getAttribute('items') !== items) p.setAttribute('items', items);
++    var ph = selPlaceholder(sel); if (ph && p.getAttribute('placeholder') !== ph) p.setAttribute('placeholder', ph);
++    if (sel.disabled !== p.hasAttribute('disabled')) { if (sel.disabled) p.setAttribute('disabled', ''); else p.removeAttribute('disabled'); }
++    var hide = sel.hidden || sel.style.display === 'none';
++    if ((p.style.display === 'none') !== hide) p.style.display = hide ? 'none' : '';
++    var v = JSON.stringify(selValue(sel));
++    if (p.__legacyLast !== v) { p.__legacyLast = v; p.__legacySetting = true; try { p.value = selValue(sel); } catch (e) { p.setAttribute('value', sel.value); } p.__legacySetting = false; }
++  }
++  function upgradeSelect(sel) {
++    if (sel.__legacyProxy || !sel.isConnected) return;
++    var p = document.createElement('sd-select');
++    sel.__legacyProxy = p;
++    if (sel.multiple) p.setAttribute('multiple', '');
++    if (sel.required) p.setAttribute('required', '');
++    if (sel.id) { var lab = document.querySelector('label[for="' + sel.id + '"]'); if (lab && !lab.querySelector('input,select,textarea')) { p.setAttribute('label', lab.textContent.replace(/\s*\*\s*$/, '').trim()); if (/\*\s*$/.test(lab.textContent)) p.setAttribute('required', ''); lab.remove(); } }
++    if (sel.className) { p.className = sel.className; p.setAttribute('data-legacy-ctl', ''); }
++    if (sel.closest('td, th')) { p.setAttribute('size', 'sm'); p.setAttribute('hideInlineError', ''); }
++    var aria = sel.getAttribute('aria-label'); if (aria) p.setAttribute('aria-label', aria);
++    /* <select> trần rộng theo option dài nhất; sd-select rộng theo vật chứa (co về ~0 trong hàng flex) → giữ bề rộng tối thiểu */
++    if (!sel.style.width && !sel.style.minWidth) { var mx = 4; Array.prototype.forEach.call(sel.options, function (o) { mx = Math.max(mx, o.text.length); }); p.style.minWidth = (mx + 7) + 'ch'; }
++    else p.style.width = sel.style.width;
++    sel.setAttribute('data-legacy-proxied', '');
++    syncProxy(sel, p);
++    sel.parentNode.insertBefore(p, sel);
++    p.addEventListener('sd-change', function (e) {
++      if (p.__legacySetting) return;
++      var v = e.detail ? e.detail.value : p.value;
++      if (sel.multiple) { var vs = [].concat(v || []).map(String); Array.prototype.forEach.call(sel.options, function (o) { o.selected = vs.indexOf(o.value) >= 0; }); }
++      else sel.value = v == null ? '' : String(v);
++      p.__legacyLast = JSON.stringify(selValue(sel));
++      sel.dispatchEvent(new Event('input', { bubbles: true }));
++      sel.dispatchEvent(new Event('change', { bubbles: true }));
++    });
++    new MutationObserver(function () { syncProxy(sel, p); }).observe(sel, { childList: true, subtree: true, attributes: true, characterData: true });
++    proxies.push([sel, p]);
++    if (proxies.length === 1) setInterval(function () {   // JS gán sel.value = … không phát sự kiện nào → dò định kỳ
++      proxies = proxies.filter(function (x) { if (!x[0].isConnected) { if (x[1].isConnected) x[1].remove(); return false; } return true; });
++      proxies.forEach(function (x) { syncProxy(x[0], x[1]); });
++    }, 250);
++  }
++
++  /* 5. tiêu đề modal cũ */
++  function bindTitle(el) {
++    if (el.__legacyTitle) return;
++    el.__legacyTitle = true;
++    var host = el.closest('sd-modal, sd-side-drawer');
++    if (!host) return;
++    new MutationObserver(function () { host.setAttribute('title', el.textContent.trim()); }).observe(el, { childList: true, characterData: true, subtree: true });
++  }
++
++  function scan(root) {
++    if (!root.querySelectorAll) return;
++    root.querySelectorAll('[data-legacy-modal]').forEach(bindModal);
++    root.querySelectorAll('[data-legacy-toggle]').forEach(bindToggle);
++    root.querySelectorAll('[data-legacy-title]').forEach(bindTitle);
++    root.querySelectorAll('[data-legacy-panel]').forEach(bindPanel);
++    root.querySelectorAll('select[data-legacy-upgrade]').forEach(upgradeSelect);
++    if (root.matches) {
++      if (root.matches('[data-legacy-modal]')) bindModal(root);
++      if (root.matches('[data-legacy-toggle]')) bindToggle(root);
++      if (root.matches('[data-legacy-title]')) bindTitle(root);
++      if (root.matches('[data-legacy-panel]')) bindPanel(root);
++      if (root.matches('select[data-legacy-upgrade]')) upgradeSelect(root);
++    }
++  }
++  function start() {
++    scan(document);
++    new MutationObserver(function (ms) { ms.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.nodeType === 1) scan(n); }); }); })
++      .observe(document.documentElement, { childList: true, subtree: true });
++  }
++  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
++})();
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/legacy-reset.css b/design-system/core/styles/legacy-reset.css
+--- a/design-system/core/styles/legacy-reset.css	2026-10-14 15:21:50.557730475 +0000
++++ b/design-system/core/styles/legacy-reset.css	2026-10-14 16:37:36.477307577 +0000
+@@ -57,3 +57,44 @@
+ .d-flex:is([style*="display: none"], [style*="display:none"]) {
+   display: none !important;
+ }
++
++/* Ô nhập tự dựng đã đổi sang sd-* (migrate-prototype bước 14): lớp CSS của trang từng vẽ viền / đệm / nền cho ô trần nay
++   rơi lên host → khung đôi. Bỏ phần HÌNH của các lớp đó trên host; bề rộng / lề / flex của trang vẫn ăn. */
++:is(sd-input, sd-input-number, sd-select, sd-textarea, sd-date, sd-datetime, sd-date-range, sd-autocomplete)[data-legacy-ctl] {
++  border: 0 !important;
++  padding: 0 !important;
++  background: none !important;
++  box-shadow: none !important;
++  outline: 0 !important;
++  height: auto !important;
++  min-height: 0 !important;
++  border-radius: 0 !important;
++  font: inherit;
++}
++/* `<button class="toggle">` (kit cũ) đã thành sd-switch: lớp .toggle của components.css không vẽ lên host nữa */
++sd-switch[data-legacy-toggle] {
++  position: static !important;
++  width: auto !important;
++  height: auto !important;
++  background: none !important;
++  border-radius: 0 !important;
++  border: 0 !important;
++  padding: 0 !important;
++  transform: none !important;
++}
++sd-switch[data-legacy-toggle]::after { content: none !important; }
++
++/* Modal / drawer viết tay đã thành sd-modal / sd-side-drawer: lớp của trang còn giữ trên host (móc JS) không được vẽ lại
++   hình hộp cũ / bật hiện host — hiện / ẩn chỉ do component quyết định. */
++sd-modal[data-legacy-modal] { display: contents !important; }
++sd-side-drawer[data-legacy-modal] {
++  position: fixed !important; inset: 0 !important; width: auto !important; height: auto !important; max-width: none !important;
++  background: none !important; box-shadow: none !important; border: 0 !important; border-radius: 0 !important;
++  padding: 0 !important; margin: 0 !important; transform: none !important; opacity: 1 !important;
++}
++sd-side-drawer[data-legacy-modal]:not(.sd-side-drawer-mounted):not(.sd-side-drawer-active) { display: none !important; }
++sd-side-drawer[data-legacy-modal]:is(.sd-side-drawer-mounted, .sd-side-drawer-active) { display: flex !important; }
++
++/* <select data-legacy-upgrade> (option dựng bằng JS): select gốc chỉ còn là nguồn dữ liệu cho JS cũ — legacy-shim.js vẽ
++   <sd-select> Core ngay trước nó. JS cũ có bật style.display của select cũng không hiện lại ô trần. */
++select[data-legacy-proxied] { display: none !important; }
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-14 14:01:22.417853879 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-14 16:29:16.275737321 +0000
+@@ -4579,6 +4579,10 @@
+ :where(sd-modal) button{border-radius:0;font-family:inherit}
+ sd-modal{--mat-icon-button-state-layer-size:36px;--mat-icon-button-icon-size:24px;--mat-icon-button-container-shape:50%;--mat-icon-button-icon-color:inherit;--mat-icon-button-touch-target-display:none;--mat-icon-button-state-layer-color:rgba(0,0,0,.87);--mat-icon-button-hover-state-layer-opacity:.04;--mat-dialog-container-shape:4px;--mat-dialog-container-elevation-shadow:0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14), 0px 9px 46px 8px rgba(0, 0, 0, 0.12);--mat-dialog-container-max-width:80vw;--mat-dialog-container-small-max-width:80vw;--mat-dialog-container-min-width:0;--mat-dialog-container-color:white;--mat-bottom-sheet-container-shape:4px;--mat-bottom-sheet-container-background-color:white;--mat-bottom-sheet-container-text-color:rgba(0, 0, 0, 0.87)}
+ sd-modal .cdk-overlay-container[hidden]{display:none}
++/* 2026-10-14: overlay của sd-modal dùng --z-max (100) → ô dính (sticky) của sd-table (z 100–103) nổi TRÊN nền mờ lẫn hộp.
++   CDK đặt overlay ở 1000, trên mọi lớp của trang. Kit: 1250 — trên khay sd-side-drawer (1200, hộp thường mở từ khay),
++   dưới overlay dùng chung ở <body> (1300: menu / bảng chọn mở trong hộp). */
++sd-modal > .cdk-overlay-container, sd-modal .cdk-overlay-container { z-index: 1250; }
+ sd-modal .cdk-overlay-backdrop{position:absolute;top:0;bottom:0;left:0;right:0;pointer-events:auto;-webkit-tap-highlight-color:rgba(0,0,0,0);opacity:0;touch-action:manipulation;z-index:1000;transition:opacity 400ms cubic-bezier(0.25, 0.8, 0.25, 1)}
+ sd-modal .cdk-overlay-backdrop-showing{opacity:1}
+ sd-modal .cdk-overlay-dark-backdrop{background:rgba(0,0,0,.32)}
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/chi-tiet-workitem.html b/prototypes/cam-nang-phan-quyen/chi-tiet-workitem.html
+--- a/prototypes/cam-nang-phan-quyen/chi-tiet-workitem.html	2026-10-14 14:01:22.414005681 +0000
++++ b/prototypes/cam-nang-phan-quyen/chi-tiet-workitem.html	2026-10-14 16:27:37.928732186 +0000
+@@ -29,8 +29,7 @@
+     html.embedded-mode .app-shell { display:block; min-height:100vh; }
+     html.embedded-mode .main-area { margin-left:0 !important; width:100% !important; min-height:100vh; }
+     html.embedded-mode .content-zone { padding:12px !important; overflow:auto !important; scrollbar-gutter:stable both-edges; }
+-    html.embedded-mode .content-zone > sd-section,
+-    html.embedded-mode .content-zone > .snapshot-backdrop { min-width:760px; width:100%; box-sizing:border-box; }
++    html.embedded-mode .content-zone > sd-section { min-width:760px; width:100%; box-sizing:border-box; }
+ 
+     .role-chip { display:inline-flex; align-items:center; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+     .role-chip.proposer { background:var(--color-info-100); color:var(--color-info-700); }
+@@ -81,11 +80,6 @@
+     .resolve-line.missing { color:var(--text-tertiary); }
+     .runtime-table-note { color:var(--color-info-700); display:block; font-size:11px; font-weight:600; line-height:1.35; margin:3px 0 0 10px; }
+     .version-action { margin-left:auto; align-self:center; }
+-    .snapshot-backdrop { position:fixed; inset:0; background:rgba(15,23,42,.35); display:none; align-items:center; justify-content:center; padding:24px; z-index:1000; }
+-    .snapshot-backdrop.open { display:flex; }
+-    .snapshot-dialog { width:min(1120px,100%); max-height:90vh; background:var(--surface-primary); border-radius:8px; border:1px solid var(--border-secondary); box-shadow:0 18px 44px rgba(15,23,42,.22); overflow:hidden; display:flex; flex-direction:column; }
+-    .snapshot-header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 16px; border-bottom:1px solid var(--border-secondary); }
+-    .snapshot-title { font-size:15px; font-weight:600; color:var(--text-primary); }
+     .snapshot-body { padding:16px; overflow:auto; }
+     .snapshot-section { border:1px solid var(--border-secondary); border-radius:8px; background:var(--surface-primary); margin-bottom:12px; overflow:hidden; }
+     .snapshot-section-title { display:flex; align-items:center; gap:8px; padding:10px 12px; border-bottom:1px solid var(--border-secondary); font-size:13px; font-weight:600; color:var(--text-primary); }
+@@ -242,20 +236,13 @@
+   </div>
+ </div>
+ 
+-<div class="snapshot-backdrop" id="versionSnapshot" aria-hidden="true">
+-  <div class="snapshot-dialog" role="dialog" aria-modal="true" aria-labelledby="snapshotTitle">
+-    <div class="snapshot-header">
+-      <div>
+-        <div class="snapshot-title" id="snapshotTitle">Phiên bản</div>
+-        <div class="version-meta" id="snapshotMeta"></div>
+-      </div>
+-      <sd-button type="link" color="secondary" size="sm" prefixIcon="close" title="" aria-label="Thoát" onclick="closeVersionSnapshot()"></sd-button>
+-    </div>
++<!-- Hộp xem phiên bản = sd-modal (Core #c-modal) — 2026-10-14 thay hộp tự dựng .snapshot-backdrop; tiêu đề + dòng meta chiếu qua [sdHeaderLeft] -->
++<sd-modal id="versionSnapshot" title="Phiên bản" width="1120px" lazyLoadContent="false"><div sdHeaderLeft><div class="T20M" id="snapshotTitle">Phiên bản</div><div class="T14R text-secondary" id="snapshotMeta"></div></div>
++    
+     <div class="snapshot-body">
+       <div id="snapshotBody"></div>
+     </div>
+-  </div>
+-</div>
++  </sd-modal>
+ 
+ <script src="../../design-system/sd-components/sd-components.js"></script>
+ <script src="../../design-system/patterns/page-header.js"></script>
+@@ -734,15 +721,11 @@
+         '<sd-tab label="Thông tin đầu việc"><div class="pt-12">' + data.sections.map(renderSnapshotSection).join('') + '</div></sd-tab>' +
+         '<sd-tab label="Lịch sử thay đổi"><div class="pt-12">' + renderVersionChangeHistory(version) + '</div></sd-tab>' +
+       '</sd-tab-group>';
+-    var modal = document.getElementById('versionSnapshot');
+-    modal.classList.add('open');
+-    modal.setAttribute('aria-hidden', 'false');
++    document.getElementById('versionSnapshot').open();
+   }
+ 
+   function closeVersionSnapshot() {
+-    var modal = document.getElementById('versionSnapshot');
+-    modal.classList.remove('open');
+-    modal.setAttribute('aria-hidden', 'true');
++    document.getElementById('versionSnapshot').close();
+   }
+ 
+   function onVersionKey(event, version) {
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/danh-sach-workitem.html b/prototypes/cam-nang-phan-quyen/danh-sach-workitem.html
+--- a/prototypes/cam-nang-phan-quyen/danh-sach-workitem.html	2026-10-14 14:01:22.414802792 +0000
++++ b/prototypes/cam-nang-phan-quyen/danh-sach-workitem.html	2026-10-14 16:27:37.930324436 +0000
+@@ -113,11 +113,6 @@
+     .tree-context-popup { position:fixed; top:auto; left:auto; right:auto; }
+ 
+     /* ── Clone Dialog ─────────────────────────────────────────── */
+-    .clone-dialog-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; z-index:1000; }
+-    .clone-dialog { background:var(--surface-primary); border-radius:12px; width:520px; max-width:90vw; box-shadow:0 20px 40px rgba(0,0,0,.2); }
+-    .clone-dialog-header { padding:20px 24px 16px; border-bottom:1px solid var(--border-primary); }
+-    .clone-dialog-header h3 { font-size:18px; font-weight:600; margin:0 0 4px; display:flex; align-items:center; gap:8px; }
+-    .clone-dialog-header p { font-size:13px; color:var(--text-secondary); margin:0; }
+     .clone-dialog-body { padding:20px 24px; }
+     .clone-field { display:grid; gap:6px; }
+     .clone-field label { color:var(--text-secondary); font-size:12px; font-weight:600; }
+@@ -135,10 +130,6 @@
+     .badge-active { background:var(--sd-success-light); color:var(--sd-success); }
+     .badge-handbook { background:var(--sd-primary-light); color:var(--sd-primary); padding:2px 6px; border-radius:4px; font-size:10px; font-weight:600; }
+ 
+-    .import-dialog-overlay { position:fixed; inset:0; z-index:1100; display:flex; align-items:center; justify-content:center; background:rgba(33,33,33,.18); }
+-    .import-dialog { width:min(1080px, calc(100vw - 28px)); height:min(720px, calc(100vh - 28px)); background:var(--surface-primary); border-radius:4px; box-shadow:0 24px 60px rgba(0,0,0,.22); display:flex; flex-direction:column; overflow:hidden; }
+-    .import-dialog-header { height:42px; display:flex; align-items:center; justify-content:space-between; padding:0 18px; border-bottom:1px solid var(--border-primary); flex-shrink:0; }
+-    .import-dialog-title { font-size:16px; font-weight:500; color:var(--text-primary); margin:0; }
+     .import-dialog-body { flex:1; overflow:auto; padding:0 18px 84px; background:var(--surface-primary); }
+     .import-hero { display:flex; align-items:flex-start; gap:12px; border:1px solid var(--border-primary); border-radius:5px; background:var(--surface-secondary); padding:10px 12px; margin:0 0 12px; }
+     .import-hero-icon { width:32px; height:32px; border:1px solid var(--sd-primary); border-radius:6px; color:var(--sd-primary); display:flex; align-items:center; justify-content:center; background:var(--surface-primary); flex-shrink:0; }
+@@ -311,12 +302,9 @@
+     </div><!-- /main-area -->
+ 
+     <!-- Clone Dialog -->
+-    <div class="clone-dialog-overlay" id="clone-dialog" style="display:none;">
+-      <div class="clone-dialog">
+-        <div class="clone-dialog-header">
+-          <h3><span class="material-icons-outlined mi-md">content_copy</span>Clone Đầu việc</h3>
+-          <p>Chọn Cẩm nang đích để tạo bản sao từ <strong id="clone-source-code">WI-001</strong></p>
+-        </div>
++    <!-- Hộp Clone = sd-modal (Core #c-modal) — 2026-10-14 thay hộp tự dựng .clone-dialog-overlay -->
++    <sd-modal id="clone-dialog" title="Clone Đầu việc" width="520px" lazyLoadContent="false"><div sdHeaderLeft><div class="T20M">Clone Đầu việc</div><div class="T14R text-secondary">Chọn Cẩm nang đích để tạo bản sao từ <strong id="clone-source-code">WI-001</strong></div></div>
++        
+         <div class="clone-dialog-body">
+           <div class="clone-field">
+             <label class="mb-0" for="clone-target-handbook">Cẩm nang đích <span style="color:var(--sd-error);">*</span></label>
+@@ -330,21 +318,17 @@
+             <div class="clone-help">Chọn một thư mục để bản clone được tạo là đầu việc con trực tiếp dưới thư mục đó; chọn Hạng mục lớn để tạo ở cấp ngoài cùng.</div>
+           </div>
+         </div>
+-        <div class="clone-dialog-footer">
++        
++      <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
+           <sd-button type="link" color="primary" title="Bỏ qua" onclick="closeCloneDialog()"></sd-button>
+           <sd-button type="fill" color="primary" prefixIcon="content_copy" title="Clone" onclick="confirmClone()"></sd-button>
+-        </div>
+-      </div>
+-    </div>
++        </div></sd-modal>
+ 
+     <!-- Nhập đầu việc Dialog -->
+-    <div class="import-dialog-overlay" id="import-dialog" style="display:none;">
+-      <div class="import-dialog" role="dialog" aria-modal="true" aria-labelledby="import-dialog-title">
++    <!-- Hộp Nhập nguồn = sd-modal (Core #c-modal) — 2026-10-14 thay hộp tự dựng .import-dialog-overlay -->
++    <sd-modal id="import-dialog" title="Nhập nguồn" width="1080px" lazyLoadContent="false">
+         <div class="import-dialog-wrap">
+-          <div class="import-dialog-header">
+-            <h3 class="import-dialog-title" id="import-dialog-title">Nhập nguồn</h3>
+-            <sd-button type="link" color="primary" size="sm" prefixIcon="close" title="" aria-label="Đóng" onclick="closeImportDialog()"></sd-button>
+-          </div>
++          
+ 
+           <div class="import-dialog-body">
+             <div class="import-hero">
+@@ -425,14 +409,13 @@
+             </section>
+           </div>
+ 
+-          <div class="import-dialog-footer">
++          
++        </div>
++      <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
+             <sd-button type="fill" color="primary" size="sm" id="import-confirm-btn" prefixIcon="check" title="Xác nhận ghi dữ liệu" disabled></sd-button>
+             <sd-button type="light" color="primary" size="sm" id="import-result-btn" prefixIcon="download" title="Tải kết quả" disabled></sd-button>
+             <sd-button type="light" color="primary" size="sm" id="import-error-btn" prefixIcon="error_outline" title="Tải tệp lỗi" disabled></sd-button>
+-          </div>
+-        </div>
+-      </div>
+-    </div>
++          </div></sd-modal>
+ 
+     </div>
+ 
+@@ -1103,11 +1086,11 @@
+     const importDialog = document.getElementById('import-dialog');
+     function openImportDialog() {
+       if (!importDialog) return;
+-      importDialog.style.display = 'flex';
++      importDialog.open();
+     }
+     function closeImportDialog() {
+       if (!importDialog) return;
+-      importDialog.style.display = 'none';
++      importDialog.close();
+     }
+     function setImportSteps(activeLabel) {
+       document.querySelectorAll('#import-status-steps .import-step').forEach(function(step) {
+@@ -1251,9 +1234,9 @@
+       document.getElementById('clone-source-code').textContent = id;
+       document.getElementById('clone-target-handbook').value = '';
+       renderCloneTargetTree('');
+-      cloneDialog.style.display = 'flex';
++      cloneDialog.open();
+     }
+-    function closeCloneDialog() { cloneDialog.style.display = 'none'; }
++    function closeCloneDialog() { cloneDialog.close(); }
+     function confirmClone() {
+       const handbook = document.getElementById('clone-target-handbook').value;
+       if (!handbook) { alert('Vui lòng chọn Cẩm nang đích'); return; }
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/tra-cuu-cam-nang-v2.html b/prototypes/cam-nang-phan-quyen/tra-cuu-cam-nang-v2.html
+--- a/prototypes/cam-nang-phan-quyen/tra-cuu-cam-nang-v2.html	2026-10-14 14:01:22.413431320 +0000
++++ b/prototypes/cam-nang-phan-quyen/tra-cuu-cam-nang-v2.html	2026-10-14 16:27:37.905852749 +0000
+@@ -108,7 +108,7 @@
+           <sd-section-item label="Danh mục">-</sd-section-item>
+         </sd-section>
+       </div>
+-      <div slot="footer">
++      <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
+         <sd-button type="link" color="primary" title="Thoát" onclick="closeDetail()"></sd-button>
+       </div>
+     </sd-side-drawer>
+@@ -117,7 +117,7 @@
+          (pham vi + nguoi + can cu). Drawer la khung add gon cua DS nen dung sd-side-drawer. -->
+     <sd-side-drawer id="delegation-request-drawer" title="Thêm người được ủy quyền" width="880px">
+       <div class="p-16" id="delegation-request-body"></div>
+-      <div slot="footer" class="delegation-request-footer">
++      <div sdFooter class="delegation-request-footer d-flex align-items-center justify-content-end gap-8">
+         <p class="delegation-request-note">Sau khi gửi, yêu cầu ở trạng thái Chờ xác nhận - quyền chỉ có hiệu lực khi người được ủy quyền xác nhận.</p>
+         <div class="delegation-request-actions">
+           <sd-button type="link" color="primary" title="Thoát" onclick="closeDelegationRequestModal()"></sd-button>
+@@ -163,7 +163,7 @@
+           <div class="actor-picker-empty" id="actor-picker-empty" hidden></div>
+         </sd-section>
+       </div>
+-      <div slot="footer" class="actor-picker-footer">
++      <div sdFooter class="actor-picker-footer d-flex align-items-center justify-content-end gap-8">
+         <div class="actor-picker-actions">
+           <sd-button type="link" color="primary" title="Thoát" onclick="closeActorPicker()"></sd-button>
+           <sd-button type="fill" color="primary" id="actor-picker-confirm-button" title="Thêm (0) người" disabled onclick="confirmActorSelection()"></sd-button>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/uy-quyen-noi-bo.html b/prototypes/cam-nang-phan-quyen/uy-quyen-noi-bo.html
+--- a/prototypes/cam-nang-phan-quyen/uy-quyen-noi-bo.html	2026-10-14 15:41:51.160546430 +0000
++++ b/prototypes/cam-nang-phan-quyen/uy-quyen-noi-bo.html	2026-10-14 16:27:37.906432841 +0000
+@@ -863,7 +863,7 @@
+       </section>
+     </div>
+ 
+-    <div slot="footer">
++    <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
+       <div class="drawer-footer-actions">
+         <sd-button type="link" color="primary" title="Bỏ qua" onclick="document.getElementById('create-delegation-drawer').close()"></sd-button>
+         <sd-button type="fill" color="primary" prefixIcon="check" title="Tạo" onclick="markToast('Đã tạo yêu cầu ủy quyền')"></sd-button>
+@@ -954,7 +954,7 @@
+       </section>
+     </div>
+ 
+-    <div slot="footer">
++    <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
+       <div class="drawer-footer-actions">
+         <sd-button type="link" color="primary" title="Bỏ qua" onclick="document.getElementById('edit-delegation-drawer').close()"></sd-button>
+         <sd-button type="fill" color="primary" prefixIcon="save" title="Lưu" onclick="markToast('Đã lưu thay đổi ủy quyền')"></sd-button>
+@@ -964,7 +964,7 @@
+ 
+   <sd-side-drawer id="delegation-detail-drawer" title="Chi tiết ủy quyền" width="760px">
+     <div class="drawer-body" id="delegation-detail-content"></div>
+-    <div slot="footer">
++    <div sdFooter class="d-flex align-items-center justify-content-end gap-8">
+       <div class="drawer-footer-actions" id="delegation-detail-footer">
+         <sd-button type="link" color="primary" title="Thoát" onclick="document.getElementById('delegation-detail-drawer').close()"></sd-button>
+       </div>

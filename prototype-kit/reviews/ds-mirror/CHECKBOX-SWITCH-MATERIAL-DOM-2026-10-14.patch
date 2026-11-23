@@ -1,0 +1,1178 @@
+# CHECKBOX-SWITCH-MATERIAL-DOM 2026-10-14 — sd-checkbox / sd-switch dựng đúng DOM Material của catalog (#c-checkbox mat-checkbox, #c-switch mat-slide-toggle) + CSS chép nguyên checkbox.css / switch.css
+# Quyết định Builder: 'Làm phần này trước: 1. Checkbox và switch, vì dùng ở rất nhiều trang'
+# 7 file: sd-components.js (SdCheckbox, SdSwitch), sd-tokens.css, preview switch.html, sd-interactive.md, CHANGELOG, known-gaps, lessons
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/CHECKBOX-SWITCH-MATERIAL-DOM-2026-10-14.patch
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-14 08:20:20.740997863 +0000
++++ b/CHANGELOG.md	2026-10-14 08:43:28.089134244 +0000
+@@ -8,6 +8,28 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `sd-checkbox` và `sd-switch` dựng đúng DOM Material của catalog (Builder 2026-10-14: *„Checkbox và switch, vì dùng ở rất nhiều trang“*)
++
++- **`sd-checkbox`**: trước là `label.c-checkbox-wrap > span.c-checkbox-hit > input.c-checkbox-input…` tự dựng. Nay đúng
++  `mat-checkbox.mat-mdc-checkbox[.mdc-checkbox--disabled.mat-mdc-checkbox-disabled][.mat-mdc-checkbox-checked].mat-accent >
++  div.mdc-form-field.mat-internal-form-field > div.mdc-checkbox (touch-target · input.mdc-checkbox__native-control ·
++  __ripple · __background + svg checkmark + mixedmark · mat-mdc-checkbox-ripple) + label.mdc-label[for]`, lỗi inline là
++  `mat-error.mat-mdc-form-field-error.mat-mdc-form-field-bottom-align`. Chế độ xem vẽ thẳng hai div `T14R text-black400` +
++  `T14M` như template thư viện (trước đi qua `<sd-view>`).
++- **`sd-switch`**: gỡ lớp bọc `span.c-switch-wrap`, dùng đúng thẻ `mat-slide-toggle` + `div.mdc-form-field`, nút có đủ
++  touch-target / `mdc-elevation-overlay` / `mat-mdc-slide-toggle-ripple`, `id` / `aria-labelledby` / `label[for]`. Bấm nhãn → một
++  sự kiện duy nhất (`label[for]` chuyển cú bấm sang nút). Đổi trạng thái tại chỗ, không vẽ lại → giữ focus.
++- **CSS**: chép nguyên `css/components/checkbox.css` (67 luật) và `switch.css` (109 luật) của catalog, đổi scope giữ tương quan độ
++  ưu tiên (`reviews/ds-mirror/cbsw/gencss.py`) — thay hai khối tự dựng trong `sd-tokens.css`. `sd-tree` đổi luật màu indigo sang
++  `--sd-c`.
++- **API giữ nguyên**: `label` · `color` / `sd-c-*` · `checked` / `model` · `disabled` · `viewed` · `inlineError` (hiện sau khi chạm) ·
++  `autoId` (`data-autoid` nay nằm trên `mat-checkbox` / `mat-slide-toggle` như thư viện) · `name` · `value` · `required` ·
++  `sd-change`. Gỡ `data-disabled` / `data-empty` / `data-value` / `data-required` — catalog không có (known-gaps).
++- **Kiểm**: đối chiếu tự động 13/13 mẫu `#c-checkbox` + 13/13 `#c-switch` khớp cấu trúc và computed style; ảnh chụp 96 trang
++  trước / sau: chỉ 3 trang preview khác (dòng lỗi checkbox nay trùng catalog từng px), mọi prototype giống hệt; 0 lỗi JS; kịch
++  bản tương tác prototype chạy lại đủ. Trang preview `switch.html`: mẫu "Bắt buộc" đặt trong ô flex như catalog.
++  Bản vá: `reviews/ds-mirror/CHECKBOX-SWITCH-MATERIAL-DOM-2026-10-14.patch`.
++
+ ### Added — báo cáo đối chiếu tổng kit ↔ catalog (Builder 2026-10-14: *„vòng đối chiếu tổng kit ↔ catalog“*)
+ 
+ - `reviews/ds-mirror/DOI-CHIEU-TONG-2026-10-14.md` + công cụ `reviews/ds-mirror/audit-tong/` (`extract.mjs`, `compare.py`): so tự động
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-14 08:20:20.742304360 +0000
++++ b/_memory/known-gaps.md	2026-10-14 08:43:28.080509409 +0000
+@@ -21,7 +21,7 @@
+ | 2026-10-11 | Ô nhập — viền khi hover / focus / lỗi | Catalog ghim màu viền ô nhập ở **mọi trạng thái** bằng `!important` (`.mat-mdc-notch-piece.mdc-notched-outline__leading{border-color:var(--sd-black200)!important}`), nên hover không đổi màu, focus chỉ **dày lên 2px** chứ không chuyển nâu, và **ô lỗi vẫn giữ viền xám** — chỉ `hideInlineError` mới cho viền đỏ. Kit đã làm theo. **Builder nên xem lại:** bản cũ của kit (hover xám đậm, focus nâu + quầng, lỗi viền đỏ) dễ thấy hơn nhiều khi điền form dài | Đã mirror đúng catalog theo yêu cầu "mọi thứ giống catalog". Từ 2026-10-13 mọi `sd-*` dùng DOM Material: luật nằm ở các khối `catalog #c-…` (`.mat-mdc-notch-piece… {border-color:var(--sd-black200)!important}`) trong `sd-tokens.css` — muốn trả lại thì sửa ở đó. Ba rule `.sd-form-field:hover` / `:focus-within` / `.sd-error` nay chỉ còn áp cho markup viết tay |
+ | 2026-10-11 | **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]** `sd-stepper` — nhãn bước đang làm | Catalog **có** rule tô nhãn bước đang làm màu brand + 600, nhưng rule `.mat-step-label-active` đứng trước lại nhiều class hơn nên luôn thắng → nhãn bước đang làm KHÔNG khác các bước khác. Kit chép lại đúng tương quan điểm đó. **Builder nên xem lại:** bước đang làm giờ chỉ phân biệt bằng vòng tròn (số, nền đặc), nhãn thì giống hệt bước khác | Đây là hành vi THẬT của catalog (nhiều khả năng là lỗi thứ tự rule của thư viện). Muốn trả lại: nâng điểm rule `sd-stepper .sd-stepper__label--selected` |
+ | 2026-10-14 | Kit có, `.d.ts` 19.0.10 không có (phát hiện khi sinh `html-to-angular-api.md`) | `sd-select showSelectAll` / `hideReadError` · `sd-input-number clearable` · `sd-radio helperText` · `sd-date-range inlineError` · `autoId` trên `sd-label` / `sd-view` / `sd-history` / `sd-import-excel` / `sd-form-builder` / `sd-document-builder` / `sd-header-footer-builder` · `sd-table addable` / `filterRequired` / cột number `option.precision`. Ngược lại `.d.ts` CÓ mà kit đã gỡ theo bảng API catalog: `sd-tab-group disableRipple` / `autoId`; `sd-side-drawer` 19.0.10 chỉ có `[sdFooter]` (không `sdFooterLeft/Right`) | Rule 18 đo theo **bảng API catalog**, còn `.d.ts` là mã thật — hai nguồn lệch nhau. Chờ Builder chọn nguồn khi rà Rule 18. Bảng dịch đã ghi "Kit-only — bỏ khi dịch" |
+-| 2026-10-14 | **Đối chiếu tổng kit ↔ catalog** — `reviews/ds-mirror/DOI-CHIEU-TONG-2026-10-14.md` | Khớp hẳn: button, badge, avatar, radio, anchor, history, org-chart, preview-image, inform, tooltip, tab-group, kpi-card, filter-scorecard. **Lệch cấu trúc thật:** `sd-checkbox` / `sd-switch` (tự dựng, không phải `mat-checkbox` / `mat-slide-toggle`), `sd-tree` (ô chọn / nút lệnh / spinner), khối popup ẩn trong thẻ của select / autocomplete / date / date-range / datetime / chip-calendar, `sd-upload-file` thiếu `<preview>`, `sd-chip` viewed, `sd-query-builder`. Lệch nhỏ: `sd-label` cao 22 thay 20px, dòng lỗi form-generic, lớp `<table>` của sd-table. Chưa so được: modal / drawer / confirm (overlay), stepper, splitter, chart, import-excel | Builder mới yêu cầu đối chiếu — chờ chọn thứ tự sửa (đề xuất ở cuối báo cáo) |
++| 2026-10-14 | **Đối chiếu tổng kit ↔ catalog** — `reviews/ds-mirror/DOI-CHIEU-TONG-2026-10-14.md` | Khớp hẳn: button, badge, avatar, radio, anchor, history, org-chart, preview-image, inform, tooltip, tab-group, kpi-card, filter-scorecard. **Lệch cấu trúc thật:** ~~`sd-checkbox` / `sd-switch`~~ (**ĐÃ SỬA 2026-10-14** — DOM Material, 13/13 + 13/13 khớp), `sd-tree` (ô chọn / nút lệnh / spinner), khối popup ẩn trong thẻ của select / autocomplete / date / date-range / datetime / chip-calendar, `sd-upload-file` thiếu `<preview>`, `sd-chip` viewed, `sd-query-builder`. Lệch nhỏ: `sd-label` cao 22 thay 20px, dòng lỗi form-generic, lớp `<table>` của sd-table. Chưa so được: modal / drawer / confirm (overlay), stepper, splitter, chart, import-excel | Builder mới yêu cầu đối chiếu — chờ chọn thứ tự sửa (đề xuất ở cuối báo cáo) |
+ | 2026-10-14 | `sd-tab-group` — sau khi đổi sang DOM Material | Còn khác catalog: (1) thẻ `<sd-tab>` vẫn nằm trong `.mat-mdc-tab-body-content` (display: contents) — HTML không có ng-template, JS trang tìm / gỡ `sd-tab`; (2) thân tab chưa chọn ẩn hẳn nội dung (Angular lazy — thân rỗng; bản chụp tĩnh của catalog có nội dung nhưng `visibility:hidden`); (3) không có ripple / hiệu ứng trượt gạch chân; (4) kit thêm viền `:focus-visible` (Rule 9). Catalog vẽ `pills` / `segmented` vẫn có lớp `mat-mdc-tab-group-stretch-tabs` dù mẫu khai `[stretchTabs]="false"` — kit theo mã thư viện (`[mat-stretch-tabs]="stretchTabs()"` → false thì gỡ lớp); hình không đổi vì theme ép `flex-grow:0` | (1)(2) bắt buộc để JS các trang chạy; (3) catalog tĩnh cũng không có |
+ | 2026-10-14 | ~~`page-header` — tab trang~~ **ĐÃ SỬA 2026-10-14** (nay `sd-tab-group`, cầu tương thích `phBindPageTabs` giữ lớp móc `.tab`) | ~~`data-page-tabs` vẫn là `.page-tab-zone .tabs button.tab` của kit, không phải `sd-tab-group` như portal (chỉ dời xuống dưới khung header) | Bản đóng băng `tra-cuu-cam-nang.html` (không được sửa), `tra-cuu-cam-nang-v2.html` và ~45 trang preview gắn JS thẳng vào DOM này — đổi sang `sd-tab-group` là phải viết lại JS các trang đó~~ |
+ | 2026-10-14 | ~~`page-header` — `data-site-tabs`~~ **ĐÃ GỠ 2026-10-14** (Builder: *„không hiện trong kit và các prototype“*) | Tab kiểu trình duyệt — Core / portal-template không có. Chỉ trang demo `preview/patterns/page-header.html` dùng | — |
+@@ -1056,11 +1056,14 @@
+ 
+ | Chỗ | Catalog | Kit | Vì sao |
+ |---|---|---|---|
+-| Host | `display:block` | `inline-block` | Demo catalog đặt trong ô flex nên nhìn như nhau; đổi sang block thì các checkbox xếp cạnh nhau trong prototype (`.mp-row-content`…) sẽ xuống dòng |
++| Host | không có luật host (đo ra `block` vì demo nằm trong ô flex) | `inline-block` | Trong ô flex hai bên như nhau; host inline thì `mb-*` đặt trên sd-checkbox mất tác dụng; đổi sang block thì các checkbox xếp cạnh nhau trong prototype (`.mp-row-content`…) sẽ xuống dòng |
+ | Ô "chọn một phần" (indeterminate) | `mat-checkbox` thuần, màu indigo #3f51b5 | không có trên `sd-checkbox` (đã gỡ) | Rule 18. `sd-table` tự dựng ô chọn tất cả. Nếu Builder cần ô tri-state rời thì phải chốt dựng gì |
+-| Dòng lỗi | chữ có khoảng trắng đầu (markup catalog) | không | Lệch 3.5px bề ngang chữ — không thấy được |
++| ~~Dòng lỗi~~ **ĐÃ SỬA 2026-10-14** | `mat-error` có khoảng trắng hai đầu | nay đúng `mat-error` của catalog | Đổi sang DOM Material — đo lại trùng từng nút |
+ | `[form]` | có | không dựng | Cơ chế Reactive Forms |
+ | `sd-change` | `(sdChange)` | `{ checked, value }` | `value` là attribute HTML của ô |
++| DOM (2026-10-14) | `mat-checkbox` Material | **nay đúng `mat-checkbox`** (DOM + 67 luật CSS nguyên văn) — 13/13 mẫu khớp cấu trúc + style | Builder: *„Checkbox và switch, vì dùng ở rất nhiều trang“* |
++| `data-disabled` / `data-empty` / `data-value` | template thư viện CÓ (trên `mat-checkbox`); bản chụp catalog KHÔNG có | **không vẽ** (trước: vẽ trên `input` — sai chỗ) | Theo catalog. `data-autoid` vẫn có (trên `mat-checkbox`, như thư viện) khi khai `autoId`. Builder cần các data-* này cho kiểm thử tự động thì nói — thêm lại đúng chỗ |
++| Ô chọn trong `sd-table` / `sd-tree` | `mat-checkbox` thuần (`c-selection px-8 mat-primary` / `sd-tree__checkbox`) | vẫn là `<sd-checkbox>` bọc ngoài (bên trong nay là `mat-checkbox`) | Thuộc vòng "Tree" và "lệch nhỏ — table"; đổi khi làm hai mục đó |
+ 
+ ## `sd-chip` — rà soát `#c-chip` 2026-10-12
+ 
+@@ -1179,6 +1182,10 @@
+ | `[form]` (FormGroup) | có | không | Cơ chế Angular, không có tương đương trong HTML tĩnh |
+ | `checked` | `[(model)]` | `checked` + thuộc tính JS `el.model` | Lối viết HTML (đã ghi từ trước) |
+ | Ripple / chuyển động tay nắm | catalog ghi "lược bỏ, đổi tức thì" | kit còn transition 75ms của MDC | Catalog chỉ lược trong trang demo; mã MDC gốc có transition — giữ |
++| DOM (2026-10-14) | `mat-slide-toggle` Material | **nay đúng `mat-slide-toggle`** (DOM + 109 luật CSS nguyên văn, gỡ lớp bọc `span.c-switch-wrap`) — 13/13 mẫu khớp | Builder: *„Checkbox và switch …“* |
++| `<sd-label>` trong nhãn | không có thuộc tính | `<sd-label label="…" [required]>` | Web component của kit đọc nhãn từ attribute; hình / DOM bên trong trùng |
++| `data-disabled/empty/value/required` | thư viện có, catalog không chụp | không vẽ (`data-autoid` giữ, trên `mat-slide-toggle`) | Như sd-checkbox |
++| Nhãn rỗng | `<sd-label>` rỗng vẫn nằm trong `label.mdc-label` (đệm trái 4px) | như thư viện | — |
+ 
+ ## Tooltip (`[sdTooltip]`) — rà soát `#c-tooltip` 2026-10-12
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-14 07:59:28.767729272 +0000
++++ b/_memory/lessons.md	2026-10-14 08:43:43.656510335 +0000
+@@ -1437,3 +1437,14 @@
+   "noPadding" là phải cho thân `display:flow-root`, không thì lề dưới rơi ra ngoài thẻ.
+ - **Ô nhập Material chừa 20px vạch lỗi bên dưới** → trong bảng căn giữa, nút / chữ cạnh nó tụt xuống. Dòng có ô nhập
+   thì căn ĐẦU ô.
++
++## Control dạng Material (`mat-checkbox`, `mat-slide-toggle`) — 2026-10-14
++
++- **`label[for]` tự chuyển cú bấm sang control.** Nghe `click` trên vỏ ngoài (cả nhãn lẫn nút) sẽ ra HAI sự kiện khi bấm
++  nhãn — một của nhãn, một của cú bấm được chuyển. Nghe đúng trên `button` / `change` của `input`.
++- **Đổi trạng thái tại chỗ, đừng vẽ lại.** Vẽ lại cả cụm khi đổi `checked` làm mất focus bàn phím (Material giữ focus).
++  Đặt lại `className` của thẻ Material theo đúng thứ tự lớp catalog (`_syncState`) — `classList.toggle` làm lệch thứ tự.
++- **Lớp demo trên host của trang preview** (`cb-cat-touch`) làm bộ so tự động báo "lệch cấu trúc" giả ở nút #0 — kiểm
++  bằng tay mẫu đó (so từng nút bỏ qua host) trước khi kết luận.
++- **Mẫu đặt thẳng trong `sd-section` (không trong ô flex) thì host inline** → chiều cao / display khác catalog dù component
++  đúng. Bọc mẫu preview đúng như `.stage` của catalog (ô flex) rồi mới so.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-interactive.md b/design-system/components/sd-interactive.md
+--- a/design-system/components/sd-interactive.md	2026-10-13 20:23:30.562648261 +0000
++++ b/design-system/components/sd-interactive.md	2026-10-14 08:45:09.288197559 +0000
+@@ -182,25 +182,21 @@
+ | `color` | `primary` \| `secondary` \| `info` \| `success` \| `warning` \| `error` | `primary` |
+ | `checked` | boolean | `false` |
+ | `disabled` | boolean | `false` |
+-| `viewed` | `false` \| `true` \| `inline` | `false` |
++| `viewed` | `false` \| `true` | `false` |
+ | `inlineError` | string | `''` |
+ | `autoId` | string | — |
+ | `name` | string | — |
+ 
+-> **Hình thức:** dựng bám đúng `mat-checkbox` của `@angular/material` 22.1.6 (thư viện mà Core dùng):
+-> ô tích **14/18/22px** theo `size`, viền **2px**, bo **2px**, nền **trong suốt** khi chưa tích,
+-> vùng state layer **32/40/48px** có lớp tròn mờ khi hover/focus, gap tới nhãn **2/4/6px**.
+-> Dấu tích vẽ bằng **SVG đúng path của MDC** (không dùng icon font, nên không phụ thuộc Google Fonts).
+-> Màu thì lấy từ token brand OMEU — portal vốn cho theme lại nên khác màu mặc định của portal là đúng.
++> **Hình thức (2026-10-14):** DOM `mat-checkbox` Material và CSS **nguyên văn catalog `#c-checkbox`** (67 luật) — ô 18px,
++> viền 2px, bo 2px, nền trong suốt khi chưa tích, vùng bấm / state layer 28px (mật độ −3), nhãn cách ô 4px, lỗi inline là
++> `mat-error`. Một cỡ (catalog không có `size`). Không viết CSS đè vào ruột `mat-checkbox` (Rule 0b nhóm A).
+ 
+ Ba điểm dễ hiểu sai, đều đã đối chiếu source thật của `@sdcorejs/angular` v22.2.12:
+ 
+ - **`color` chỉ đổi màu ô ĐÃ TÍCH** (và vòng focus bàn phím) — chưa tích thì mọi màu viền
+   giống hệt nhau. Thư viện chỉ ghi đè nhóm biến `--mdc-checkbox-selected-*`.
+-- **`viewed` là tam trạng thái, không phải boolean.** `true` = khối xem tĩnh đọc ra
+-  **"Có" / "Không"**; `inline` = vẫn tích được như thường; **`disabled` + `inline` → rơi về
+-  xem tĩnh** (không sửa được ô đang khoá). Và vì transform là `booleanAttribute`,
+-  `viewed="false"` nghĩa là KHÔNG viewed chứ không phải "có attribute nên là true".
++- **`viewed`** (boolean, catalog 19.0.10): `true` = hai dòng tĩnh — nhãn `T14R text-black400` + **"Có" / "Không"** `T14M`.
++  `viewed="false"` là KHÔNG viewed (`booleanAttribute`). Giá trị `inline` cũ của kit nay coi như `true`.
+ - **`inlineError` chỉ hiện SAU KHI người dùng chạm vào ô** (`formControl.touched` bên thư
+   viện) — mới tải trang thì chưa thấy gì, giống cách `sd-input` của kit báo lỗi.
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-14 07:59:28.769736745 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-14 08:36:59.931317994 +0000
+@@ -464,282 +464,84 @@
+   text-decoration: underline;
+ }
+ 
+-/* --- sd-checkbox styles --- */
+-/* Rà soát 2026-09-24 — dựng lại BÁM ĐÚNG mat-checkbox thật mà Core UI dùng.
+-   Nguồn số đo: CSS đã biên dịch của `@angular/material@22.1.6` (fesm2022/checkbox.mjs,
+-   đúng version portal-template khai trong package.json) + `checkbox.component.scss`
+-   của `@sdcorejs/angular@22.2.12`. Bản trước dựng theo ghi chú Figma (box 16 /
+-   viền 1.5 / bo 4 / gap 8 / nền trắng / 1 cỡ) nên nhìn KHÁC HẲN Core: ô nhỏ hơn,
+-   viền mảnh và nhạt hơn, bo tròn hơn, và dấu tích vẽ bằng icon font.
+-
+-   Số đo Core (biến theo `size`, mặc định md):
+-     sm  ô 14 · vùng state layer 32 · gap nhãn 2
+-     md  ô 18 · vùng state layer 40 · gap nhãn 4
+-     lg  ô 22 · vùng state layer 48 · gap nhãn 6
+-   Viền 2px, bo 2px, nền TRONG SUỐT khi chưa tích (không phải nền trắng).
+-   Hover khi chưa tích: CHỈ đậm viền lên, KHÔNG đổ nền (bản cũ đổ nền primary-light
+-   — đây là chỗ lệch dễ thấy nhất khi rê chuột).
+-   Hover/focus có thêm lớp state layer hình tròn mờ phía sau ô — đặc trưng Material,
+-   bản cũ không có.
+-   Disabled theo Core: viền/nền chuyển xám 38%, KHÔNG phải làm mờ opacity cả cụm. */
+-/* Rà soát #c-checkbox 2026-10-12: catalog dùng mật độ -3 (`.mdc-checkbox{padding:5px}`)
+-   → vùng bấm / state layer **28px**, ô 18px ở (5,5), nhãn cách 4px, cả cụm cao 28px.
+-   Bản trước theo mật độ mặc định 40px (ô ở 11,11; cả cụm cao 46px). Cỡ sm/lg đã gỡ
+-   (catalog không có `size`). Host giữ inline-block (catalog `display:block` nhưng
+-   demo đặt trong ô flex — đổi sang block sẽ làm các checkbox xếp cạnh nhau trong
+-   prototype bị xuống dòng). */
+-sd-checkbox {
+-  display: inline-block;
+-  vertical-align: middle;
+-  --sd-cb-size: 18px;
+-  --sd-cb-layer: 28px;
+-  --sd-cb-gap: 4px;
+-}
+-
+-sd-checkbox .c-checkbox-wrap {
+-  margin-bottom: 0;  /* reboot sd-core `label{margin-bottom:.5rem}` — catalog: host cao 28px */
+-  /* flex (không inline-flex): nhãn inline-flex trong host inline-block để lại khoảng
+-     chân chữ 6px dưới dòng → host cao 34 thay vì 28 như catalog (2026-10-12) */
+-  display: flex;
+-  width: max-content;
+-  align-items: center;
+-  font-family: var(--sd-font-family);
+-  cursor: pointer;
+-}
+-/* Vùng bấm = state layer của Material (40px ở md), ô tích nằm giữa */
+-sd-checkbox .c-checkbox-hit {
+-  position: relative;
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  flex: 0 0 var(--sd-cb-layer);
+-  width: var(--sd-cb-layer);
+-  height: var(--sd-cb-layer);
+-  box-sizing: border-box;
+-}
+-sd-checkbox .c-checkbox-input {
+-  position: absolute;
+-  top: 0;
+-  left: 0;
+-  /* Explicit 100% width/height — native <input type="checkbox"> is a
+-     replaced element with an intrinsic size, so `inset:0` alone does NOT
+-     reliably stretch it to fill an absolutely-positioned parent in every
+-     browser. Without this it can render at its native ~13px size instead
+-     of the full hit-area, which is otherwise invisible (opacity:0) but is
+-     the root cause class of "shifts on click" bugs in this hidden-input
+-     pattern. */
+-  width: 100%;
+-  height: 100%;
+-  margin: 0;
+-  padding: 0;
+-  border: none;
+-  opacity: 0;
+-  cursor: pointer;
+-  -webkit-appearance: none;
+-  -moz-appearance: none;
+-  appearance: none;
+-  outline: none;
+-  z-index: 1;
+-}
+-
+-/* State layer — vòng tròn mờ hiện khi hover/focus, đúng Material
+-   (opacity hover .08 / focus .12 theo --mat-sys-*-state-layer-opacity) */
+-sd-checkbox .c-checkbox-ripple {
+-  position: absolute;
+-  inset: 0;
+-  border-radius: 50%;
+-  opacity: 0;
+-  pointer-events: none;
+-  background: var(--sd-black500);
+-  transition: opacity .12s ease, background-color .12s ease;
+-}
+-sd-checkbox .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-ripple { opacity: .08; }
+-sd-checkbox .c-checkbox-input:focus-visible ~ .c-checkbox-ripple { opacity: .12; }
+-sd-checkbox .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:checked ~ .c-checkbox-ripple,
+-sd-checkbox .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:indeterminate ~ .c-checkbox-ripple,
+-sd-checkbox .c-checkbox-input:checked:focus-visible ~ .c-checkbox-ripple,
+-sd-checkbox .c-checkbox-input:indeterminate:focus-visible ~ .c-checkbox-ripple {
+-  background: var(--sd-primary);
+-}
+-
+-/* Ô tích */
+-sd-checkbox .c-checkbox-box {
+-  position: absolute;
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  box-sizing: border-box;
+-  width: var(--sd-cb-size);
+-  height: var(--sd-cb-size);
+-  /* catalog: --mdc-checkbox-unselected-icon-color rgba(0,0,0,.54) */
+-  border: 2px solid rgba(0, 0, 0, .54);
+-  border-radius: 2px;
+-  background: transparent;
+-  pointer-events: none;
+-  transition: background-color .09s cubic-bezier(.4, 0, .6, 1),
+-              border-color .09s cubic-bezier(.4, 0, .6, 1);
+-}
+-/* Hover khi CHƯA tích — chỉ đậm viền, giữ nền trong suốt (đúng Core) */
+-sd-checkbox .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:not(:checked):not(:indeterminate) ~ .c-checkbox-box {
+-  border-color: var(--sd-black500);
+-  background: transparent;
+-}
+-/* Đã tích / chọn một phần — đổ nền brand, viền cùng màu */
+-sd-checkbox .c-checkbox-input:checked ~ .c-checkbox-box,
+-sd-checkbox .c-checkbox-input:indeterminate ~ .c-checkbox-box {
+-  border-color: var(--sd-primary);
+-  background: var(--sd-primary);
+-}
+-
+-/* Dấu tích — SVG đúng MDC: nét 3.12px, chạy nét theo stroke-dashoffset */
+-sd-checkbox .c-checkbox-checkmark {
+-  position: absolute;
+-  inset: 0;
+-  width: 100%;
+-  opacity: 0;
+-  color: var(--color-neutral-0);
+-  transition: opacity .18s cubic-bezier(.4, 0, .6, 1);
+-}
+-sd-checkbox .c-checkbox-checkmark-path {
+-  stroke: currentColor;
+-  stroke-width: 3.12px;
+-  stroke-dasharray: 29.7833385;
+-  stroke-dashoffset: 29.7833385;
+-  transition: stroke-dashoffset .18s cubic-bezier(.4, 0, .6, 1);
+-}
+-sd-checkbox .c-checkbox-input:checked ~ .c-checkbox-box .c-checkbox-checkmark { opacity: 1; }
+-sd-checkbox .c-checkbox-input:checked ~ .c-checkbox-box .c-checkbox-checkmark-path { stroke-dashoffset: 0; }
+-sd-checkbox .c-checkbox-input:indeterminate ~ .c-checkbox-box .c-checkbox-checkmark {
+-  opacity: 0;
+-  transform: rotate(45deg);
+-}
+-
+-/* Gạch ngang "chọn một phần" — đúng MDC: thanh 1px scaleX từ 0 lên 1 */
+-sd-checkbox .c-checkbox-mixedmark {
+-  width: 100%;
+-  height: 0;
+-  border: 1px solid var(--color-neutral-0);
+-  opacity: 0;
+-  transform: scaleX(0) rotate(0deg);
+-  transition: opacity .09s cubic-bezier(.4, 0, .6, 1), transform .09s cubic-bezier(.4, 0, .6, 1);
+-}
+-sd-checkbox .c-checkbox-input:checked ~ .c-checkbox-box .c-checkbox-mixedmark {
+-  transform: scaleX(1) rotate(-45deg);
+-}
+-sd-checkbox .c-checkbox-input:indeterminate ~ .c-checkbox-box .c-checkbox-mixedmark {
+-  opacity: 1;
+-  transform: scaleX(1) rotate(0deg);
+-}
+-
+-/* Color — API thật `color` (6 giá trị, mặc định primary). Thư viện chỉ ghi đè nhóm
+-   biến `--mdc-checkbox-selected-*` nên màu CHỈ đổi ở trạng thái đã tích (và lớp
+-   state layer đi kèm), viền lúc chưa tích giữ nguyên ở mọi màu.
+-   2026-10-11: nhận CẢ HAI — attribute `color="x"` (cách kit dùng từ đầu) lẫn lớp
+-   host `.sd-c-x` (cách catalog render input `color`). JS chỉ GẮN LỚP, không ghi
+-   ngược vào attribute, để selector kiểu `sd-checkbox:not([color])` của trang
+-   không bị đổi nghĩa. */
+-sd-checkbox[color="secondary"] .c-checkbox-input:checked ~ .c-checkbox-box,
+-sd-checkbox.sd-c-secondary .c-checkbox-input:checked ~ .c-checkbox-box,
+-sd-checkbox[color="secondary"] .c-checkbox-input:indeterminate ~ .c-checkbox-box,
+-sd-checkbox.sd-c-secondary .c-checkbox-input:indeterminate ~ .c-checkbox-box {
+-  border-color: var(--sd-secondary); background: var(--sd-secondary);
+-}
+-sd-checkbox[color="info"] .c-checkbox-input:checked ~ .c-checkbox-box,
+-sd-checkbox.sd-c-info .c-checkbox-input:checked ~ .c-checkbox-box,
+-sd-checkbox[color="info"] .c-checkbox-input:indeterminate ~ .c-checkbox-box,
+-sd-checkbox.sd-c-info .c-checkbox-input:indeterminate ~ .c-checkbox-box {
+-  border-color: var(--sd-info); background: var(--sd-info);
+-}
+-sd-checkbox[color="success"] .c-checkbox-input:checked ~ .c-checkbox-box,
+-sd-checkbox.sd-c-success .c-checkbox-input:checked ~ .c-checkbox-box,
+-sd-checkbox[color="success"] .c-checkbox-input:indeterminate ~ .c-checkbox-box,
+-sd-checkbox.sd-c-success .c-checkbox-input:indeterminate ~ .c-checkbox-box {
+-  border-color: var(--sd-success); background: var(--sd-success);
+-}
+-sd-checkbox[color="warning"] .c-checkbox-input:checked ~ .c-checkbox-box,
+-sd-checkbox.sd-c-warning .c-checkbox-input:checked ~ .c-checkbox-box,
+-sd-checkbox[color="warning"] .c-checkbox-input:indeterminate ~ .c-checkbox-box,
+-sd-checkbox.sd-c-warning .c-checkbox-input:indeterminate ~ .c-checkbox-box {
+-  border-color: var(--sd-warning); background: var(--sd-warning);
+-}
+-sd-checkbox[color="error"] .c-checkbox-input:checked ~ .c-checkbox-box,
+-sd-checkbox.sd-c-error .c-checkbox-input:checked ~ .c-checkbox-box,
+-sd-checkbox[color="error"] .c-checkbox-input:indeterminate ~ .c-checkbox-box,
+-sd-checkbox.sd-c-error .c-checkbox-input:indeterminate ~ .c-checkbox-box {
+-  border-color: var(--sd-error); background: var(--sd-error);
+-}
+-/* State layer theo màu khi rê chuột / focus ô đã tích. Sửa 2026-10-12: bản trước có
+-   dấu phẩy thừa sau `}` (`{ … },`) làm trình duyệt bỏ GẦN HẾT các luật này — và cả
+-   luật đứng ngay sau khối (dòng lỗi của checkbox) cũng bị nuốt. */
+-sd-checkbox[color="secondary"] .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:checked ~ .c-checkbox-ripple,
+-sd-checkbox.sd-c-secondary .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:checked ~ .c-checkbox-ripple,
+-sd-checkbox[color="secondary"] .c-checkbox-input:checked:focus-visible ~ .c-checkbox-ripple,
+-sd-checkbox.sd-c-secondary .c-checkbox-input:checked:focus-visible ~ .c-checkbox-ripple { background: var(--sd-secondary); }
+-sd-checkbox[color="info"] .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:checked ~ .c-checkbox-ripple,
+-sd-checkbox.sd-c-info .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:checked ~ .c-checkbox-ripple,
+-sd-checkbox[color="info"] .c-checkbox-input:checked:focus-visible ~ .c-checkbox-ripple,
+-sd-checkbox.sd-c-info .c-checkbox-input:checked:focus-visible ~ .c-checkbox-ripple { background: var(--sd-info); }
+-sd-checkbox[color="success"] .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:checked ~ .c-checkbox-ripple,
+-sd-checkbox.sd-c-success .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:checked ~ .c-checkbox-ripple,
+-sd-checkbox[color="success"] .c-checkbox-input:checked:focus-visible ~ .c-checkbox-ripple,
+-sd-checkbox.sd-c-success .c-checkbox-input:checked:focus-visible ~ .c-checkbox-ripple { background: var(--sd-success); }
+-sd-checkbox[color="warning"] .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:checked ~ .c-checkbox-ripple,
+-sd-checkbox.sd-c-warning .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:checked ~ .c-checkbox-ripple,
+-sd-checkbox[color="warning"] .c-checkbox-input:checked:focus-visible ~ .c-checkbox-ripple,
+-sd-checkbox.sd-c-warning .c-checkbox-input:checked:focus-visible ~ .c-checkbox-ripple { background: var(--sd-warning); }
+-sd-checkbox[color="error"] .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:checked ~ .c-checkbox-ripple,
+-sd-checkbox.sd-c-error .c-checkbox-wrap:not(.c-disabled):hover .c-checkbox-input:checked ~ .c-checkbox-ripple,
+-sd-checkbox[color="error"] .c-checkbox-input:checked:focus-visible ~ .c-checkbox-ripple,
+-sd-checkbox.sd-c-error .c-checkbox-input:checked:focus-visible ~ .c-checkbox-ripple { background: var(--sd-error); }
+-
+-/* Lỗi inline — catalog CHỈ có dòng `mat-error` bên dưới (14px/21px #f44336, không
+-   thụt lề, `::before` 16px nâng dòng lên 22px — cùng luật đã mirror cho sd-radio).
+-   Ô tích không đổi viền đỏ. Rà soát 2026-10-12. */
+-sd-checkbox > .sd-error-text {
+-  font-size: 14px;
+-  line-height: 21px;
+-  margin-top: 0;
+-  color: #f44336;
+-}
+-sd-checkbox > .sd-error-text::before {
+-  content: "";
+-  display: inline-block;
+-  height: 16px;
+-  font-size: 12px;
+-  line-height: 16px;
+-}
+-
+-/* Disabled — theo Core: chuyển xám, KHÔNG làm mờ opacity cả cụm (bản cũ opacity .4
+-   làm cả chữ lẫn ô nhạt đi, nhìn khác hẳn Core vốn giữ ô xám đặc và dấu tích rõ) */
+-/* Disabled — override của portal (catalog #c-checkbox): NHÃN GIỮ MÀU, con trỏ thường;
+-   ô chưa tích nền --sd-light + viền --sd-black300; ô đã tích nền đen 38% (Material
+-   `color-mix(on-surface 38%)` → rgba(0,0,0,.33)). Bản trước: nhãn xám, con trỏ cấm,
+-   ô chưa tích trong suốt, ô đã tích #bfbfbf. Rà soát 2026-10-12. */
+-sd-checkbox .c-checkbox-wrap.c-disabled { cursor: default; }
+-sd-checkbox .c-checkbox-wrap.c-disabled .c-checkbox-hit,
+-sd-checkbox .c-checkbox-wrap.c-disabled .c-checkbox-input { cursor: default; }
+-sd-checkbox .c-checkbox-wrap.c-disabled .c-checkbox-box { border-color: var(--sd-black300); background: var(--sd-light); }
+-sd-checkbox .c-checkbox-wrap.c-disabled .c-checkbox-input:checked ~ .c-checkbox-box {
+-  background: color-mix(in srgb, rgba(0, 0, 0, .87) 38%, transparent);
+-  border-color: transparent;
+-}
+-
+-/* Label + helper text — khoảng cách tới nhãn theo --sd-cb-gap (Material dùng
+-   padding-inline-start trên nhãn, không phải gap của flex) */
+-sd-checkbox .c-checkbox-text {
+-  display: flex;
+-  flex-direction: column;
+-  justify-content: center;
+-  padding-inline-start: var(--sd-cb-gap);
+-}
+-/* catalog `.mdc-label`: 14px/20px, rgba(0,0,0,.87), giãn .016rem (body-medium tracking) */
+-sd-checkbox .c-checkbox-label {
+-  font-size: 14px;
+-  font-weight: 400;
+-  line-height: 20px;
+-  letter-spacing: .016rem;
+-  color: rgba(0, 0, 0, .87);
+-}
++/* --- sd-checkbox styles ---
++   ── DOM MATERIAL (2026-10-14, Builder: „Checkbox và switch, vì dùng ở rất nhiều trang“) ──
++   CSS NGUYÊN VĂN catalog `css/components/checkbox.css` (#c-checkbox, 67 luật), sinh bằng
++   reviews/ds-mirror/cbsw/gencss.py: `#c-checkbox X` → `sd-checkbox X`; luật host `#c-checkbox sd-checkbox[_nghost-sd-cb]…`
++   → `sd-checkbox:not(._ng):is(sd-checkbox)…` (giữ chênh lệch độ ưu tiên +1 thuộc tính +1 thẻ như catalog).
++   Thay khối `.c-checkbox-*` tự dựng trước đây (cùng số đo nhưng khác DOM). Token M3 `--mat-sys-body-*` lấy từ
++   `material-tokens.css` + `.sd-scope` của catalog.
++   Kit giữ MỘT luật ngoài catalog: host `display:inline-block` (catalog không có luật host; prototype đặt
++   `mb-*` lên sd-checkbox — host inline sẽ bỏ lề dọc). */
++sd-checkbox { display: inline-block; vertical-align: middle; }
++sd-checkbox{--mat-sys-body-medium-font:Roboto, sans-serif;--mat-sys-body-medium-line-height:1.25rem;--mat-sys-body-medium-size:0.875rem;--mat-sys-body-medium-tracking:0.016rem;--mat-sys-body-medium-weight:400;--mat-sys-body-small-font:Roboto;--mat-sys-body-small-line-height:1rem;--mat-sys-body-small-size:0.75rem;--mat-sys-body-small-tracking:0.025rem;--mat-sys-body-small-weight:400}
++sd-checkbox{--mat-checkbox-disabled-unselected-icon-color:var(--sd-black300);--mat-checkbox-selected-focus-icon-color:#3f51b5;--mat-checkbox-selected-hover-icon-color:#3f51b5;--mat-checkbox-selected-icon-color:#3f51b5;--mat-checkbox-selected-focus-state-layer-color:#3f51b5;--mat-checkbox-selected-hover-state-layer-color:#3f51b5;--mat-checkbox-selected-pressed-state-layer-color:#3f51b5}
++sd-checkbox label{display:inline-block;margin-bottom:.5rem}
++sd-checkbox input{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
++sd-checkbox input{overflow:visible}
++sd-checkbox input[type=checkbox]{box-sizing:border-box;padding:0}
++sd-checkbox svg{overflow:hidden;vertical-align:middle}
++sd-checkbox .T14M{font-size:14px;font-weight:500;line-height:20px}
++sd-checkbox .T14R{font-size:14px;font-weight:400;line-height:20px}
++sd-checkbox .text-black400{color:var(--sd-black400)!important}
++sd-checkbox .mat-ripple{overflow:hidden;position:relative}
++sd-checkbox .mat-ripple:not(:empty){transform:translateZ(0)}
++sd-checkbox .mdc-checkbox__native-control:disabled:not(:checked):not(:indeterminate)~.mdc-checkbox__background{background-color:var(--sd-light)}
++sd-checkbox .mat-focus-indicator{position:relative}
++sd-checkbox .mat-focus-indicator::before{top:0;left:0;right:0;bottom:0;position:absolute;box-sizing:border-box;pointer-events:none;display:var(--mat-focus-indicator-display, none);border-width:var(--mat-focus-indicator-border-width, 3px);border-style:var(--mat-focus-indicator-border-style, solid);border-color:var(--mat-focus-indicator-border-color, transparent);border-radius:var(--mat-focus-indicator-border-radius, 4px)}
++sd-checkbox .mat-focus-indicator:focus::before{content:""}
++sd-checkbox .mat-internal-form-field{display:inline-flex;align-items:center;vertical-align:middle}
++sd-checkbox .mat-internal-form-field>label{margin-left:0;margin-right:auto;padding-left:4px;padding-right:0;order:0}
++sd-checkbox .mdc-checkbox{display:inline-block;position:relative;flex:0 0 18px;box-sizing:content-box;width:18px;height:18px;line-height:0;white-space:nowrap;cursor:pointer;vertical-align:bottom;padding:calc((28px - 18px)/2);margin:calc((28px - 28px)/2)}
++sd-checkbox .mdc-checkbox:hover>.mdc-checkbox__ripple{opacity:.04;background-color:rgba(0,0,0,.87)}
++sd-checkbox .mdc-checkbox .mdc-checkbox__native-control:focus+.mdc-checkbox__ripple{opacity:.12;background-color:rgba(0,0,0,.87)}
++sd-checkbox .mdc-checkbox:active>.mdc-checkbox__native-control+.mdc-checkbox__ripple{opacity:.12;background-color:rgba(0,0,0,.87)}
++sd-checkbox .mdc-checkbox:hover .mdc-checkbox__native-control:checked+.mdc-checkbox__ripple{opacity:.04;background-color:var(--mat-checkbox-selected-hover-state-layer-color)}
++sd-checkbox .mdc-checkbox .mdc-checkbox__native-control:focus:checked+.mdc-checkbox__ripple{opacity:.12;background-color:var(--mat-checkbox-selected-focus-state-layer-color)}
++sd-checkbox .mdc-checkbox:active>.mdc-checkbox__native-control:checked+.mdc-checkbox__ripple{opacity:.12;background-color:var(--mat-checkbox-selected-pressed-state-layer-color)}
++sd-checkbox .mdc-checkbox .mdc-checkbox__native-control{position:absolute;margin:0;padding:0;opacity:0;cursor:inherit;z-index:1;width:28px;height:28px;top:calc((28px - 28px)/2);right:calc((28px - 28px)/2);left:calc((28px - 28px)/2)}
++sd-checkbox .mdc-checkbox--disabled{cursor:default;pointer-events:none}
++sd-checkbox .mdc-checkbox__background{display:inline-flex;position:absolute;align-items:center;justify-content:center;box-sizing:border-box;width:18px;height:18px;border:2px solid currentColor;border-radius:2px;background-color:rgba(0,0,0,0);pointer-events:none;will-change:background-color,border-color;transition:background-color 90ms cubic-bezier(0.4, 0, 0.6, 1),border-color 90ms cubic-bezier(0.4, 0, 0.6, 1);-webkit-print-color-adjust:exact;color-adjust:exact;border-color:rgba(0,0,0,.54);top:calc((28px - 18px)/2);left:calc((28px - 18px)/2)}
++sd-checkbox .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background,sd-checkbox .mdc-checkbox__native-control:enabled:indeterminate~.mdc-checkbox__background{border-color:var(--mat-checkbox-selected-icon-color);background-color:var(--mat-checkbox-selected-icon-color)}
++sd-checkbox .mdc-checkbox--disabled .mdc-checkbox__background{border-color:var(--mat-checkbox-disabled-unselected-icon-color)}
++sd-checkbox .mdc-checkbox__native-control:disabled:checked~.mdc-checkbox__background,sd-checkbox .mdc-checkbox__native-control:disabled:indeterminate~.mdc-checkbox__background{background-color:color-mix(in srgb, rgba(0,0,0,.87) 38%, transparent);border-color:rgba(0,0,0,0)}
++sd-checkbox .mdc-checkbox:hover>.mdc-checkbox__native-control:not(:checked)~.mdc-checkbox__background,sd-checkbox .mdc-checkbox:hover>.mdc-checkbox__native-control:not(:indeterminate)~.mdc-checkbox__background{border-color:rgba(0,0,0,.87);background-color:rgba(0,0,0,0)}
++sd-checkbox .mdc-checkbox:hover>.mdc-checkbox__native-control:checked~.mdc-checkbox__background,sd-checkbox .mdc-checkbox:hover>.mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background{border-color:var(--mat-checkbox-selected-hover-icon-color);background-color:var(--mat-checkbox-selected-hover-icon-color)}
++sd-checkbox .mdc-checkbox__native-control:focus:focus:not(:checked)~.mdc-checkbox__background,sd-checkbox .mdc-checkbox__native-control:focus:focus:not(:indeterminate)~.mdc-checkbox__background{border-color:rgba(0,0,0,.87)}
++sd-checkbox .mdc-checkbox__native-control:focus:focus:checked~.mdc-checkbox__background,sd-checkbox .mdc-checkbox__native-control:focus:focus:indeterminate~.mdc-checkbox__background{border-color:var(--mat-checkbox-selected-focus-icon-color);background-color:var(--mat-checkbox-selected-focus-icon-color)}
++sd-checkbox .mdc-checkbox__checkmark{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;opacity:0;transition:opacity 180ms cubic-bezier(0.4, 0, 0.6, 1);color:#fff}
++sd-checkbox .mdc-checkbox--disabled .mdc-checkbox__checkmark{color:#fff}
++sd-checkbox .mdc-checkbox__checkmark-path{transition:stroke-dashoffset 180ms cubic-bezier(0.4, 0, 0.6, 1);stroke:currentColor;stroke-width:3.12px;stroke-dashoffset:29.7833385;stroke-dasharray:29.7833385}
++sd-checkbox .mdc-checkbox__mixedmark{width:100%;height:0;transform:scaleX(0) rotate(0deg);border-width:1px;border-style:solid;opacity:0;transition:opacity 90ms cubic-bezier(0.4, 0, 0.6, 1),transform 90ms cubic-bezier(0.4, 0, 0.6, 1);border-color:#fff}
++sd-checkbox .mdc-checkbox--disabled .mdc-checkbox__mixedmark{border-color:#fff}
++sd-checkbox .mdc-checkbox__native-control:checked~.mdc-checkbox__background,sd-checkbox .mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background{transition:border-color 90ms cubic-bezier(0, 0, 0.2, 1),background-color 90ms cubic-bezier(0, 0, 0.2, 1)}
++sd-checkbox .mdc-checkbox__native-control:checked~.mdc-checkbox__background>.mdc-checkbox__checkmark>.mdc-checkbox__checkmark-path,sd-checkbox .mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background>.mdc-checkbox__checkmark>.mdc-checkbox__checkmark-path{stroke-dashoffset:0}
++sd-checkbox .mdc-checkbox__native-control:checked~.mdc-checkbox__background>.mdc-checkbox__checkmark{transition:opacity 180ms cubic-bezier(0, 0, 0.2, 1),transform 180ms cubic-bezier(0, 0, 0.2, 1);opacity:1}
++sd-checkbox .mdc-checkbox__native-control:checked~.mdc-checkbox__background>.mdc-checkbox__mixedmark{transform:scaleX(1) rotate(-45deg)}
++sd-checkbox .mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background>.mdc-checkbox__checkmark{transform:rotate(45deg);opacity:0;transition:opacity 90ms cubic-bezier(0.4, 0, 0.6, 1),transform 90ms cubic-bezier(0.4, 0, 0.6, 1)}
++sd-checkbox .mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background>.mdc-checkbox__mixedmark{transform:scaleX(1) rotate(0deg);opacity:1}
++sd-checkbox .mat-mdc-checkbox{display:inline-block;position:relative;-webkit-tap-highlight-color:rgba(0,0,0,0)}
++sd-checkbox .mat-mdc-checkbox label{cursor:pointer}
++sd-checkbox .mat-mdc-checkbox .mat-internal-form-field{color:rgba(0,0,0,.87);font-family:var(--mat-checkbox-label-text-font, var(--mat-sys-body-medium-font));line-height:var(--mat-checkbox-label-text-line-height, var(--mat-sys-body-medium-line-height));font-size:var(--mat-checkbox-label-text-size, var(--mat-sys-body-medium-size));letter-spacing:var(--mat-checkbox-label-text-tracking, var(--mat-sys-body-medium-tracking));font-weight:var(--mat-checkbox-label-text-weight, var(--mat-sys-body-medium-weight))}
++sd-checkbox .mat-mdc-checkbox.mat-mdc-checkbox-disabled label{cursor:default;color:rgba(0,0,0,.87)}
++sd-checkbox .mat-mdc-checkbox label:empty{display:none}
++sd-checkbox .mat-mdc-checkbox .mdc-checkbox__ripple{opacity:0}
++sd-checkbox .mat-mdc-checkbox .mat-mdc-checkbox-ripple,sd-checkbox .mdc-checkbox__ripple{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:50%;pointer-events:none}
++sd-checkbox .mat-mdc-checkbox .mat-mdc-checkbox-ripple:not(:empty),sd-checkbox .mdc-checkbox__ripple:not(:empty){transform:translateZ(0)}
++sd-checkbox .mat-mdc-checkbox-touch-target{position:absolute;top:50%;left:50%;height:48px;width:48px;transform:translate(-50%, -50%);display:none}
++sd-checkbox .mat-mdc-checkbox .mat-mdc-checkbox-ripple::before{border-radius:50%}
++sd-checkbox .mdc-checkbox__native-control:focus~.mat-focus-indicator::before{content:""}
++sd-checkbox .mat-mdc-form-field-bottom-align::before{content:"";display:inline-block;height:16px}
++sd-checkbox .mat-mdc-form-field-error{display:block;color:#f44336}
++sd-checkbox .mat-mdc-form-field-bottom-align::before{font-family:var(--mat-form-field-subscript-text-font, var(--mat-sys-body-small-font));line-height:var(--mat-form-field-subscript-text-line-height, var(--mat-sys-body-small-line-height));font-size:var(--mat-form-field-subscript-text-size, var(--mat-sys-body-small-size));letter-spacing:var(--mat-form-field-subscript-text-tracking, var(--mat-sys-body-small-tracking));font-weight:var(--mat-form-field-subscript-text-weight, var(--mat-sys-body-small-weight))}
++sd-checkbox:not(._ng):is(sd-checkbox) .mdc-label{margin-bottom:0}
++sd-checkbox:not(._ng):is(sd-checkbox){--sd-c: var(--sd-primary)}
++sd-checkbox:not(._ng):is(sd-checkbox).sd-c-secondary{--sd-c: var(--sd-secondary)}
++sd-checkbox:not(._ng):is(sd-checkbox).sd-c-info{--sd-c: var(--sd-info)}
++sd-checkbox:not(._ng):is(sd-checkbox).sd-c-success{--sd-c: var(--sd-success)}
++sd-checkbox:not(._ng):is(sd-checkbox).sd-c-warning{--sd-c: var(--sd-warning)}
++sd-checkbox:not(._ng):is(sd-checkbox).sd-c-error{--sd-c: var(--sd-error)}
++sd-checkbox:not(._ng):is(sd-checkbox) .mat-mdc-checkbox,sd-checkbox:not(._ng):is(sd-checkbox) .mdc-checkbox{--mdc-checkbox-selected-icon-color: var(--sd-c) !important;--mdc-checkbox-selected-focus-icon-color: var(--sd-c) !important;--mdc-checkbox-selected-hover-icon-color: var(--sd-c) !important;--mdc-checkbox-selected-pressed-icon-color: var(--sd-c) !important;--mdc-checkbox-selected-focus-state-layer-color: var(--sd-c) !important;--mdc-checkbox-selected-hover-state-layer-color: var(--sd-c) !important;--mdc-checkbox-selected-pressed-state-layer-color: var(--sd-c) !important;--mat-checkbox-selected-icon-color: var(--sd-c) !important;--mat-checkbox-selected-focus-icon-color: var(--sd-c) !important;--mat-checkbox-selected-hover-icon-color: var(--sd-c) !important;--mat-checkbox-selected-pressed-icon-color: var(--sd-c) !important;--mat-checkbox-selected-focus-state-layer-color: var(--sd-c) !important;--mat-checkbox-selected-hover-state-layer-color: var(--sd-c) !important;--mat-checkbox-selected-pressed-state-layer-color: var(--sd-c) !important}
+ 
+ 
+ /* --- sd-radio styles --- */
+@@ -880,7 +682,7 @@
+   position: absolute;
+   top: 0;
+   left: 0;
+-  /* See same note on sd-checkbox .c-checkbox-input above — explicit 100%
++  /* (Ghi chú cũ nhắc sd-checkbox .c-checkbox-input — khối đó đã thay bằng DOM Material 2026-10-14.) Explicit 100%
+      stretch is required for a replaced <input> element inside an abspos
+      container; `inset:0` alone is not sufficient in every browser. */
+   width: 100%;
+@@ -1008,132 +810,121 @@
+ }
+ 
+ /* --- sd-switch — THEO CORE UI CATALOG (#c-switch) ---
+-   Catalog render sd-switch bằng `mat-slide-toggle` của Angular Material, tức cấu
+-   trúc MDC switch. Kit chép lại nguyên khối CSS đó (bỏ phần ripple/elevation phụ
+-   thuộc runtime Material), chỉ đổi scope `#c-switch` → `sd-switch`.
+-
+-   Số đo catalog: khung 36px · track 14px bo 7px · tay nắm 20px bo 10px ·
+-   icon trong tay nắm 18px. Tay nắm XÁM ĐẬM khi tắt, MÀU CHỦ ĐỀ khi bật, và luôn
+-   có icon bên trong (✓ khi bật, — khi tắt).
+-
+-   Bản trước của kit là pill viền + tay nắm trắng không icon.
+-
+-   Rà soát lần 2 (2026-10-12), đo 13 công tắc mẫu của catalog:
+-     · track khi BẬT = `--sd-<color>-light` (catalog: "track = --sd-<color>-light");
+-       bản trước kit dùng màu trung gian tự pha (#c49e6d…) — đậm hơn hẳn;
+-     · disabled: nền track + tay nắm `rgba(0,0,0,.87)` (track mờ .12, tay nắm .38);
+-     · nhãn: `.mat-internal-form-field{color:rgba(0,0,0,.87);letter-spacing:
+-       var(--mat-sys-body-medium-tracking)=0.016rem}`, disabled .87×38%;
+-     · nhãn dựng bằng markup sd-label như catalog;
+-     · gỡ `size` sm/lg (catalog một cỡ, Rule 18) và luật kit tự thêm trên host. --- */
+-/* Host không khai display — catalog không có luật nào cho thẻ host. */
+-sd-switch .c-switch-wrap { display: inline-flex; align-items: center; }
+-
+-/* bộ biến màu theo color — catalog `.sd-c-{color}{--sd-c;--sd-c-light}` */
+-sd-switch .c-switch-wrap               { --sd-sw: var(--sd-primary);   --sd-sw-track: var(--sd-primary-light); }
+-sd-switch .c-switch-wrap.c-color-secondary { --sd-sw: var(--sd-secondary); --sd-sw-track: var(--sd-secondary-light); }
+-sd-switch .c-switch-wrap.c-color-info      { --sd-sw: var(--sd-info);      --sd-sw-track: var(--sd-info-light); }
+-sd-switch .c-switch-wrap.c-color-success   { --sd-sw: var(--sd-success);   --sd-sw-track: var(--sd-success-light); }
+-sd-switch .c-switch-wrap.c-color-warning   { --sd-sw: var(--sd-warning);   --sd-sw-track: var(--sd-warning-light); }
+-sd-switch .c-switch-wrap.c-color-error     { --sd-sw: var(--sd-error);     --sd-sw-track: var(--sd-error-light); }
+-
+-sd-switch .mat-mdc-slide-toggle {
+-  -webkit-user-select: none; user-select: none;
+-  display: inline-block; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); outline: 0;
+-}
+-sd-switch .mdc-form-field {
+-  display: inline-flex; align-items: center; vertical-align: middle;
+-  color: rgba(0, 0, 0, .87); font-family: Roboto, sans-serif;
+-  font-size: 14px; line-height: 20px; font-weight: 400; letter-spacing: 0.016rem;
+-}
+-sd-switch .mdc-label {
+-  margin-left: 0; margin-right: auto; padding-left: 4px; padding-right: 0; order: 0;
+-  margin-bottom: 0; cursor: pointer;
+-}
+-sd-switch .mdc-switch {
+-  align-items: center; background: none; border: none; cursor: pointer;
+-  display: inline-flex; flex-shrink: 0; margin: 0; outline: none;
+-  overflow: visible; padding: 0; position: relative;
+-  width: 36px;
+-}
+-sd-switch .mdc-switch.mdc-switch--disabled { cursor: default; pointer-events: none; }
+-
+-sd-switch .mdc-switch__track {
+-  overflow: hidden; position: relative; width: 100%;
+-  height: 14px; border-radius: 7px;
+-}
+-sd-switch .mdc-switch--disabled .mdc-switch__track { opacity: .12; }
+-sd-switch .mdc-switch.mdc-switch--disabled .mdc-switch__track::before,
+-sd-switch .mdc-switch.mdc-switch--disabled .mdc-switch__track::after { background: rgba(0, 0, 0, .87); }
+-sd-switch .mdc-switch__track::before,
+-sd-switch .mdc-switch__track::after {
+-  border: 1px solid transparent; border-radius: inherit; box-sizing: border-box;
+-  content: ""; height: 100%; left: 0; position: absolute; width: 100%;
+-}
+-/* ::before là nền XÁM (trạng thái tắt), ::after là nền MÀU (trạng thái bật);
+-   cả hai trượt ngang 100% để đổi trạng thái — đúng cơ chế của MDC. */
+-sd-switch .mdc-switch__track::before {
+-  transition: transform 75ms cubic-bezier(0, 0, .2, 1);
+-  transform: translateX(0);
+-  background: rgba(0, 0, 0, .12);
+-}
+-sd-switch .mdc-switch--selected .mdc-switch__track::before { transform: translateX(100%); }
+-sd-switch .mdc-switch__track::after {
+-  transform: translateX(-100%);
+-  transition: transform 75ms cubic-bezier(.4, 0, .6, 1);
+-  background: var(--sd-sw-track);
+-}
+-sd-switch .mdc-switch--selected .mdc-switch__track::after { transform: translateX(0); }
+-
+-sd-switch .mdc-switch__handle-track {
+-  height: 100%; pointer-events: none; position: absolute; top: 0;
+-  transition: transform 75ms cubic-bezier(.4, 0, .2, 1);
+-  left: 0; right: auto; transform: translateX(0);
+-  width: calc(100% - 20px);
+-}
+-sd-switch .mdc-switch--selected .mdc-switch__handle-track { transform: translateX(100%); }
+-sd-switch .mdc-switch__handle {
+-  display: flex; pointer-events: auto; position: absolute;
+-  top: 50%; transform: translateY(-50%); left: 0; right: auto;
+-  width: 20px; height: 20px; border-radius: 10px;
+-}
+-sd-switch .mdc-switch__handle::before,
+-sd-switch .mdc-switch__handle::after {
+-  border: 1px solid transparent; border-radius: inherit; box-sizing: border-box;
+-  content: ""; width: 100%; height: 100%; left: 0; position: absolute; top: 0;
+-}
+-sd-switch .mdc-switch__handle::before { background: #fff; }
+-sd-switch .mdc-switch--unselected .mdc-switch__handle::after { background: rgba(0, 0, 0, .54); }
+-sd-switch .mdc-switch--selected .mdc-switch__handle::after   { background: var(--sd-sw); }
+-sd-switch .mdc-switch--disabled .mdc-switch__handle::after    { background: rgba(0, 0, 0, .87); opacity: .38; }
+-sd-switch .mdc-switch--unselected:hover:not(.mdc-switch--disabled) .mdc-switch__handle::after { background: #424242; }
+-
+-sd-switch .mdc-switch__shadow {
+-  border-radius: inherit; bottom: 0; left: 0; position: absolute; right: 0; top: 0;
+-  box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+-}
+-sd-switch .mdc-switch--disabled .mdc-switch__shadow { box-shadow: 0 0 0 0 rgba(0,0,0,.2), 0 0 0 0 rgba(0,0,0,.14), 0 0 0 0 rgba(0,0,0,.12); }
+-sd-switch .mdc-switch__ripple {
+-  left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%);
+-  z-index: -1; width: 28px; height: 28px; border-radius: 50%; pointer-events: none;
+-}
+-
+-sd-switch .mdc-switch__icons { position: relative; height: 100%; width: 100%; z-index: 1; }
+-sd-switch .mdc-switch__icon {
+-  bottom: 0; left: 0; margin: auto; position: absolute; right: 0; top: 0;
+-  opacity: 0; transition: opacity 30ms cubic-bezier(.4, 0, 1, 1);
+-  width: 18px; height: 18px;
+-}
+-sd-switch .mdc-switch--unselected .mdc-switch__icon { fill: #f6f6f6; }
+-sd-switch .mdc-switch--selected .mdc-switch__icon   { fill: #fff; }
+-sd-switch .mdc-switch--selected .mdc-switch__icon--on,
+-sd-switch .mdc-switch--unselected .mdc-switch__icon--off {
+-  opacity: 1; transition: opacity 45ms 30ms cubic-bezier(0, 0, .2, 1);
+-}
+-sd-switch .mdc-switch--disabled .mdc-switch__icons { opacity: .38; }
++   ── DOM MATERIAL (2026-10-14) ── CSS NGUYÊN VĂN catalog `css/components/switch.css` (109 luật), cùng cách
++   quy đổi với sd-checkbox ở trên (`#c-switch X` → `sd-switch X`, host `[_nghost-sd-sw]` → `:not(._ng):is(sd-switch)`).
++   Thay khối mirror tay trước đây (bọc `span.c-switch-wrap`, thiếu ripple / focus / hover track). Host không khai
++   display — catalog không có luật host. */
++sd-switch{--mat-sys-body-medium-font:Roboto, sans-serif;--mat-sys-body-medium-line-height:1.25rem;--mat-sys-body-medium-size:0.875rem;--mat-sys-body-medium-tracking:0.016rem;--mat-sys-body-medium-weight:400}
++sd-switch{--mat-slide-toggle-selected-focus-state-layer-color:#ae7129;--mat-slide-toggle-selected-handle-color:#ae7129;--mat-slide-toggle-selected-hover-state-layer-color:#ae7129;--mat-slide-toggle-selected-pressed-state-layer-color:#ae7129;--mat-slide-toggle-selected-focus-handle-color:#ae7129;--mat-slide-toggle-selected-hover-handle-color:#ae7129;--mat-slide-toggle-selected-pressed-handle-color:#ae7129;--mat-slide-toggle-selected-focus-track-color:#c49e6d;--mat-slide-toggle-selected-hover-track-color:#c49e6d;--mat-slide-toggle-selected-pressed-track-color:#c49e6d;--mat-slide-toggle-selected-track-color:#c49e6d}
++sd-switch label{display:inline-block;margin-bottom:.5rem}
++sd-switch button{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
++sd-switch button{overflow:visible}
++sd-switch button{text-transform:none}
++sd-switch button{border-radius:0}
++sd-switch button,sd-switch [type=button]{-webkit-appearance:button}
++sd-switch button:not(:disabled),sd-switch [type=button]:not(:disabled){cursor:pointer}
++sd-switch svg{overflow:hidden;vertical-align:middle}
++sd-switch .T14M{font-size:14px;font-weight:500;line-height:20px}
++sd-switch .T14R{font-size:14px;font-weight:400;line-height:20px}
++sd-switch .text-black400{color:var(--sd-black400)!important}
++sd-switch .text-error{color:var(--sd-error)!important}
++sd-switch .mb-0{margin-bottom:0!important}
++sd-switch .mb-2{margin-bottom:2px!important}
++sd-switch .d-flex{display:flex!important}
++sd-switch .mat-ripple{overflow:hidden;position:relative}
++sd-switch .mat-ripple:not(:empty){transform:translateZ(0)}
++sd-switch .mat-focus-indicator{position:relative}
++sd-switch .mat-focus-indicator::before{top:0;left:0;right:0;bottom:0;position:absolute;box-sizing:border-box;pointer-events:none;display:var(--mat-focus-indicator-display, none);border-width:var(--mat-focus-indicator-border-width, 3px);border-style:var(--mat-focus-indicator-border-style, solid);border-color:var(--mat-focus-indicator-border-color, transparent);border-radius:var(--mat-focus-indicator-border-radius, 4px)}
++sd-switch .mat-focus-indicator:focus::before{content:""}
++sd-switch .mat-internal-form-field{display:inline-flex;align-items:center;vertical-align:middle}
++sd-switch .mat-internal-form-field>label{margin-left:0;margin-right:auto;padding-left:4px;padding-right:0;order:0}
++sd-switch .mdc-switch{align-items:center;background:none;border:none;cursor:pointer;display:inline-flex;flex-shrink:0;margin:0;outline:none;overflow:visible;padding:0;position:relative;width:36px}
++sd-switch .mdc-switch.mdc-switch--disabled{cursor:default;pointer-events:none}
++sd-switch .mdc-switch__track{overflow:hidden;position:relative;width:100%;height:14px;border-radius:7px}
++sd-switch .mdc-switch--disabled.mdc-switch .mdc-switch__track{opacity:.12}
++sd-switch .mdc-switch__track::before,sd-switch .mdc-switch__track::after{border:1px solid rgba(0,0,0,0);border-radius:inherit;box-sizing:border-box;content:"";height:100%;left:0;position:absolute;width:100%;border-width:1px;border-color:transparent}
++sd-switch .mdc-switch--selected .mdc-switch__track::before,sd-switch .mdc-switch--selected .mdc-switch__track::after{border-width:1px;border-color:transparent}
++sd-switch .mdc-switch--disabled .mdc-switch__track::before,sd-switch .mdc-switch--disabled .mdc-switch__track::after{border-width:1px;border-color:transparent}
++sd-switch .mdc-switch__track::before{transition:transform 75ms 0ms cubic-bezier(0, 0, 0.2, 1);transform:translateX(0);background:rgba(0,0,0,.12)}
++sd-switch .mdc-switch--selected .mdc-switch__track::before{transition:transform 75ms 0ms cubic-bezier(0.4, 0, 0.6, 1);transform:translateX(100%)}
++sd-switch .mdc-switch--selected .mdc-switch__track::before{opacity:1;transition:transform 75ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}
++sd-switch .mdc-switch--unselected .mdc-switch__track::before{opacity:1;transition:transform 75ms 0ms cubic-bezier(0, 0, 0.2, 1)}
++sd-switch .mdc-switch:enabled:hover:not(:focus):not(:active) .mdc-switch__track::before{background:rgba(0,0,0,.12)}
++sd-switch .mdc-switch:enabled:focus:not(:active) .mdc-switch__track::before{background:rgba(0,0,0,.12)}
++sd-switch .mdc-switch:enabled:active .mdc-switch__track::before{background:rgba(0,0,0,.12)}
++sd-switch .mdc-switch.mdc-switch--disabled .mdc-switch__track::before{background:rgba(0,0,0,.87)}
++sd-switch .mdc-switch__track::after{transform:translateX(-100%);background:var(--mat-slide-toggle-selected-track-color)}
++sd-switch .mdc-switch--selected .mdc-switch__track::after{transform:translateX(0)}
++sd-switch .mdc-switch--selected .mdc-switch__track::after{opacity:1;transition:transform 75ms 0ms cubic-bezier(0, 0, 0.2, 1)}
++sd-switch .mdc-switch--unselected .mdc-switch__track::after{opacity:1;transition:transform 75ms 0ms cubic-bezier(0.4, 0, 0.6, 1)}
++sd-switch .mdc-switch:enabled:hover:not(:focus):not(:active) .mdc-switch__track::after{background:var(--mat-slide-toggle-selected-hover-track-color)}
++sd-switch .mdc-switch:enabled:focus:not(:active) .mdc-switch__track::after{background:var(--mat-slide-toggle-selected-focus-track-color)}
++sd-switch .mdc-switch:enabled:active .mdc-switch__track::after{background:var(--mat-slide-toggle-selected-pressed-track-color)}
++sd-switch .mdc-switch.mdc-switch--disabled .mdc-switch__track::after{background:rgba(0,0,0,.87)}
++sd-switch .mdc-switch__handle-track{height:100%;pointer-events:none;position:absolute;top:0;transition:transform 75ms 0ms cubic-bezier(0.4, 0, 0.2, 1);left:0;right:auto;transform:translateX(0);width:calc(100% - 20px)}
++sd-switch .mdc-switch--selected .mdc-switch__handle-track{transform:translateX(100%)}
++sd-switch .mdc-switch__handle{display:flex;pointer-events:auto;position:absolute;top:50%;transform:translateY(-50%);left:0;right:auto;transition:width 75ms cubic-bezier(0.4, 0, 0.2, 1),height 75ms cubic-bezier(0.4, 0, 0.2, 1),margin 75ms cubic-bezier(0.4, 0, 0.2, 1);width:20px;height:20px;border-radius:10px}
++sd-switch .mat-mdc-slide-toggle .mdc-switch--unselected .mdc-switch__handle{width:20px;height:20px;margin:0}
++sd-switch .mat-mdc-slide-toggle .mdc-switch--unselected .mdc-switch__handle:has(.mdc-switch__icons){margin:0}
++sd-switch .mat-mdc-slide-toggle .mdc-switch--selected .mdc-switch__handle{width:20px;height:20px;margin:0}
++sd-switch .mat-mdc-slide-toggle .mdc-switch--selected .mdc-switch__handle:has(.mdc-switch__icons){margin:0}
++sd-switch .mat-mdc-slide-toggle .mdc-switch__handle:has(.mdc-switch__icons){width:20px;height:20px}
++sd-switch .mat-mdc-slide-toggle .mdc-switch:active:not(.mdc-switch--disabled) .mdc-switch__handle{width:20px;height:20px}
++sd-switch .mat-mdc-slide-toggle .mdc-switch--selected:active:not(.mdc-switch--disabled) .mdc-switch__handle{margin:0}
++sd-switch .mat-mdc-slide-toggle .mdc-switch--unselected:active:not(.mdc-switch--disabled) .mdc-switch__handle{margin:0}
++sd-switch .mdc-switch--disabled.mdc-switch--selected .mdc-switch__handle::after{opacity:.38}
++sd-switch .mdc-switch--disabled.mdc-switch--unselected .mdc-switch__handle::after{opacity:.38}
++sd-switch .mdc-switch__handle::before,sd-switch .mdc-switch__handle::after{border:1px solid rgba(0,0,0,0);border-radius:inherit;box-sizing:border-box;content:"";width:100%;height:100%;left:0;position:absolute;top:0;transition:background-color 75ms 0ms cubic-bezier(0.4, 0, 0.2, 1),border-color 75ms 0ms cubic-bezier(0.4, 0, 0.2, 1);z-index:-1}
++sd-switch .mdc-switch--selected:enabled .mdc-switch__handle::after{background:var(--mat-slide-toggle-selected-handle-color)}
++sd-switch .mdc-switch--selected:enabled:hover:not(:focus):not(:active) .mdc-switch__handle::after{background:var(--mat-slide-toggle-selected-hover-handle-color)}
++sd-switch .mdc-switch--selected:enabled:focus:not(:active) .mdc-switch__handle::after{background:var(--mat-slide-toggle-selected-focus-handle-color)}
++sd-switch .mdc-switch--selected:enabled:active .mdc-switch__handle::after{background:var(--mat-slide-toggle-selected-pressed-handle-color)}
++sd-switch .mdc-switch--selected.mdc-switch--disabled .mdc-switch__handle::after{background:rgba(0,0,0,.87)}
++sd-switch .mdc-switch--unselected:enabled .mdc-switch__handle::after{background:rgba(0,0,0,.54)}
++sd-switch .mdc-switch--unselected:enabled:hover:not(:focus):not(:active) .mdc-switch__handle::after{background:#424242}
++sd-switch .mdc-switch--unselected:enabled:focus:not(:active) .mdc-switch__handle::after{background:#424242}
++sd-switch .mdc-switch--unselected:enabled:active .mdc-switch__handle::after{background:#424242}
++sd-switch .mdc-switch--unselected.mdc-switch--disabled .mdc-switch__handle::after{background:rgba(0,0,0,.87)}
++sd-switch .mdc-switch__handle::before{background:#fff}
++sd-switch .mdc-switch__shadow{border-radius:inherit;bottom:0;left:0;position:absolute;right:0;top:0}
++sd-switch .mdc-switch:enabled .mdc-switch__shadow{box-shadow:0px 2px 1px -1px rgba(0,0,0,.2),0px 1px 1px 0px rgba(0,0,0,.14),0px 1px 3px 0px rgba(0,0,0,.12)}
++sd-switch .mdc-switch.mdc-switch--disabled .mdc-switch__shadow{box-shadow:0px 0px 0px 0px rgba(0,0,0,.2),0px 0px 0px 0px rgba(0,0,0,.14),0px 0px 0px 0px rgba(0,0,0,.12)}
++sd-switch .mdc-switch__ripple{left:50%;position:absolute;top:50%;transform:translate(-50%, -50%);z-index:-1;width:28px;height:28px}
++sd-switch .mdc-switch__ripple::after{content:"";opacity:0}
++sd-switch .mdc-switch--disabled .mdc-switch__ripple::after{display:none}
++sd-switch .mdc-switch:hover .mdc-switch__ripple::after{transition:75ms opacity cubic-bezier(0, 0, 0.2, 1)}
++sd-switch .mdc-switch--unselected:enabled:hover:not(:focus) .mdc-switch__ripple::after{background:rgba(0,0,0,.87);opacity:.12}
++sd-switch .mdc-switch--unselected:enabled:focus .mdc-switch__ripple::after{background:rgba(0,0,0,.87);opacity:.12}
++sd-switch .mdc-switch--unselected:enabled:active .mdc-switch__ripple::after{background:rgba(0,0,0,.87);opacity:.1;transition:opacity 75ms linear}
++sd-switch .mdc-switch--selected:enabled:hover:not(:focus) .mdc-switch__ripple::after{background:var(--mat-slide-toggle-selected-hover-state-layer-color);opacity:.04}
++sd-switch .mdc-switch--selected:enabled:focus .mdc-switch__ripple::after{background:var(--mat-slide-toggle-selected-focus-state-layer-color);opacity:.12}
++sd-switch .mdc-switch--selected:enabled:active .mdc-switch__ripple::after{background:var(--mat-slide-toggle-selected-pressed-state-layer-color);opacity:.12;transition:opacity 75ms linear}
++sd-switch .mdc-switch__icons{position:relative;height:100%;width:100%;z-index:1;transform:translateZ(0)}
++sd-switch .mdc-switch--disabled.mdc-switch--unselected .mdc-switch__icons{opacity:.38}
++sd-switch .mdc-switch--disabled.mdc-switch--selected .mdc-switch__icons{opacity:.38}
++sd-switch .mdc-switch__icon{bottom:0;left:0;margin:auto;position:absolute;right:0;top:0;opacity:0;transition:opacity 30ms 0ms cubic-bezier(0.4, 0, 1, 1)}
++sd-switch .mdc-switch--unselected .mdc-switch__icon{width:18px;height:18px;fill:#f6f6f6}
++sd-switch .mdc-switch--unselected.mdc-switch--disabled .mdc-switch__icon{fill:#f6f6f6}
++sd-switch .mdc-switch--selected .mdc-switch__icon{width:18px;height:18px;fill:#fff}
++sd-switch .mdc-switch--selected.mdc-switch--disabled .mdc-switch__icon{fill:#fff}
++sd-switch .mdc-switch--selected .mdc-switch__icon--on,sd-switch .mdc-switch--unselected .mdc-switch__icon--off{opacity:1;transition:opacity 45ms 30ms cubic-bezier(0, 0, 0.2, 1)}
++sd-switch .mat-mdc-slide-toggle{-webkit-user-select:none;user-select:none;display:inline-block;-webkit-tap-highlight-color:rgba(0,0,0,0);outline:0}
++sd-switch .mat-mdc-slide-toggle .mat-mdc-slide-toggle-ripple,sd-switch .mat-mdc-slide-toggle .mdc-switch__ripple::after{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:50%;pointer-events:none}
++sd-switch .mat-mdc-slide-toggle .mat-mdc-slide-toggle-ripple:not(:empty),sd-switch .mat-mdc-slide-toggle .mdc-switch__ripple::after:not(:empty){transform:translateZ(0)}
++sd-switch .mat-mdc-slide-toggle .mat-internal-form-field{color:rgba(0,0,0,.87);font-family:var(--mat-slide-toggle-label-text-font, var(--mat-sys-body-medium-font));line-height:var(--mat-slide-toggle-label-text-line-height, var(--mat-sys-body-medium-line-height));font-size:var(--mat-slide-toggle-label-text-size, var(--mat-sys-body-medium-size));letter-spacing:var(--mat-slide-toggle-label-text-tracking, var(--mat-sys-body-medium-tracking));font-weight:var(--mat-slide-toggle-label-text-weight, var(--mat-sys-body-medium-weight))}
++sd-switch .mat-mdc-slide-toggle .mat-focus-indicator::before{border-radius:50%}
++sd-switch .mat-mdc-slide-toggle .mdc-switch:enabled+.mdc-label{cursor:pointer}
++sd-switch .mat-mdc-slide-toggle .mdc-switch--disabled+label{color:color-mix(in srgb, rgba(0,0,0,.87) 38%, transparent)}
++sd-switch .mat-mdc-slide-toggle-touch-target{position:absolute;top:50%;left:50%;height:48px;width:100%;transform:translate(-50%, -50%);display:none}
++sd-switch:not(._ng):is(sd-switch) label{margin-bottom:0!important}
++sd-switch:not(._ng):is(sd-switch){--sd-c: var(--sd-primary);--sd-c-light: var(--sd-primary-light)}
++sd-switch:not(._ng):is(sd-switch).sd-c-secondary{--sd-c: var(--sd-secondary);--sd-c-light: var(--sd-secondary-light)}
++sd-switch:not(._ng):is(sd-switch).sd-c-info{--sd-c: var(--sd-info);--sd-c-light: var(--sd-info-light)}
++sd-switch:not(._ng):is(sd-switch).sd-c-success{--sd-c: var(--sd-success);--sd-c-light: var(--sd-success-light)}
++sd-switch:not(._ng):is(sd-switch).sd-c-warning{--sd-c: var(--sd-warning);--sd-c-light: var(--sd-warning-light)}
++sd-switch:not(._ng):is(sd-switch).sd-c-error{--sd-c: var(--sd-error);--sd-c-light: var(--sd-error-light)}
++sd-switch:not(._ng):is(sd-switch) .mat-mdc-slide-toggle,sd-switch:not(._ng):is(sd-switch) .mdc-switch{--mdc-switch-selected-handle-color: var(--sd-c) !important;--mdc-switch-selected-focus-handle-color: var(--sd-c) !important;--mdc-switch-selected-hover-handle-color: var(--sd-c) !important;--mdc-switch-selected-pressed-handle-color: var(--sd-c) !important;--mdc-switch-selected-track-color: var(--sd-c-light) !important;--mdc-switch-selected-focus-track-color: var(--sd-c-light) !important;--mdc-switch-selected-hover-track-color: var(--sd-c-light) !important;--mdc-switch-selected-pressed-track-color: var(--sd-c-light) !important;--mdc-switch-selected-focus-state-layer-color: var(--sd-c-light) !important;--mdc-switch-selected-hover-state-layer-color: var(--sd-c-light) !important;--mdc-switch-selected-pressed-state-layer-color: var(--sd-c-light) !important;--mat-slide-toggle-selected-handle-color: var(--sd-c) !important;--mat-slide-toggle-selected-focus-handle-color: var(--sd-c) !important;--mat-slide-toggle-selected-hover-handle-color: var(--sd-c) !important;--mat-slide-toggle-selected-pressed-handle-color: var(--sd-c) !important;--mat-slide-toggle-selected-track-color: var(--sd-c-light) !important;--mat-slide-toggle-selected-focus-track-color: var(--sd-c-light) !important;--mat-slide-toggle-selected-hover-track-color: var(--sd-c-light) !important;--mat-slide-toggle-selected-pressed-track-color: var(--sd-c-light) !important;--mat-slide-toggle-selected-focus-state-layer-color: var(--sd-c-light) !important;--mat-slide-toggle-selected-hover-state-layer-color: var(--sd-c-light) !important;--mat-slide-toggle-selected-pressed-state-layer-color: var(--sd-c-light) !important}
+ 
+-sd-switch .c-disabled .c-switch-label { color: color-mix(in srgb, rgba(0, 0, 0, .87) 38%, transparent); cursor: default; }
+-sd-switch .mdc-switch:focus-visible { outline: 2px solid var(--sd-primary); outline-offset: 2px; }
+ 
+ /* --- sd-badge styles ---
+    Rà soát 2026-10-10 — dựng lại bám ĐÚNG badge.component.scss biên dịch của
+@@ -6863,11 +6654,8 @@
+    nhưng Material 20 đọc `--mat-checkbox-selected-icon-color`, mà theme portal đặt
+    biến đó = #3f51b5. Kết quả THẬT trên màn là indigo. Kit mirror kết quả thật và
+    ghi vào _memory/known-gaps.md để Builder quyết có giữ hay không. */
+-sd-tree sd-checkbox.sd-tree__checkbox .c-checkbox-input:checked ~ .c-checkbox-box,
+-sd-tree sd-checkbox.sd-tree__checkbox .c-checkbox-input:indeterminate ~ .c-checkbox-box {
+-  border-color: #3f51b5;
+-  background: #3f51b5;
+-}
++/* (2026-10-14) sd-checkbox nay là DOM Material + biến `--sd-c` → chỉ cần đặt `--sd-c` của ô trong cây. */
++sd-tree sd-checkbox.sd-tree__checkbox { --sd-c: #3f51b5; }
+ 
+ 
+ /* ══════════════════════════════════════════════════════════
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/switch.html b/design-system/preview/components/switch.html
+--- a/design-system/preview/components/switch.html	2026-10-13 17:29:12.678195719 +0000
++++ b/design-system/preview/components/switch.html	2026-10-14 08:37:47.496365990 +0000
+@@ -46,7 +46,9 @@
+         </sd-section>
+ 
+         <sd-section title="Bắt buộc" subtitle="required: dấu * đỏ của sd-label">
+-          <sd-switch label="Áp dụng cho toàn bộ Kế hoạch Funding" required checked></sd-switch>
++          <div class="d-flex flex-column gap-16">
++            <sd-switch label="Áp dụng cho toàn bộ Kế hoạch Funding" required checked></sd-switch>
++          </div>
+         </sd-section>
+ 
+         <sd-section title="Disabled" subtitle="tắt · bật">
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-14 07:59:28.772696355 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-14 08:36:37.315568667 +0000
+@@ -604,9 +604,8 @@
+        như sd-input của kit cũng chỉ hiện lỗi sau khi touched.
+      - `color` chỉ đổi màu trạng thái ĐÃ TÍCH (thư viện chỉ ghi đè nhóm biến
+        `--mdc-checkbox-selected-*`), không đổi viền lúc chưa tích.
+-     - Data attributes của control bên trong: `data-disabled`, `data-empty`
+-       (sdIsEmpty — model chưa set thì "true"), `data-value`, và
+-       `data-autoid="forms-checkbox-{autoId}"`.
++     - `data-autoid="forms-checkbox-{autoId}"` nằm trên `mat-checkbox` như template thư viện. (2026-10-14:
++       `data-disabled` / `data-empty` / `data-value` gỡ — catalog không chụp; trước nằm trên input.)
+ 
+      Hình thức (rà soát lại 2026-09-24 sau khi Builder báo "nhìn chưa giống"):
+      dựng lại bám ĐÚNG mat-checkbox thật — ô 18px (sm 14 / lg 22), viền 2px,
+@@ -626,8 +625,8 @@
+        icon chọn theo tên, còn đây là indicator của chính control và thư viện
+        thật cũng vẽ bằng SVG; dùng icon font còn khiến ô tích hiện ra ô vuông
+        ký tự lạ khi mạng chặn Google Fonts (đã gặp thật khi chụp lại preview).
+-     - View mode đi qua `<sd-view>` (xem `sdViewHtml`) như mọi
+-       control khác của kit (thư viện dùng `.text-secondary`).
++     - (2026-10-14) View mode vẽ thẳng hai div `T14R text-black400` + `T14M` như template thư viện / catalog,
++       KHÔNG qua <sd-view>. DOM sửa được = mat-checkbox Material nguyên văn catalog (xem `_render`).
+ 
+      ĐÃ GỠ 2026-10-12 (Rule 18, rà soát #c-checkbox): `size`, `viewed="inline"`,
+      `indeterminate`, `helperText`, `error` — catalog không có, chỉ trang preview dùng.
+@@ -642,6 +641,33 @@
+   var SD_CHECKBOX_TEXT = { checked: 'Có', unchecked: 'Không' };
+   var SD_CHECKBOX_COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error'];
+ 
++  /* ── mat-checkbox của Angular Material — DOM nguyên văn catalog (#c-checkbox, 2026-10-14).
++     Dùng chung cho sd-checkbox; sd-table / sd-tree (catalog vẽ mat-checkbox thuần) sẽ dùng ở vòng sau. ── */
++  var SD_MAT_CHECKBOX_SEQ = 0;
++  var SD_MAT_ERROR_SEQ = 0;
++  function sdMatCheckboxClass(checked, disabled) {
++    return 'mat-mdc-checkbox' + (disabled ? ' mdc-checkbox--disabled mat-mdc-checkbox-disabled' : '') +
++      (checked ? ' mat-mdc-checkbox-checked' : '') + ' mat-accent';
++  }
++  function sdMatCheckboxInner(id, checked, disabled, label, inputAttrs) {
++    return '<div class="mdc-form-field mat-internal-form-field"><div class="mdc-checkbox">' +
++        '<div class="mat-mdc-checkbox-touch-target"></div>' +
++        '<input type="checkbox" class="mdc-checkbox__native-control' + (checked ? ' mdc-checkbox--selected' : '') + '"' +
++          ' id="' + id + '-input" tabindex="' + (disabled ? '-1' : '0') + '"' + (inputAttrs || '') +
++          (checked ? ' checked' : '') + (disabled ? ' disabled' : '') + '>' +
++        '<div class="mdc-checkbox__ripple"></div>' +
++        '<div class="mdc-checkbox__background">' +
++          '<svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">' +
++            '<path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path></svg>' +
++          '<div class="mdc-checkbox__mixedmark"></div>' +
++        '</div>' +
++        '<div class="mat-mdc-checkbox-ripple mat-focus-indicator mat-ripple"></div>' +
++      '</div>' +
++      /* catalog: nhãn có khoảng trắng hai đầu (nội suy `{{ label() }}` của template); nhãn rỗng → label:empty ẩn */
++      '<label class="mdc-label" for="' + id + '-input">' + (label ? ' ' + esc(label) + ' ' : '') + '</label>' +
++    '</div>';
++  }
++
+   class SdCheckbox extends HTMLElement {
+     static get observedAttributes() {
+       /* Rà soát #c-checkbox 2026-10-12 (Rule 18): GỠ size · viewed="inline" ·
+@@ -680,7 +706,7 @@
+       var label = this.getAttribute('label') || '';
+       /* Đọc màu từ attribute HOẶC lớp `sd-c-*` của catalog, rồi đặt lại cả hai.
+          Catalog render input `color` thành lớp trên host: `<sd-x class="sd-c-success">`. */
+-      var color = sdSyncColorClass(this, SD_CHECKBOX_COLORS, 'primary');
++      sdSyncColorClass(this, SD_CHECKBOX_COLORS, 'primary');
+       var disabled = this._boolAttr('disabled');
+       /* [viewed] boolean của catalog — `viewed="inline"` cũ của kit nay coi như xem tĩnh */
+       var isViewed = this._boolAttr('viewed');
+@@ -691,78 +717,62 @@
+       var name = this.getAttribute('name') || '';
+       var value = this.getAttribute('value') || '';
+ 
++      /* Chế độ xem — template thư viện / DOM catalog: hai div thẳng trong host, nhãn chỉ vẽ khi có
++         (`@if (label())`). Trước 2026-10-14 kit đi qua <sd-view> → lệch cấu trúc với catalog. */
+       if (isViewed) {
+-        this.innerHTML = sdViewHtml(label, checked ? SD_CHECKBOX_TEXT.checked : SD_CHECKBOX_TEXT.unchecked);
++        this.innerHTML = (label ? '<div class="T14R text-black400">' + esc(label) + '</div>' : '') +
++          '<div class="T14M">' + (checked ? SD_CHECKBOX_TEXT.checked : SD_CHECKBOX_TEXT.unchecked) + '</div>';
+         return;
+       }
+ 
+       var showError = !!inlineError && this._touched;
+-      var modelVal = this._modelSet ? checked : undefined;
+-
+-      /* catalog: lỗi inline CHỈ là dòng mat-error bên dưới — ô tích KHÔNG đổi viền đỏ
+-         (đo #c-checkbox: viền vẫn rgba(0,0,0,.54)). Bản trước kit tô viền đỏ. */
+-      var classes = ['c-checkbox-wrap'];
+-      if (disabled) classes.push('c-disabled');
+-
+-      var textHtml = label
+-        ? '<span class="c-checkbox-text"><span class="c-checkbox-label">' + esc(label) + '</span></span>'
+-        : '';
+-
+-      this.innerHTML = '<label class="' + classes.join(' ') + '">' +
+-        '<span class="c-checkbox-hit">' +
+-          '<input type="checkbox" class="c-checkbox-input"' +
+-            (checked ? ' checked' : '') +
+-            (disabled ? ' disabled' : '') +
+-            (name ? ' name="' + escAttr(name) + '"' : '') +
+-            (value ? ' value="' + escAttr(value) + '"' : '') +
+-            (autoIdInput ? ' data-autoid="forms-checkbox-' + escAttr(autoIdInput) + '"' : '') +
+-            ' data-disabled="' + (disabled ? 'true' : 'false') + '"' +
+-            ' data-empty="' + (modelVal === undefined ? 'true' : 'false') + '"' +
+-            ' data-value="' + (modelVal === undefined ? '' : String(modelVal)) + '"' + '>' +
+-          '<span class="c-checkbox-ripple" aria-hidden="true"></span>' +
+-          '<span class="c-checkbox-box" aria-hidden="true">' +
+-            // Dấu tích vẽ bằng SVG ĐÚNG như mat-checkbox thật (path + stroke-width +
+-            // stroke-dasharray của MDC), KHÔNG dùng icon font. Xem ghi chú "Rule 4"
+-            // ở đầu block: đây là indicator của control, không phải icon chọn theo tên,
+-            // và thư viện thật cũng vẽ bằng SVG. Dùng icon font ở đây còn làm ô tích
+-            // hiện ra ô vuông ký tự lạ khi mạng chặn Google Fonts (đã gặp thật).
+-            '<svg class="c-checkbox-checkmark" viewBox="0 0 24 24" focusable="false">' +
+-              '<path class="c-checkbox-checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>' +
+-            '</svg>' +
+-            '<span class="c-checkbox-mixedmark"></span>' +
+-          '</span>' +
+-        '</span>' + textHtml +
+-        '</label>' +
+-        (showError ? '<div class="sd-error-text">' + esc(inlineError) + '</div>' : '');
++      if (!this._cbId) this._cbId = 'mat-mdc-checkbox-' + (++SD_MAT_CHECKBOX_SEQ);
+ 
++      /* DOM MATERIAL NGUYÊN VĂN catalog `#c-checkbox` (2026-10-14 — trước đó là `label.c-checkbox-wrap` tự dựng):
++           mat-checkbox.mat-mdc-checkbox[.mdc-checkbox--disabled.mat-mdc-checkbox-disabled][.mat-mdc-checkbox-checked].mat-accent
++             > div.mdc-form-field.mat-internal-form-field
++                 > div.mdc-checkbox > touch-target · input.mdc-checkbox__native-control · __ripple ·
++                                      __background(svg checkmark + mixedmark) · mat-mdc-checkbox-ripple
++                 + label.mdc-label[for]
++           + mat-error (khi đã chạm và có inlineError)
++         `data-autoid` nằm trên mat-checkbox như template thư viện (`[attr.data-autoId]`); catalog không chụp
++         `data-disabled/empty/value` nên kit không vẽ (cũ: nằm trên input — sai chỗ so với thư viện). */
++      this.innerHTML = '<mat-checkbox class="' + sdMatCheckboxClass(checked, disabled) + '" id="' + this._cbId + '"' +
++          (autoIdInput ? ' data-autoid="forms-checkbox-' + escAttr(autoIdInput) + '"' : '') + '>' +
++        sdMatCheckboxInner(this._cbId, checked, disabled, label,
++          (name ? ' name="' + escAttr(name) + '"' : '') + (value ? ' value="' + escAttr(value) + '"' : '')) +
++        '</mat-checkbox>' +
++        (showError ? '<mat-error class="mat-mdc-form-field-error mat-mdc-form-field-bottom-align" id="mat-mdc-error-' +
++          (++SD_MAT_ERROR_SEQ) + '"> ' + esc(inlineError) + ' </mat-error>' : '');
++    }
++
++    /* Đồng bộ lớp trạng thái của Material sau khi tích / bỏ tích — không vẽ lại cả cụm (giữ focus). */
++    _syncState() {
++      var mc = this.querySelector('mat-checkbox');
++      var input = this.querySelector('.mdc-checkbox__native-control');
++      if (!mc || !input) return;
++      mc.className = sdMatCheckboxClass(input.checked, input.disabled);
++      input.classList.toggle('mdc-checkbox--selected', input.checked);
+     }
+ 
+     _bind() {
+       var self = this;
+-      var input = this.querySelector('.c-checkbox-input');
++      var input = this.querySelector('.mdc-checkbox__native-control');
+       if (!input || input._bound) return;
+       input._bound = true;
+       input.addEventListener('change', function () {
+-        // Reflect the new state onto the host attributes for external API
+-        // consistency, but suppress the attribute-triggered re-render since
+-        // the native input + CSS :checked/:indeterminate selectors already
+-        // reflect the visual change instantly — re-rendering here would
+-        // replace the DOM for no visual gain (and risks a layout flicker).
++        // Phản ánh trạng thái lên attribute của host cho API ngoài, nhưng chặn lần vẽ lại do attribute —
++        // input gốc + CSS :checked / :indeterminate đã đổi hình ngay; chỉ cần đồng bộ lớp Material.
+         var wasTouched = self._touched;
+         self._touched = true;
+         self._modelSet = true;
+         self._userToggle = true;
+         self.toggleAttribute('checked', input.checked);
+         self._userToggle = false;
+-        // data-empty/data-value bên thư viện là computed signal nên cập nhật ngay
+-        // khi model đổi. Mirror cập nhật thẳng trên input thay vì vẽ lại cả cụm —
+-        // giữ đúng nguyên tắc "không vẽ lại khi chỉ đổi tick" ở trên.
+-        input.setAttribute('data-empty', 'false');
+-        input.setAttribute('data-value', String(input.checked));
++        self._syncState();
+         self.dispatchEvent(new CustomEvent('sd-change', { detail: { checked: input.checked, value: input.value }, bubbles: true }));
+-        // Chỉ vẽ lại khi lần chạm này làm inlineError chuyển từ ẩn sang hiện —
+-        // đúng điều kiện `touched` của thư viện, và vẫn giữ nguyên nguyên tắc
+-        // "không vẽ lại khi chỉ đổi tick" ở trên cho mọi trường hợp còn lại.
++        // Chỉ vẽ lại khi lần chạm này làm inlineError chuyển từ ẩn sang hiện — đúng điều kiện `touched`
++        // của thư viện.
+         var hasInlineError = !!(self.getAttribute('inlineError') || self.getAttribute('inlineerror'));
+         if (hasInlineError && !wasTouched) { self._render(); self._bind(); }
+       });
+@@ -775,17 +785,19 @@
+        sót tên. KHÔNG thêm bí danh `value`: attribute value của checkbox là giá
+        trị form gửi đi khi ô được tích, khác hẳn model boolean. */
+     get model() {
+-      var input = this.querySelector('.c-checkbox-input');
++      var input = this.querySelector('.mdc-checkbox__native-control');
+       return input ? input.checked : this.hasAttribute('checked');
+     }
+     set model(v) {
+       var checked = !!v;
+-      var input = this.querySelector('.c-checkbox-input');
++      var input = this.querySelector('.mdc-checkbox__native-control');
+       if (input) input.checked = checked;
+       this._modelSet = true;
+       this._userToggle = true;
+       this.toggleAttribute('checked', checked);
+       this._userToggle = false;
++      if (input) this._syncState();
++      else if (this.isConnected) { this._render(); this._bind(); }
+     }
+     get checked() { return this.model; }
+     set checked(v) { this.model = v; }
+@@ -1077,6 +1089,7 @@
+      checked trên mirror biểu diễn model two-way [(model)] của Angular.
+      Events: sd-change { checked } - bên Angular là [(model)]
+      ══════════════════════════════════════════════════════════ */
++  var SD_MAT_SLIDE_TOGGLE_SEQ = 0;
+   class SdSwitch extends HTMLElement {
+     static get observedAttributes() {
+       /* `size` đã gỡ 2026-10-12 — catalog chỉ có MỘT cỡ (Rule 18). */
+@@ -1084,8 +1097,10 @@
+               'hideinlineerror', 'hideInlineError', 'name', 'autoid', 'autoId'];
+     }
+     connectedCallback() { this._render(); this._bind(); }
+-    attributeChangedCallback() {
+-      if (!this.isConnected) return;
++    attributeChangedCallback(name) {
++      if (!this.isConnected || this._userToggle) return;
++      /* đổi `checked` từ ngoài (model setter, JS trang): đổi lớp tại chỗ nếu đang ở chế độ sửa */
++      if (name === 'checked' && this._syncState()) return;
+       this._render(); this._bind();
+     }
+ 
+@@ -1105,95 +1120,97 @@
+       var label = this.getAttribute('label') || '';
+       /* Đọc màu từ attribute HOẶC lớp `sd-c-*` của catalog, rồi đặt lại cả hai.
+          Catalog render input `color` thành lớp trên host: `<sd-x class="sd-c-success">`. */
+-      var color = sdSyncColorClass(this, SD_CHECKBOX_COLORS, 'primary');
++      sdSyncColorClass(this, SD_CHECKBOX_COLORS, 'primary');
+       var checked = this.hasAttribute('checked');
+       var disabled = this.hasAttribute('disabled');
+       var viewed = (this.viewedMode === true);
+       var required = this.hasAttribute('required');
+-      // Portal có input hideInlineError - mirror nhận attribute nhưng không render
+-      // inline-error nên không có hiệu ứng thị giác (giữ API khớp Angular).
+-      var hideInlineError = this.hasAttribute('hideInlineError') || this.hasAttribute('hideinlineerror');
+-
+-      /* Chế độ xem — catalog render THẲNG hai div (không bọc sd-view):
+-         <div class="T14R text-black400">nhãn</div><div class="T14M">Bật|Tắt</div>
+-         (core.form.switch.on/off). Rà soát 2026-10-12. */
++      // hideInlineError: thư viện nhận input nhưng template switch không vẽ mat-error → không có hiệu ứng hình.
++
++      /* Chế độ xem — template thư viện / catalog: hai div thẳng, nhãn chỉ vẽ khi có (`@if (label())`). */
+       if (viewed) {
+-        this.innerHTML = '<div class="T14R text-black400">' + esc(label) + '</div>' +
++        this.innerHTML = (label ? '<div class="T14R text-black400">' + esc(label) + '</div>' : '') +
+           '<div class="T14M">' + (checked ? 'Bật' : 'Tắt') + '</div>';
+         return;
+       }
+       this.removeAttribute('data-size');
++      if (!this._swId) this._swId = 'mat-mdc-slide-toggle-' + (++SD_MAT_SLIDE_TOGGLE_SEQ);
++      var id = this._swId;
+ 
+-      /* MARKUP THEO CATALOG (#c-switch): catalog render sd-switch bằng
+-         mat-slide-toggle của Angular Material, tức cấu trúc MDC switch:
+-           button.mdc-switch > span.mdc-switch__track
+-                             + span.mdc-switch__handle-track
+-                                 > span.mdc-switch__handle
+-                                     > span.mdc-switch__shadow
+-                                     + span.mdc-switch__ripple
+-                                     + span.mdc-switch__icons > svg--on + svg--off
+-         Track xám khi tắt / tô màu nhạt khi bật; tay nắm 20px tròn, xám đậm khi
+-         tắt và màu chủ đề khi bật, BÊN TRONG có icon ✓ (bật) hoặc — (tắt).
+-         Bản trước của kit là pill viền + tay nắm trắng, không có icon — khác hẳn. */
+-      var classes = ['c-switch-wrap', 'c-color-' + esc(color)];
+-      if (disabled) classes.push('c-disabled');
+-      if (required) classes.push('c-required');
+-
+-      /* Nhãn — catalog: <label class="mdc-label"><sd-label>…</sd-label></label>,
+-         tức chính markup của sd-label (span.T14M + span.text-error.mb-2.T14M "*").
+-         Bản trước kit tự dựng `label.c-switch-label.T14M` với dấu * cách 2px.
+-         Viết sẵn markup đã render để không phụ thuộc thứ tự define(). */
+-      var labelHtml = label
+-        ? '<label class="mdc-label c-switch-label"><sd-label label="' + escAttr(label) + '"' +
+-            (required ? ' required' : '') + '>' +
+-            '<div class="mb-0 d-flex"><div class="d-flex align-items-center gap-4">' +
+-              '<span class="T14M">' + esc(label) + '</span></div>' +
+-              (required ? '<span class="text-error mb-2 T14M">*</span>' : '') +
+-            '</div></sd-label></label>'
+-        : '';
+-
++      /* DOM MATERIAL NGUYÊN VĂN catalog `#c-switch` (2026-10-14 — trước đó bọc thêm `span.c-switch-wrap` và
++         dùng span thay cho thẻ mat-slide-toggle / div.mdc-form-field):
++           mat-slide-toggle.mat-mdc-slide-toggle[.mat-mdc-slide-toggle-checked]
++             > div.mdc-form-field.mat-internal-form-field
++                 > button.mdc-switch[role=switch] > touch-target · __track · __handle-track > __handle >
++                     (__shadow > mdc-elevation-overlay) · (__ripple > mat-mdc-slide-toggle-ripple) · __icons(svg on/off)
++                 + label.mdc-label[for][id] > sd-label (span.T14M + * đỏ khi required)
++         Nhãn: thư viện luôn vẽ `<sd-label>` (rỗng thì sd-label không vẽ gì). `data-autoid` trên mat-slide-toggle
++         như template thư viện; `data-disabled/empty/value/required` catalog không chụp nên kit không vẽ. */
+       var ICON_ON  = '<svg class="mdc-switch__icon mdc-switch__icon--on" viewBox="0 0 24 24">' +
+         '<path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z"></path></svg>';
+       var ICON_OFF = '<svg class="mdc-switch__icon mdc-switch__icon--off" viewBox="0 0 24 24">' +
+         '<path d="M20 13H4v-2h16v2z"></path></svg>';
+ 
+-      this.innerHTML = '<span class="' + classes.join(' ') + '">' +
+-        '<span class="mat-mdc-slide-toggle' + (checked ? ' mat-mdc-slide-toggle-checked' : '') + '">' +
+-          '<span class="mdc-form-field mat-internal-form-field">' +
+-            '<button type="button" role="switch" class="mdc-switch ' +
+-              (checked ? 'mdc-switch--selected mdc-switch--checked' : 'mdc-switch--unselected') +
+-              (disabled ? ' mdc-switch--disabled' : '') + '"' +
+-              ' aria-checked="' + (checked ? 'true' : 'false') + '"' +
+-              (this.name ? ' name="' + escAttr(this.name) + '"' : '') +
+-              (this.autoId ? ' data-autoid="' + escAttr(this.autoId) + '"' : '') +
+-              ' data-disabled="' + (disabled ? 'true' : 'false') + '"' +
+-              ' data-required="' + (required ? 'true' : 'false') + '"' +
+-              (disabled ? ' disabled' : '') + '>' +
+-              '<span class="mdc-switch__track"></span>' +
+-              '<span class="mdc-switch__handle-track">' +
+-                '<span class="mdc-switch__handle">' +
+-                  '<span class="mdc-switch__shadow"></span>' +
+-                  '<span class="mdc-switch__ripple"></span>' +
+-                  '<span class="mdc-switch__icons">' + ICON_ON + ICON_OFF + '</span>' +
+-                '</span>' +
+-              '</span>' +
+-            '</button>' + labelHtml +
+-          '</span>' +
+-        '</span>' +
+-        '</span>';
++      this.innerHTML = '<mat-slide-toggle class="' + this._toggleClass(checked) + '" id="' + id + '"' +
++          (this.autoId ? ' data-autoid="' + escAttr(this.autoId) + '"' : '') + '>' +
++        '<div class="mdc-form-field mat-internal-form-field">' +
++          '<button class="' + this._switchClass(checked, disabled) + '" role="switch" type="button"' +
++            ' tabindex="' + (disabled ? '-1' : '0') + '" id="' + id + '-button" aria-labelledby="' + id + '-label"' +
++            ' aria-checked="' + (checked ? 'true' : 'false') + '"' +
++            (this.name ? ' name="' + escAttr(this.name) + '"' : '') +
++            (disabled ? ' disabled' : '') + '>' +
++            '<div class="mat-mdc-slide-toggle-touch-target"></div>' +
++            '<span class="mdc-switch__track"></span>' +
++            '<span class="mdc-switch__handle-track"><span class="mdc-switch__handle">' +
++              '<span class="mdc-switch__shadow"><span class="mdc-elevation-overlay"></span></span>' +
++              '<span class="mdc-switch__ripple"><span class="mat-mdc-slide-toggle-ripple mat-focus-indicator mat-ripple"></span></span>' +
++              '<span class="mdc-switch__icons">' + ICON_ON + ICON_OFF + '</span>' +
++            '</span></span>' +
++          '</button>' +
++          '<label class="mdc-label" for="' + id + '-button" id="' + id + '-label">' +
++            /* markup sd-label viết sẵn (giống SdLabel._render) để không phụ thuộc thứ tự define() */
++            (label
++              ? '<sd-label label="' + escAttr(label) + '"' + (required ? ' required' : '') + '>' +
++                  '<div class="mb-0 d-flex"><div style="display: flex; align-items: center; gap: 4px">' +
++                    '<span class="T14M">' + esc(label) + '</span></div>' +
++                    (required ? '<span class="text-error mb-2 T14M">*</span>' : '') +
++                  '</div></sd-label>'
++              : '<sd-label></sd-label>') +
++          '</label>' +
++        '</div>' +
++        '</mat-slide-toggle>';
++    }
++
++    _toggleClass(checked) { return 'mat-mdc-slide-toggle' + (checked ? ' mat-mdc-slide-toggle-checked' : ''); }
++    _switchClass(checked, disabled) {
++      return 'mdc-switch ' + (checked ? 'mdc-switch--selected mdc-switch--checked' : 'mdc-switch--unselected') +
++        (disabled ? ' mdc-switch--disabled' : '');
++    }
++    /* Đổi trạng thái tại chỗ (không vẽ lại cả cụm → giữ focus trên nút như Material) */
++    _syncState() {
++      var mt = this.querySelector('mat-slide-toggle');
++      var btn = this.querySelector('button.mdc-switch');
++      if (!mt || !btn) return false;
++      var checked = this.hasAttribute('checked');
++      mt.className = this._toggleClass(checked);
++      btn.className = this._switchClass(checked, btn.disabled);
++      btn.setAttribute('aria-checked', checked ? 'true' : 'false');
++      return true;
+     }
+ 
+     _bind() {
+       var self = this;
+-      var wrap = this.querySelector('.c-switch-wrap');
+-      if (!wrap || wrap._bound) return;
+-      wrap._bound = true;
+-      // Lắng nghe trên cả wrap (track + label) để click label cũng bật/tắt;
+-      // click vào button track sẽ bubble lên wrap nên không cần bind riêng.
+-      wrap.addEventListener('click', function () {
++      var btn = this.querySelector('button.mdc-switch');
++      if (!btn || btn._bound) return;
++      btn._bound = true;
++      /* Chỉ nghe trên nút: bấm vào nhãn thì `label[for]` tự chuyển cú bấm sang nút (một sự kiện duy nhất). */
++      btn.addEventListener('click', function () {
+         if (self.hasAttribute('disabled')) return;
+         var checked = !self.hasAttribute('checked');
++        self._userToggle = true;
+         self.toggleAttribute('checked', checked);
++        self._userToggle = false;
++        self._syncState();
+         self.dispatchEvent(new CustomEvent('sd-change', { detail: { checked: checked }, bubbles: true }));
+       });
+     }
+@@ -1204,7 +1221,7 @@
+        `checked` là bí danh CỐ Ý giữ cho JS sẵn có của prototype, không phải
+        sót tên. SdSwitch không có attribute value nào nên chỉ có bí danh checked. */
+     get model() {
+-      var track = this.querySelector('.mdc-switch');
++      var track = this.querySelector('button.mdc-switch');
+       return track ? track.getAttribute('aria-checked') === 'true' : this.hasAttribute('checked');
+     }
+     set model(v) {

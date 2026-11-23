@@ -1,0 +1,899 @@
+# OPERATOR-2026-10-13 — sd-operator khớp catalog #c-operator + mã thư viện @sd-angular/core 19.0.10
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/OPERATOR-2026-10-13.patch
+# 6 file: sd-components.js · sd-tokens.css · operator.html · sd-data.md · known-gaps.md · CHANGELOG.md
+
+diff -ruN a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-13 05:41:16.010844384 +0000
++++ b/CHANGELOG.md	2026-10-13 05:41:16.038045557 +0000
+@@ -8,6 +8,29 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `sd-operator` khớp catalog `#c-operator` + mã thư viện
++
++Builder: *„Tiếp tục phần Operator `sd-operator`…“*
++
++- **DOM y hệt catalog:** nút `c-op-trigger mat-mdc-menu-trigger mat-mdc-tooltip-trigger` + `aria-haspopup` /
++  `aria-expanded` + thẻ `<mat-menu>`; menu mở là `.mat-mdc-menu-panel.c-op-menu` trong
++  `.cdk-overlay-pane` ở `body > .cdk-overlay-container` (trước: lớp nổi con của host), dòng
++  `button.mat-mdc-menu-item.c-op-row` + ripple. Tooltip `matTooltip` thay `title`.
++- **CSS chép nguyên thứ tự `operator.css`** (styles thư viện + MatMenu + token M2) và reboot nút của
++  catalog — nút trước đây mang font UA (Arial).
++- **Logic theo thư viện:** `operators` mặc định `[]` (trước: đủ 17 mã); `autoId` → `data-autoId` trên nút,
++  nguyên giá trị (trước: `operator-…` trên host); `sd-change` chỉ phát khi đổi giá trị. Bàn phím như
++  mat-menu (Enter / Space mở, ↑ ↓ Home End, Enter chọn, Esc / Tab đóng, trả focus về nút), lật menu khi
++  thiếu chỗ, bám nút khi cuộn. Nút không còn bị vẽ lại mỗi lần đổi (giữ focus).
++- Catalog vẽ nút khác nhau ở `#c-query-bar` / `#c-query-builder` → kit vẽ theo đúng mục chứa nó; query-bar
++  vẫn 0 lệch như trước, query-builder DOM nút trùng catalog. Menu toán tử trong popover query-bar: chọn
++  xong popover vẫn mở, Esc chỉ đóng menu.
++- So 8 nút + 2 menu catalog: **0 lệch**. Trang preview dựng lại 3 tab (2 biến thể catalog + `open()` +
++  event log + bảng 17 mã); docs `sd-data.md`.
++
++Kiểm: 23 phép thử tương tác + 4 phép thử trong query-bar / query-builder PASS. Chi tiết lệch có chủ ý:
++`_memory/known-gaps.md`. Bản vá: `reviews/ds-mirror/OPERATOR-2026-10-13.patch`.
++
+ ### Changed — `sd-org-chart` khớp catalog `#c-org-chart` + mã thư viện
+ 
+ Builder: *„Tiếp tục phần Org chart `sd-org-chart`…“*
+diff -ruN a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-13 05:41:16.016745580 +0000
++++ b/_memory/known-gaps.md	2026-10-13 05:41:16.043461527 +0000
+@@ -216,6 +216,25 @@
+ | `src` | không có | bí danh của `source` | Ngoại lệ 3 Rule 18 (markup cũ) |
+ | Export prototype (1 file HTML) | — | trang có `sd-preview-pdf` phải nhúng thêm `vendor/pdfjs/*.js` (~1,7 MB) | Ghi ở `ai-instructions/export.md` |
+ 
++## `sd-operator` — ĐỒNG BỘ 2026-10-13 theo catalog + mã thư viện
++
++Nguồn: catalog `#c-operator` + `fesm2022/sd-angular-core-components-operator.mjs` + bảng `OPERATORS`
++của `@sdcorejs/utils` 1.1.4 (`npm pack`; 17 SVG trùng từng ký tự với kit) + `VI_MESSAGES`
++`core.operator.*`. So 8 nút + 2 menu mở của catalog: **DOM trùng 100%, tên lớp / toạ độ / màu / chữ 0
++lệch** (menu đo trong pane). `sd-query-bar` (fcmp 6 thanh) giữ nguyên như trước; `sd-query-builder`
++DOM nút trùng catalog.
++
++| Chỗ | Catalog / thư viện | Kit | Vì sao |
++|---|---|---|---|
++| DOM nút theo chỗ đặt | catalog **tự mâu thuẫn**: `#c-operator` vẽ đúng thư viện (3 lớp `c-op-trigger mat-mdc-menu-trigger mat-mdc-tooltip-trigger` + `aria-haspopup` + `aria-expanded` + `<mat-menu>`, tooltip matTooltip); `#c-query-bar` vẽ `button.c-op-trigger[title]` trần; `#c-query-builder` vẽ 3 lớp + `aria-haspopup` + `title` + `data-op`, không `aria-expanded` / `<mat-menu>` | vẽ theo **đúng mục catalog chứa nó** (`_variant()`: trong `sd-query-builder` / trong `sd-query-bar` hoặc pane popover của nó / còn lại) | "Không được khác catalog" — mỗi mục giữ 0 lệch. Trên app thật cả ba là cùng DOM thư viện |
++| Tooltip | `matTooltip` (catalog vẽ sẵn một tooltip tĩnh trong khung hẹp 28px nên chữ "Bằng" xuống 2 dòng, 40×40) | node tooltip chung kiểu `mat` (`data-sd-tooltip-kind="mat"`, trễ 0) — 45×24, một dòng, cách nút 8px, cùng màu / chữ / bo góc | Khung hẹp là của trang demo; overlay CDK thật không bị bó. Thêm 4 thuộc tính `data-sd-tooltip*` trên nút |
++| `[operators]` mặc định | `input([])` → menu rỗng | `[]` — **bản cũ của kit mặc định đủ 17 mã** | Trang nào bỏ trống `operators` nay ra menu rỗng (sd-query-bar / sd-query-builder luôn truyền) |
++| `autoId` | `[attr.data-autoId]` trên nút, nguyên giá trị | y hệt — **bản cũ gắn `operator-{autoId}` lên host** | Test E2E bám vào |
++| `data-value` trên dòng menu, `data-model` trên host | catalog có (thư viện không) | có | Theo DOM catalog |
++| Lớp focus của dòng | FocusKeyManager: mở bằng chuột → `cdk-mouse-focused` (không tô); bàn phím / `open()` → `cdk-keyboard-focused` / `cdk-program-focused` (tô `rgba(0,0,0,.12)`) | bàn phím / program y hệt; mở bằng chuột focus mục đầu nhưng không gắn lớp | Ảnh chụp catalog không có lớp nào trên dòng |
++| Gõ chữ để nhảy (typeahead), `aria-controls`, id panel | có trong mat-menu | không | Catalog không vẽ; ít dùng |
++| Esc khi menu nằm trong popover sd-query-bar | menu lồng: chỉ đóng menu | y hệt (chặn sự kiện để popover không commit) | |
++
+ ## `sd-org-chart` — ĐỒNG BỘ 2026-10-13 theo catalog + mã thư viện
+ 
+ Nguồn: catalog `#c-org-chart` + `fesm2022/sd-angular-core-components-org-chart.mjs` (template, logic,
+@@ -697,7 +716,7 @@
+ | Icon của `bpm-kpi-card` | Catalog dùng `material-icons` (đặc) | **ĐÃ ĐỔI theo catalog 2026-10-12 — QUYẾT ĐỊNH CỦA BUILDER** (trước: outlined theo Rule 4) | Ngoại lệ Rule 4 riêng cho component này; đừng sửa ngược |
+ | Lớp `.kpi-card` của mẫu HTML viết tay cũ (components.css) | — | Trùng tên lớp bên trong `bpm-kpi-card`; nay khai `.kpi-card:not(bpm-kpi-card > .kpi-card)` | Giữ cho trang đã sinh; mẫu đã bỏ khỏi `generate-components.md`. Khi chắc không còn trang nào dùng thì gỡ hẳn cả khối `.kpi-card*` cũ (2026-10-12) |
+ | **Chữ thanh tiêu đề `sd-modal-resizable` là chữ TỐI trên nền xám** | Nút mang lớp `.c-action--white`, nhưng bundle CSS catalog **không có luật nào tô trắng** cho nó hay cho `.modal-resizable__title` | Kit mirror kết quả thật: không khai `color`, chữ thừa hưởng `#212529` trên nền header `#5d6165` | Cùng loại với màu checkbox indigo của `sd-tree`: tên lớp nói một đằng, CSS thật làm một nẻo. Đã dựng lại nguyên văn CSS catalog trong trình duyệt để đo, không đoán. **Chờ Builder quyết** giữ hay tô trắng cho dễ đọc (2026-10-11) |
+-| Menu toán tử của `sd-operator` | Overlay CDK trong `cdk-overlay-container` ở `body` | Lớp nổi là **con** của host; thêm `position:relative` trên host | Cùng kiểu lệch đã ghi cho `sd-tree` / `sd-query-bar` / `sd-autocomplete`. Tên lớp và số đo bên trong giữ đúng catalog (2026-10-11) |
++| ~~Menu toán tử của `sd-operator`~~ **ĐÃ SỬA 2026-10-13** — menu nay nằm trong `.cdk-overlay-pane` của `body > .cdk-overlay-container` như overlay CDK, host bỏ `position:relative`; ghi chú cũ giữ dưới đây | Overlay CDK trong `cdk-overlay-container` ở `body` | Lớp nổi là **con** của host; thêm `position:relative` trên host | Cùng kiểu lệch đã ghi cho `sd-tree` / `sd-query-bar` / `sd-autocomplete`. Tên lớp và số đo bên trong giữ đúng catalog (2026-10-11) |
+ | Icon toán tử của `sd-operator` là **inline SVG** | 17 glyph riêng (hai gạch = bằng, mũi tên hai đầu = trong khoảng…) | Giữ nguyên SVG của catalog | Rule 4 của `AGENTS.md` cấm inline SVG cho **icon chọn theo tên**; đây là glyph của chính component — cùng ngoại lệ đã áp cho dấu tích `sd-checkbox` (2026-10-11) |
+ | `editable` · `(editingChanged)` (sd-modal-resizable) | Bảng API có khai | **Không dựng** | Catalog chỉ nêu tên, không ví dụ, không markup nào mang trạng thái "đang sửa". Dựng là đoán (2026-10-11) |
+ | Tooltip hai nút đếm của `sd-import-excel` **ghi ngược nhau** | Catalog: nút **warning** chú thích *"Số dòng dữ liệu có lỗi"*, nút **error** chú thích *"Số dòng dữ liệu có cảnh báo"* | Kit chép **nguyên văn**, kể cả chỗ ngược | Gần như chắc chắn là nhầm trong catalog, nhưng sửa là cố ý lệch mốc chuẩn. **Chờ Builder quyết** (2026-10-11) |
+diff -ruN a/design-system/components/sd-data.md b/design-system/components/sd-data.md
+--- a/design-system/components/sd-data.md	2026-10-13 05:41:16.019780093 +0000
++++ b/design-system/components/sd-data.md	2026-10-13 05:41:16.046336380 +0000
+@@ -661,25 +661,38 @@
+ 
+ ---
+ 
+-## sd-operator — DỰNG MỚI 2026-10-11
++## sd-operator — ĐỒNG BỘ 2026-10-13 (catalog `#c-operator` + mã thư viện 19.0.10)
+ 
+-Nút chọn toán tử so sánh cho bộ lọc. `sd-query-bar` dùng khi dựng điều kiện.
++Nút icon mở `mat-menu` liệt kê các toán tử được phép **theo đúng thứ tự truyền vào**.
++`sd-query-bar` / `sd-query-builder` dùng khi dựng điều kiện. So 8/8 nút + 2/2 menu của catalog:
++DOM, tên lớp, toạ độ / màu / chữ **0 lệch**.
+ 
+ | Attribute / property | Ý nghĩa | Default |
+ |---|---|---|
+-| `model` (hoặc `value`) | Mã toán tử đang chọn. Rỗng → icon **phễu** | — |
+-| `operators` | Mảng mã được phép, **giữ đúng thứ tự truyền vào**. JSON hoặc `"A,B,C"` | đủ 17 mã |
++| `model` (bí danh cũ `value`) | Mã toán tử đang chọn. Rỗng / mã lạ → icon **phễu**, không tooltip | — |
++| `operators` | Mảng mã được phép, giữ thứ tự. JSON, `"A,B,C"` hoặc property JS | **`[]`** (như thư viện — menu rỗng) |
+ | `disabled` | boolean | `false` |
++| `autoId` | `data-autoId` trên **nút**, nguyên giá trị (thư viện không thêm tiền tố) | — |
+ 
+-17 mã: `EQUAL` · `NOT_EQUAL` · `GREATER_THAN` · `LESS_THAN` · `GREATER_OR_EQUAL` ·
+-`LESS_OR_EQUAL` · `BETWEEN` · `CONTAIN` · `NOT_CONTAIN` · `START_WITH` ·
+-`NOT_START_WITH` · `END_WITH` · `NOT_END_WITH` · `IN` · `NOT_IN` · `NULL` · `NOT_NULL`.
++17 mã (bảng `OPERATORS` của `@sdcorejs/utils` 1.1.4, nhãn `VI_MESSAGES`): `EQUAL` Bằng · `NOT_EQUAL` ·
++`GREATER_THAN` · `LESS_THAN` · `GREATER_OR_EQUAL` · `LESS_OR_EQUAL` · `CONTAIN` · `NOT_CONTAIN` ·
++`START_WITH` · `NOT_START_WITH` · `END_WITH` · `NOT_END_WITH` · `IN` · `NOT_IN` · `BETWEEN` · `NULL` · `NOT_NULL`.
++
++- Nút: `button.c-op-trigger.mat-mdc-menu-trigger.mat-mdc-tooltip-trigger` (`aria-haspopup`, `aria-expanded`)
++  + thẻ `<mat-menu>` rỗng. Tooltip `matTooltip` phía trên = nhãn đã dịch.
++- Menu mở nằm trong `.cdk-overlay-pane` ở `body > .cdk-overlay-container` (overlay CDK):
++  `.mat-mdc-menu-panel.c-op-menu.mat-menu-after.mat-menu-below > .mat-mdc-menu-content >
++  button.mat-mdc-menu-item.c-op-row[data-value]` (icon · `.c-op-label` · `.c-op-code`), dòng đang chọn
++  `.c-op-active`. Đặt dưới nút, mép trái thẳng nút; thiếu chỗ thì lật `mat-menu-above` / `-before`.
++- Bàn phím như mat-menu: Enter / Space mở (focus mục đầu, tô nền), ↑ ↓ (vòng) · Home · End, Enter chọn,
++  Esc / Tab đóng; chọn xong / Esc trả focus về nút. Bấm ra ngoài là đóng.
++- Đặt trong `sd-query-bar` / `sd-query-builder`: nút vẽ đúng DOM catalog của mục đó (xem known-gaps).
+ 
+-Phương thức `open()` / `close()`; sự kiện `sd-change` → `{ value }`.
+-Tooltip của nút là nhãn tiếng Việt của toán tử đang chọn.
++Phương thức `open()` (thư viện) / `close()` (kit); sự kiện `sd-change` → `{ value }` ≙ `(modelChange)`,
++chỉ phát khi đổi giá trị.
+ 
+ ```html
+-<sd-operator model="GREATER_OR_EQUAL"
++<sd-operator model="GREATER_OR_EQUAL" autoId="loc-so-tien"
+   operators='["EQUAL","NOT_EQUAL","GREATER_THAN","LESS_THAN","GREATER_OR_EQUAL","LESS_OR_EQUAL","BETWEEN"]'>
+ </sd-operator>
+ ```
+diff -ruN a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-13 05:41:16.018571056 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-13 05:41:16.044995074 +0000
+@@ -8066,85 +8066,60 @@
+ 
+ 
+ /* ══════════════════════════════════════════════════════════
+-   sd-operator — DỰNG MỚI 2026-10-11 theo Core UI Catalog `#c-operator`.
+-
+-   Catalog: "Nút chọn toán tử so sánh cho bộ lọc (bằng, lớn hơn, chứa, trong
+-   khoảng…): nút icon mở `mat-menu` liệt kê các toán tử được phép theo đúng thứ
+-   tự truyền vào. Được `sd-query-bar` dùng khi dựng điều kiện lọc."
+-
+-   CSS của component chép nguyên văn (catalog ghi "styles nguyên văn,
+-   `::ng-deep .c-op-menu` là global"). Menu thì catalog dùng overlay CDK; kit
+-   dựng lớp nổi riêng — cùng kiểu lệch đã ghi cho `sd-tree` và `sd-query-bar` —
+-   nhưng GIỮ đúng tên lớp `.c-op-menu` / `.c-op-row` và số đo bên trong.
+-
+-   `sd-query-bar` của kit đã khai `.c-op-trigger` ở phạm vi hẹp từ trước; nay
+-   nâng lên tầng component để `sd-operator` đứng riêng cũng dùng được.
++   sd-operator — ĐỒNG BỘ 2026-10-13 theo Core UI Catalog `#c-operator`
++   (`css/components/operator.css`: styles nguyên văn của @sd-angular/core 19.0.10 +
++   MatMenu @angular/material + token M2 của portal).
++
++   Chép NGUYÊN THỨ TỰ. Phạm vi `#c-operator X` →
++     `sd-operator …`  với luật của nút / thẻ `mat-menu` (giữ độ ưu tiên như bản cũ —
++                      sd-query-bar / sd-query-builder vẫn đè được)
++     `:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) …` với luật menu: menu
++                      nằm trong `.cdk-overlay-pane` ở `body > .cdk-overlay-container` như
++                      overlay CDK; `:where` không cộng độ ưu tiên.
++   Bỏ: khung demo `.op-*` và khối MatTooltip tĩnh của trang catalog — tooltip là node
++   chung của kit kiểu `matTooltip` (`data-sd-tooltip-kind="mat"`).
++   Host không khai `display` (như catalog) → `inline`.
+    ══════════════════════════════════════════════════════════ */
+-/* `position: relative` là của KIT, không có trong catalog: menu của catalog nằm
+-   trong `cdk-overlay-container` ở `body`, còn menu của kit là CON của host nên
+-   cần host làm mốc định vị. Cùng kiểu đã ghi cho sd-autocomplete / sd-tree. */
+-/* Catalog không khai `display` cho host → mặc định `inline` (trong hàng flex của
+-   query-builder nó thành khối, cao 30px = dòng chữ chứa nút 28px). 2026-10-13. */
+-sd-operator { display: inline; position: relative; }
+-sd-operator .c-op-trigger {
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  padding: 4px;
+-  border: none;
+-  background: transparent;
+-  color: var(--sd-primary);
+-  cursor: pointer;
+-  border-radius: 4px;
+-}
+-sd-operator .c-op-trigger:hover:not([disabled]) { background: #0000000a; }
+-sd-operator .c-op-trigger[disabled] { color: #00000042; cursor: default; }
+-sd-operator .c-op-icon { display: inline-flex; align-items: center; }
+-sd-operator .c-op-icon svg { display: block; }
+-
+-/* Menu toán tử — khai TOÀN CỤC đúng như catalog (`::ng-deep .c-op-menu`). */
+-.c-op-menu {
+-  display: none;
+-  position: absolute;
+-  top: calc(100% + 4px);
+-  left: 0;
+-  z-index: 1000;
+-  min-width: 112px;
+-  max-width: 280px;
+-  padding: 8px 0;
+-  background: #fff;
+-  border-radius: 4px;
+-  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, .2), 0 8px 10px 1px rgba(0, 0, 0, .14), 0 3px 14px 2px rgba(0, 0, 0, .12);
+-}
+-sd-operator.sd-open .c-op-menu { display: block; }
+-.c-op-menu .c-op-row {
+-  display: flex;
+-  align-items: center;
+-  width: 100%;
+-  min-height: 48px;
+-  padding: 0 16px;
+-  border: none;
+-  background: none;
+-  color: rgba(0, 0, 0, .87);
+-  font-family: var(--sd-font-family);
+-  font-size: 14px;
+-  text-align: left;
+-  cursor: pointer;
+-}
+-.c-op-menu .c-op-row:hover { background: rgba(0, 0, 0, .04); }
+-.c-op-menu .mat-mdc-menu-item-text { display: flex; align-items: center; gap: 8px; width: 100%; }
+-.c-op-menu .c-op-icon { display: inline-flex; align-items: center; flex: 0 0 auto; }
+-.c-op-menu .c-op-icon svg { display: block; }
+-.c-op-menu .c-op-label { flex: 1 1 auto; }
+-/* `--sd-text-muted` không có trong bộ token portal → giá trị thật là fallback */
+-.c-op-menu .c-op-code {
+-  margin-left: auto;
+-  padding-left: 16px;
+-  color: #7a7a7a;
+-  font-size: 11px;
+-  font-family: monospace;
+-}
+-.c-op-menu .c-op-row.c-op-active { background: var(--sd-primary-light); }
++/* overlay pane của menu (kit thêm toạ độ màn hình, như pane của sd-query-bar) */
++.cdk-overlay-pane:has(> .c-op-menu){position:absolute;z-index:1000;display:flex;max-width:100%;box-sizing:border-box;pointer-events:auto}
++/* token M3 `--mat-sys-label-large-*`: catalog khai toàn cục trên `html` (material-tokens.css) */
++:where(.cdk-overlay-pane:has(> .c-op-menu)){--mat-sys-label-large-font:Roboto;--mat-sys-label-large-line-height:1.25rem;--mat-sys-label-large-size:0.875rem;--mat-sys-label-large-tracking:0.006rem;--mat-sys-label-large-weight:500}
++/* reboot `.sd-scope button{border-radius:0;font-family:inherit}` của catalog (catalog.css) —
++   thiếu nó nút mang font UA (Arial). Thua luật component như ở catalog. */
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) button{border-radius:0;font-family:inherit}
++sd-operator .c-op-trigger{display:inline-flex;align-items:center;justify-content:center;padding:4px;border:none;background:transparent;color:var(--sd-primary, #0f766e);cursor:pointer;border-radius:4px}
++sd-operator .c-op-trigger:hover:not([disabled]){background:#0000000a}
++sd-operator .c-op-trigger[disabled]{color:#00000042;cursor:default}
++sd-operator .c-op-icon{display:inline-flex;align-items:center}
++sd-operator .c-op-icon svg{display:block}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .c-op-menu .mat-mdc-menu-item-text{display:flex;align-items:center;gap:8px;width:100%}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .c-op-menu .c-op-icon{display:inline-flex;align-items:center;flex:0 0 auto}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .c-op-menu .c-op-icon svg{display:block}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .c-op-menu .c-op-label{flex:1 1 auto}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .c-op-menu .c-op-code{margin-left:auto;padding-left:16px;color:var(--sd-text-muted, #7a7a7a);font-size:11px;font-family:monospace}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .c-op-menu .c-op-row.c-op-active{background:var(--sd-primary-light, rgba(15, 118, 110, .08))}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) mat-menu{display:none}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-content{margin:0;padding:8px 0;outline:0}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-content,:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-content .mat-mdc-menu-item .mat-mdc-menu-item-text{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;flex:1;white-space:normal;font-family:var(--mat-menu-item-label-text-font, var(--mat-sys-label-large-font));line-height:var(--mat-menu-item-label-text-line-height, var(--mat-sys-label-large-line-height));font-size:var(--mat-menu-item-label-text-size, var(--mat-sys-label-large-size));letter-spacing:var(--mat-menu-item-label-text-tracking, var(--mat-sys-label-large-tracking));font-weight:var(--mat-menu-item-label-text-weight, var(--mat-sys-label-large-weight))}
++@keyframes _mat-menu-enter{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:none}}
++@keyframes _mat-menu-exit{from{opacity:1}to{opacity:0}}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-panel{min-width:112px;max-width:280px;overflow:auto;box-sizing:border-box;outline:0;animation:_mat-menu-enter 120ms cubic-bezier(0, 0, 0.2, 1);border-radius:var(--mat-menu-container-shape, var(--mat-sys-corner-extra-small));background-color:var(--mat-menu-container-color, var(--mat-sys-surface-container));box-shadow:var(--mat-menu-container-elevation-shadow, 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12));will-change:transform,opacity}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-panel.mat-menu-panel-animations-disabled{animation:none}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-panel .mat-divider{color:var(--mat-menu-divider-color, var(--mat-sys-surface-variant));margin-bottom:var(--mat-menu-divider-bottom-spacing, 8px);margin-top:var(--mat-menu-divider-top-spacing, 8px)}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item{display:flex;position:relative;align-items:center;justify-content:flex-start;overflow:hidden;padding:0;cursor:pointer;width:100%;text-align:left;box-sizing:border-box;color:inherit;font-size:inherit;background:none;text-decoration:none;margin:0;min-height:48px;padding-left:var(--mat-menu-item-leading-spacing, 12px);padding-right:var(--mat-menu-item-trailing-spacing, 12px);-webkit-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item::-moz-focus-inner{border:0}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item:has(.material-icons,mat-icon,[matButtonIcon]){padding-left:var(--mat-menu-item-with-icon-leading-spacing, 12px);padding-right:var(--mat-menu-item-with-icon-trailing-spacing, 12px)}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item,:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item:visited,:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item:link{color:var(--mat-menu-item-label-text-color, var(--mat-sys-on-surface))}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item .mat-icon-no-color{color:var(--mat-menu-item-icon-color, var(--mat-sys-on-surface-variant))}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item[disabled]{cursor:default;opacity:.38}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item[disabled]::after{display:block;position:absolute;content:"";top:0;left:0;bottom:0;right:0}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item:focus{outline:0}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item .mat-icon{flex-shrink:0;margin-right:var(--mat-menu-item-spacing, 12px);height:var(--mat-menu-item-icon-size, 24px);width:var(--mat-menu-item-icon-size, 24px)}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item:not([disabled]):hover{background-color:var(--mat-menu-item-hover-state-layer-color, color-mix(in srgb, var(--mat-sys-on-surface) calc(var(--mat-sys-hover-state-layer-opacity) * 100%), transparent))}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item:not([disabled]).cdk-program-focused,:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item:not([disabled]).cdk-keyboard-focused,:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item:not([disabled]).mat-mdc-menu-item-highlighted{background-color:var(--mat-menu-item-focus-state-layer-color, color-mix(in srgb, var(--mat-sys-on-surface) calc(var(--mat-sys-focus-state-layer-opacity) * 100%), transparent))}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))) .mat-mdc-menu-item .mat-mdc-menu-ripple{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}
++:is(sd-operator, :where(.cdk-overlay-pane:has(> .c-op-menu))){--mat-menu-container-shape:4px;--mat-menu-container-color:#fff;--mat-menu-item-label-text-color:rgba(0,0,0,.87);--mat-menu-item-icon-color:rgba(0,0,0,.87);--mat-menu-item-spacing:16px;--mat-menu-item-leading-spacing:16px;--mat-menu-item-trailing-spacing:16px;--mat-menu-item-with-icon-leading-spacing:16px;--mat-menu-item-with-icon-trailing-spacing:16px;--mat-menu-item-hover-state-layer-color:rgba(0,0,0,.04);--mat-menu-item-focus-state-layer-color:rgba(0,0,0,.12);--mat-menu-container-elevation-shadow:0px 5px 5px -3px rgba(0,0,0,.2),0px 8px 10px 1px rgba(0,0,0,.14),0px 3px 14px 2px rgba(0,0,0,.12)}
++/* /sd-operator */
+ 
+ /* ══════════════════════════════════════════════════════════
+    sd-modal-resizable — DỰNG MỚI 2026-10-11 theo `#c-modal-resizable`.
+diff -ruN a/design-system/preview/components/operator.html b/design-system/preview/components/operator.html
+--- a/design-system/preview/components/operator.html	2026-10-13 05:41:16.022342013 +0000
++++ b/design-system/preview/components/operator.html	2026-10-13 05:41:16.048974511 +0000
+@@ -4,11 +4,13 @@
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>sd-operator — Preview</title>
++
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
++
+   <link rel="stylesheet" href="../../core/styles/tokens.css">
+   <link rel="stylesheet" href="../../core/styles/layout.css">
+   <link rel="stylesheet" href="../../core/styles/components.css">
+@@ -17,56 +19,230 @@
+   <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+ </head>
+ <body>
++
+ <div class="app-shell">
++
+   <aside class="sidebar" id="sidebar"></aside>
++
+   <div class="main-area">
++
+     <div data-pattern="page-header" data-variant="browse"
+          data-title="sd-operator"
+-         data-subtitle="Nút chọn toán tử so sánh cho bộ lọc — sd-query-bar dùng khi dựng điều kiện"></div>
++         data-subtitle="Nút chọn toán tử so sánh cho bộ lọc — đồng bộ Core UI #c-operator"
++         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
++
+     <div class="content-zone">
+ 
+-      <sd-section title="Nút kích hoạt">
+-        <p class="text-sm text-secondary mb-2">Nút trong suốt màu <code>--sd-primary</code>; tooltip = nhãn đã dịch của toán tử đang chọn. Chưa chọn → icon phễu.</p>
+-        <div style="display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;">
++      <!-- ── Tab: Preview ──────────────────────────────────── -->
++      <div class="tab-panel" data-tab-panel="0">
++
++        <sd-section title="Nút kích hoạt">
++          <p class="text-sm text-secondary mb-3">Nút trong suốt màu <code>--sd-primary</code>; rê chuột → tooltip (matTooltip, phía trên) là nhãn đã dịch của toán tử đang chọn. Chưa chọn → icon phễu, không tooltip.</p>
++          <div style="display:flex;align-items:flex-end;gap:20px 28px;flex-wrap:wrap;padding-top:24px;">
+           <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;">
+-            <sd-operator></sd-operator><span class="text-sm text-secondary">chưa chọn</span></div>
++            <sd-operator operators='["EQUAL","NOT_EQUAL","GREATER_THAN","LESS_THAN","GREATER_OR_EQUAL","LESS_OR_EQUAL","BETWEEN"]'></sd-operator><span class="text-xs text-secondary font-mono">chưa chọn (phễu)</span></div>
+           <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;">
+-            <sd-operator model="EQUAL"></sd-operator><span class="text-sm text-secondary">EQUAL</span></div>
++            <sd-operator model="EQUAL" operators='["EQUAL","NOT_EQUAL","GREATER_THAN","LESS_THAN","GREATER_OR_EQUAL","LESS_OR_EQUAL","BETWEEN"]'></sd-operator><span class="text-xs text-secondary font-mono">EQUAL</span></div>
+           <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;">
+-            <sd-operator model="CONTAIN"></sd-operator><span class="text-sm text-secondary">CONTAIN</span></div>
++            <sd-operator model="CONTAIN" operators='["CONTAIN","NOT_CONTAIN","START_WITH","NOT_START_WITH","END_WITH","NOT_END_WITH","IN","NOT_IN","NULL","NOT_NULL"]'></sd-operator><span class="text-xs text-secondary font-mono">CONTAIN</span></div>
+           <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;">
+-            <sd-operator model="BETWEEN"></sd-operator><span class="text-sm text-secondary">BETWEEN</span></div>
++            <sd-operator model="BETWEEN" operators='["EQUAL","NOT_EQUAL","GREATER_THAN","LESS_THAN","GREATER_OR_EQUAL","LESS_OR_EQUAL","BETWEEN"]'></sd-operator><span class="text-xs text-secondary font-mono">BETWEEN</span></div>
+           <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;">
+-            <sd-operator model="NOT_NULL"></sd-operator><span class="text-sm text-secondary">NOT_NULL</span></div>
++            <sd-operator model="NOT_NULL" operators='["CONTAIN","NOT_CONTAIN","START_WITH","NOT_START_WITH","END_WITH","NOT_END_WITH","IN","NOT_IN","NULL","NOT_NULL"]'></sd-operator><span class="text-xs text-secondary font-mono">NOT_NULL</span></div>
+           <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;">
+-            <sd-operator model="EQUAL" disabled></sd-operator><span class="text-sm text-secondary">disabled</span></div>
+-        </div>
+-      </sd-section>
++            <sd-operator model="EQUAL" operators='["EQUAL"]' disabled></sd-operator><span class="text-xs text-secondary font-mono">disabled</span></div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Menu — danh sách toán tử theo đúng thứ tự truyền vào">
++          <p class="text-sm text-secondary mb-3">Bấm nút để mở menu: mỗi dòng icon · nhãn (VI_MESSAGES) · mã; dòng đang chọn tô <code>--sd-primary-light</code>. Bàn phím: Enter / Space mở · ↑ ↓ Home End di chuyển · Enter chọn · Esc / Tab đóng.</p>
++          <div style="display:flex;gap:24px 48px;flex-wrap:wrap;min-height:540px;align-items:flex-start;">
++            <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:300px;">
++              <span class="text-xs text-secondary font-mono">Số tiền giải ngân</span>
++              <sd-operator id="op-num" model="GREATER_OR_EQUAL" autoId="loc-so-tien" operators='["EQUAL","NOT_EQUAL","GREATER_THAN","LESS_THAN","GREATER_OR_EQUAL","LESS_OR_EQUAL","BETWEEN"]'></sd-operator>
++            </div>
++            <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:300px;">
++              <span class="text-xs text-secondary font-mono">Tên ngân hàng</span>
++              <sd-operator id="op-text" model="CONTAIN" autoId="loc-ngan-hang" operators='["CONTAIN","NOT_CONTAIN","START_WITH","NOT_START_WITH","END_WITH","NOT_END_WITH","IN","NOT_IN","NULL","NOT_NULL"]'></sd-operator>
++            </div>
++            <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px;">
++              <sd-button id="btn-op-open" title="open() — mở menu &quot;Số tiền giải ngân&quot;" type="light" color="primary" prefixIcon="menu_open"></sd-button>
++            </div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Event log">
++          <p class="text-sm text-secondary mb-3"><code>sd-change</code> ≙ <code>(modelChange)</code> của <code>[(model)]</code> — chỉ phát khi đổi sang toán tử khác.</p>
++          <pre class="ds-guide-code" id="op-event-log">Chưa có sự kiện nào.</pre>
++        </sd-section>
++
++      </div><!-- /tab-panel: Preview -->
++
++      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
++      <div class="tab-panel" data-tab-panel="1" style="display:none">
++        <sd-section title="Hướng dẫn BA / PO">
++          <div class="ds-guide">
++
++            <div class="ds-guide-do-dont">
++              <div class="ds-guide-do">
++                <div class="ds-guide-box-header">
++                  <span class="material-icons-outlined mi-16">check_circle</span>
++                  Dùng khi
++                </div>
++                <ul class="ds-guide-list">
++                  <li>Ô lọc cần cho người dùng chọn cách so sánh: bằng, lớn hơn, trong khoảng, chứa…</li>
++                  <li>Dựng điều kiện trong sd-query-bar / sd-query-builder (hai component này đã dùng sẵn)</li>
++                  <li>Chỉ cho phép một số toán tử theo kiểu dữ liệu (số tiền, chuỗi, ngày)</li>
++                </ul>
++              </div>
++              <div class="ds-guide-dont">
++                <div class="ds-guide-box-header">
++                  <span class="material-icons-outlined mi-16">cancel</span>
++                  Không dùng khi
++                </div>
++                <ul class="ds-guide-list">
++                  <li>Ô lọc luôn so sánh một kiểu cố định — không cần cho chọn</li>
++                  <li>Chọn giá trị dữ liệu (trạng thái, chi nhánh) — dùng sd-select</li>
++                  <li>Bộ lọc nhiều điều kiện lồng nhau — dùng sd-query-builder</li>
++                </ul>
++              </div>
++            </div>
++
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
++              <div class="ds-guide-prd">
++                <p>"Cạnh ô Số tiền giải ngân có sd-operator cho chọn: Bằng, Không bằng, Lớn hơn, Nhỏ hơn, Lớn hơn hoặc bằng, Nhỏ hơn hoặc bằng, Trong khoảng — mặc định Lớn hơn hoặc bằng. Chọn Trong khoảng thì ô nhập đổi thành hai ô Từ / Đến."</p>
++              </div>
++            </div>
+ 
+-      <sd-section title="Danh sách toán tử theo đúng thứ tự truyền vào">
+-        <p class="text-sm text-secondary mb-2">Bấm nút để mở menu. Mỗi dòng: icon · nhãn · mã; dòng đang chọn tô <code>--sd-primary-light</code>.</p>
+-        <div style="display:flex;gap:64px;flex-wrap:wrap;min-height:560px;align-items:flex-start;">
+-          <div>
+-            <p class="text-sm text-secondary mb-2">Số tiền giải ngân</p>
+-            <sd-operator id="op-num" model="GREATER_OR_EQUAL"
+-              operators='["EQUAL","NOT_EQUAL","GREATER_THAN","LESS_THAN","GREATER_OR_EQUAL","LESS_OR_EQUAL","BETWEEN"]'></sd-operator>
+           </div>
+-          <div>
+-            <p class="text-sm text-secondary mb-2">Tên ngân hàng</p>
+-            <sd-operator id="op-text" model="CONTAIN"
+-              operators='["CONTAIN","NOT_CONTAIN","START_WITH","NOT_START_WITH","END_WITH","NOT_END_WITH","IN","NOT_IN","NULL","NOT_NULL"]'></sd-operator>
++        </sd-section>
++      </div><!-- /tab-panel: BA/PO -->
++
++      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
++      <div class="tab-panel" data-tab-panel="2" style="display:none">
++        <sd-section title="Hướng dẫn Dev">
++          <div class="ds-guide">
++
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Cú pháp</p>
++              <div class="ds-guide-code-wrap">
++                <div class="ds-guide-code-bar">
++                  <span class="ds-guide-code-lang">HTML</span>
++                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
++                </div>
++                <pre class="ds-guide-code">&lt;sd-operator id="op-so-tien" model="GREATER_OR_EQUAL" autoId="loc-so-tien"
++  operators='["EQUAL","NOT_EQUAL","GREATER_THAN","LESS_THAN","GREATER_OR_EQUAL","LESS_OR_EQUAL","BETWEEN"]'&gt;&lt;/sd-operator&gt;
++
++&lt;script&gt;
++  var op = document.getElementById('op-so-tien');
++  op.addEventListener('sd-change', function (e) { /* e.detail.value */ });
++  op.open();    // mở menu bằng code (như sd-query-bar khi dựng điều kiện)
++&lt;/script&gt;</pre>
++              </div>
++            </div>
++
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Attributes / property</p>
++              <table class="ds-guide-table">
++                <thead><tr><th>Tên</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
++                <tbody>
++                  <tr><td>model</td><td>mã toán tử</td><td>-</td><td>Toán tử đang chọn (<code>[(model)]</code>). Rỗng / mã lạ → icon phễu, không tooltip</td></tr>
++                  <tr><td>operators</td><td>JSON · "A,B,C" · property JS</td><td>[]</td><td>Toán tử được phép, giữ đúng thứ tự truyền vào. Không khai → menu rỗng (như thư viện)</td></tr>
++                  <tr><td>disabled</td><td>boolean</td><td>false</td><td>Nút xám <code>rgba(0,0,0,.26)</code>, không mở được menu</td></tr>
++                  <tr><td>autoId</td><td>string</td><td>-</td><td><code>data-autoId</code> trên nút, nguyên giá trị (không tiền tố)</td></tr>
++                </tbody>
++              </table>
++            </div>
++
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">17 mã toán tử (bảng OPERATORS · nhãn VI_MESSAGES)</p>
++              <table class="ds-guide-table">
++                <thead><tr><th>Mã</th><th>Nhãn</th><th>Mã</th><th>Nhãn</th></tr></thead>
++                <tbody>
++                  <tr><td>EQUAL</td><td>Bằng</td><td>NOT_EQUAL</td><td>Không bằng</td></tr>
++                  <tr><td>GREATER_THAN</td><td>Lớn hơn</td><td>LESS_THAN</td><td>Nhỏ hơn</td></tr>
++                  <tr><td>GREATER_OR_EQUAL</td><td>Lớn hơn, hoặc bằng</td><td>LESS_OR_EQUAL</td><td>Nhỏ hơn, hoặc bằng</td></tr>
++                  <tr><td>CONTAIN</td><td>Chứa</td><td>NOT_CONTAIN</td><td>Không chứa</td></tr>
++                  <tr><td>START_WITH</td><td>Bắt đầu bởi</td><td>NOT_START_WITH</td><td>Không bắt đầu bởi</td></tr>
++                  <tr><td>END_WITH</td><td>Kết thúc bởi</td><td>NOT_END_WITH</td><td>Không kết thúc bởi</td></tr>
++                  <tr><td>IN</td><td>Nằm trong</td><td>NOT_IN</td><td>Không nằm trong</td></tr>
++                  <tr><td>BETWEEN</td><td>Trong khoảng</td><td>NULL · NOT_NULL</td><td>Là rỗng · Không rỗng</td></tr>
++                </tbody>
++              </table>
++            </div>
++
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Method · Event</p>
++              <table class="ds-guide-table">
++                <thead><tr><th>Tên</th><th>Mô tả</th></tr></thead>
++                <tbody>
++                  <tr><td>open()</td><td>Mở menu (thư viện) — focus mục đầu</td></tr>
++                  <tr><td>close()</td><td>Đóng menu (kit thêm)</td></tr>
++                  <tr><td>sd-change</td><td>detail <code>{ value }</code> ≙ <code>(modelChange)</code> — chỉ khi đổi giá trị</td></tr>
++                </tbody>
++              </table>
++            </div>
++
+           </div>
+-        </div>
+-      </sd-section>
++        </sd-section>
++      </div><!-- /tab-panel: Dev -->
+ 
+     </div>
++
+   </div>
++
+ </div>
++
+ <script src="../../sd-components/sd-components.js"></script>
+ <script src="../../patterns/page-header.js"></script>
+ <script src="../../patterns/sidebar.js"></script>
+ <script src="../../core/js/pattern-loader.js"></script>
+ <script src="../../core/js/shell.js"></script>
+ <script src="../shared-nav.js"></script>
++
++<script>
++  // Wire the page's own page-tab-zone to tab panels
++  (function () {
++    function initPreviewTabs() {
++      var pageHeader = document.querySelector('.main-area > .page-header');
++      if (!pageHeader) return;
++      var tabZone = pageHeader.querySelector('.page-tab-zone');
++      if (!tabZone) return;
++      var tabs = tabZone.querySelectorAll('.tab');
++      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
++
++      function showPanel(index) {
++        panels.forEach(function (p) {
++          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
++        });
++        tabs.forEach(function (t, i) {
++          t.classList.toggle('active', i === index);
++        });
++      }
++
++      tabs.forEach(function (tab, i) {
++        tab.addEventListener('click', function () { showPanel(i); });
++      });
++
++      showPanel(0);
++    }
++    initPreviewTabs();
++  })();
++
++  (function () {
++    var log = document.getElementById('op-event-log'), empty = 'Chưa có sự kiện nào.';
++    document.addEventListener('sd-change', function (e) {
++      if (!e.target.matches || !e.target.matches('sd-operator')) return;
++      log.textContent = (log.textContent === empty ? '' : log.textContent + '\n') +
++        'sd-change #' + (e.target.id || 'sd-operator') + ' { value: "' + e.detail.value + '" }';
++    });
++    document.getElementById('btn-op-open').addEventListener('click', function (e) {
++      e.stopPropagation();
++      document.getElementById('op-num').open();
++    });
++  })();
++</script>
++
+ </body>
+ </html>
+diff -ruN a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-13 05:41:16.016960419 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-13 05:41:16.043669783 +0000
+@@ -16154,27 +16154,34 @@
+ 
+ 
+   /* ══════════════════════════════════════════════════════════
+-     sd-operator — DỰNG MỚI 2026-10-11 theo Core UI Catalog `#c-operator`.
++     sd-operator — ĐỒNG BỘ 2026-10-13 theo Core UI Catalog `#c-operator` và mã thật của
++     thư viện (`@sd-angular/core` 19.0.10 `fesm2022/sd-angular-core-components-operator.mjs`
++     + bảng `OPERATORS` của `@sdcorejs/utils` 1.1.4 + `VI_MESSAGES` `core.operator.*`).
++
++     Nút icon mở `mat-menu` liệt kê các toán tử được phép THEO ĐÚNG THỨ TỰ truyền vào.
++
++     Inputs:
++       model      mã toán tử đang chọn (`[(model)]`); `value` là bí danh cũ của kit
++       operators  JSON / "A,B,C" / property JS — mặc định `[]` như thư viện (menu rỗng);
++                  mã không có trong OPERATORS bị bỏ qua
++       disabled   boolean
++       autoId     → `data-autoId` trên NÚT (nguyên giá trị, không tiền tố — thư viện)
++     Method: open() (mở menu, như thư viện) · close() (kit thêm)
++     Event:  sd-change { value } ≙ (modelChange) — chỉ khi đổi giá trị
++
++     DOM y hệt catalog: `button.c-op-trigger.mat-mdc-menu-trigger.mat-mdc-tooltip-trigger`
++     + thẻ `<mat-menu>` rỗng; menu mở nằm trong `.cdk-overlay-pane` của
++     `body > .cdk-overlay-container` (overlay CDK) — `.mat-mdc-menu-panel.c-op-menu
++     .mat-menu-after.mat-menu-below > .mat-mdc-menu-content > button.mat-mdc-menu-item.c-op-row`.
++     Tooltip (`matTooltip`, above) = nhãn đã dịch của toán tử đang chọn; chưa chọn → không có.
+ 
+-     Catalog: "Nút chọn toán tử so sánh cho bộ lọc (bằng, lớn hơn, chứa, trong
+-     khoảng…): nút icon mở `mat-menu` liệt kê các toán tử được phép THEO ĐÚNG
+-     THỨ TỰ truyền vào. Được `sd-query-bar` dùng khi dựng điều kiện lọc."
+-
+-     API: `[(model)]`, `[operators]`, `[disabled]`, `autoId`, `open()`.
+-
+-     17 toán tử + nhãn tiếng Việt + icon SVG đều TRÍCH NGUYÊN VĂN từ markup
+-     catalog (`VI_MESSAGES`). Icon ở đây là **glyph riêng của component**, không
+-     phải icon chọn theo tên như Material — nên dùng SVG đúng như catalog, cùng
+-     ngoại lệ đã áp cho dấu tích của `sd-checkbox` (Rule 4 của AGENTS.md nói về
+-     icon chọn theo tên).
+-
+-     Chưa chọn gì → icon cái PHỄU; đã chọn → icon của toán tử đó, và `title`
+-     (tooltip) là nhãn đã dịch.
++     Icon là glyph SVG của chính component (bảng OPERATORS), không phải icon chọn theo tên —
++     cùng ngoại lệ Rule 4 đã áp cho dấu tích sd-checkbox.
+      ══════════════════════════════════════════════════════════ */
+   var SD_OPERATOR_SVG_ATTRS =
+     'viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"' +
+     ' stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+-  /* Icon phễu — trạng thái chưa chọn toán tử nào */
++  /* SdOperator.FALLBACK_ICON — phễu, khi chưa chọn / mã lạ */
+   var SD_OPERATOR_EMPTY_SVG = '<path d=\'M4 5h16l-6.5 7.5V19l-3 2v-8.5z\'/>';
+   var SD_OPERATORS = {
+     EQUAL: { label: 'Bằng', svg: '<line x1=\'5.5\' y1=\'9.5\' x2=\'18.5\' y2=\'9.5\'/><line x1=\'5.5\' y1=\'14.5\' x2=\'18.5\' y2=\'14.5\'/>' },
+@@ -16195,6 +16202,8 @@
+     NULL: { label: 'Là rỗng', svg: '<circle cx=\'12\' cy=\'12\' r=\'7\' stroke-dasharray=\'2.4 2.6\'/><line x1=\'17.5\' y1=\'6.5\' x2=\'6.5\' y2=\'17.5\'/>' },
+     NOT_NULL: { label: 'Không rỗng', svg: '<circle cx=\'12\' cy=\'12\' r=\'7\' fill=\'currentColor\' stroke=\'none\'/>' }
+   };
++  /* Thứ tự dự phòng của sd-query-builder (`_opsFor`) — KHÔNG phải mặc định của sd-operator
++     (thư viện: `operators = input([])`). Bảng OPERATORS của @sdcorejs/utils 1.1.4 đặt BETWEEN sau NOT_IN. */
+   var SD_OPERATOR_ORDER = ["EQUAL", "NOT_EQUAL", "GREATER_THAN", "LESS_THAN", "GREATER_OR_EQUAL", "LESS_OR_EQUAL", "BETWEEN", "CONTAIN", "NOT_CONTAIN", "START_WITH", "NOT_START_WITH", "END_WITH", "NOT_END_WITH", "IN", "NOT_IN", "NULL", "NOT_NULL"];
+ 
+   function sdOperatorSvg(inner) {
+@@ -16202,97 +16211,225 @@
+   }
+ 
+   class SdOperator extends HTMLElement {
+-    static get observedAttributes() { return ['model', 'value', 'operators', 'disabled', 'autoid', 'autoId']; }
+-    connectedCallback() { this._render(); this._bind(); }
+-    attributeChangedCallback() { if (this.isConnected) this._render(); }
+-    disconnectedCallback() {
+-      if (this._outside) { document.removeEventListener('click', this._outside, true); this._outside = null; }
++    static get observedAttributes() { return ['model', 'value', 'operators', 'disabled', 'autoid']; }
++    constructor() { super(); this._open = false; this._pane = null; }
++    connectedCallback() {
++      if (!this._built || !this.querySelector(':scope > .c-op-trigger')) this._build();
++      this._sync();
+     }
++    disconnectedCallback() { this._closeMenu(false); }
++    attributeChangedCallback(n, o, v) { if (o !== v && this._built) this._sync(); }
+ 
+-    get model() { return this.getAttribute('model') || this.getAttribute('value') || ''; }
++    /* ── inputs ── */
++    get model() { var v = this.getAttribute('model'); if (v == null) v = this.getAttribute('value'); return v || ''; }
+     set model(v) { this.setAttribute('model', v == null ? '' : String(v)); }
+-    get disabled() {
+-      var v = this.getAttribute('disabled');
+-      return v !== null && v !== 'false';
+-    }
+-    /* `[operators]`: danh sách mã được phép, GIỮ ĐÚNG THỨ TỰ truyền vào.
+-       Không khai thì lấy đủ 17 mã theo thứ tự của catalog. */
++    get value() { return this.model; }
++    set value(v) { this.model = v; }
++    get disabled() { var v = this.getAttribute('disabled'); return v !== null && v !== 'false'; }
++    set disabled(v) { if (v) this.setAttribute('disabled', ''); else this.removeAttribute('disabled'); }
+     get operators() {
+       if (Array.isArray(this._operators)) return this._operators;
+       var raw = this.getAttribute('operators');
+-      if (!raw) return SD_OPERATOR_ORDER.slice();
+-      try {
+-        var p = JSON.parse(raw);
+-        if (Array.isArray(p)) return p;
+-      } catch (e) { /* cho phép khai kiểu "EQUAL,NOT_EQUAL" */ }
++      if (!raw) return [];
++      try { var p = JSON.parse(raw); if (Array.isArray(p)) return p; } catch (e) { /* "EQUAL,NOT_EQUAL" */ }
+       return raw.split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+     }
+-    set operators(v) { this._operators = v; if (this.isConnected) this._render(); }
+-
+-    open() { if (!this.disabled) { this.classList.add('sd-open'); if (this.isConnected) this._render(); } }
+-    close() { this.classList.remove('sd-open'); if (this.isConnected) this._render(); }
++    set operators(v) { this._operators = Array.isArray(v) ? v : null; if (this._built) this._sync(); }
++    get isOpen() { return this._open; }
+ 
+-    _render() {
++    /* ── DOM ── */
++    /* Catalog vẽ nút KHÁC NHAU theo chỗ đặt (tự mâu thuẫn — xem known-gaps):
++         #c-operator      → `c-op-trigger mat-mdc-menu-trigger mat-mdc-tooltip-trigger` + aria-haspopup
++                            + aria-expanded + `<mat-menu>`; tooltip matTooltip (đúng thư viện)
++         #c-query-bar     → chỉ `c-op-trigger` + `title`, không aria, không `<mat-menu>`
++         #c-query-builder → 3 lớp + aria-haspopup + `title` + `data-op`, không aria-expanded / `<mat-menu>`
++       Kit vẽ theo đúng mục catalog chứa nó. Menu mở ra giống nhau ở cả ba. */
++    _variant() {
++      if (this.closest('sd-query-builder')) return 'builder';
++      if (this.closest('sd-query-bar, .cdk-overlay-pane:has(> .c-chip-popover, > .c-field-picker-menu, > .c-saved-filters-menu)')) return 'bar';
++      return 'lib';
++    }
++    _build() {
++      this._built = true;
++      var v = this._variant();
++      this._v = v;
++      var cls = v === 'bar' ? 'c-op-trigger' : 'c-op-trigger mat-mdc-menu-trigger mat-mdc-tooltip-trigger';
++      this.innerHTML = '<button type="button" class="' + cls + '"' + (v === 'bar' ? '' : ' aria-haspopup="menu"') + (v === 'lib' ? ' aria-expanded="false"' : '') + '>' +
++        '<span class="c-op-icon"></span></button>' + (v === 'lib' ? '<mat-menu></mat-menu>' : '');
++      this._btn = this.firstElementChild;
++      this._bind();
++    }
++    _sync() {
++      var model = this.model, cur = SD_OPERATORS[model], btn = this._btn, v = this._v;
++      this.setAttribute('data-model', model);     // catalog ghi data-model trên thẻ host
++      this.removeAttribute('data-autoid');          // bản cũ gắn `operator-…` lên host
++      btn.disabled = this.disabled;
++      var aid = this.getAttribute('autoId') || this.getAttribute('autoid');
++      if (aid) btn.setAttribute('data-autoId', aid); else btn.removeAttribute('data-autoId');
++      var tipAttrs = ['data-sd-tooltip', 'data-sd-tooltip-position', 'data-sd-tooltip-kind', 'data-sd-tooltip-delay'];
++      if (v === 'lib') {
++        /* matTooltip="currentLabel()" matTooltipPosition="above" — '' thì không hiện */
++        if (cur) {
++          btn.setAttribute('data-sd-tooltip', cur.label);
++          btn.setAttribute('data-sd-tooltip-position', 'above');
++          btn.setAttribute('data-sd-tooltip-kind', 'mat');
++          btn.setAttribute('data-sd-tooltip-delay', '0');
++        } else tipAttrs.forEach(function (a) { btn.removeAttribute(a); });
++        btn.setAttribute('aria-expanded', this._open ? 'true' : 'false');
++      } else {
++        if (cur) btn.setAttribute('title', cur.label); else btn.removeAttribute('title');
++        if (v === 'builder') { if (model) btn.setAttribute('data-op', model); else btn.removeAttribute('data-op'); }
++      }
++      var icon = sdOperatorSvg(cur ? cur.svg : SD_OPERATOR_EMPTY_SVG), span = btn.firstElementChild;
++      if (span._sdIcon !== icon) { span.innerHTML = icon; span._sdIcon = icon; }
++      if (this._open) {
++        if (this.disabled) this._closeMenu(false);
++        else this._renderMenu();
++      }
++    }
++    _items() {
++      return this.operators.filter(function (c) { return !!SD_OPERATORS[c]; });
++    }
++    _menuHtml() {
+       var model = this.model;
+-      var cur = SD_OPERATORS[model];
+-      var open = this.classList.contains('sd-open');
+-      var rows = this.operators.filter(function (c) { return !!SD_OPERATORS[c]; }).map(function (c) {
++      var rows = this._items().map(function (c) {
+         var op = SD_OPERATORS[c];
+-        return '<button type="button" class="c-op-row' + (c === model ? ' c-op-active' : '') + '"' +
+-            ' role="menuitem" data-value="' + escAttr(c) + '">' +
+-            '<span class="mat-mdc-menu-item-text">' +
+-              '<span class="c-op-icon">' + sdOperatorSvg(op.svg) + '</span>' +
+-              '<span class="c-op-label">' + esc(op.label) + '</span>' +
+-              '<span class="c-op-code">' + esc(c) + '</span>' +
+-            '</span>' +
+-          '</button>';
++        return '<button type="button" mat-menu-item class="mat-mdc-menu-item mat-focus-indicator c-op-row' + (c === model ? ' c-op-active' : '') + '"' +
++          ' role="menuitem" tabindex="0" aria-disabled="false" data-value="' + escAttr(c) + '">' +
++          '<span class="mat-mdc-menu-item-text"><span class="c-op-icon">' + sdOperatorSvg(op.svg) + '</span>' +
++          '<span class="c-op-label">' + esc(op.label) + '</span><span class="c-op-code">' + esc(c) + '</span></span>' +
++          '<div matripple class="mat-ripple mat-mdc-menu-ripple"></div></button>';
+       }).join('');
++      return '<div class="mat-mdc-menu-panel c-op-menu mat-menu-after mat-menu-below" role="menu" tabindex="-1">' +
++        '<div class="mat-mdc-menu-content">' + rows + '</div></div>';
++    }
++    _renderMenu() {
++      var self = this;
++      if (!this._pane) {
++        var pane = document.createElement('div');
++        pane.className = 'cdk-overlay-pane';
++        pane.addEventListener('click', function (e) { self._onMenuClick(e); });
++        pane.addEventListener('keydown', function (e) { self._onMenuKey(e); });
++        this._pane = pane;
++      }
++      if (!this._pane.isConnected) sdOverlayContainer().appendChild(this._pane);
++      var focusedVal = document.activeElement && this._pane.contains(document.activeElement) ? document.activeElement.getAttribute('data-value') : null;
++      this._pane.innerHTML = this._menuHtml();
++      if (focusedVal) { var f = this._pane.querySelector('.c-op-row[data-value="' + focusedVal + '"]'); if (f) f.focus({ preventScroll: true }); }
++      this._position();
++    }
++    /* Vị trí của mat-menu (xPosition after · yPosition below, overlapTrigger false): mép trái
++       panel = mép trái nút, đỉnh panel = đáy nút; thiếu chỗ thì lật lên trên / sang trái
++       (mat-menu-above / mat-menu-before) như ConnectedPositionStrategy của CDK. */
++    _position() {
++      if (!this._pane) return;
++      var panel = this._pane.firstElementChild;
++      if (!panel) return;
++      var r = this._btn.getBoundingClientRect(), pw = panel.offsetWidth, ph = panel.offsetHeight;
++      var vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
++      var below = r.bottom + ph <= vh || r.top - ph < 0, after = r.left + pw <= vw || r.right - pw < 0;
++      panel.className = 'mat-mdc-menu-panel c-op-menu mat-menu-' + (after ? 'after' : 'before') + ' mat-menu-' + (below ? 'below' : 'above');
++      this._pane.style.top = (below ? r.bottom : r.top - ph) + 'px';
++      this._pane.style.left = (after ? r.left : r.right - pw) + 'px';
++    }
+ 
+-      this.innerHTML =
+-        '<button type="button" class="c-op-trigger" aria-haspopup="menu"' +
+-          ' aria-expanded="' + (open ? 'true' : 'false') + '"' +
+-          (this.disabled ? ' disabled' : '') +
+-          (cur ? ' title="' + escAttr(cur.label) + '"' : '') + '>' +
+-          '<span class="c-op-icon">' + sdOperatorSvg(cur ? cur.svg : SD_OPERATOR_EMPTY_SVG) + '</span>' +
+-        '</button>' +
+-        /* Catalog: menu là overlay của mat-menu — CHỈ có trong DOM khi đang mở
+-           (đóng / disabled thì cây chỉ còn nút trigger). */
+-        ((open && !this.disabled) ? '<div class="c-op-menu" role="menu">' + rows + '</div>' : '');
++    /* ── mở / đóng ── */
++    open(origin) {
++      if (this.disabled || !this._built) return;
++      if (!this._open) {
++        this._open = true;
++        if (this._v === 'lib') this._btn.setAttribute('aria-expanded', 'true');
++        this._renderMenu();
++        this._listen(true);
++        this._focusItem(0, origin || 'program');      // focusFirstItem(openedBy || 'program')
++      }
++    }
++    close() { this._closeMenu(true); }
++    _closeMenu(restoreFocus) {
++      if (!this._open) return;
++      this._open = false;
++      this._listen(false);
++      if (this._pane && this._pane.parentNode) this._pane.parentNode.removeChild(this._pane);
++      if (this._btn) {
++        if (this._v === 'lib') this._btn.setAttribute('aria-expanded', 'false');
++        if (restoreFocus && this.isConnected) { try { this._btn.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
++      }
++    }
++    _listen(on) {
++      var self = this;
++      if (on && !this._docClick) {
++        this._docClick = function (e) {
++          var path = (e.composedPath && e.composedPath()) || [];
++          if (self._pane && (path.indexOf(self._pane) !== -1)) return;
++          if (path.indexOf(self._btn) !== -1) return;
++          self._closeMenu(false);      // backdrop của mat-menu: bấm ra ngoài là đóng
++        };
++        this._reflow = function () { if (self._open) self._position(); };
++        document.addEventListener('click', this._docClick, true);
++        window.addEventListener('scroll', this._reflow, true);
++        window.addEventListener('resize', this._reflow);
++      } else if (!on && this._docClick) {
++        document.removeEventListener('click', this._docClick, true);
++        window.removeEventListener('scroll', this._reflow, true);
++        window.removeEventListener('resize', this._reflow);
++        this._docClick = this._reflow = null;
++      }
++    }
++    _rows() { return this._pane ? Array.prototype.slice.call(this._pane.querySelectorAll('.c-op-row')) : []; }
++    /* FocusKeyManager của mat-menu: lớp cdk-*-focused theo nguồn focus; chỉ keyboard / program
++       mới tô nền (`.cdk-keyboard-focused`, `.cdk-program-focused`) */
++    _focusItem(i, origin) {
++      var rows = this._rows();
++      rows.forEach(function (r) { r.classList.remove('cdk-focused', 'cdk-keyboard-focused', 'cdk-program-focused'); });
++      if (!rows.length) { if (this._pane && this._pane.firstElementChild) this._pane.firstElementChild.focus({ preventScroll: true }); return; }
++      var el = rows[(i + rows.length) % rows.length];
++      if (origin === 'keyboard' || origin === 'program') el.classList.add('cdk-focused', origin === 'keyboard' ? 'cdk-keyboard-focused' : 'cdk-program-focused');
++      el.focus({ preventScroll: true });
++    }
+ 
+-      this.setAttribute('data-model', model);
+-      sdSyncAutoId(this, 'operator-');
++    /* ── chọn ── */
++    select(value) {
++      var old = this.model;
++      this.setAttribute('model', value);
++      if (value !== old) this.dispatchEvent(new CustomEvent('sd-change', { bubbles: true, detail: { value: value } }));
++    }
++    _onMenuClick(e) {
++      e.stopPropagation();
++      var row = e.target.closest ? e.target.closest('.c-op-row') : null;
++      if (!row) return;
++      var v = row.getAttribute('data-value');
++      this._closeMenu(true);          // mat-menu đóng sau khi bấm mục, trả focus về nút
++      this.select(v);
++    }
++    _onMenuKey(e) {
++      var rows = this._rows(), idx = rows.indexOf(document.activeElement);
++      switch (e.key) {
++        case 'ArrowDown': e.preventDefault(); this._focusItem(idx + 1, 'keyboard'); break;
++        case 'ArrowUp': e.preventDefault(); this._focusItem(idx < 0 ? -1 : idx - 1, 'keyboard'); break;
++        case 'Home': e.preventDefault(); this._focusItem(0, 'keyboard'); break;
++        case 'End': e.preventDefault(); this._focusItem(-1, 'keyboard'); break;
++        case 'Escape': e.preventDefault(); this._closeMenu(true); break;
++        case 'Tab': this._closeMenu(true); break;
++        default: return;
++      }
++      e.stopPropagation();      // menu lồng trong popover sd-query-bar: Esc chỉ đóng menu này
+     }
+ 
+     _bind() {
+       var self = this;
+       if (this._bound) return;
+       this._bound = true;
+-
++      this.addEventListener('keydown', function (e) {
++        if (e.target === self._btn && (e.key === 'Enter' || e.key === ' ')) self._kbd = true;
++      });
+       this.addEventListener('click', function (e) {
+-        if (e.target.closest('.c-op-trigger')) {
+-          if (self.disabled) return;
+-          e.stopPropagation();
+-          if (self.classList.contains('sd-open')) self.close(); else self.open();
+-          self._render();
+-          return;
+-        }
+-        var row = e.target.closest('.c-op-row');
+-        if (!row) return;
++        if (!e.target.closest || !e.target.closest('.c-op-trigger') || e.target.closest('sd-operator') !== self) return;
+         e.stopPropagation();
+-        var v = row.getAttribute('data-value');
+-        self.close();
+-        self.setAttribute('model', v);
+-        self.dispatchEvent(new CustomEvent('sd-change', { bubbles: true, detail: { value: v } }));
++        if (self.disabled) return;
++        var origin = self._kbd || e.detail === 0 ? 'keyboard' : 'mouse';
++        self._kbd = false;
++        if (self._open) self._closeMenu(false); else self.open(origin);
+       });
+-
+-      this._outside = function (e) {
+-        if (!self.classList.contains('sd-open')) return;
+-        if (!document.contains(e.target)) return;
+-        if (self.contains(e.target)) return;
+-        self.close();
+-        self._render();
+-      };
+-      document.addEventListener('click', this._outside, true);
+     }
+   }
+   customElements.define('sd-operator', SdOperator);

@@ -1,0 +1,1665 @@
+# FORMGENERIC-2026-10-13 — sd-form-render khớp catalog #c-form-generic + mã thư viện; sd-radio nhóm DOM Material; sd-label; nút × ô bắt buộc
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/FORMGENERIC-2026-10-13.patch
+# 9 file: CHANGELOG.md known-gaps.md lessons.md generate-components.md sd-components.md sd-interactive.md sd-tokens.css form-generic.html sd-components.js 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-13 09:08:59.220897216 +0000
++++ b/CHANGELOG.md	2026-10-13 09:08:59.304848865 +0000
+@@ -8,6 +8,31 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `sd-form-render` khớp catalog `#c-form-generic` + mã thư viện (kéo theo `sd-radio` nhóm, `sd-label`, nút ×)
++
++Builder: *„Tiếp tục phần Form Generic `sd-form-render`…“*.
++
++- **Cấu hình đúng schema thư viện** (`SdFormGeneric`): `layout.columns` (lib-item `col-{n||6} px-8 py-8`), `validate.required /
++  maxlength / pattern / min / max`, `values [{value,label}]`, `valuesKey`, `subtype` date/datetime, `columns` của table,
++  `properties.direction / multiple / viewed / hidden / icon / extensions / maxSize / max`. SdFormatComponent tự sinh `id`/`key`,
++  `layout.columns '12'`. Cấu hình cũ của kit (`columns`, `required`, `properties.items`, hàm điều kiện) vẫn nhận.
++- **Biểu thức JSON của thư viện** `visible/hidden/required/disabledWhenExpression` (EvaluateExpression nguyên văn, 8 toán tử +
++  combinator, `now` / `NLastDay`); đổi giá trị → debounce 500ms → tính lại, không cần trang gán lại `entity`.
++- Đủ kiểu của lib-item: thêm `chip-string`, `chip-calendar`, `break`, `html` (nội dung `entity[key]` + biến); `datetime` →
++  `sd-datetime` khi `subtype: 'datetime'`. Chế độ xem theo đúng template: number `text-secondary` + `T16M`, radio
++  `T14R` + `T14M`, upload nhãn + danh sách tệp khoá. `getValidationMessages()` (đánh dấu đã chạm) · `defaultEntity`.
++- Host `display: contents` như thư viện; biến màu `--mat-form-field-*` / `--mat-radio-*` của mục; nhãn nổi không lề dưới;
++  tên tệp màu thương hiệu. Bảng `lib-table` vẫn tĩnh như catalog, số định dạng vi-VN.
++- **`sd-radio` nhóm dựng DOM Material** (`section.c-section` › `sd-label` › `mat-radio-group` › `mat-radio-button` …) + chép
++  nguyên `radio.css` của catalog — `#c-radio` 8/8 mẫu trùng toạ độ / màu; trong form vẽ dạng rút gọn của `#c-form-generic`.
++  Nút đơn kiểu cũ (không `items`) giữ nguyên.
++- **Sửa chung:** ô `required` không còn nút × (sd-input · sd-input-number · sd-date · sd-datetime — `showClear()` thư viện);
++  `sd-label` dùng đúng `style="display: flex; align-items: center; gap: 4px"`; `window.SD_UPLOAD_FILE_CONFIGURATION`
++  (≙ token DI) cấp `upload` / `details` cho mọi `sd-upload-file`.
++- Trang preview viết lại theo 3 mẫu catalog + mục biểu thức + Event log. 97 trang không lỗi JS; ảnh chụp chỉ đổi ở trang
++  Form Generic (Radio lệch < 1px khử răng cưa). Docs `sd-components.md`, `sd-interactive.md`. Bản vá:
++  `reviews/ds-mirror/FORMGENERIC-2026-10-13.patch`.
++
+ ### Changed — `sd-history` khớp catalog `#c-history` + mã thư viện (kéo theo DOM `sd-badge`)
+ 
+ Builder: *„Tiếp tục phần History `sd-history`…“*.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-13 09:08:59.235998336 +0000
++++ b/_memory/known-gaps.md	2026-10-13 09:08:59.318926422 +0000
+@@ -277,6 +277,40 @@
+ | 6 cờ `primary` … `error` | bảng API catalog không liệt kê, nhưng **mã thư viện có** (input boolean, thắng `color`) | có | `audit-kit-extras` báo là thừa — không phải: theo mã thư viện |
+ | `type` / `dismissible` / `cta` / thân viết trong thẻ / `sd-inform-dismiss` | không có | vẫn nhận | Ngoại lệ 3 Rule 18 (38 chỗ trong kit dùng). Khai `type` thì icon theo lối cũ (chỉ hiện khi có `icon`) |
+ 
++## `sd-form-render` (+ `sd-radio` nhóm) — ĐỒNG BỘ 2026-10-13 theo catalog `#c-form-generic` + mã thư viện
++
++Nguồn đối chiếu: catalog `#c-form-generic` (3 mẫu, `css/components/form-generic.css`) + mã thư viện
++`sd-angular-core-components-form-generic.mjs` (SdFormRender, LibItemComponent, lib-* , WhenExpressionPipe,
++ComponentViewedPipe, SdFormatComponent, EvaluateExpression) + `sd-angular-core-forms-radio.mjs`.
++Kit nay nhận **đúng schema thư viện** (`layout.columns`, `validate.*`, `values [{value,label}]`, `subtype`,
++`columns` của table, `properties.*WhenExpression`). Đo `fcmp` (host `display:contents` → toạ độ tính từ `.row`):
++mọi ô nhập trùng toạ độ / màu / chữ với catalog; `#c-radio` 8/8 mẫu trùng (chỉ khác thuộc tính host).
++
++| Chỗ | Catalog / thư viện | Kit | Vì sao |
++|---|---|---|---|
++| Ruột Material của ô nhập | catalog "dựng lại khung outline bằng script nhỏ" — thiếu `mat-mdc-form-field-hint-wrapper`, `<mat-datepicker>`, lớp `mat-datepicker-input`; mũi tên select là `div.mat-mdc-select-arrow` ẩn | DOM đầy đủ như từng mục `#c-input` / `#c-select` / `#c-date` (đã đồng bộ trước) | Catalog tự ghi đây là bản mô phỏng; toạ độ khớp từng px |
++| Số dòng `textarea` | DOM catalog `rows="3"` | 5 dòng (mặc định `rows = input(5)` của sd-textarea; `lib-textarea` KHÔNG truyền rows) | Theo thư viện — form cao hơn catalog 48px ở mẫu 1 |
++| Bộ đếm `maxlength` | đoạn mã catalog khai `maxlength: 50` nhưng DOM không có bộ đếm | sd-input hiện `14/50` khi có `validate.maxlength` (template thư viện) | Đoạn mã là "trích"; trang thử bỏ maxlength |
++| `T12R` / `T14R` trong form | `form-generic.css` KHÔNG khai → mô tả upload 14px/21px, nhãn xem 21px | giữ 12px/16px, 14px/20px của sd-core | Lớp tiện ích bị bỏ sót ở CSS mục demo — cùng quyết định với `.bg-white` của `#c-table` |
++| Host thẻ control (`sd-input` …) | không thuộc tính | có `label` / `name` / `value` / `required` … | Web Component nhận input qua thuộc tính (như badge viết tay) |
++| `sd-has-label` trên host chế độ xem | catalog chỉ `sd-viewed` | `sd-has-label sd-viewed` | Host binding thư viện `[class.sd-has-label]="!!label()"` |
++| Ngày rỗng / không hợp lệ ở chế độ xem | — | `--` (EMPTY_STR) | ComponentViewedPipe |
++| Biểu tượng tệp | nhãn màu PDF/XLSX (catalog tự ghi: thay ảnh data-URI) · `245,3KB` | ảnh như `#c-upload-file` · `245,30KB` | Catalog tự ghi là bản giản lược |
++| Tên tệp | màu `--sd-primary` | `--sd-primary` trong `sd-form-render` (ngoài form vẫn xanh liên kết như `#c-upload-file`) | Theo từng mục |
++| Nhãn nổi | không lề dưới (thấp hơn `#c-input` 1px) | `sd-form-render … .mdc-floating-label{margin-bottom:0}` | Theo mục |
++| Nút × trong ô | `font 13.33px/normal` (mặc định `<button>`) · ô bắt buộc KHÔNG có × | y hệt; **sửa chung** sd-input / sd-input-number / sd-date / sd-datetime: `required` → không có × (`showClear()` thư viện) | Trước đây kit hiện × cả ô bắt buộc |
++| Biến màu `--mat-form-field-*` / `--mat-radio-*` | khai trên `#c-form-generic` | khai trên host `sd-form-render` | Theo mục |
++| `input` của radio trong form | font mặc định Arial 13.33px (không có reboot) | kế thừa Roboto 14px | Ô `opacity:0`, không nhìn thấy |
++| Dạng radio trong form | rút gọn: `mat-primary`, không touch-target / ripple / `mdc-form-field`, không `id`/`for` | y hệt; bấm chữ vẫn chọn được (JS) | Theo mục; thuộc tính `value` của input giữ để chạy |
++| Gắn cấu hình ↔ phần tử | — | thuộc tính JS `lib-item._fgComp` (DOM không thêm thuộc tính) | — |
++| Nguồn tệp của upload | token `SD_UPLOAD_FILE_CONFIGURATION` (DI) | `window.SD_UPLOAD_FILE_CONFIGURATION = { upload, details }` (một object hoặc mảng có `key`) | Không có DI trong HTML tĩnh |
++| `valuesKey` | `SD_FORM_GENERIC_CONFIGURATION.form.selections` | `window.SD_FORM_GENERIC_CONFIGURATION` (values / valuesKey+getValues; chưa có lazyValues, setVariables, query) | Đủ cho prototype |
++| `variables` · `setVariables` (Subject) · `hyperlink` · `validations` kiểu `function` · side-drawer table | có | chưa dựng (setVariables của kit chỉ là object truyền vào hàm điều kiện cũ) | Catalog không có ví dụ |
++| Cấu hình CŨ của kit | — | vẫn nhận (`columns`, `required`, `properties.items`, hàm điều kiện) | `sd-form-builder` của kit còn sinh dạng này — đổi ở vòng Form Builder |
++| `sd-label` | div trong có `style="display: flex; align-items: center; gap: 4px"` | **nay y hệt** (trước dùng lớp `d-flex align-items-center gap-4`) | Theo catalog |
++| `sd-radio` nhóm | DOM Material + `radio.css` | **nay y hệt** (trước là `.c-radio-wrap` tự dựng); nút đơn cũ không `items` giữ nguyên | Theo catalog |
++| `placeholder` của sd-radio nhóm | không có | vẫn có (`.c-radio-placeholder`) | Mở rộng cũ, chờ Builder quyết |
++
+ ## `sd-history` (+ DOM `sd-badge`) — ĐỒNG BỘ 2026-10-13 theo catalog + mã thư viện
+ 
+ Nguồn đối chiếu: catalog `#c-history` (2 mẫu, `css/components/history.css`) + mã thư viện
+@@ -736,7 +770,7 @@
+ | Nút radio ĐƠN (không `items`) + `checked` · `error` · `helperText` | không có — sd-radio luôn là nhóm | có | Bí danh tương thích ngược (Rule 18, ngoại lệ 3): 4 prototype + sd-query-builder + SdConfirmService.withRadio. Trang mới dùng chế độ nhóm. Muốn gỡ hẳn thì phải đổi 6 chỗ đó sang `items` trước |
+ | `placeholder` · `inlineError` · `autoId` | không có trong API catalog | có | Cùng nhóm "chờ Builder quyết" với sd-select |
+ | `hyperlink` · `(sdSelection)` · `[form]` | có | không | Chưa có nhu cầu trong prototype tĩnh |
+-| Chấm trong khi chưa chọn | `transform: scale(0)` (có hiệu ứng phóng) | `display:none` | Nhìn giống hệt; khác ở hoạt ảnh 90ms khi đổi lựa chọn |
++| **[ĐÃ THAY THẾ 2026-10-13 — xem mục `sd-form-render` (+ `sd-radio` nhóm)]** Chấm trong khi chưa chọn | `transform: scale(0)` (có hiệu ứng phóng) | `display:none` | Nhìn giống hệt; khác ở hoạt ảnh 90ms khi đổi lựa chọn |
+ 
+ ## `sd-select` — rà soát `#c-select` 2026-10-12
+ 
+@@ -931,13 +965,13 @@
+ | `[form]` (FormGroup) của `sd-editor` | Nối control vào FormGroup của Angular Reactive Forms | **Không dựng**; `key` thì giữ | Web Component không có FormGroup. Validate thì kit mở `[validator]`, `required`, `maxlength`, `inlineError` — đủ cho prototype (2026-10-11) |
+ | Thứ tự ưu tiên câu lỗi của `sd-editor` | Catalog chỉ cho hai câu lỗi rời (required, maxlength), không nêu thứ tự | Kit: `inlineError` > `[validator]` > `required` > `maxlength` | Phải chọn một thứ tự mới chạy được. Cùng kiểu với precedence lỗi đã ghi cho `sd-input` (2026-10-11) |
+ | Nút toolbar + dropdown cỡ chữ/màu chữ của `sd-editor` | CKEditor thật | Kit dựng nút, không gắn lệnh | Đúng mức catalog tự ghi: *"nút toolbar và dropdown cỡ chữ/màu chữ không hoạt động"* (2026-10-11) |
+-| `sd-form-render` dựng **component thật**, không dán DOM Material | Catalog dán `mat-form-field` / `mdc-notched-outline` / `mat-radio-button` đã render | Kit dựng thẳng `sd-input`, `sd-select`, `sd-date`, `sd-input-number`, `sd-textarea`, `sd-radio`, `sd-upload-file` | Chính ghi chú catalog nói đó là "DOM đã render của sd-input…". Kit chạy được các component đó nên mirror đúng hơn. Khung ngoài (`.row`, `.col-*`, `lib-*`) vẫn chép nguyên văn (2026-10-11) |
+-| Nhóm `radio` của `sd-form-render` | Catalog gói cả nhóm trong một thẻ `<sd-radio>` (Angular component của nó là group) | Kit dựng `sd-label` + hàng `sd-radio` trong `.c-radio-group-row` | `sd-radio` của kit là MỘT nút, không phải group. Không gói lại được mà không đổi API component đang chạy (2026-10-11) |
+-| Biểu thức FEEL của `sd-form-render` | "ẩn/bắt buộc/vô hiệu theo biểu thức" (FEEL) | Kit nhận boolean HOẶC hàm `(entity, setVariables) => boolean` | Catalog **không in ra cú pháp FEEL nào**. Dựng trình thông dịch FEEL là đoán cả một ngôn ngữ (2026-10-11) |
+-| Kiểu `break` của `sd-form-render` | Có trong danh sách kiểu của catalog | **Không dựng** | Catalog nêu tên nhưng không có ví dụ, không markup. Theo luật "không được tự đoán" (2026-10-11) |
++| **[ĐÃ THAY THẾ 2026-10-13 — xem mục `sd-form-render` (+ `sd-radio` nhóm)]** `sd-form-render` dựng **component thật**, không dán DOM Material | Catalog dán `mat-form-field` / `mdc-notched-outline` / `mat-radio-button` đã render | Kit dựng thẳng `sd-input`, `sd-select`, `sd-date`, `sd-input-number`, `sd-textarea`, `sd-radio`, `sd-upload-file` | Chính ghi chú catalog nói đó là "DOM đã render của sd-input…". Kit chạy được các component đó nên mirror đúng hơn. Khung ngoài (`.row`, `.col-*`, `lib-*`) vẫn chép nguyên văn (2026-10-11) |
++| **[ĐÃ THAY THẾ 2026-10-13 — xem mục `sd-form-render` (+ `sd-radio` nhóm)]** Nhóm `radio` của `sd-form-render` | Catalog gói cả nhóm trong một thẻ `<sd-radio>` (Angular component của nó là group) | Kit dựng `sd-label` + hàng `sd-radio` trong `.c-radio-group-row` | `sd-radio` của kit là MỘT nút, không phải group. Không gói lại được mà không đổi API component đang chạy (2026-10-11) |
++| **[ĐÃ THAY THẾ 2026-10-13 — xem mục `sd-form-render` (+ `sd-radio` nhóm)]** Biểu thức FEEL của `sd-form-render` | "ẩn/bắt buộc/vô hiệu theo biểu thức" (FEEL) | Kit nhận boolean HOẶC hàm `(entity, setVariables) => boolean` | Catalog **không in ra cú pháp FEEL nào**. Dựng trình thông dịch FEEL là đoán cả một ngôn ngữ (2026-10-11) |
++| **[ĐÃ THAY THẾ 2026-10-13 — xem mục `sd-form-render` (+ `sd-radio` nhóm)]** Kiểu `break` của `sd-form-render` | Có trong danh sách kiểu của catalog | **Không dựng** | Catalog nêu tên nhưng không có ví dụ, không markup. Theo luật "không được tự đoán" (2026-10-11) |
+ | Kiểu `checkbox` của `sd-form-render` | Có trong builder | **Không dựng** | Chính catalog ghi "kiểu checkbox chỉ có trong builder — lib-item của form-render không render nó" (2026-10-11) |
+ | Side-drawer "Tạo mới/cập nhật" của `lib-table` | Mở drawer thêm/sửa dòng | **Không dựng**; nút "Thêm mới" chỉ bắn `sd-form-add-row` | Catalog ghi "side-drawer không mở". Bảng cũng là bảng tĩnh đúng như catalog (2026-10-11) |
+-| Chế độ xem của `radio` / `upload` trong `sd-form-render` | Catalog render hai dòng `T14R`/`T14M` (radio) và `.text-secondary` + danh sách tệp (upload), **không** qua `<sd-view>` như các control khác | Kit chép đúng chỗ mâu thuẫn đó | Catalog tự mâu thuẫn với chính nó; sửa cho nhất quán là cố ý lệch mốc chuẩn. Cùng loại với tooltip ngược của `sd-import-excel` (2026-10-11) |
++| **[ĐÃ THAY THẾ 2026-10-13 — xem mục `sd-form-render` (+ `sd-radio` nhóm)]** Chế độ xem của `radio` / `upload` trong `sd-form-render` | Catalog render hai dòng `T14R`/`T14M` (radio) và `.text-secondary` + danh sách tệp (upload), **không** qua `<sd-view>` như các control khác | Kit chép đúng chỗ mâu thuẫn đó | Catalog tự mâu thuẫn với chính nó; sửa cho nhất quán là cố ý lệch mốc chuẩn. Cùng loại với tooltip ngược của `sd-import-excel` (2026-10-11) |
+ | `.col-1`..`.col-12` của `sd-form-render` | Catalog chỉ dùng tới `col-6` và `col-12` | Kit sinh đủ 12 mức | `layout.columns` là lưới 12 cột nên cấu hình khác hẳn sinh ra `col-3`, `col-4`… Mở rộng có chủ ý (2026-10-11) |
+ | ~~Ô chọn trường của `sd-query-builder` chỉ hiện NHÃN~~ **ĐÃ SỬA 2026-10-13** | Catalog hiện **icon + nhãn** (`.qb-opt` + `.qb-opt-icon` + `.qb-opt-label`) | Kit nay dựng đúng mẫu đó qua `sd-select.selectedTemplate` (≙ `sdSelectedDef`) | Xem mục `sd-query-builder` 2026-10-13 |
+ | Chuỗi toán tử ở `mode="view"` | Catalog in ra đúng NĂM cái: `in` · `between` · `>` · `=` · `<` | Mười hai mã còn lại kit dùng ký hiệu SQL thông dụng (`>=`, `<=`, `!=`, `not in`, `like`, `is null`…) | Phải có chữ cho mọi toán tử mới chạy được `mode="view"`. Năm cái catalog in ra thì giữ nguyên văn (2026-10-11) |
+@@ -966,7 +1000,7 @@
+ | ~~`sd-chip-calendar` — `.sd-chip-calendar-selected-date`~~ **DÒNG NÀY SAI, ĐÃ SỬA 2026-10-12** | Ngày đã chọn: nền `--sd-primary-light`, chữ `--sd-primary`, bo tròn 50% | **Kit nay dựng đúng như catalog** | Lý do cũ ("do script của trang catalog gắn, không phải của thư viện") là **sai**: lớp này có luật CSS thật trong `css/components/chip-calendar.css`, bó trong `#c-chip-calendar`, và nhãn biến thể của catalog cũng ghi *"ngày đã chọn tô --sd-primary-light"*. `.mat-calendar-body-selected` (nâu đặc + chữ trắng) là của `sd-date`/`sd-date-range`, KHÔNG phải của chip-calendar — hai kiểu khác nhau, không phải một |
+ | `sd-modal-resizable` — `.modal-resizable__icon` | Hai rule (`border:0;background:transparent;color:#212121` và `.mat-icon{float:left}`) | **2026-10-13: đã chép** (cùng toàn bộ CSS catalog), vẫn không phần tử nào mang lớp này | Class **không xuất hiện lần nào** trong markup của catalog → "khai mà không ăn", ca thứ năm. Dựng thì không có gì để nhìn thấy khác đi |
+ | `#c-form-generic` / `#c-form-builder` — `sd-textarea{display:block;max-width:100%}`, `sd-radio{height:100%;display:flex;flex-direction:column}`, `sd-select/sd-input/sd-date/sd-input-number{display:block;max-width:100%}` | Rule bọc trong phạm vi **mục demo** | Không mirror ra toàn cục | Đây là style **của trang trình bày** để xếp các ô vào lưới demo, không phải của component. Mirror `sd-radio{display:flex;flex-direction:column}` ra toàn cục sẽ bẻ gãy mọi nhóm radio xếp ngang trong kit |
+-| `sd-form-render{display:contents}` | Có | Kit để `display:block` | Catalog gộp nó chung một rule với `lib-item`, `lib-textfield`, `lib-textarea`… — tức là đang làm **trong suốt các thẻ bọc của Angular**, không phải tuyên bố về `sd-form-render`. Kit dựng component thật (lệch đã ghi) nên host là thẻ có thật và cần hộp của chính nó |
++| **[ĐÃ THAY THẾ 2026-10-13 — xem mục `sd-form-render` (+ `sd-radio` nhóm)]** `sd-form-render{display:contents}` | Có | Kit để `display:block` | Catalog gộp nó chung một rule với `lib-item`, `lib-textfield`, `lib-textarea`… — tức là đang làm **trong suốt các thẻ bọc của Angular**, không phải tuyên bố về `sd-form-render`. Kit dựng component thật (lệch đã ghi) nên host là thẻ có thật và cần hộp của chính nó |
+ | Tiện ích khoảng cách `.mr-2` `.mb-2` … | `margin:2px` (số pixel thẳng) | `var(--space-2)` của kit | Đã ghi từ đợt trước; đổi sẽ xê dịch mọi trang pattern đang dùng. Chờ Builder |
+ | `sd-select` — `.sd-select-panel`, `.sd-multiple` | Panel bung bằng CDK overlay gắn vào `body` | Kit tự dựng menu là con của host | Đã ghi từ đợt trước — khác tầng hạ tầng |
+ | `sd-upload-file` — thư viện ảnh (`image-gallery`, `main-image-container`, `thumbnail-*`, `next-icon`, `back-icon`) | Xem ảnh lớn + dải ảnh nhỏ + nút trái/phải | Không dựng | Catalog chỉ có CSS, **không có markup mẫu** nào dùng bộ class này. Luật "không được tự đoán" |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-13 09:08:59.235784351 +0000
++++ b/_memory/lessons.md	2026-10-13 09:08:59.318745979 +0000
+@@ -1263,3 +1263,17 @@
+ Catalog đóng gói Roboto woff2 (`css/fonts.css`), kit lấy Google Fonts (chặn khi offline) → mọi phần tử
+ co theo chữ lệch 2–9px dù computed `font-family` giống hệt. → Harness nạp `catalog/css/fonts.css`
+ (và `text-rendering:auto` của trang catalog) trước khi kết luận lệch kích thước.
++
++## Host `display:contents` → so toạ độ phải lấy mốc từ con đầu (2026-10-13)
++
++`sd-form-render` của thư viện có `:host{display:contents}` → `getBoundingClientRect()` của host là 0×0 ở toạ độ
++(0,0), mọi phép so "toạ độ tương đối host" lệch cả trang dù bố cục trùng. `fcmp.mjs` nay tự lấy mốc từ con đầu
++khi host rộng/cao 0. Cùng lúc: kit để `display:block` từ 2026-10-11 với lý do "là thẻ thật cần hộp riêng" —
++sai, chính thư viện khai `display:contents`.
++
++## Catalog vẽ cùng một component theo DẠNG KHÁC NHAU giữa các mục — kể cả CSS (2026-10-13)
++
++Trong `#c-form-generic`, nhãn nổi thấp hơn `#c-input` 1px (không có `label{margin-bottom:.5rem}`), nút × mang cỡ
++chữ mặc định của `<button>`, tên tệp màu thương hiệu (ở `#c-upload-file` là xanh liên kết), radio là dạng rút gọn.
++→ So mỗi mục bằng `csdiff.mjs <catalogSel> <kitUrl> <kitSel>` (mọi thuộc tính computed của phần tử + 2 cấp cha)
++rồi viết luật PHẠM VI mục đó (`sd-form-render …`), đừng sửa luật chung của control.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/generate-components.md b/ai-instructions/generate-components.md
+--- a/ai-instructions/generate-components.md	2026-10-13 09:08:59.227483063 +0000
++++ b/ai-instructions/generate-components.md	2026-10-13 09:08:59.309497202 +0000
+@@ -70,7 +70,7 @@
+ | Soạn thảo rich-text gắn form (label, bắt buộc, đếm ký tự) | `<sd-editor>` | `<sd-editor label="Nội dung" required maxlength="500"></sd-editor>` |
+ | Soạn văn bản khổ A4 (tờ trình, hợp đồng) có biến và bình luận | `<sd-document-builder>` | `<div style="height:640px"><sd-document-builder></sd-document-builder></div>` |
+ | Thiết kế form bằng giao diện (palette + canvas + thuộc tính) | `<sd-form-builder>` | `el.formGeneric = { layout:{columns:12}, components:[...] }` |
+-| Form động dựng từ cấu hình JSON | `<sd-form-render>` | `el.configuration = { layout:{columns:12}, components:[...] }; el.entity = {...}` |
++| Form động dựng từ cấu hình JSON | `<sd-form-render>` | `el.configuration = { components:[{ id:'c1', type:'textfield', key:'soHD', label:'Số HĐ', layout:{columns:6}, validate:{required:true} }] }; el.entity = {...}` — schema thư viện, xem `sd-components.md` |
+ | Ô bình luận có định dạng (đậm/nghiêng/danh sách/mention @) | `<sd-mini-editor>` | `el.option = { placeholder: '…', enableMention: true }` |
+ | Khung xem/sửa code có tô màu cú pháp | `<sd-code-editor>` | `<sd-code-editor language="json" viewed></sd-code-editor>` + `el.model = {...}` |
+ | Soát `data-autoid` cả trang (công cụ dev/QA) | `<sd-autoid-inspector>` | `<sd-autoid-inspector></sd-autoid-inspector>` — đặt NGOÀI `.app-shell`, chỉ bật khi cần soát; xem `sd-components.md` |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-components.md b/design-system/components/sd-components.md
+--- a/design-system/components/sd-components.md	2026-10-13 09:08:59.249981952 +0000
++++ b/design-system/components/sd-components.md	2026-10-13 09:08:59.325278306 +0000
+@@ -317,46 +317,65 @@
+ 
+ ---
+ 
+-## sd-form-render — DỰNG MỚI 2026-10-11
++## sd-form-render — ĐỒNG BỘ 2026-10-13 (catalog `#c-form-generic` + mã thư viện 19.0.10)
+ 
+-Form động theo cấu hình JSON, lưới 12 cột.
++Form động theo cấu hình JSON (`SdFormGeneric` của thư viện), lưới 12 cột. Cấu hình **đúng schema
++thư viện** — giống hệt thứ `sd-form-builder` của portal xuất ra:
+ 
+ ```html
+ <sd-form-render id="fr"></sd-form-render>
+ <script>
+   var fr = document.getElementById('fr');
+-  fr.configuration = {
+-    layout: { columns: 12 },
+-    components: [
+-      { id: 'c1', type: 'textfield', key: 'soHopDong', label: 'Số hợp đồng', columns: 6, required: true },
+-      { id: 'c2', type: 'select', key: 'nganHang', label: 'Ngân hàng', columns: 6,
+-        properties: { items: [{ id: 'vcb', name: 'Vietcombank' }] } },
+-      { id: 'g1', type: 'group', label: 'Tài sản bảo đảm', properties: { icon: 'verified_user' },
+-        components: [ /* … */ ] },
+-      { id: 'd1', type: 'textfield', key: 'lyDo', label: 'Lý do ngoại lệ', columns: 6,
+-        hidden: e => e.coNgoaiLe !== 'yes', required: e => e.coNgoaiLe === 'yes' }
+-    ]
+-  };
++  fr.configuration = { components: [
++    { id: 'c1', type: 'textfield', key: 'soHopDong', label: 'Số hợp đồng',
++      layout: { columns: 6 }, validate: { required: true, maxlength: 50 } },
++    { id: 'c2', type: 'select', key: 'nganHang', label: 'Ngân hàng', layout: { columns: 6 },
++      values: [{ value: 'vcb', label: 'Vietcombank' }, { value: 'bidv', label: 'BIDV' }] },
++    { id: 'c3', type: 'datetime', subtype: 'date', key: 'ngayGiaiNgan', label: 'Ngày giải ngân', layout: { columns: 6 } },
++    { id: 'c4', type: 'radio', key: 'phuongThuc', label: 'Phương thức trả nợ', layout: { columns: 12 },
++      properties: { direction: 'row' }, values: [{ value: 'deu', label: 'Trả góp đều' }, { value: 'cuoi', label: 'Cuối kỳ' }] },
++    { id: 'g1', type: 'group', label: 'Tài sản bảo đảm', properties: { icon: 'verified_user' }, components: [ /* … */ ] },
++    { id: 'u1', type: 'upload', key: 'hoSo', label: 'Hồ sơ', properties: { type: 'file', extensions: ['pdf'], maxSize: 10, max: 5 } },
++    { id: 't1', type: 'table', key: 'lichTraNo', label: 'Lịch trả nợ', columns: [{ key: 'ky', label: 'Kỳ', type: 'string' }, { key: 'goc', label: 'Gốc', type: 'number' }] },
++    { id: 'd1', type: 'textfield', key: 'lyDo', label: 'Lý do ngoại lệ', layout: { columns: 6 },
++      properties: { visibleWhenExpression: { field: 'coNgoaiLe', operator: 'EQUAL', value: 'yes' },
++                    requiredWhenExpression: { field: 'coNgoaiLe', operator: 'EQUAL', value: 'yes' } } }
++  ] };
+   fr.entity = { soHopDong: 'HĐTD-2026/0158', nganHang: 'vcb' };
+   fr.addEventListener('sd-form-change', e => console.log(e.detail.entity));
++  // tệp của upload: window.SD_UPLOAD_FILE_CONFIGURATION = { upload(files), details(keys) }
+ </script>
+ ```
+ 
+ | Thành viên | Ý nghĩa |
+ |---|---|
+-| `.configuration` | `{ layout: { columns }, components: [...] }` |
+-| `.entity` | Dữ liệu đổ vào control; gán lại là vẽ lại (biểu thức tính lại) |
+-| `.setVariables` | Biến phụ truyền vào hàm điều kiện |
+-| `viewed` | Chế độ xem — control render nhãn + giá trị |
+-
+-**Kiểu component**: `textfield` · `textarea` · `number` · `datetime` · `select` ·
+-`radio` · `upload` · `table` · `group` · `html`.
+-`hidden` / `required` / `disabled` nhận **boolean hoặc hàm** `(entity, vars) => boolean`.
++| `.configuration` | `{ components, variables?, validations?, onLoaded? }` — được format lại (SdFormatComponent: tự sinh `id`/`key`, `layout.columns` mặc định `'12'`, `subtype` `'date'`, radio `direction: 'row'`…) |
++| `.entity` | `[(model)]` của mọi control — giá trị người dùng nhập chảy ngược vào đây |
++| `.defaultEntity` | Gán vào entity những key còn trống |
++| `viewed` | Chế độ xem (textfield/select/date: `sd-view`; number: `text-secondary` + `T16M`; radio: `T14R` + `T14M`; upload: nhãn + danh sách tệp khoá) |
++| `getValidationMessages(alert)` | Form thiếu ô bắt buộc → đánh dấu mọi ô đã chạm (hiện lỗi), trả `undefined`; ngược lại trả mảng message của `configuration.validations` kiểu `expression` |
++
++**Ô theo `type`** (lib-item của thư viện): `textfield` → `sd-input` · `textarea` → `sd-textarea` ·
++`number` → `sd-input-number` (`validate.min/max`) · `datetime` → `sd-date` / `sd-datetime` theo `subtype` ·
++`select` → `sd-select` (`properties.multiple`) · `radio` → `sd-radio` nhóm · `chip-string` / `chip-calendar` →
++`sd-chip` / `sd-chip-calendar` · `upload` → `sd-upload-file` · `table` → bảng tĩnh + "Thêm mới" ·
++`html` → nội dung `entity[key]` (biến `${key}` từ `properties.variables`) · `break` → ô trống 12 cột ·
++`group` → `sd-section [title] [icon]`. `checkbox` không render (đúng thư viện).
++
++**Biểu thức** (`properties.*WhenExpression`): `{ field, operator, value }` với `EQUAL · NOT_EQUAL ·
++GREATER_THAN · LESS_THAN · GREATER_OR_EQUAL · LESS_OR_EQUAL · NULL · NOT_NULL`, hoặc
++`{ type: 'combinator', combinator: '&&' | '||', conditions: [...] }`. Giá trị ngày nhận `now`, `3LastDay`.
++Ẩn tĩnh: `properties.hidden`; khoá tĩnh: `disabled`; bắt buộc: `validate.required`. Đổi giá trị → sau 500ms
++(debounce của thư viện) form tính lại.
+ 
+-Sự kiện: `sd-form-change` → `{ key, value, entity }` · `sd-form-add-row`.
++Nguồn lựa chọn ngoài `values`: `valuesKey` tra `window.SD_FORM_GENERIC_CONFIGURATION.form.selections`
++(≙ token `SD_FORM_GENERIC_CONFIGURATION`).
+ 
+-> **Không dựng** (đúng catalog): kiểu `break` và `checkbox`, biểu thức FEEL,
+-> side-drawer "Tạo mới/cập nhật" của bảng. Xem `_memory/known-gaps.md`.
++Sự kiện (kit): `sd-form-change` → `{ key, value, entity }` · `sd-form-add-row` → `{ key }` (nút "Thêm mới" — side-drawer
++không dựng, đúng catalog).
++
++> Cấu hình kiểu CŨ của kit (`columns`, `required: true`, `properties.items [{id,name}]`, hàm `hidden/required/disabled`)
++> vẫn chạy — `sd-form-builder` của kit còn sinh dạng đó. Trang mới viết theo schema thư viện ở trên.
+ 
+ Preview: [components/form-generic.html](../preview/components/form-generic.html)
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-interactive.md b/design-system/components/sd-interactive.md
+--- a/design-system/components/sd-interactive.md	2026-10-13 09:08:59.252734847 +0000
++++ b/design-system/components/sd-interactive.md	2026-10-13 09:08:59.325930609 +0000
+@@ -307,6 +307,13 @@
+ 
+ Sự kiện `sd-change` mang `detail: { value }`.
+ 
++**DOM (2026-10-13) — Material đúng `#c-radio`:** `<section class="c-section">` (xếp dọc: `<section>`) ›
++`<sd-label>` › `mat-radio-group.mat-mdc-radio-group.c-radio-group-row|column` › `mat-radio-button.mat-mdc-radio-button
++.mr-16|m-0.mat-accent[.mat-mdc-radio-checked]` › `.mdc-radio` (input `.mdc-radio__native-control` + vòng) +
++`label.mdc-label`; lỗi là `mat-error` trong `section`; host mang lớp `sd-c-{color}`. CSS chép nguyên `radio.css`
++của catalog. Trong `sd-form-render` vẽ dạng rút gọn của `#c-form-generic` (`mat-primary`, không touch-target / ripple).
++Chế độ xem: `div.T14R.text-black400` + `div.T14M` (không qua `sd-view`, đúng template thư viện).
++
+ ### Chế độ nút đơn — bản cũ của kit, vẫn chạy
+ 
+ | Attribute | Values | Default |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-13 09:08:59.243185014 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-13 09:08:59.322478022 +0000
+@@ -944,6 +944,86 @@
+ /* Chế độ NHÓM — catalog `sd-radio{height:100%;display:flex;flex-direction:column}`
+    (rà soát 2026-10-12). Nút đơn kiểu cũ của kit giữ inline-block. */
+ sd-radio[items] { height: 100%; display: flex; flex-direction: column; }
++sd-radio[items] .c-radio-placeholder { padding: 4px 0; }   /* mở rộng cũ của kit */
++/* ── sd-radio NHÓM — DOM Material (2026-10-13, vòng Form Generic): CSS NGUYÊN VĂN catalog `css/components/radio.css`
++   (#c-radio), quy đổi `#c-radio X` → `sd-radio[items] X`, `[_nghost/_ngcontent]` → `:not(._ng)`, luật reboot của mục
++   (`label`, `input`) → `:where(sd-radio[items]) …`. Nút ĐƠN kiểu cũ (không `items`) vẫn dùng khối `.c-radio-*` ở trên. */
++/* token M3 catalog (`material-tokens.css` + `.sd-scope{--mat-sys-body-medium-font:Roboto, sans-serif}`) */
++sd-radio[items]{--mat-sys-body-medium-font:Roboto, sans-serif;--mat-sys-body-medium-line-height:1.25rem;--mat-sys-body-medium-size:0.875rem;--mat-sys-body-medium-tracking:0.016rem;--mat-sys-body-medium-weight:400;--mat-sys-body-small-font:Roboto;--mat-sys-body-small-line-height:1rem;--mat-sys-body-small-size:0.75rem;--mat-sys-body-small-tracking:0.025rem;--mat-sys-body-small-weight:400}
++sd-radio[items]{--mat-radio-checked-ripple-color:#3f51b5;--mat-radio-selected-focus-icon-color:#3f51b5;--mat-radio-selected-hover-icon-color:#3f51b5;--mat-radio-selected-icon-color:#3f51b5;--mat-radio-selected-pressed-icon-color:#3f51b5}
++:where(sd-radio[items]) label{display:inline-block;margin-bottom:.5rem}
++:where(sd-radio[items]) input{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
++:where(sd-radio[items]) input{overflow:visible}
++:where(sd-radio[items]) input[type=radio]{box-sizing:border-box;padding:0}
++sd-radio[items] .T14M{font-size:14px;font-weight:500;line-height:20px}
++sd-radio[items] .T14R{font-size:14px;font-weight:400;line-height:20px}
++sd-radio[items] .text-black400{color:var(--sd-black400)!important}
++sd-radio[items] .text-error{color:var(--sd-error)!important}
++sd-radio[items] .mb-0{margin-bottom:0!important}
++sd-radio[items] .mb-2{margin-bottom:2px!important}
++sd-radio[items] .m-0{margin:0!important}
++sd-radio[items] .mr-16{margin-right:16px!important}
++sd-radio[items] .d-flex{display:flex!important}
++sd-radio[items] .mat-ripple{overflow:hidden;position:relative}
++sd-radio[items] .mat-ripple:not(:empty){transform:translateZ(0)}
++sd-radio[items] .mat-focus-indicator{position:relative}
++sd-radio[items] .mat-focus-indicator::before{top:0;left:0;right:0;bottom:0;position:absolute;box-sizing:border-box;pointer-events:none;display:var(--mat-focus-indicator-display, none);border-width:var(--mat-focus-indicator-border-width, 3px);border-style:var(--mat-focus-indicator-border-style, solid);border-color:var(--mat-focus-indicator-border-color, transparent);border-radius:var(--mat-focus-indicator-border-radius, 4px)}
++sd-radio[items] .mat-focus-indicator:focus::before{content:""}
++sd-radio[items] .mat-internal-form-field{display:inline-flex;align-items:center;vertical-align:middle}
++sd-radio[items] .mat-internal-form-field>label{margin-left:0;margin-right:auto;padding-left:4px;padding-right:0;order:0}
++sd-radio[items] .mat-mdc-radio-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio{display:inline-block;position:relative;flex:0 0 auto;box-sizing:content-box;width:20px;height:20px;cursor:pointer;will-change:opacity,transform,border-color,color;padding:calc((28px - 20px)/2)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio:hover>.mdc-radio__native-control:not([disabled]):not(:focus)~.mdc-radio__background::before{opacity:.04;transform:scale(1)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio:hover>.mdc-radio__native-control:not([disabled])~.mdc-radio__background>.mdc-radio__outer-circle{border-color:rgba(0,0,0,.87)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio:hover>.mdc-radio__native-control:enabled:checked+.mdc-radio__background>.mdc-radio__outer-circle{border-color:var(--mat-radio-selected-hover-icon-color)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio:hover>.mdc-radio__native-control:enabled:checked+.mdc-radio__background>.mdc-radio__inner-circle{background-color:var(--mat-radio-selected-hover-icon-color)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio:active>.mdc-radio__native-control:enabled:not(:checked)+.mdc-radio__background>.mdc-radio__outer-circle{border-color:rgba(0,0,0,.87)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio:active>.mdc-radio__native-control:enabled:checked+.mdc-radio__background>.mdc-radio__outer-circle{border-color:var(--mat-radio-selected-pressed-icon-color)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio:active>.mdc-radio__native-control:enabled:checked+.mdc-radio__background>.mdc-radio__inner-circle{background-color:var(--mat-radio-selected-pressed-icon-color)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__background{display:inline-block;position:relative;box-sizing:border-box;width:20px;height:20px}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__background::before{position:absolute;transform:scale(0, 0);border-radius:50%;opacity:0;pointer-events:none;content:"";transition:opacity 90ms cubic-bezier(0.4, 0, 0.6, 1),transform 90ms cubic-bezier(0.4, 0, 0.6, 1);width:28px;height:28px;top:calc(-1*(28px - 20px)/2);left:calc(-1*(28px - 20px)/2)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__outer-circle{position:absolute;top:0;left:0;box-sizing:border-box;width:100%;height:100%;border-width:2px;border-style:solid;border-radius:50%;transition:border-color 90ms cubic-bezier(0.4, 0, 0.6, 1)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__inner-circle{position:absolute;top:0;left:0;box-sizing:border-box;width:100%;height:100%;transform:scale(0);border-radius:50%;transition:transform 90ms cubic-bezier(0.4, 0, 0.6, 1),background-color 90ms cubic-bezier(0.4, 0, 0.6, 1)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control{position:absolute;margin:0;padding:0;opacity:0;top:0;right:0;left:0;cursor:inherit;z-index:1;width:28px;height:28px}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:checked+.mdc-radio__background,sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:disabled+.mdc-radio__background{transition:opacity 90ms cubic-bezier(0, 0, 0.2, 1),transform 90ms cubic-bezier(0, 0, 0.2, 1)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:checked+.mdc-radio__background>.mdc-radio__outer-circle,sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:disabled+.mdc-radio__background>.mdc-radio__outer-circle{transition:border-color 90ms cubic-bezier(0, 0, 0.2, 1)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:checked+.mdc-radio__background>.mdc-radio__inner-circle,sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:disabled+.mdc-radio__background>.mdc-radio__inner-circle{transition:transform 90ms cubic-bezier(0, 0, 0.2, 1),background-color 90ms cubic-bezier(0, 0, 0.2, 1)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:focus+.mdc-radio__background::before{transform:scale(1);opacity:.12;transition:opacity 90ms cubic-bezier(0, 0, 0.2, 1),transform 90ms cubic-bezier(0, 0, 0.2, 1)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:disabled:not(:checked)+.mdc-radio__background>.mdc-radio__outer-circle{border-color:rgba(0,0,0,.87);opacity:.38}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:disabled+.mdc-radio__background{cursor:default}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:disabled+.mdc-radio__background>.mdc-radio__outer-circle{border-color:rgba(0,0,0,.87);opacity:.38}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:disabled+.mdc-radio__background>.mdc-radio__inner-circle{background-color:rgba(0,0,0,.87);opacity:.38}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:enabled:not(:checked)+.mdc-radio__background>.mdc-radio__outer-circle{border-color:rgba(0,0,0,.54)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:enabled:checked+.mdc-radio__background>.mdc-radio__outer-circle{border-color:var(--mat-radio-selected-icon-color)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:enabled:checked+.mdc-radio__background>.mdc-radio__inner-circle{background-color:var(--mat-radio-selected-icon-color)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:enabled:focus:checked+.mdc-radio__background>.mdc-radio__outer-circle{border-color:var(--mat-radio-selected-focus-icon-color)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:enabled:focus:checked+.mdc-radio__background>.mdc-radio__inner-circle{background-color:var(--mat-radio-selected-focus-icon-color)}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__native-control:checked+.mdc-radio__background>.mdc-radio__inner-circle{transform:scale(0.5);transition:transform 90ms cubic-bezier(0, 0, 0.2, 1),background-color 90ms cubic-bezier(0, 0, 0.2, 1)}
++sd-radio[items] .mat-mdc-radio-button label{cursor:pointer}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio__background::before{background-color:rgba(0,0,0,.87)}
++sd-radio[items] .mat-mdc-radio-button.mat-mdc-radio-checked .mat-ripple-element,sd-radio[items] .mat-mdc-radio-button.mat-mdc-radio-checked .mdc-radio__background::before{background-color:var(--mat-radio-checked-ripple-color)}
++sd-radio[items] .mat-mdc-radio-button .mat-internal-form-field{color:rgba(0,0,0,.87);font-family:var(--mat-radio-label-text-font, var(--mat-sys-body-medium-font));line-height:var(--mat-radio-label-text-line-height, var(--mat-sys-body-medium-line-height));font-size:var(--mat-radio-label-text-size, var(--mat-sys-body-medium-size));letter-spacing:var(--mat-radio-label-text-tracking, var(--mat-sys-body-medium-tracking));font-weight:var(--mat-radio-label-text-weight, var(--mat-sys-body-medium-weight))}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio--disabled+label{color:color-mix(in srgb, rgba(0,0,0,.87) 38%, transparent)}
++sd-radio[items] .mat-mdc-radio-button .mat-radio-ripple{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:50%}
++sd-radio[items] .mat-mdc-radio-button .mat-radio-ripple>.mat-ripple-element{opacity:.14}
++sd-radio[items] .mat-mdc-radio-button .mat-radio-ripple::before{border-radius:50%}
++sd-radio[items] .mat-mdc-radio-button .mdc-radio>.mdc-radio__native-control:focus:enabled:not(:checked)~.mdc-radio__background>.mdc-radio__outer-circle{border-color:rgba(0,0,0,.87)}
++sd-radio[items] .mat-mdc-radio-disabled{cursor:default;pointer-events:none}
++sd-radio[items] .mat-mdc-radio-touch-target{position:absolute;top:50%;left:50%;height:48px;width:48px;transform:translate(-50%, -50%);display:none}
++sd-radio[items] .mat-mdc-form-field-bottom-align::before{content:"";display:inline-block;height:16px}
++sd-radio[items] .mat-mdc-form-field-error{display:block;color:#f44336}
++sd-radio[items] .mat-mdc-form-field-bottom-align::before{font-family:var(--mat-form-field-subscript-text-font, var(--mat-sys-body-small-font));line-height:var(--mat-form-field-subscript-text-line-height, var(--mat-sys-body-small-line-height));font-size:var(--mat-form-field-subscript-text-size, var(--mat-sys-body-small-size));letter-spacing:var(--mat-form-field-subscript-text-tracking, var(--mat-sys-body-small-tracking));font-weight:var(--mat-form-field-subscript-text-weight, var(--mat-sys-body-small-weight))}
++sd-radio[items]:not(._ng){height:100%;display:flex;flex-direction:column}
++sd-radio[items]:not(._ng) label.mdc-label{margin-bottom:0}
++sd-radio[items]:not(._ng){--sd-c: var(--sd-primary)}
++sd-radio[items]:not(._ng).sd-c-success{--sd-c: var(--sd-success)}
++sd-radio[items]:not(._ng).sd-c-warning{--sd-c: var(--sd-warning)}
++sd-radio[items]:not(._ng).sd-c-error{--sd-c: var(--sd-error)}
++sd-radio[items]:not(._ng) .mat-mdc-radio-button,sd-radio[items]:not(._ng) .mat-mdc-radio-group,sd-radio[items]:not(._ng) .mdc-radio{--mdc-radio-selected-icon-color: var(--sd-c) !important;--mdc-radio-selected-focus-icon-color: var(--sd-c) !important;--mdc-radio-selected-hover-icon-color: var(--sd-c) !important;--mdc-radio-selected-pressed-icon-color: var(--sd-c) !important;--mdc-radio-selected-focus-state-layer-color: var(--sd-c) !important;--mdc-radio-selected-hover-state-layer-color: var(--sd-c) !important;--mat-radio-selected-icon-color: var(--sd-c) !important;--mat-radio-selected-focus-icon-color: var(--sd-c) !important;--mat-radio-selected-hover-icon-color: var(--sd-c) !important;--mat-radio-selected-pressed-icon-color: var(--sd-c) !important;--mat-radio-checked-ripple-color: var(--sd-c) !important;--mat-radio-checked-state-layer-color: var(--sd-c) !important}
++sd-radio[items] .c-section:not(._ng){align-content:center;align-items:center}
++sd-radio[items] .c-radio-group-column:not(._ng){flex:1;display:flex;flex-direction:column;align-items:flex-start}
++sd-radio[items] .c-radio-group-row:not(._ng){flex:1;display:flex;flex-direction:row;align-items:center}
++
+ /* --- sd-radio chế độ NHÓM (có attribute items) — rà soát 2026-10-10 ---
+    Thư viện `sd-radio` là một NHÓM radio nhận `items` rồi tự dựng từng lựa
+    chọn, không phải một nút đơn như bản trước của kit. Không có `items` thì
+@@ -957,28 +1037,22 @@
+      nhãn cách ô 4px (padding-left của .mdc-label) — kit cũ gap 8px
+      các lựa chọn cách nhau bằng margin-right 16px; xếp DỌC thì cách 0
+      nhãn nhóm 14/500 ngay sát trên nhóm (khoảng hở 1px) */
+-sd-radio .c-radio-group {
+-  display: flex;
+-}
+-sd-radio .c-radio-group.c-row { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 0; }
+-sd-radio .c-radio-group.c-row .c-radio-wrap { margin-right: 16px; }
+-sd-radio .c-radio-group.c-column { flex-direction: column; align-items: flex-start; gap: 0; }
++
++
++
++
+ /* (nhãn nhóm nay là markup sd-label — không còn `.c-radio-group-label`) */
+-sd-radio .c-radio-placeholder { padding: 4px 0; }
++
+ 
+ /* color đổi màu chấm và viền ô đã chọn — 6 màu hệ thống */
+-sd-radio .c-radio-group.c-color-primary   { --sd-radio-on: var(--sd-primary); }
++
+ /* secondary / info: catalog KHÔNG khai (chỉ primary · success · warning · error)
+    → ra màu primary như catalog. Gỡ theo Rule 18, rà soát 2026-10-12. */
+-sd-radio .c-radio-group.c-color-success   { --sd-radio-on: var(--sd-success); }
+-sd-radio .c-radio-group.c-color-warning   { --sd-radio-on: var(--sd-warning); }
+-sd-radio .c-radio-group.c-color-error     { --sd-radio-on: var(--sd-error); }
+-sd-radio .c-radio-group .c-radio-input:checked ~ .c-radio-box {
+-  border-color: var(--sd-radio-on, var(--sd-primary));
+-}
+-sd-radio .c-radio-group .c-radio-input:checked ~ .c-radio-box .c-radio-dot {
+-  background: var(--sd-radio-on, var(--sd-primary));
+-}
++
++
++
++
++
+ sd-radio .c-radio-wrap {
+   display: inline-flex;
+   align-items: center;
+@@ -1098,12 +1172,8 @@
+ sd-radio .c-radio-wrap.c-disabled .c-radio-input {
+   cursor: default;
+ }
+-sd-radio .c-radio-group .c-radio-wrap.c-disabled .c-radio-input:checked ~ .c-radio-box {
+-  border-color: rgba(0, 0, 0, .87);
+-}
+-sd-radio .c-radio-group .c-radio-wrap.c-disabled .c-radio-input:checked ~ .c-radio-box .c-radio-dot {
+-  background: rgba(0, 0, 0, .87);
+-}
++
++
+ 
+ /* Label + helper text */
+ sd-radio .c-radio-text {
+@@ -1123,21 +1193,9 @@
+ }
+ /* Dòng lỗi của nhóm — catalog `mat-error` đứng ngay dưới nhóm, kế thừa chữ
+    14px / 21px, màu #f44336, không thụt lề. */
+-sd-radio[items] > .sd-error-text {
+-  font-size: 14px;
+-  line-height: 21px;
+-  margin-top: 0;
+-  color: #f44336;
+-}
++
+ /* catalog `.mat-mdc-form-field-bottom-align::before{content:"";display:inline-block;
+-   height:16px;font:12px/16px}` — nâng dòng lỗi lên cao 22px. */
+-sd-radio[items] > .sd-error-text::before {
+-  content: "";
+-  display: inline-block;
+-  height: 16px;
+-  font-size: 12px;
+-  line-height: 16px;
+-}
++   height:16px;font:12px/16px}
+ sd-radio .c-radio-helper {
+   font-size: 12px;
+   line-height: 1.5;
+@@ -8251,7 +8309,24 @@
+    `lib-textfield`, … trong DOM nhưng cho chúng "trong suốt" về bố cục. Kit giữ
+    đúng các thẻ đó để markup đối chiếu được 1-1 với catalog.
+    =================================================================== */
+-sd-form-render { display: block; }
++sd-form-render { display: contents; }   /* thư viện: `:host{display:contents}` (SdFormRender styles) */
++/* Biến token của mục catalog `#c-form-generic` (M2 outline) — đặt trên host (display:contents vẫn truyền biến). */
++sd-form-render {
++  --mat-form-field-outlined-label-text-color: rgba(0,0,0,.54); --mat-form-field-outlined-input-text-color: rgba(0,0,0,.87);
++  --mat-form-field-outlined-caret-color: #ae7129; --mat-form-field-outlined-focus-outline-color: #ae7129;
++  --mat-form-field-outlined-focus-label-text-color: #ae7129; --mat-form-field-outlined-error-label-text-color: #f44336;
++  --mat-form-field-error-text-color: #f44336; --mat-form-field-outlined-container-shape: 4px;
++  --mat-form-field-trailing-icon-color: rgba(0,0,0,.54); --mat-select-enabled-trigger-text-color: rgba(0,0,0,.87);
++  --mat-select-placeholder-text-color: rgba(0,0,0,.54); --mat-radio-state-layer-size: 28px;
++  --mat-radio-unselected-icon-color: rgba(0,0,0,.54); --mat-radio-label-text-color: rgba(0,0,0,.87);
++}
++/* Đo catalog `#c-form-generic`: nhãn nổi KHÔNG có lề dưới 8px của reboot (`label{margin-bottom:.5rem}`) → nhãn thấp
++   hơn 1px so với `#c-input`; nút × mang cỡ chữ mặc định của <button> (13.33px). */
++sd-form-render .mat-mdc-form-field .mdc-floating-label { margin-bottom: 0; }
++sd-form-render .mat-mdc-form-field .sd-clear-btn { font-size: 13.3333px; letter-spacing: normal; line-height: normal; }
++sd-form-render sd-date .mat-mdc-form-field-icon-suffix { color: var(--mat-form-field-trailing-icon-color); }
++/* `#c-form-generic` tô tên tệp bằng màu thương hiệu (`#c-upload-file` thì để xanh liên kết #007bff) */
++sd-form-render sd-upload-file .c-document-container .c-file-name { color: var(--sd-primary); text-decoration: none; }
+ sd-form-render .row { display: flex; flex-wrap: wrap; margin-left: -8px; margin-right: -8px; }
+ sd-form-render .row > * { box-sizing: border-box; padding-left: 8px; padding-right: 8px; }
+ sd-form-render [class^="col-"], sd-form-render [class*=" col-"] { box-sizing: border-box; padding-left: 8px; padding-right: 8px; }
+@@ -8276,7 +8351,7 @@
+ sd-form-render lib-number, sd-form-render lib-select, sd-form-render lib-radio,
+ sd-form-render lib-datetime, sd-form-render lib-upload, sd-form-render lib-table,
+ sd-form-render lib-html { display: contents; }
+-sd-form-render .c-radio-group-row { flex: 1; display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; }
++
+ /* Bảng của `lib-table`: catalog ghi "bảng của lib-table là bảng tĩnh (xem mục
+    Table cho sd-table đầy đủ)" — chép đúng bảng tĩnh đó. */
+ sd-form-render .fg-table { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 8px; font-size: 14px; }
+@@ -8625,7 +8700,7 @@
+ /* Nhóm radio xếp dọc — tên lớp của catalog (`#c-radio .c-radio-group-column`).
+    Chép nguyên văn; kit vẫn giữ `.c-radio-group.c-column` cũ nên hai rule cùng
+    ăn, giá trị không chọi nhau (`flex:1` là phần catalog có thêm). */
+-sd-radio .c-radio-group-column { flex: 1; display: flex; flex-direction: column; align-items: flex-start; }
++
+ 
+ /* `.kv` — lưới hai cột nhãn/giá trị, chép nguyên văn từ catalog `#c-modal`
+    (biến thể "Kích thước + slot header/footer" dùng nó cho bảng chi tiết khoản
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/form-generic.html b/design-system/preview/components/form-generic.html
+--- a/design-system/preview/components/form-generic.html	2026-10-13 09:08:59.257927552 +0000
++++ b/design-system/preview/components/form-generic.html	2026-10-13 09:08:59.331548951 +0000
+@@ -25,39 +25,68 @@
+          data-subtitle="Form động theo cấu hình JSON — lưới 12 cột, ẩn/bắt buộc/vô hiệu theo điều kiện"></div>
+     <div class="content-zone">
+ 
+-      <sd-inform type="info" icon title="Kit dựng control THẬT, không dán DOM">
+-        Catalog dán DOM Angular Material đã render vì nó không chạy được Angular. Kit có sẵn
+-        <code>sd-input</code>, <code>sd-select</code>, <code>sd-date</code>… chạy thật nên dựng thẳng các thẻ đó —
+-        đúng điều catalog đang mô phỏng. Khung ngoài (<code>.row</code>, <code>.col-*</code>,
+-        <code>lib-item</code>…) thì chép nguyên văn.
+-      </sd-inform>
+-
+-      <sd-section title="Nhập liệu">
++      <sd-section data-catalog-section="c-form-generic" title="Nhập liệu">
+         <p class="text-sm text-secondary mb-2">
+-          textfield, select, number, date, radio, textarea — “Mã hồ sơ phê duyệt” bắt buộc và đang bỏ trống.
+-          Catalog vẽ sẵn trạng thái lỗi; kit để <code>sd-input</code> tự quyết theo luật riêng của nó
+-          (lỗi hiện khi <code>touched</code> hoặc <code>dirty</code>), nên bấm vào ô rồi rời ra sẽ thấy câu lỗi.
++          textfield, select, number, date, radio, textarea; 1 trường bắt buộc đang báo lỗi
++          (trang gọi <code>getValidationMessages()</code> → đánh dấu mọi ô đã chạm, như <code>form.markAllAsTouched()</code> của thư viện).
+         </p>
+-        <sd-form-render id="fr1"></sd-form-render>
++        <div style="background:#fff"><sd-form-render id="fr1"></sd-form-render></div>
++        <pre class="ds-guide-code mt-2">&lt;sd-form-render id="fr1"&gt;&lt;/sd-form-render&gt;
++&lt;script&gt;
++  fr1.configuration = { components: [
++    { id: 'c1', type: 'textfield', key: 'soHopDong', label: 'Số hợp đồng tín dụng',
++      layout: { columns: 6 }, validate: { required: true } },
++    { id: 'c2', type: 'select', key: 'nganHang', label: 'Ngân hàng cho vay', layout: { columns: 6 },
++      validate: { required: true }, values: [{ value: 'vcb', label: 'Vietcombank – CN Sở Giao dịch' }, …] },
++    { id: 'c3', type: 'number', key: 'soTien', label: 'Số tiền giải ngân (VND)', layout: { columns: 6 }, validate: { required: true } },
++    { id: 'c4', type: 'datetime', subtype: 'date', key: 'ngayGiaiNgan', label: 'Ngày giải ngân dự kiến', layout: { columns: 6 } },
++    { id: 'c7', type: 'radio', key: 'phuongThucTraNo', label: 'Phương thức trả nợ', layout: { columns: 12 },
++      validate: { required: true }, properties: { direction: 'row' }, values: [...] },
++    { id: 'c8', type: 'textarea', key: 'mucDich', label: 'Mục đích sử dụng vốn', layout: { columns: 12 } }
++  ] };
++  fr1.entity = { soHopDong: 'HĐTD-2026/0158', nganHang: 'vcb', soTien: 1250000000, ngayGiaiNgan: '2026-10-15', … };
++&lt;/script&gt;</pre>
+       </sd-section>
+ 
+-      <sd-section title="Group, upload, table">
+-        <p class="text-sm text-secondary mb-2"><code>group</code> → <code>sd-section</code>; <code>upload</code> → <code>sd-upload-file</code>; <code>table</code> → bảng tĩnh + nút “Thêm mới” (catalog ghi rõ bảng của <code>lib-table</code> là bảng tĩnh).</p>
++      <sd-section data-catalog-section="c-form-generic" title="Group, upload, table">
++        <p class="text-sm text-secondary mb-2">
++          <code>group</code> → <code>&lt;sd-section [title] [icon]&gt;</code>; <code>upload</code> → <code>&lt;sd-upload-file&gt;</code>;
++          <code>table</code> → bảng tĩnh + nút “Thêm mới” (catalog: bảng của <code>lib-table</code> là bảng tĩnh, side-drawer
++          “Tạo mới/cập nhật” không mở — bấm nút chỉ phát sự kiện <code>sd-form-add-row</code>).
++        </p>
+         <sd-form-render id="fr2"></sd-form-render>
++        <pre class="ds-guide-code mt-2">{ id: 'g1', type: 'group', label: 'Tài sản bảo đảm', properties: { icon: 'verified_user' },
++  components: [ /* textfield, number */ ] },
++{ id: 'u1', type: 'upload', key: 'hoSoDinhKem', label: 'Hồ sơ đính kèm', validate: { required: true },
++  properties: { type: 'file', extensions: ['pdf', 'docx', 'xlsx'], maxSize: 10, max: 5 } },
++{ id: 't1', type: 'table', key: 'lichTraNo', label: 'Lịch trả nợ dự kiến',
++  columns: [{ key: 'ky', label: 'Kỳ', type: 'string' }, …, { key: 'goc', label: 'Gốc (VND)', type: 'number' }] }
++// tệp: window.SD_UPLOAD_FILE_CONFIGURATION = { details(keys) { … } }  (≙ token SD_UPLOAD_FILE_CONFIGURATION)</pre>
+       </sd-section>
+ 
+-      <sd-section title="Chế độ xem — [viewed]">
+-        <sd-form-render id="fr3" viewed></sd-form-render>
++      <sd-section data-catalog-section="c-form-generic" title="Chế độ xem — [viewed]">
++        <p class="text-sm text-secondary mb-2"><code>viewed</code> — control render nhãn + giá trị (<code>sd-view</code>); number / radio / upload theo đúng template riêng của thư viện.</p>
++        <div style="background:#fff"><sd-form-render id="fr3" viewed></sd-form-render></div>
++        <pre class="ds-guide-code mt-2">&lt;sd-form-render id="fr3" viewed&gt;&lt;/sd-form-render&gt;</pre>
+       </sd-section>
+ 
+-      <sd-section title="Ẩn / bắt buộc / vô hiệu theo điều kiện">
++      <sd-section title="Ẩn / bắt buộc / vô hiệu theo biểu thức">
+         <p class="text-sm text-secondary mb-2">
+-          Catalog không in ra cú pháp biểu thức FEEL nào, nên kit nhận <code>hidden</code> / <code>required</code> /
+-          <code>disabled</code> là boolean <strong>hoặc hàm</strong> <code>(entity, vars) =&gt; boolean</code>.
+-          Chọn “Có” ở ô bên dưới để hiện thêm trường lý do (bắt buộc).
++          Cú pháp của thư viện: <code>properties.visibleWhenExpression</code> / <code>hiddenWhenExpression</code> /
++          <code>requiredWhenExpression</code> / <code>disabledWhenExpression</code> là JSON
++          <code>{ field, operator, value }</code> (EQUAL · NOT_EQUAL · GREATER_THAN · LESS_THAN · GREATER_OR_EQUAL ·
++          LESS_OR_EQUAL · NULL · NOT_NULL) hoặc nhóm <code>{ type: 'combinator', combinator: '&amp;&amp;' | '||', conditions }</code>.
++          Đổi lựa chọn bên dưới — sau 500ms (debounce của thư viện) form tính lại.
+         </p>
+         <sd-form-render id="fr4"></sd-form-render>
+-        <p class="text-sm text-secondary mt-2">entity: <code id="fr4-out">—</code></p>
++        <pre class="ds-guide-code mt-2">{ id: 'd2', type: 'textfield', key: 'lyDo', label: 'Lý do ngoại lệ', layout: { columns: 6 },
++  properties: {
++    visibleWhenExpression:  { field: 'coNgoaiLe', operator: 'EQUAL', value: 'yes' },
++    requiredWhenExpression: { field: 'coNgoaiLe', operator: 'EQUAL', value: 'yes' } } }</pre>
++      </sd-section>
++
++      <sd-section title="Event log">
++        <pre class="ds-guide-code" id="fr-event-log">Chưa có sự kiện nào.</pre>
+       </sd-section>
+ 
+     </div>
+@@ -72,95 +101,97 @@
+ <script>
+   (function () {
+     var NGAN_HANG = [
+-      { id: 'vcb', name: 'Vietcombank – CN Sở Giao dịch' },
+-      { id: 'bidv', name: 'BIDV – CN Hà Nội' },
+-      { id: 'tcb', name: 'Techcombank – CN Láng Hạ' }
++      { value: 'vcb', label: 'Vietcombank – CN Sở Giao dịch' },
++      { value: 'bidv', label: 'BIDV – CN Hà Nội' },
++      { value: 'tcb', label: 'Techcombank – CN Láng Hạ' }
+     ];
+-    var KY_HAN = [{ id: '6', name: '6 tháng' }, { id: '12', name: '12 tháng' }, { id: '24', name: '24 tháng' }];
+-
+-    var CAU_HINH = {
+-      layout: { columns: 12 },
+-      components: [
+-        { id: 'c1', type: 'textfield', key: 'soHopDong', label: 'Số hợp đồng tín dụng', columns: 6, required: true },
+-        { id: 'c2', type: 'select', key: 'nganHang', label: 'Ngân hàng cho vay', columns: 6, required: true,
+-          properties: { items: NGAN_HANG } },
+-        { id: 'c3', type: 'number', key: 'soTien', label: 'Số tiền giải ngân (VND)', columns: 6, required: true },
+-        { id: 'c4', type: 'datetime', key: 'ngayGiaiNgan', label: 'Ngày giải ngân dự kiến', columns: 6 },
+-        { id: 'c5', type: 'select', key: 'kyHan', label: 'Kỳ hạn vay', columns: 6, properties: { items: KY_HAN } },
+-        { id: 'c6', type: 'textfield', key: 'maHoSo', label: 'Mã hồ sơ phê duyệt', columns: 6, required: true },
+-        { id: 'c7', type: 'radio', key: 'phuongThuc', label: 'Phương thức trả nợ', columns: 12, required: true,
+-          properties: { items: [
+-            { id: 'deu', name: 'Trả góp đều hàng tháng' },
+-            { id: 'cuoiKy', name: 'Trả gốc cuối kỳ' },
+-            { id: 'tuyChinh', name: 'Theo lịch tùy chỉnh' }
+-          ] } },
+-        { id: 'c8', type: 'textarea', key: 'mucDich', label: 'Mục đích sử dụng vốn', columns: 12, properties: { rows: 3 } }
+-      ]
++    var KY_HAN = [{ value: '6', label: '6 tháng' }, { value: '12', label: '12 tháng' }, { value: '24', label: '24 tháng' }];
++    var PHUONG_THUC = [
++      { value: 'deu', label: 'Trả góp đều hàng tháng' },
++      { value: 'cuoiKy', label: 'Trả gốc cuối kỳ' },
++      { value: 'tuyChinh', label: 'Theo lịch tùy chỉnh' }
++    ];
++    /* Nguồn tệp cho sd-upload-file (≙ provide SD_UPLOAD_FILE_CONFIGURATION trong Angular) */
++    var FILES = {
++      'f-totrinh': { idOrKey: 'f-totrinh', cdn: '#', name: 'To_trinh_phe_duyet_khoan_vay.pdf', extension: 'pdf', size: 245.3 / 1024 },
++      'f-phuongan': { idOrKey: 'f-phuongan', cdn: '#', name: 'Phuong_an_tra_no_Q4-2026.xlsx', extension: 'xlsx', size: 58.7 / 1024 }
+     };
+-    var HO_SO = {
+-      soHopDong: 'HĐTD-2026/0158',
+-      nganHang: 'vcb',
+-      soTien: 1250000000,
+-      ngayGiaiNgan: '2026/10/15',
+-      kyHan: '12',
+-      maHoSo: '',
+-      phuongThuc: 'deu',
+-      mucDich: 'Bổ sung vốn lưu động phục vụ kế hoạch nhập hàng quý IV/2026.'
++    window.SD_UPLOAD_FILE_CONFIGURATION = {
++      details: function (keys) { return Promise.resolve(keys.map(function (k) { return FILES[k]; }).filter(Boolean)); }
+     };
+-    var fr1 = document.getElementById('fr1');
+-    fr1.configuration = CAU_HINH;
+-    fr1.entity = HO_SO;
+ 
+-    document.getElementById('fr2').configuration = {
+-      layout: { columns: 12 },
+-      components: [
+-        { id: 'g1', type: 'group', label: 'Tài sản bảo đảm', properties: { icon: 'verified_user' }, components: [
+-          { id: 'g1a', type: 'textfield', key: 'loaiTaiSan', label: 'Loại tài sản', columns: 6 },
+-          { id: 'g1b', type: 'number', key: 'giaTri', label: 'Giá trị định giá (VND)', columns: 6 }
+-        ] },
+-        { id: 'u1', type: 'upload', key: 'hoSoDinhKem', label: 'Hồ sơ đính kèm', columns: 12, required: true,
+-          properties: { description: 'Định dạng: pdf, docx, xlsx và tối đa: 10MB', extensions: 'pdf,docx,xlsx', maxSize: 10 } },
+-        { id: 't1', type: 'table', key: 'lichTraNo', label: 'Lịch trả nợ dự kiến', columns: 12, properties: {
+-          columns: [
+-            { field: 'ky', title: 'Kỳ' },
+-            { field: 'ngay', title: 'Ngày đến hạn' },
+-            { field: 'goc', title: 'Gốc (VND)', align: 'right' },
+-            { field: 'lai', title: 'Lãi (VND)', align: 'right' }
+-          ] } }
+-      ]
++    var fr1 = document.getElementById('fr1');
++    fr1.configuration = { components: [
++      { id: 'c1', type: 'textfield', key: 'soHopDong', label: 'Số hợp đồng tín dụng', layout: { columns: 6 }, validate: { required: true } },
++      { id: 'c2', type: 'select', key: 'nganHang', label: 'Ngân hàng cho vay', layout: { columns: 6 }, validate: { required: true }, values: NGAN_HANG },
++      { id: 'c3', type: 'number', key: 'soTien', label: 'Số tiền giải ngân (VND)', layout: { columns: 6 }, validate: { required: true } },
++      { id: 'c4', type: 'datetime', subtype: 'date', key: 'ngayGiaiNgan', label: 'Ngày giải ngân dự kiến', layout: { columns: 6 } },
++      { id: 'c5', type: 'select', key: 'kyHan', label: 'Kỳ hạn vay', layout: { columns: 6 }, values: KY_HAN },
++      { id: 'c6', type: 'textfield', key: 'maHoSo', label: 'Mã hồ sơ phê duyệt', layout: { columns: 6 }, validate: { required: true } },
++      { id: 'c7', type: 'radio', key: 'phuongThucTraNo', label: 'Phương thức trả nợ', layout: { columns: 12 }, validate: { required: true },
++        properties: { direction: 'row' }, values: PHUONG_THUC },
++      { id: 'c8', type: 'textarea', key: 'mucDich', label: 'Mục đích sử dụng vốn', layout: { columns: 12 } }
++    ] };
++    fr1.entity = {
++      soHopDong: 'HĐTD-2026/0158', nganHang: 'vcb', soTien: 1250000000, ngayGiaiNgan: '2026-10-15', kyHan: '12',
++      phuongThucTraNo: 'deu',
++      mucDich: 'Bổ sung vốn lưu động cho Kế hoạch Funding quý IV/2026: thanh toán nhà cung cấp và chi phí vận hành theo phương án đã duyệt.'
+     };
+-    document.getElementById('fr2').entity = {
++    fr1.getValidationMessages();
++
++    var fr2 = document.getElementById('fr2');
++    fr2.configuration = { components: [
++      { id: 'g1', type: 'group', label: 'Tài sản bảo đảm', properties: { icon: 'verified_user' }, components: [
++        { id: 'g1a', type: 'textfield', key: 'loaiTaiSan', label: 'Loại tài sản', layout: { columns: 6 } },
++        { id: 'g1b', type: 'number', key: 'giaTri', label: 'Giá trị định giá (VND)', layout: { columns: 6 } }
++      ] },
++      { id: 'u1', type: 'upload', key: 'hoSoDinhKem', label: 'Hồ sơ đính kèm', layout: { columns: 12 }, validate: { required: true },
++        properties: { type: 'file', extensions: ['pdf', 'docx', 'xlsx'], maxSize: 10, max: 5 } },
++      { id: 't1', type: 'table', key: 'lichTraNo', label: 'Lịch trả nợ dự kiến', layout: { columns: 12 }, columns: [
++        { key: 'ky', label: 'Kỳ', type: 'string' },
++        { key: 'ngay', label: 'Ngày đến hạn', type: 'string' },
++        { key: 'goc', label: 'Gốc (VND)', type: 'number' },
++        { key: 'lai', label: 'Lãi (VND)', type: 'number' }
++      ] }
++    ] };
++    fr2.entity = {
++      loaiTaiSan: 'Quyền sử dụng đất & tài sản gắn liền', giaTri: 3800000000,
++      hoSoDinhKem: ['f-totrinh', 'f-phuongan'],
+       lichTraNo: [
+-        { ky: 1, ngay: '15/11/2026', goc: '104.166.667', lai: '8.854.167' },
+-        { ky: 2, ngay: '15/12/2026', goc: '104.166.667', lai: '8.116.319' },
+-        { ky: 3, ngay: '15/01/2027', goc: '104.166.667', lai: '7.378.472' }
++        { ky: '1', ngay: '15/11/2026', goc: 104166667, lai: 8854167 },
++        { ky: '2', ngay: '15/12/2026', goc: 104166667, lai: 8116319 },
++        { ky: '3', ngay: '15/01/2027', goc: 104166667, lai: 7378472 }
+       ]
+     };
+ 
+     var fr3 = document.getElementById('fr3');
+-    fr3.configuration = CAU_HINH;
+-    fr3.entity = Object.assign({}, HO_SO, { maHoSo: 'HS-2026-0412' });
++    fr3.configuration = { components: [
++      { id: 'v1', type: 'textfield', key: 'soHopDong', label: 'Số hợp đồng tín dụng', layout: { columns: 6 } },
++      { id: 'v2', type: 'select', key: 'nganHang', label: 'Ngân hàng cho vay', layout: { columns: 6 }, values: NGAN_HANG },
++      { id: 'v3', type: 'number', key: 'soTien', label: 'Số tiền giải ngân (VND)', layout: { columns: 6 } },
++      { id: 'v4', type: 'datetime', subtype: 'date', key: 'ngayGiaiNgan', label: 'Ngày giải ngân dự kiến', layout: { columns: 6 } },
++      { id: 'v5', type: 'radio', key: 'phuongThucTraNo', label: 'Phương thức trả nợ', layout: { columns: 6 }, values: PHUONG_THUC },
++      { id: 'v6', type: 'upload', key: 'hoSoDinhKem', label: 'Hồ sơ đính kèm', layout: { columns: 6 }, properties: { type: 'file' } }
++    ] };
++    fr3.entity = { soHopDong: 'HĐTD-2026/0158', nganHang: 'vcb', soTien: 1250000000, ngayGiaiNgan: '2026-10-15',
++      phuongThucTraNo: 'deu', hoSoDinhKem: ['f-totrinh'] };
+ 
+     var fr4 = document.getElementById('fr4');
+-    fr4.configuration = {
+-      layout: { columns: 12 },
+-      components: [
+-        { id: 'd1', type: 'select', key: 'coNgoaiLe', label: 'Có ngoại lệ tín dụng?', columns: 6,
+-          properties: { items: [{ id: 'no', name: 'Không' }, { id: 'yes', name: 'Có' }] } },
+-        { id: 'd2', type: 'textfield', key: 'lyDo', label: 'Lý do ngoại lệ', columns: 6,
+-          hidden: function (e) { return e.coNgoaiLe !== 'yes'; },
+-          required: function (e) { return e.coNgoaiLe === 'yes'; } },
+-        { id: 'd3', type: 'textfield', key: 'nguoiDuyet', label: 'Người phê duyệt ngoại lệ', columns: 6,
+-          disabled: function (e) { return e.coNgoaiLe !== 'yes'; } }
+-      ]
+-    };
++    var isYes = { field: 'coNgoaiLe', operator: 'EQUAL', value: 'yes' };
++    fr4.configuration = { components: [
++      { id: 'd1', type: 'radio', key: 'coNgoaiLe', label: 'Có ngoại lệ tín dụng?', layout: { columns: 12 },
++        values: [{ value: 'no', label: 'Không' }, { value: 'yes', label: 'Có' }] },
++      { id: 'd2', type: 'textfield', key: 'lyDo', label: 'Lý do ngoại lệ', layout: { columns: 6 },
++        properties: { visibleWhenExpression: isYes, requiredWhenExpression: isYes } },
++      { id: 'd3', type: 'textfield', key: 'nguoiDuyet', label: 'Người phê duyệt ngoại lệ', layout: { columns: 6 },
++        properties: { disabledWhenExpression: { field: 'coNgoaiLe', operator: 'NOT_EQUAL', value: 'yes' } } }
++    ] };
+     fr4.entity = { coNgoaiLe: 'no' };
+-    var out = document.getElementById('fr4-out');
+-    out.textContent = JSON.stringify(fr4.entity);
+-    fr4.addEventListener('sd-form-change', function (e) {
+-      out.textContent = JSON.stringify(e.detail.entity);
+-      fr4.entity = e.detail.entity;   /* vẽ lại để biểu thức tính lại */
+-    });
++
++    var log = document.getElementById('fr-event-log'), lines = [];
++    function push(t) { lines.unshift(new Date().toLocaleTimeString('vi-VN') + '  ' + t); log.textContent = lines.slice(0, 12).join('\n'); }
++    document.addEventListener('sd-form-change', function (e) { push('sd-form-change  ' + e.detail.key + ' = ' + JSON.stringify(e.detail.value)); });
++    document.addEventListener('sd-form-add-row', function (e) { push('sd-form-add-row  ' + e.detail.key); });
+   })();
+ </script>
+ </body>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-13 09:08:59.236543154 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-13 09:08:59.319568477 +0000
+@@ -1268,76 +1268,71 @@
+       return this._renderSingle();
+     }
+ 
+-    /* ── Chế độ nhóm: đúng thư viện ─────────────────────────── */
++    /* ── Chế độ nhóm: DOM Material đúng template thư viện + catalog `#c-radio` (2026-10-13) ──
++         viewed: `div.T14R.text-black400` (nhãn) + `div.T14M` (viewedText | sdEmpty) — KHÔNG qua sd-view
++         sửa:    `<section [class.c-section]="row">` › `<sd-label>` › `mat-radio-group.mat-mdc-radio-group
++                 .c-radio-group-row|column` › `mat-radio-button.mat-mdc-radio-button.mr-16|m-0.mat-accent
++                 [.mat-mdc-radio-checked][.mat-mdc-radio-disabled]` › `div.mdc-form-field.mat-internal-form-field`
++                 › `div.mdc-radio` (touch-target · input.mdc-radio__native-control · background · ripple) +
++                 `label.mdc-label` › [`mat-error`] khi đã chạm.
++         Trong `sd-form-render` vẽ dạng rút gọn của `#c-form-generic` (mat-primary, không touch-target /
++         ripple / lớp mdc-form-field, không id) — như các dạng theo mục khác của kit. */
+     _renderGroup() {
+       var self = this;
+       var label = this.getAttribute('label') || '';
+-      var placeholder = this.getAttribute('placeholder') || '';
+       var value = this.getAttribute('value') || '';
+       var disabled = this._bool('disabled');
+       var required = this._bool('required');
+       var items = this.items;
++      var row = this.display !== 'column';
++      var short = !!this.closest('sd-form-render');
++      void this.color;   // đồng bộ lớp host `sd-c-*` (catalog: [class.sd-c-primary]="color()==='primary'" …)
+ 
+       if (this.viewedMode === true) {
+         var sel = items.filter(function (it) { return self._itemValue(it) === value; })[0];
+-        this.innerHTML = sdViewHtml(label, sel ? self._itemDisplay(sel) : '');
++        var txt = sel ? self._itemDisplay(sel) : '';
++        this.innerHTML = (label ? '<div class="T14R text-black400">' + esc(label) + '</div>' : '') +
++          '<div class="T14M">' + esc(txt === '' ? '--' : txt) + '</div>';
+         return;
+       }
+ 
+       var errorMsg = this._computeError();
+       var showError = !!errorMsg && (this._touched || !!this.inlineError);
++      var name = this.getAttribute('name') || ('sd-radio-' + (this.id || this._autoName()));
++      var gid = this._autoName();
+ 
+-      var optionsHtml = items.map(function (it) {
++      var optionsHtml = items.map(function (it, i) {
+         var v = self._itemValue(it);
+         var dis = disabled || self._itemDisabled(it);
+         var on = (v === value);
+-        /* Lỗi KHÔNG tô đỏ vòng tròn — catalog giữ viền xám .54, chỉ hiện dòng
+-           lỗi bên dưới (rà soát 2026-10-12). */
+-        return '<label class="c-radio-wrap' + (dis ? ' c-disabled' : '') + '">' +
+-          '<span class="c-radio-hit">' +
+-            '<input type="radio" class="c-radio-input"' +
+-              /* name riêng cho TỪNG nhóm khi trang không đặt — bản trước mọi nhóm
+-                 không có id đều chung `sd-radio-group`, nên trình duyệt chỉ giữ
+-                 MỘT ô được chọn trên cả trang (bắt được 2026-10-12). */
+-              ' name="' + escAttr(self.getAttribute('name') || ('sd-radio-' + (self.id || self._autoName()))) + '"' +
+-              ' value="' + escAttr(v) + '"' +
+-              (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>' +
+-            '<span class="c-radio-box"><span class="c-radio-dot"></span></span>' +
+-          '</span>' +
+-          '<span class="c-radio-text"><span class="c-radio-label">' + esc(self._itemDisplay(it)) + '</span></span>' +
+-          '</label>';
++        var iid = 'sd-radio-' + gid + '-' + i;
++        var cls = 'mat-mdc-radio-button ' + (row ? 'mr-16' : 'm-0') + (short ? ' mat-primary' : ' mat-accent') +
++          (on ? ' mat-mdc-radio-checked' : '') + (dis ? ' mat-mdc-radio-disabled' : '');
++        var input = '<input class="mdc-radio__native-control"' + (short ? '' : ' id="' + iid + '-input"') +
++          ' name="' + escAttr(name) + '"' + (short ? '' : ' tabindex="' + (dis ? '-1' : '0') + '"') +
++          ' type="radio" value="' + escAttr(v) + '"' + (on ? ' checked' : '') + (dis ? ' disabled' : '') + '>';
++        return '<mat-radio-button class="' + cls + '"' + (short ? '' : ' id="' + iid + '"') + '>' +
++          '<div class="' + (short ? '' : 'mdc-form-field ') + 'mat-internal-form-field">' +
++            '<div class="mdc-radio' + (dis ? ' mdc-radio--disabled' : '') + '">' +
++              (short ? '' : '<div class="mat-mdc-radio-touch-target"></div>') + input +
++              '<div class="mdc-radio__background"><div class="mdc-radio__outer-circle"></div><div class="mdc-radio__inner-circle"></div></div>' +
++              (short ? '' : '<div class="mat-radio-ripple mat-focus-indicator mat-ripple" mat-ripple=""><div class="mat-ripple-element mat-radio-persistent-ripple"></div></div>') +
++            '</div>' +
++            '<label class="mdc-label"' + (short ? '' : ' for="' + iid + '-input"') + '>' + (short ? '' : ' ') + esc(self._itemDisplay(it)) + (short ? '' : ' ') + '</label>' +
++          '</div></mat-radio-button>';
+       }).join('');
+ 
+-      /* Nhãn nhóm — catalog dựng bằng <sd-label> (span.T14M + span.text-error
+-         .mb-2.T14M "*"). Bản trước kit tự dựng div + span.sd-required, dấu *
+-         ra màu chữ thường (.sd-required chỉ được tô đỏ trong khung form). */
+-      var labelHtml = label
+-        ? '<sd-label label="' + escAttr(label) + '"' + (required ? ' required' : '') + '>' +
+-            '<div class="mb-0 d-flex"><div class="d-flex align-items-center gap-4">' +
+-              '<span class="T14M">' + esc(label) + '</span></div>' +
+-              (required ? '<span class="text-error mb-2 T14M">*</span>' : '') +
+-            '</div></sd-label>'
+-        : '';
+-      var placeholderHtml = (!items.length && placeholder)
+-        ? '<div class="c-radio-placeholder T14R text-black400">' + esc(placeholder) + '</div>'
+-        : '';
++      /* Nhãn nhóm — `<sd-label [label] [required]>` (sd-label của kit tự vẽ ruột) */
++      var labelHtml = label ? '<sd-label label="' + escAttr(label) + '"' + (required ? ' required' : '') + '></sd-label>' : '';
+ 
+-      this.innerHTML = labelHtml +
+-        /* `c-radio-group-column`: tên lớp của catalog cho nhóm xếp dọc
+-           (`#c-radio .c-radio-group-column{flex:1;display:flex;flex-direction:column;align-items:flex-start}`).
+-           Kit vốn dùng `c-column`; phát cả hai để markup khớp catalog mà
+-           không phải sửa CSS cũ. Catalog KHÔNG có lớp tương ứng cho hàng
+-           ngang (mặc định), nên chiều `row` giữ nguyên. */
+-        '<div class="c-radio-group c-' + esc(this.display) +
+-          (this.display === 'column' ? ' c-radio-group-column' : '') +
+-          ' c-color-' + esc(this.color) + '"' +
+-          (this.autoId ? ' data-autoid="' + escAttr(this.autoId) + '"' : '') +
+-          ' role="radiogroup" data-value="' + escAttr(value) + '"' +
+-          ' data-required="' + (required ? 'true' : 'false') + '"' +
+-          ' data-invalid="' + (errorMsg ? 'true' : 'false') + '">' +
+-          optionsHtml + placeholderHtml +
+-        '</div>' +
+-        (showError ? '<div class="sd-error-text">' + esc(errorMsg) + '</div>' : '');
++      this.innerHTML = '<section' + (row ? ' class="c-section"' : '') + '>' + labelHtml +
++        '<mat-radio-group class="mat-mdc-radio-group ' + (row ? 'c-radio-group-row' : 'c-radio-group-column') + '" role="radiogroup"' +
++          (this.autoId ? ' data-autoid="' + escAttr(this.autoId) + '"' : '') + '>' + optionsHtml + '</mat-radio-group>' +
++        /* `placeholder` khi items rỗng — mở rộng cũ của kit (chờ Builder quyết, xem known-gaps) */
++        ((!items.length && this.getAttribute('placeholder')) ? '<div class="c-radio-placeholder T14R text-black400">' + esc(this.getAttribute('placeholder')) + '</div>' : '') +
++        (showError ? '<mat-error class="mat-mdc-form-field-error mat-mdc-form-field-bottom-align" id="mat-mdc-error-sd-radio-' + gid + '"> ' +
++          esc(errorMsg) + ' </mat-error>' : '') +
++        '</section>';
+     }
+ 
+     /* ── Chế độ nút đơn: giữ nguyên bản cũ của kit ──────────── */
+@@ -1376,11 +1371,18 @@
+     _bind() {
+       var self = this;
+       if (this.isGroup) {
+-        var group = this.querySelector('.c-radio-group');
++        var group = this.querySelector('mat-radio-group');
+         if (!group || group._bound) return;
+         group._bound = true;
++        /* dạng rút gọn (#c-form-generic) không có `for`/`id` → bấm chữ thì tự chọn ô */
++        group.addEventListener('click', function (e) {
++          var lab = e.target.closest('label.mdc-label');
++          if (!lab || lab.hasAttribute('for')) return;
++          var inp = lab.parentElement && lab.parentElement.querySelector('.mdc-radio__native-control');
++          if (inp && !inp.disabled && !inp.checked) inp.click();
++        });
+         group.addEventListener('change', function (e) {
+-          var input = e.target.closest('.c-radio-input');
++          var input = e.target.closest('.mdc-radio__native-control');
+           if (!input) return;
+           self._touched = true;
+           self._userToggle = true;
+@@ -2974,7 +2976,8 @@
+         (showErrorIcon
+           ? '<mat-icon class="mat-icon sd-error-icon material-icons" aria-hidden="true" matsuffix data-sd-tooltip="' + escAttr(state.message) + '" data-sd-tooltip-position="above">error</mat-icon>'
+           : '') +
+-        ((value && !this.disabled && !this.readonlyMode)
++        /* showClear() thư viện: required / disabled / readonly → không có nút × (2026-10-13) */
++        ((value && !this.required && !this.disabled && !this.readonlyMode)
+           ? '<button type="button" class="sd-clear-btn sd-hover" matsuffix title="Xóa" aria-label="Xóa">' +
+               '<mat-icon class="mat-icon material-icons" aria-hidden="true">close</mat-icon></button>'
+           : '') +
+@@ -4217,7 +4220,8 @@
+ 
+       var errorMsg = this._computeError();
+       var showError = !!errorMsg && (this._touched || !!this.inlineError);
+-      var showClear = clearable && !!canonical && !disabled;
++      /* thư viện: `formControl.value && !_required && !formControl.disabled` (2026-10-13) */
++      var showClear = clearable && !!canonical && !required && !disabled;
+       var showErrorIcon = showError && hideInlineError;
+       var showErrorText = showError && !hideInlineError;
+       var focused = !!this._focused;
+@@ -4687,7 +4691,8 @@
+ 
+       var errorMsg = this._computeError();
+       var showError = !!errorMsg && (this._touched || !!this.inlineError);
+-      var showClear = clearable && !!canonical && !disabled;
++      /* thư viện: `formControl.value && !_required && !formControl.disabled` (2026-10-13) */
++      var showClear = clearable && !!canonical && !required && !disabled;
+       var showErrorIcon = showError && hideInlineError;
+       var showErrorText = showError && !hideInlineError;
+       var focused = !!this._focused;
+@@ -5328,7 +5333,8 @@
+       this._focused = false;
+       var floated = !!displayVal;
+       var hasLabel = !!label;
+-      var showClear = clearable && val !== null && !disabled && !readOnly;
++      /* showClear() thư viện: required / disabled / readonly → không có nút × (2026-10-13) */
++      var showClear = clearable && val !== null && !required && !disabled && !readOnly;
+       var showErrorIcon = showError && hideInlineError;
+       var showErrorText = showError && !hideInlineError;
+       var suffixIcon = this.suffixIcon, suffixText = this.suffix;
+@@ -8185,6 +8191,17 @@
+   var SD_UPLOAD_DOC_ICON_EXT = ['png', 'jpg', 'pdf', 'doc', 'docx', 'xls', 'xlsx',
+                                 'ppt', 'pptx', 'csv', 'psd', 'xml', 'zip', 'tiff'];
+ 
++  /* ≙ token `SD_UPLOAD_FILE_CONFIGURATION` của thư viện (provide một object hoặc mảng nhiều nguồn có `key`):
++     `window.SD_UPLOAD_FILE_CONFIGURATION = { upload(files, args), details(keys, args) }`. Input `upload` /
++     `details` của từng thẻ vẫn thắng; chọn nguồn theo thuộc tính `key` của thẻ (thư viện: configuration.key). */
++  function sdUploadGlobalConfig(el) {
++    var c = window.SD_UPLOAD_FILE_CONFIGURATION;
++    if (!c) return null;
++    var list = Array.isArray(c) ? c : [c];
++    var key = el.getAttribute('key');
++    return list.filter(function (x) { return x && x.key === (key || undefined); })[0] || (key ? null : list[0]) || null;
++  }
++
+   class SdUploadFile extends HTMLElement {
+     static get observedAttributes() {
+       return ['label', 'description', 'helpertext', 'type', 'extensions', 'maxsize',
+@@ -8308,7 +8325,9 @@
+ 
+     _resolveDetails() {
+       var self = this;
+-      var handler = this._details || function (keys) { return self._defaultDetails(keys); };
++      var gcfg = sdUploadGlobalConfig(this);
++      var handler = this._details || (gcfg && typeof gcfg.details === 'function' ? gcfg.details : null) ||
++        function (keys) { return self._defaultDetails(keys); };
+       Promise.resolve(handler(this._model.slice(), this.args)).then(function (details) {
+         self._previewFiles = (details || []).map(function (d) {
+           var ext = (d.extension || '').toLowerCase();
+@@ -8595,7 +8614,9 @@
+         var message = this._validate(files[i]);
+         if (message) { this._notify('warning', message); return; }
+       }
+-      var handler = this._upload || function (fs) { return self._defaultUpload(fs); };
++      var gcfg = sdUploadGlobalConfig(this);
++      var handler = this._upload || (gcfg && typeof gcfg.upload === 'function' ? function (fs) { return gcfg.upload(fs, self.args); } : null) ||
++        function (fs) { return self._defaultUpload(fs); };
+       Promise.resolve(handler(files, this.args)).then(function (keys) {
+         self._model = self._model.concat(keys || []);
+         self._touch();
+@@ -14182,9 +14203,8 @@
+        </sd-label>
+ 
+      Hai chỗ kit đổi, có lý do, KHÔNG phải đoán:
+-     - Catalog ghi `style="display:flex;align-items:center;gap:4px"` trên div
+-       trong. Kit dùng `class="d-flex align-items-center gap-4"` — ba utility
+-       này đã có sẵn và khai đúng ba dòng đó, tránh inline style (AGENTS Rule 11).
++     - (2026-10-13: div trong nay mang đúng `style="display: flex; align-items: center; gap: 4px"`
++       như catalog — bỏ lớp utility thay thế trước đây.)
+      - Icon: catalog `<mat-icon class="mat-icon material-icons">`, kit
+        `<span class="material-icons-outlined sd-label__hint">` (AGENTS Rule 4)
+        và dùng cơ chế tooltip sẵn có của kit `data-sd-tooltip`.
+@@ -14216,8 +14236,10 @@
+       var hint = this._attr('helpertext', 'helperText');
+       var desc = this.getAttribute('description') || '';
+ 
++      /* div trong mang `style` inline NGUYÊN VĂN template thư viện / DOM catalog (2026-10-13 — trước đây
++         kit đổi sang lớp `d-flex align-items-center gap-4`; đó là ruột component, không phải trang AI viết). */
+       var html = '<div class="mb-0 d-flex">' +
+-        '<div class="d-flex align-items-center gap-4">' +
++        '<div style="display: flex; align-items: center; gap: 4px">' +
+           '<span class="T14M">' + esc(label) + '</span>' +
+           (hint
+             /* Tooltip của icon gợi ý là `matTooltip` (KHÔNG phải sdTooltip):
+@@ -20508,53 +20530,181 @@
+ 
+ 
+   /* ---------- sd-form-render (#c-form-generic) ---------------------------
+-     Catalog: "Form động theo cấu hình JSON: `sd-form-render` dựng form nhập
+-     liệu hoặc xem từ danh sách component (textfield, textarea, number,
+-     datetime, select, radio, upload, table, group, html, break) trên lưới 12
+-     cột theo `layout.columns`, kèm ẩn/bắt buộc/vô hiệu theo biểu thức."
+-
+-     **Chỗ kit KHÁC catalog một cách cố ý.** Catalog dán DOM Angular Material đã
+-     render (`mat-form-field` / `mdc-notched-outline` / `mat-radio-button`) vì
+-     nó không chạy được Angular. Kit CÓ sẵn `sd-input`, `sd-select`, `sd-date`,
+-     `sd-input-number`, `sd-textarea`, `sd-radio`, `sd-upload-file` chạy thật,
+-     nên dựng thẳng các thẻ đó — đúng điều catalog đang mô phỏng. Khung ngoài
+-     (`.row`, `.col-*`, `lib-item`, `lib-textfield`, …) thì chép nguyên văn để
+-     đối chiếu được 1-1.
+-
+-     KHÔNG DỰNG (ghi ở `_memory/known-gaps.md`):
+-     - `break` — catalog nêu tên trong danh sách kiểu nhưng không có ví dụ nào.
+-     - `checkbox` — chính catalog ghi "kiểu checkbox chỉ có trong builder,
+-       lib-item của form-render không render nó".
+-     - Biểu thức FEEL — catalog không in ra cú pháp nào. Kit nhận `hidden` /
+-       `required` / `disabled` là boolean HOẶC hàm `(entity) => boolean`.
+-     - Side-drawer "Tạo mới/cập nhật" của `lib-table` — catalog ghi "không mở".  */
+-  var SD_FORM_RENDER_TEXT = {
+-    addRow: 'Thêm mới'
+-  };
+-  var SD_FORM_RENDER_TAGS = {
+-    textfield: 'sd-input',
+-    textarea: 'sd-textarea',
+-    number: 'sd-input-number',
+-    datetime: 'sd-date',
+-    select: 'sd-select',
+-    radio: 'sd-radio',
+-    upload: 'sd-upload-file'
+-  };
+-  var SD_FORM_RENDER_LIB = {
+-    textfield: 'lib-textfield',
+-    textarea: 'lib-textarea',
+-    number: 'lib-number',
+-    datetime: 'lib-datetime',
+-    select: 'lib-select',
+-    radio: 'lib-radio',
+-    upload: 'lib-upload',
+-    table: 'lib-table',
+-    html: 'lib-html'
+-  };
++     ĐỒNG BỘ 2026-10-13 theo catalog `#c-form-generic` + MÃ THƯ VIỆN
++     (`sd-angular-core-components-form-generic.mjs` 19.0.10: SdFormRender, LibItemComponent,
++     lib-textfield/textarea/number/datetime/select/radio/upload/table/html, WhenExpressionPipe,
++     ComponentViewedPipe, SdFormatComponent, EvaluateExpression).
++
++     Cấu hình đúng `SdFormGeneric` của thư viện:
++       { components: [ { id, type, key, label, helperText, defaultValue, disabled,
++                         layout: { columns: '6' },            // lib-item: `col-{columns||6} px-8 py-8`
++                         validate: { required, maxlength, pattern, patternErrorMessage, min, max },
++                         values: [{ value, label }],          // select / radio
++                         valuesKey,                           // nguồn ở SD_FORM_GENERIC_CONFIGURATION
++                         subtype: 'date' | 'datetime',        // datetime
++                         columns: [{ key, label, type }],     // table
++                         components: [...],                   // group
++                         properties: { icon, direction, multiple, viewed, hidden,
++                                       hiddenWhenExpression, visibleWhenExpression,
++                                       disabledWhenExpression, requiredWhenExpression,
++                                       type, extensions, maxSize, max, args, content, titleButtonCreate } } ],
++         variables, validations, onLoaded }
++     Biểu thức `*WhenExpression` là JSON `{ type:'combinator', combinator:'&&'|'||', conditions:[…] }` /
++     `{ field, operator: EQUAL|NOT_EQUAL|GREATER_THAN|LESS_THAN|GREATER_OR_EQUAL|LESS_OR_EQUAL|NULL|NOT_NULL, value }`
++     — EvaluateExpression nguyên văn.
++
++     Tương thích cấu hình CŨ của kit (sd-form-builder còn sinh dạng này): `columns` (số cột) →
++     `layout.columns`, `required: true` → `validate.required`, `properties.items [{id,name}]` →
++     `values`, và `hidden / required / disabled` là hàm `(entity) => boolean`.
++
++     DOM khung chép nguyên catalog/thư viện: `<div class="row mx-0">` › `<lib-item>` ›
++     `<div class="col-N px-8 py-8">` › `<lib-TYPE>` › control; group → `<div class="col-12 mt-16">
++     <sd-section>` + `.row mx-0` lồng; break → `<div class="col-12" style="height: 0;">`.
++     KHÔNG DỰNG: side-drawer "Tạo mới/cập nhật" của lib-table (catalog: "không mở"; bảng tĩnh
++     `.fg-table` như catalog), `checkbox` / `chip-*` ngoài lib-item (thư viện: lib-item có
++     chip-string / chip-calendar → kit dựng bằng sd-chip / sd-chip-calendar). */
++  var SD_FORM_RENDER_TEXT = { addNew: 'Thêm mới' };   // core.component.form-builder.add-new (vi)
++  var SD_FG_EMPTY = '--';                              // EMPTY_STR
++
++  /* SdFormatComponent — "Luôn format lại component trước khi render" (thư viện SỬA THẲNG cấu hình). */
++  function sdFgFormat(c) {
++    if (!c) return;
++    /* tương thích cấu hình cũ của kit */
++    if (!c.layout && (c.columns !== undefined && !Array.isArray(c.columns) || c.col !== undefined)) {
++      c.layout = { columns: String(c.col !== undefined ? c.col : c.columns) };
++    }
++    if (c.required === true && !(c.validate && c.validate.required)) { c.validate = c.validate || {}; c.validate.required = true; }
++    if (c.properties && Array.isArray(c.properties.items) && !(c.values && c.values.length) && (c.type === 'select' || c.type === 'radio')) {
++      c.values = c.properties.items.map(function (x) {
++        return { value: x.value !== undefined ? x.value : x.id, label: x.label !== undefined ? x.label : x.name };
++      });
++    }
++    if (!c.id) c.id = 'id' + Math.random().toString(36).slice(2, 10);
++    if (c.type !== 'group') {
++      if (!c.key) c.key = 'key' + Math.random().toString(36).slice(2, 10);
++      if (!c.validate) c.validate = {};
++    }
++    if (!c.layout) c.layout = { columns: '12' };
++    if (!c.properties) c.properties = {};
++    if (c.type === 'datetime') c.subtype = c.subtype || 'date';
++    else if (c.type === 'table') {
++      if (!(Array.isArray(c.columns) && c.columns.length)) {
++        c.columns = [{ key: 'key_1', label: 'Cột 1', type: 'string' }, { key: 'key_2', label: 'Cột 2', type: 'string' },
++                     { key: 'key_3', label: 'Cột 3', type: 'string' }];
++      }
++    } else if (c.type === 'radio') {
++      if (!(c.values && c.values.length)) c.values = [{ value: 'value_1', label: 'Label 1' }, { value: 'value_2', label: 'Label 2' }];
++      c.properties.direction = c.properties.direction || 'row';
++    } else if (c.type === 'upload') {
++      c.properties.type = c.properties.type || 'file';
++      c.properties.source = c.properties.source || 'ALL';
++    }
++    if (c.type === 'group') (c.components || []).forEach(sdFgFormat);
++  }
++
++  /* ── EvaluateExpression (nguyên văn thư viện) ── */
++  function sdFgDatetimeValue(value) {
++    if (!value || typeof value !== 'string') return undefined;
++    if (value === 'now') return sdUtil.toFormat(new Date(), 'yyyy/MM/dd HH:mm:ss');
++    var d;
++    if (value.slice(-7) === 'LastDay') {
++      var n1 = +value.replace('LastDay', '');
++      if (n1) { d = new Date(); d.setDate(d.getDate() - n1); return sdUtil.toFormat(d, 'yyyy/MM/dd HH:mm:ss'); }
++    }
++    if (value.slice(-7) === 'NextDay') {
++      /* thư viện viết `value.replace('LastDay', '')` cho cả nhánh NextDay → `+'3NextDay'` = NaN → rơi xuống
++         undefined (so với chuỗi gốc). Chép đúng hành vi đó. */
++      var n2 = +value.replace('LastDay', '');
++      if (n2) { d = new Date(); d.setDate(d.getDate() + n2); return sdUtil.toFormat(d, 'yyyy/MM/dd HH:mm:ss'); }
++    }
++    return undefined;
++  }
++  function sdFgEntityValue(entity, key) {
++    if (!key) return undefined;
++    var v = entity;
++    String(key).split('.').forEach(function (k) { v = v == null ? undefined : v[k]; });
++    return v;
++  }
++  function sdFgNorm(v) { return typeof v === 'string' && sdUtil.isDate(v) ? sdUtil.toFormat(v, 'yyyy/MM/dd HH:mm:ss') : v; }
++  function sdFgEvalCond(c, entity) {
++    var actual = sdFgNorm(sdFgEntityValue(entity, c.field)), op = c.operator;
++    if (!op) return undefined;
++    if (op === 'NULL') return !actual;
++    if (op === 'NOT_NULL') return !!actual;
++    var exp = typeof c.value === 'string' ? (sdFgDatetimeValue(c.value) || c.value) : c.value;
++    if (exp === undefined || exp === null || exp === '') return undefined;
++    exp = sdFgNorm(exp);
++    if (op === 'EQUAL') return actual === exp;
++    if (op === 'GREATER_THAN') return actual > exp;
++    if (op === 'LESS_THAN') return actual < exp;
++    if (op === 'NOT_EQUAL') return actual !== exp;
++    if (op === 'GREATER_OR_EQUAL') return actual >= exp;
++    if (op === 'LESS_OR_EQUAL') return actual <= exp;
++    return undefined;
++  }
++  function sdFgEval(c, entity) {
++    if (!c) return undefined;
++    if (c.type === 'combinator') {
++      if (!(c.conditions && c.conditions.length)) return undefined;
++      var r = c.conditions.map(function (x) { return sdFgEval(x, entity); });
++      if (r.some(function (x) { return typeof x !== 'boolean'; })) return undefined;
++      return c.combinator === '&&' ? r.every(function (x) { return x === true; }) : r.some(function (x) { return x === true; });
++    }
++    return sdFgEvalCond(c, entity);
++  }
++  /* WhenExpressionPipe (+ hàm của cấu hình cũ kit) */
++  function sdFgWhen(c, entity, vars) {
++    var p = c.properties || {};
++    var fn = function (x) { try { return !!x(entity, vars); } catch (e) { return false; } };
++    var hidden;
++    if (typeof c.hidden === 'function') hidden = fn(c.hidden);
++    else if (p.hidden) hidden = true;
++    else if (p.hiddenWhenExpression) { var h = sdFgEval(p.hiddenWhenExpression, entity); hidden = typeof h === 'boolean' ? h : true; }
++    else if (p.visibleWhenExpression) { var v = sdFgEval(p.visibleWhenExpression, entity); hidden = typeof v === 'boolean' ? !v : true; }
++    else hidden = false;
++    if (c.type === 'group' || c.type === 'html' || c.type === 'break') return { hidden: hidden, disabled: false, required: false };
++    var disabled = typeof c.disabled === 'function' ? fn(c.disabled) : !!c.disabled;
++    if (!disabled && p.disabledWhenExpression) { var d = sdFgEval(p.disabledWhenExpression, entity); disabled = typeof d === 'boolean' ? d : true; }
++    var required = typeof c.required === 'function' ? fn(c.required) : !!(c.validate && c.validate.required);
++    if (!required && p.requiredWhenExpression) { var r = sdFgEval(p.requiredWhenExpression, entity); required = typeof r === 'boolean' ? r : false; }
++    return { hidden: hidden, disabled: disabled, required: required };
++  }
++
++  /* FormGenericService.selection.items — `values` tĩnh, cột `values` của table, hoặc `valuesKey` tra
++     `window.SD_FORM_GENERIC_CONFIGURATION.form.selections` (≙ token SD_FORM_GENERIC_CONFIGURATION). */
++  function sdFgItems(c, args) {
++    if (c && Array.isArray(c.values) && c.values.length) {
++      return Promise.resolve(c.values.map(function (e) { return { value: e.value, display: e.label, data: e }; }));
++    }
++    if (!c || !c.valuesKey) return Promise.resolve([]);
++    var cfg = (window.SD_FORM_GENERIC_CONFIGURATION || {}).form || {};
++    var sels = cfg.selections;
++    return Promise.resolve(typeof sels === 'function' ? sels() : (sels || [])).then(function (list) {
++      var sel = (list || []).filter(function (e) { return e.value === c.valuesKey; })[0];
++      if (!sel) return [];
++      if (typeof sel.values === 'function') return Promise.resolve(sel.values(args)).then(function (x) { return x || []; });
++      if (sel.valuesKey && typeof cfg.getValues === 'function') return Promise.resolve(cfg.getValues(sel.valuesKey, sel.args)).then(function (x) { return x || []; });
++      return [];
++    }).catch(function (err) { console.error(err); return []; });
++  }
+ 
+-  function sdFormRenderFlag(v, entity) {
+-    if (typeof v === 'function') { try { return !!v(entity); } catch (e) { return false; } }
+-    return !!v;
++  /* ComponentViewedPipe */
++  function sdFgViewed(c, entity) {
++    if (!c || !c.key) return Promise.resolve('');
++    var val = entity ? entity[c.key] : undefined;
++    if (val === undefined || val === null) return Promise.resolve(SD_FG_EMPTY);
++    if (c.type === 'textfield' || c.type === 'textarea') return Promise.resolve(val || SD_FG_EMPTY);
++    if (c.type === 'number') { var n = sdUtil.toVN(val); return Promise.resolve(n == null ? SD_FG_EMPTY : String(n)); }
++    if (c.type === 'datetime') return Promise.resolve(sdUtil.toFormat(val, c.subtype === 'datetime' ? 'dd/MM/yyyy HH:mm' : 'dd/MM/yyyy') || SD_FG_EMPTY);
++    if (c.type === 'select' || c.type === 'radio' || c.type === 'checklist') {
++      var vals = (Array.isArray(val) ? val : [val]).filter(function (v) { return v !== undefined && v !== null && v !== ''; });
++      if (!vals.length) return Promise.resolve(SD_FG_EMPTY);
++      return sdFgItems(c, { entity: entity, component: c }).then(function (items) {
++        return (items || []).filter(function (e) { return vals.indexOf(e.value) >= 0; })
++          .map(function (e) { return e.display; }).join(', ') || SD_FG_EMPTY;
++      });
++    }
++    return Promise.resolve('');
+   }
+ 
+   class SdFormRender extends HTMLElement {
+@@ -20563,12 +20713,24 @@
+     connectedCallback() { this._ready = true; this._render(); this._bind(); }
+     attributeChangedCallback() { if (this._ready) this._render(); }
+ 
+-    set configuration(v) { this._configuration = v || {}; if (this._ready) this._render(); }
++    /* `[configuration]` — thư viện format lại (SdFormatComponent) mỗi lần nhận. */
++    set configuration(v) {
++      this._configuration = v || {};
++      (this._configuration.components || []).forEach(sdFgFormat);
++      if (this._ready) this._render();
++    }
+     get configuration() { return this._configuration || {}; }
+     set entity(v) { this._entity = v || {}; if (this._ready) this._render(); }
+-    get entity() { return this._entity || {}; }
+-    /* `[setVariables]` — biến phụ cho biểu thức, catalog chỉ nêu tên. Kit truyền
+-       nguyên vào hàm `hidden`/`required`/`disabled` cùng với entity. */
++    get entity() { return this._entity || (this._entity = {}); }
++    /* `[defaultEntity]` — gán vào entity những key còn trống */
++    set defaultEntity(v) {
++      this._default = v || {};
++      var e = this.entity, d = this._default;
++      Object.keys(d).forEach(function (k) { e[k] = e[k] != null ? e[k] : d[k]; });
++      if (this._ready) this._render();
++    }
++    get defaultEntity() { return this._default || {}; }
++    /* biến phụ cho hàm điều kiện của cấu hình cũ kit */
+     set setVariables(v) { this._vars = v || {}; if (this._ready) this._render(); }
+     get setVariables() { return this._vars || {}; }
+ 
+@@ -20576,196 +20738,249 @@
+     set viewed(v) { if (v) this.setAttribute('viewed', ''); else this.removeAttribute('viewed'); }
+ 
+     get components() { return this.configuration.components || []; }
+-    get columns() {
+-      var l = this.configuration.layout || {};
+-      return l.columns || 12;
+-    }
+-
+-    /* Giá trị hiển thị của một control, ưu tiên `entity[key]`. */
+-    _value(c) {
+-      if (c.key && Object.prototype.hasOwnProperty.call(this.entity, c.key)) return this.entity[c.key];
+-      return c.defaultValue !== undefined ? c.defaultValue : '';
+-    }
+ 
+-    _ctx() {
+-      var e = this.entity, v = this.setVariables;
+-      return function (fn) { return fn(e, v); };
++    /* `getValidationMessages(alert)` — form invalid → markAllAsTouched, trả undefined; ngược lại chạy
++       `configuration.validations` kiểu `expression` (alert khớp) → mảng message. */
++    getValidationMessages(alert) {
++      var invalid = false, self = this;
++      this.querySelectorAll('lib-item').forEach(function (li) {
++        var c = li._fgComp, el = self._control(li);
++        if (!c || !el || !c.key) return;
++        var w = sdFgWhen(c, self.entity, self.setVariables);
++        var v = self.entity[c.key];
++        var empty = v === undefined || v === null || v === '' || (Array.isArray(v) && !v.length);
++        if (w.required && empty && !w.disabled) invalid = true;
++        el._touched = true;
++        if (el.hasAttribute('label')) el.setAttribute('label', el.getAttribute('label'));   // vẽ lại control (hiện lỗi)
++        else if (typeof el._render === 'function') el._render();
++      });
++      if (invalid) return Promise.resolve(undefined);
++      var msgs = [];
++      (this.configuration.validations || []).filter(function (x) { return x.alert === alert; }).forEach(function (x) {
++        if (x.type === 'expression' && sdFgEval(x.expression, self.entity)) msgs.push(x.message);
++      });
++      return Promise.resolve(msgs);
+     }
+-
+-    _flags(c) {
+-      var e = this.entity, vars = this.setVariables;
+-      function f(x) {
+-        if (typeof x === 'function') { try { return !!x(e, vars); } catch (err) { return false; } }
+-        return !!x;
+-      }
+-      return { hidden: f(c.hidden), required: f(c.required), disabled: f(c.disabled) };
++    /* `upload()` — thư viện gọi upload() của từng sd-upload-file trước khi lưu */
++    upload() {
++      var list = [].slice.call(this.querySelectorAll('lib-upload > sd-upload-file'));
++      return list.reduce(function (pr, el) {
++        return pr.then(function () { return typeof el.uploadFiles === 'function' ? el.uploadFiles() : null; });
++      }, Promise.resolve());
+     }
+ 
+-    _colClass(c) {
+-      /* `layout.columns` của catalog là lưới 12 cột; mỗi component khai số cột
+-         chiếm ở `c.columns` (hoặc `c.col`). Không khai thì chiếm nửa lưới. */
+-      var span = c.columns || c.col || Math.round(this.columns / 2);
+-      span = Math.max(1, Math.min(12, Math.round(span * 12 / this.columns)));
+-      return 'col-' + span;
++    _byKey(k) {
++      var found = null;
++      (function walk(list) { (list || []).forEach(function (c) { if (c.key === k) found = c; if (c.type === 'group') walk(c.components); }); })(this.components);
++      return found;
+     }
+ 
+     _render() {
+       var self = this;
+-      this.innerHTML = '<div class="row mx-0">' +
+-        this.components.map(function (c) { return self._itemHtml(c); }).join('') +
+-        '</div>';
++      /* `@if (form && loadCompleted && hashedValues)` — chỉ vẽ khi có entity + components */
++      if (!this.components.length) { this.innerHTML = ''; this._exprHash = ''; return; }
++      var entity = this.entity;
++      /* lib-textfield #applyDefaultValue: không viewed, có defaultValue, entity[key] === undefined */
++      (function walk(list) {
++        (list || []).forEach(function (c) {
++          if (c.type === 'group') return walk(c.components);
++          if (c.type === 'textfield' && !self.viewed && !(c.properties && c.properties.viewed) && c.key &&
++              c.defaultValue !== undefined && c.defaultValue !== null && entity[c.key] === undefined) entity[c.key] = c.defaultValue;
++        });
++      })(this.components);
++      this._exprHash = this._hashExpr();
++      this._order = [];
++      var html = '';
++      this.components.forEach(function (c) {
++        var w = sdFgWhen(c, entity, self.setVariables);
++        if (w.hidden) return;
++        if (c.type === 'group') {
++          if (!(c.components && c.components.length)) return;
++          var inner = '';
++          c.components.forEach(function (x) {
++            var cw = sdFgWhen(x, entity, self.setVariables);
++            if (!cw.hidden) inner += self._itemHtml(x, cw);
++          });
++          var p = c.properties || {};
++          html += '<div class="col-12 mt-16"><sd-section title="' + escAttr(c.label || '') + '"' +
++            (p.icon ? ' icon="' + escAttr(p.icon) + '"' : '') + '><div class="row mx-0">' + inner + '</div></sd-section></div>';
++        } else {
++          html += self._itemHtml(c, w);
++        }
++      });
++      this.innerHTML = '<div class="row mx-0">' + html + '</div>';
++      /* nối mỗi <lib-item> với cấu hình của nó (thuộc tính JS — DOM giữ trống thuộc tính như catalog) */
++      var libs = this.querySelectorAll('lib-item'), order = this._order;
++      for (var i = 0; i < libs.length; i++) libs[i]._fgComp = order[i];
++      this._after();
++    }
++
++    /* lib-item */
++    _itemHtml(c, w) {
++      var col = 'col-' + ((c.layout && c.layout.columns) || '6') + ' px-8 py-8';
++      var t = c.type;
++      if (t === 'break') { this._order.push(c); return '<lib-item><div class="col-12" style="height: 0;"></div></lib-item>'; }
++      var lib = { textfield: 1, textarea: 1, 'chip-string': 1, 'chip-calendar': 1, number: 1, select: 1, radio: 1,
++                  datetime: 1, upload: 1, table: 1, html: 1 }[t];
++      this._order.push(c);
++      if (!lib) return '<lib-item></lib-item>';   // checkbox… — lib-item không render
++      return '<lib-item><div class="' + col + '"><lib-' + t + '>' + this._controlHtml(c, w) + '</lib-' + t + '></div></lib-item>';
++    }
++
++    _controlHtml(c, w) {
++      var p = c.properties || {}, v = c.validate || {};
++      var viewed = this.viewed || !!p.viewed;
++      var val = this.entity[c.key];
++      var lab = c.label || c.key;
++      var A = function (n, x) { return x === undefined || x === null || x === '' ? '' : ' ' + n + '="' + escAttr(String(x)) + '"'; };
++      var B = function (n, x) { return x ? ' ' + n : ''; };
++      var common = A('label', lab) + A('helperText', c.helperText) + A('name', c.key) + A('autoId', c.key);
++      var flags = B('required', w.required) + B('disabled', w.disabled) + B('viewed', viewed);
++      var valAttr = (val === undefined || val === null) ? '' : A('value', Array.isArray(val) ? JSON.stringify(val) : val);
++      switch (c.type) {
++        case 'textfield':
++          return '<sd-input' + common + valAttr + flags + A('maxlength', v.maxlength) + A('pattern', v.pattern) +
++            A('patternErrorMessage', v.patternErrorMessage) + '></sd-input>';
++        case 'textarea':
++          return '<sd-textarea' + common + valAttr + flags + A('maxlength', v.maxlength) + '></sd-textarea>';
++        case 'chip-string':
++        case 'chip-calendar':
++          if (viewed) return '<div class="text-black400">' + esc(lab) + '</div><div class="T14M"></div>';
++          return '<' + (c.type === 'chip-string' ? 'sd-chip' : 'sd-chip-calendar') + common + valAttr +
++            B('required', w.required) + B('disabled', w.disabled) + '></' + (c.type === 'chip-string' ? 'sd-chip' : 'sd-chip-calendar') + '>';
++        case 'number':
++          if (viewed) return '<div class="text-secondary">' + esc(lab) + '</div><div class="T16M"></div>';
++          return '<sd-input-number' + common + valAttr + flags + A('max', v.max) + A('min', v.min) + '></sd-input-number>';
++        case 'datetime':
++          var dt = c.subtype === 'date' ? 'sd-date' : 'sd-datetime';
++          return '<' + dt + common + valAttr + flags + A('min', v.min) + A('max', v.max) + '></' + dt + '>';
++        case 'select':
++          return '<sd-select' + common + valAttr + flags + ' items="[]" valueField="value" displayField="display" disabledField="disabled"' +
++            B('multiple', p.multiple) + '></sd-select>';
++        case 'radio':
++          return '<sd-radio' + common + valAttr + flags + ' items="[]" valueField="value" displayField="display"' + A('display', p.direction) + '></sd-radio>';
++        case 'upload':
++          var up = A('type', p.type) + ' align="left"' + A('args', p.args && typeof p.args === 'object' ? JSON.stringify(p.args) : p.args);
++          if (viewed) {
++            return '<div class="text-secondary">' + esc(lab) + '</div><sd-upload-file' + up + ' disabled previewWidth="50px" previewHeight="50px"></sd-upload-file>';
++          }
++          return '<sd-upload-file' + up + A('label', lab) + A('max', p.max) +
++            A('maxSize', p.maxSize) + A('extensions', Array.isArray(p.extensions) ? p.extensions.join(',') : p.extensions) +
++            B('required', v.required || w.required) + B('disabled', w.disabled) + ' previewWidth="50px" previewHeight="50px"></sd-upload-file>';
++        case 'table': return this._tableHtml(c, viewed);
++        case 'html':
++          /* lib-html: `<div [innerHTML]="entity[key] | htmlPipe: … : component">` — nội dung từ entity[key],
++             biến `properties.variables [{key,value}]` thay vào `${key}` (StringUtilities.templateToDisplay). */
++          var content = this.entity[c.key] || p.content || '';
++          (p.variables || []).forEach(function (x) { content = String(content).split('${' + x.key + '}').join(x.value == null ? '' : x.value); });
++          return '<div>' + content + '</div>';
++      }
++      return '';
+     }
+ 
+-    _itemHtml(c) {
+-      var fl = this._flags(c);
+-      if (fl.hidden) return '';
+-      if (c.type === 'group') return this._groupHtml(c, fl);
+-      var lib = SD_FORM_RENDER_LIB[c.type];
+-      /* Kiểu không dựng (`break`, `checkbox`, kiểu lạ): bỏ qua im lặng, đúng như
+-         `lib-item` của catalog với `checkbox`. */
+-      if (!lib) return '';
+-      return '<lib-item><div class="' + this._colClass(c) + ' px-8 py-8">' +
+-        '<' + lib + '>' + this._controlHtml(c, fl) + '</' + lib + '>' +
+-        '</div></lib-item>';
+-    }
+-
+-    /* `group` -> `sd-section` có `title` + `icon`; các component con dựng vào
+-       một `.row` lồng bên trong. Catalog để group NGOÀI `lib-item`, chiếm cả
+-       hàng và có `mt-16`. */
+-    _groupHtml(c, fl) {
+-      var self = this;
++    /* lib-table — catalog: "bảng của lib-table là bảng TĨNH (xem mục Table cho sd-table đầy đủ),
++       side-drawer 'Tạo mới/cập nhật' không mở" → tiêu đề `T14M` + `table.fg-table` + nút "Thêm mới". */
++    _tableHtml(c, viewed) {
++      var cols = Array.isArray(c.columns) ? c.columns : [];
++      var rows = Array.isArray(this.entity[c.key]) ? this.entity[c.key] : [];
++      var num = function (col) { return col.type === 'number' ? ' class="num"' : ''; };
++      var cell = function (col, r) {
++        var x = r[col.key];
++        if (x === undefined || x === null || x === '') return '';
++        if (col.type === 'number') return sdUtil.toVN(x) || String(x);
++        if (col.type === 'date') return sdUtil.toFormat(x, 'dd/MM/yyyy') || String(x);
++        if (col.type === 'datetime') return sdUtil.toFormat(x, 'dd/MM/yyyy HH:mm') || String(x);
++        if (col.type === 'boolean') return x ? 'True' : 'False';
++        if (col.type === 'values' && Array.isArray(col.values)) {
++          var m = col.values.filter(function (e) { return e.value === x; })[0];
++          return m ? m.label : String(x);
++        }
++        return String(x);
++      };
+       var p = c.properties || {};
+-      return '<div class="col-12 mt-16">' +
+-        '<sd-section title="' + escAttr(c.label || '') + '"' +
+-          (p.icon ? ' icon="' + escAttr(p.icon) + '"' : '') + '>' +
+-          '<div class="row mx-0">' +
+-            (c.components || []).map(function (x) { return self._itemHtml(x); }).join('') +
+-          '</div>' +
+-        '</sd-section>' +
+-      '</div>';
++      return '<div class="T14M" style="margin-bottom:4px">' + esc(c.label || c.key || '') + '</div>' +
++        '<div style="width:100%"><table class="fg-table"><thead><tr>' +
++          cols.map(function (col) { return '<th' + num(col) + '>' + esc(col.label || col.key || '') + '</th>'; }).join('') +
++        '</tr></thead><tbody>' +
++          rows.map(function (r) { return '<tr>' + cols.map(function (col) { return '<td' + num(col) + '>' + esc(cell(col, r || {})) + '</td>'; }).join('') + '</tr>'; }).join('') +
++        '</tbody></table>' +
++        (viewed ? '' : '<sd-button prefixIcon="add" color="primary" title="' +
++          escAttr(p.titleButtonCreate || SD_FORM_RENDER_TEXT.addNew) + '"></sd-button>') +
++        '</div>';
+     }
+ 
+-    _controlHtml(c, fl) {
+-      if (c.type === 'table') return this._tableHtml(c);
+-      if (c.type === 'html') return (c.properties || {}).html || c.html || '';
+-      if (c.type === 'radio') return this._radioHtml(c, fl);
+-      if (c.type === 'upload') return this._uploadHtml(c, fl);
+-
+-      var tag = SD_FORM_RENDER_TAGS[c.type];
+-      var p = c.properties || {};
+-      var val = this._value(c);
+-      var attrs = ' label="' + escAttr(c.label || '') + '"';
+-      if (c.key) attrs += ' name="' + escAttr(c.key) + '"';
+-      if (val !== '' && val != null) attrs += ' value="' + escAttr(String(val)) + '"';
+-      if (p.placeholder) attrs += ' placeholder="' + escAttr(p.placeholder) + '"';
+-      if (fl.required) attrs += ' required';
+-      if (fl.disabled) attrs += ' disabled';
+-      if (this.viewed) attrs += ' viewed';
+-      if (p.maxlength) attrs += ' maxlength="' + escAttr(p.maxlength) + '"';
+-      if (c.type === 'textarea' && p.rows) attrs += ' rows="' + escAttr(p.rows) + '"';
+-      if (c.type === 'select' && p.items) attrs += " items='" + escAttr(JSON.stringify(p.items)) + "'";
+-      if (c.type === 'datetime' && p.format) attrs += ' format="' + escAttr(p.format) + '"';
+-      attrs += ' size="md"';
+-      return '<' + tag + attrs + '></' + tag + '>';
+-    }
+-
+-    /* `sd-radio` của kit là MỘT nút, không phải nhóm (catalog gói cả nhóm trong
+-       một thẻ `<sd-radio>` vì Angular component của nó là group). Kit dựng
+-       `sd-label` + hàng `sd-radio` — ghi ở `_memory/known-gaps.md`. */
+-    _radioHtml(c, fl) {
+-      var p = c.properties || {};
+-      var items = p.items || [];
+-      var val = this._value(c);
+-      var name = c.key || ('radio-' + (c.id || ''));
+-      if (this.viewed) {
+-        var sel = items.filter(function (x) { return String(x.id) === String(val); })[0];
+-        /* Chế độ xem: catalog render thẳng hai dòng chữ (T14R/T14M), KHÔNG qua
+-           `<sd-view>` như các control khác — chép đúng. */
+-        return '<div class="T14R text-black400">' + esc(c.label || '') + '</div>' +
+-          '<div class="T14M">' + esc(sel ? sel.name : (val == null ? '' : String(val))) + '</div>';
+-      }
+-      return '<div class="c-section">' +
+-        '<sd-label label="' + escAttr(c.label || '') + '"' + (fl.required ? ' required' : '') + '></sd-label>' +
+-        '<div class="c-radio-group-row">' +
+-          items.map(function (x) {
+-            return '<sd-radio class="mr-16" name="' + escAttr(name) + '"' +
+-              ' label="' + escAttr(x.name) + '" value="' + escAttr(x.id) + '"' +
+-              (String(x.id) === String(val) ? ' checked' : '') +
+-              (fl.disabled ? ' disabled' : '') + '></sd-radio>';
+-          }).join('') +
+-        '</div>' +
+-      '</div>';
++    /* control của một lib-item: thẻ sd-* con trực tiếp của lib-TYPE */
++    _control(li) {
++      var col = li.firstElementChild, lib = col && col.firstElementChild;
++      if (!lib) return null;
++      for (var k = 0; k < lib.children.length; k++) if (/^SD-/.test(lib.children[k].tagName)) return lib.children[k];
++      return null;
+     }
+-
+-    _uploadHtml(c, fl) {
+-      var p = c.properties || {};
+-      var attrs = '';
+-      if (!this.viewed) {
+-        attrs += ' label="' + escAttr(c.label || '') + '"';
+-        if (p.description) attrs += ' description="' + escAttr(p.description) + '"';
+-        if (p.extensions) attrs += ' extensions="' + escAttr(p.extensions) + '"';
+-        if (p.maxSize) attrs += ' maxSize="' + escAttr(p.maxSize) + '"';
+-        if (fl.required) attrs += ' required';
+-        if (fl.disabled) attrs += ' disabled';
+-      } else {
+-        attrs += ' viewed';
+-      }
+-      /* Chế độ xem: catalog in nhãn bằng `.text-secondary` NGOÀI `sd-upload-file`
+-         rồi mới tới danh sách tệp — chép đúng. */
+-      var head = this.viewed
+-        ? '<div class="text-secondary">' + esc(c.label || '') + '</div>'
+-        : '';
+-      return head + '<sd-upload-file' + attrs + '></sd-upload-file>';
++    /* sau khi vẽ: nạp items (select/radio), giá trị xem (number/chip), model tệp */
++    _after() {
++      var self = this, entity = this.entity;
++      this.querySelectorAll('lib-item').forEach(function (li) {
++        var c = li._fgComp;
++        if (!c) return;
++        var el = self._control(li);
++        if (el && (c.type === 'select' || c.type === 'radio') && el.hasAttribute('items')) {
++          sdFgItems(c, { entity: entity, component: c }).then(function (items) {
++            if (!el.isConnected) return;
++            el.setAttribute('items', JSON.stringify(items.map(function (x) { return { value: x.value, display: x.display, disabled: x.data && x.data.disabled }; })));
++          });
++        }
++        if (c.type === 'number' || c.type === 'chip-string' || c.type === 'chip-calendar') {
++          var view = li.querySelector('.T16M, .T14M');
++          if (view && !el) sdFgViewed(c, entity).then(function (t) { view.textContent = t; });
++        }
++        if (c.type === 'upload' && el) {
++          var v = entity[c.key];
++          if (v !== undefined && v !== null) el.model = Array.isArray(v) ? v : [v];
++        }
++      });
+     }
+ 
+-    /* `lib-table`: catalog ghi rõ "bảng của lib-table là bảng TĨNH (xem mục
+-       Table cho sd-table đầy đủ)" và side-drawer "Tạo mới/cập nhật" không mở.
+-       Kit dựng đúng mức đó: tiêu đề + bảng `.fg-table` + nút "Thêm mới". */
+-    _tableHtml(c) {
+-      var p = c.properties || {};
+-      var cols = p.columns || [];
+-      var rows = this._value(c) || p.rows || [];
+-      var head = cols.map(function (x) {
+-        return '<th' + (x.align === 'right' ? ' class="num"' : '') + '>' + esc(x.title || '') + '</th>';
+-      }).join('');
+-      var body = (rows || []).map(function (r) {
+-        return '<tr>' + cols.map(function (x) {
+-          var v = r[x.field];
+-          return '<td' + (x.align === 'right' ? ' class="num"' : '') + '>' +
+-            esc(v == null ? '' : String(v)) + '</td>';
+-        }).join('') + '</tr>';
+-      }).join('');
+-      return '<div class="T14M" style="margin-bottom:4px">' + esc(c.label || '') + '</div>' +
+-        '<div style="width:100%">' +
+-          '<table class="fg-table"><thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody></table>' +
+-          (this.viewed ? '' :
+-            '<sd-button data-add-row type="light" color="primary" size="sm" prefixIcon="add"' +
+-            ' title="' + escAttr(SD_FORM_RENDER_TEXT.addRow) + '"></sd-button>') +
+-        '</div>';
++    _hashExpr() {
++      var self = this, out = [];
++      (function walk(list) {
++        (list || []).forEach(function (c) {
++          var w = sdFgWhen(c, self.entity, self.setVariables);
++          out.push(c.id + ':' + (w.hidden ? 1 : 0) + (w.disabled ? 1 : 0) + (w.required ? 1 : 0));
++          if (c.type === 'group') walk(c.components);
++        });
++      })(this.components);
++      return out.join('|');
+     }
+ 
+-    /* Giá trị người dùng nhập chảy ngược vào `entity` để biểu thức
+-       hidden/required/disabled tính lại được. */
++    /* `[(model)]="entity[component.key]"` — giá trị chảy ngược vào entity; thư viện debounce 500ms rồi
++       tính lại biểu thức → kit vẽ lại khi kết quả ẩn / khoá / bắt buộc ĐỔI. */
+     _bind() {
+       if (this._bound) return;
+       this._bound = true;
+       var self = this;
+-      this.addEventListener('sd-change', function (e) {
+-        var host = e.target.closest('[name]');
+-        if (!host || host === self) return;
+-        var key = host.getAttribute('name');
+-        if (!key) return;
+-        var v = (e.detail && e.detail.value !== undefined) ? e.detail.value : host.value;
+-        self._entity = self._entity || {};
+-        self._entity[key] = v;
+-        self.dispatchEvent(new CustomEvent('sd-form-change', {
+-          bubbles: true, detail: { key: key, value: v, entity: self._entity }
+-        }));
+-      });
++      var onChange = function (e) {
++        var host = e.target, li = host.closest && host.closest('lib-item');
++        if (!li || !li._fgComp || !self.contains(li) || self._control(li) !== host) return;
++        var key = li._fgComp.key;
++        var d = e.detail || {};
++        var v = d.model !== undefined ? d.model : (d.value !== undefined ? d.value : (host.model !== undefined ? host.model : host.value));
++        if (host.tagName === 'SD-UPLOAD-FILE') {
++          /* filesChanged bắn cả lúc nạp chi tiết tệp — chỉ coi là đổi khi danh sách key khác entity */
++          v = host.model;
++          if (JSON.stringify(v || []) === JSON.stringify(self.entity[key] || [])) return;
++        }
++        self.entity[key] = v;
++        self.dispatchEvent(new CustomEvent('sd-form-change', { bubbles: true, detail: { key: key, value: v, entity: self.entity } }));
++        clearTimeout(self._debounce);
++        self._debounce = setTimeout(function () { if (self._hashExpr() !== self._exprHash) self._render(); }, 500);
++      };
++      this.addEventListener('sd-change', onChange);
++      this.addEventListener('filesChanged', onChange);
+       this.addEventListener('click', function (e) {
+-        var btn = e.target.closest('[data-add-row]');
+-        if (!btn) return;
+-        self.dispatchEvent(new CustomEvent('sd-form-add-row', { bubbles: true }));
++        var btn = e.target.closest('lib-table sd-button');
++        var li = btn && btn.closest('lib-item');
++        if (!li || !li._fgComp) return;
++        self.dispatchEvent(new CustomEvent('sd-form-add-row', { bubbles: true, detail: { key: li._fgComp.key } }));
+       });
+     }
+   }

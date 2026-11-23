@@ -1,0 +1,1081 @@
+# TABLE-MAT-TABLE 2026-10-14 — sd-table: dòng / ô / chân bảng theo DOM mat-table của catalog (mat-mdc-header-row/cell, mat-column-*, mat-mdc-table-sticky + inline style, mat-checkbox thuần, mat-icon-button, desktop-cell.px-8, tfoot, mat-paginator), mũi tên sắp xếp background-image của catalog, menu lệnh dòng ra overlay; CSS mirror table.css
+# Quyết định Builder: 'Cần bạn quyết -> tiếp tục làm cả 3 mục' (mục 2)
+# 7 file: sd-components.js, sd-tokens.css, sd-data.md, prototypes/danh-sach-workitem.html (1 selector), CHANGELOG, known-gaps, lessons
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/TABLE-MAT-TABLE-2026-10-14.patch (sau CALENDAR-MAT-CALENDAR-SELECT-ARROW-2026-10-14.patch)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-14 10:29:58.756889290 +0000
++++ b/CHANGELOG.md	2026-10-14 10:57:09.013233930 +0000
+@@ -8,6 +8,33 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `sd-table`: dòng / ô / chân bảng dựng đúng DOM mat-table của catalog (Builder 2026-10-14: *„Cần bạn quyết -> tiếp tục làm cả 3 mục“* — mục 2)
++
++- **Đầu bảng**: `tr.mat-mdc-header-row.mdc-data-table__header-row.c-first-header`; mọi ô `th.mat-mdc-header-cell.mdc-data-table__header-cell`
++  — cột dữ liệu `.px-8.py-8.c-th.mat-column-<field>`, cột chọn `.sd-selection-cell.p-0.mat-mdc-table-sticky.mat-column-sdSelection`,
++  cột lệnh `.p-0.mat-mdc-table-sticky.mat-mdc-table-sticky-border-elem-left.mat-column-sdCommand`; vị trí dính là inline style như
++  CDK (`position: sticky; left…; top: 0px; z-index: 103 / 100`). Container sắp xếp thêm `mat-focus-indicator` (+ `mat-sort-header-sorted`).
++- **Mũi tên sắp xếp**: chép nguyên luật catalog (`background-image` của `.mat-sort-header[aria-sort]`), bỏ glyph `span.c-sort-ind`.
++- **Thân bảng**: `tbody.mdc-data-table__content`, `tr.mat-mdc-row.mdc-data-table__row.c-row`, ô `td.mat-mdc-cell.mdc-data-table__cell.c-td.px-0
++  .mat-column-<field> > desktop-cell.d-block.px-8 > view > div.text-break` (ô badge: `sd-badge` thẳng trong `view`, như catalog), dòng
++  chi tiết `tr.c-detail-row > td.p-0.mat-column-sdSubInformation.mat-mdc-table-sticky`, thêm `<tfoot>` rỗng.
++- **Ô chọn**: `mat-checkbox.mat-mdc-checkbox.c-selection.px-8.mat-primary` thuần (trước bọc `<sd-checkbox>`); Space giữ focus đúng ô.
++- **Nút lệnh**: `desktop-command > button[mat-icon-button].mdc-icon-button.mat-mdc-icon-button.mat-mdc-button-base` + ripple (trước
++  `button.c-command-btn`). Menu ⋮ "Thao tác khác" (và cột `type:"menu"` kiểu cũ): bảng chọn KHÔNG còn nằm trong ô — mở thì dựng ở overlay
++  `.cdk-overlay-pane.sd-table-pane` (hình, toạ độ, sự kiện như cũ), đóng khi chọn / bấm ngoài / Esc (focus về nút) / cuộn / vẽ lại.
++- **Chân bảng**: `mat-paginator[role=group]`, nút ‹ › là `mat-icon-button` như catalog (icon vẫn glyph — Rule 4); chữ bảng rỗng dùng tiện ích
++  `T16R text-secondary` / `T16M` như `<template data-empty>` của catalog. `sd-table sd-badge` host `inline` (đo catalog).
++- **CSS**: luật dòng / ô / ô chọn / nút lệnh / sắp xếp / nút ‹ › chép nguyên `table.css` của catalog (`reviews/ds-mirror/table/gencss.py`,
++  token `--mat-sys-*` từ material-tokens.css; luật checkbox bó vào `.c-selection`, luật nút bó vào `desktop-command` — không chạm `sd-*` lồng
++  trong ô); gỡ luật tay `.c-th` / `.c-td` / `.c-sticky-col` / `.c-command-btn` / `sd-checkbox.c-selection` / `.c-detail-cell` / `.c-paginator-btn`
++  / `.c-no-data-title`. `overflow:hidden` của ô nay áp như catalog (menu và panel ô lọc đều ở overlay). Thêm viền `:focus-visible` (Rule 9).
++- **Móc JS đổi** (ghi `sd-data.md`, known-gaps): `mat-checkbox[data-sel-row]` (đang chọn `.mat-mdc-checkbox-checked`), `desktop-command button[title]`,
++  `button[data-menu-target]`, menu ở `.sd-table-pane`; ô chọn / ô lệnh không còn `c-td`. Prototype `danh-sach-workitem.html` sửa một selector theo.
++- **Kiểm**: so 3 mẫu `#c-table` (bỏ ô lọc) — dòng / ô / chân bảng trùng style 100%, lệch còn lại là ô lọc giản lược của catalog, lớp
++  `mat-column-bank` (catalog tự mâu thuẫn với mã ví dụ `bankId`), icon ‹ › (Rule 4); kịch bản bấm thật 21 bước (chọn dòng / tất cả / bàn phím,
++  lệnh, menu overlay, sắp xếp, dính, cột `type:"menu"`); bộ kịch bản prototype qua hết; 94 trang không lỗi JS; ảnh 96 trang so t19 chỉ lệch
++  ≤ 1–2px (bề ngang cột theo badge inline). Bản vá: `reviews/ds-mirror/TABLE-MAT-TABLE-2026-10-14.patch`.
++
+ ### Changed — ruột lịch là `mat-calendar` như catalog; mũi tên `sd-select` theo ngữ cảnh (Builder 2026-10-14: *„Cần bạn quyết -> tiếp tục làm cả 3 mục“*)
+ 
+ - **`sd-date` · `sd-date-range` · `sd-datetime` · `sd-chip-calendar`**: lịch trước là lưới div `.form-field-datepicker-*` tự dựng;
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-14 10:29:58.759209384 +0000
++++ b/_memory/known-gaps.md	2026-10-14 10:56:22.924735002 +0000
+@@ -27,7 +27,7 @@
+ | 2026-10-14 | **Catalog tự dựng khung ô bằng JS ở `#c-form-generic` / `#c-query-builder` / `#c-form-builder`** (`mat-form-field[data-ff]`, `js/components/form-generic.js`) | Ở ba mục đó dòng dưới ô là `subscript-wrapper` RỖNG hoặc `mat-error.mat-mdc-form-field-bare-error`; ở mục của từng component (`#c-input`, `#c-select`…) là `hint-wrapper` / `error-wrapper` như Material thật. Bộ so tự động báo "lệch cấu trúc" ở ba mục kia | **Kit theo mục của component** (= Material thật) — KHÔNG sửa theo bản dựng giản lược. Đối chiếu ba mục kia bỏ qua phần dòng dưới ô |
+ | 2026-10-14 | `sd-select` — `div.mat-mdc-select-arrow` | Catalog có thẻ này (rỗng, ẩn bằng `sd-select .mat-mdc-select-arrow{display:none!important}`) ở 24 mẫu (#c-query-builder · #c-form-generic · #c-form-builder · #c-table), riêng mục #c-select bản chụp bỏ (7 mẫu) | **ĐÃ QUYẾT 2026-10-14** (Builder: *„Cần bạn quyết“*): vẽ thẻ **theo ngữ cảnh** như chính catalog — có khi `sd-select` nằm trong `sd-table` / `sd-query-builder` / `sd-form-render` / `sd-form-builder`, không có ở chỗ khác (mục #c-select). Cả hai phía khớp; thẻ vẫn ẩn nên không đổi hình |
+ | 2026-10-14 | Biểu tượng gợi ý của `sd-label` (`info_outline`) | Catalog không thống nhất: mục #c-label có lớp `mat-mdc-tooltip-trigger`, các mục #c-input / #c-upload-file / #c-editor không | Kit giữ lớp đó (directive `matTooltip` thật luôn gắn) |
+-| 2026-10-14 | **`sd-table` — DOM bên trong chưa theo mat-table** (phát hiện khi sửa lớp `<table>`) | Thẻ `<table>` nay đủ lớp catalog (`mat-mdc-table mdc-data-table__table cdk-table mat-sort`). Còn khác: dòng / ô dùng lớp kit (`tr.c-first-header`, `th.c-th` / `td.c-td`, `c-sticky-col`, `c-command-btn`, menu lệnh `c-table-menu-dropdown` trong ô) thay cho Material (`mat-mdc-header-row mdc-data-table__header-row`, `mat-mdc-header-cell mdc-data-table__header-cell mat-column-<key> px-8 py-8`, `mat-mdc-table-sticky`, nút `mat-mdc-icon-button`…); ô chọn còn bọc `<sd-checkbox>`. Hình đã khớp từ các vòng trước | Việc lớn (sd-table ~1.500 dòng, mọi prototype dùng) — **chờ Builder quyết** có dựng lại DOM bảng theo mat-table không |
++| 2026-10-14 | ~~**`sd-table` — DOM bên trong chưa theo mat-table**~~ **ĐÃ SỬA 2026-10-14** (Builder: *„Cần bạn quyết -> tiếp tục làm cả 3 mục“*) | Dòng / ô nay là DOM mat-table của catalog (`mat-mdc-header-row` · `mat-mdc-header-cell … mat-column-<khoá> px-8 py-8` · `mat-mdc-table-sticky` + inline style dính · ô chọn `mat-checkbox` thuần · nút lệnh `mat-icon-button` · `desktop-cell.px-8` · `c-detail-row > mat-column-sdSubInformation` · `tfoot` · `mat-paginator`), CSS mirror `table.css`. Đối chiếu: dòng / ô / chân bảng trùng style 100% ở 3 mẫu. **Còn khác** (mục `sd-table` — sau khi dựng lại DOM mat-table, bên dưới) | — |
+ | 2026-10-14 | Lệch còn lại của báo cáo đối chiếu là **của trang preview, không phải component** | `sd-label` cao 22 (ô lưới của trang kéo giãn; component không có CSS) · `sd-inline-text` `flex` (ô flex của trang) và mẫu "đang focus" của catalog kit chưa có · độ cao thân `sd-tab-group` (nội dung demo) · bề ngang ô 316 vs 280 (khung demo) · trạng thái "đang focus" (`c-focused` / `mat-focused`) của vài mẫu input / input-number / datetime / date-range · lớp demo `ui-demo__row`, `uf-i-*` của catalog | Không sửa component. Muốn bộ so ra 0 lệch thì dựng lại mẫu preview theo đúng khung `.stage` của catalog |
+ | 2026-10-14 | Lớp móc kit giữ lại dù catalog không có | `sd-section > .c-section-wrap` (prototype `tao-workitem` / `sua-workitem` tìm theo nó) · `sd-quick-action{display:contents}` · `aria-label` trên nút icon (Rule 9) · `data-path` / `data-logic` của `sd-query-builder`, `data-qb-*` của `sd-query-bar` (JS của component tìm theo) | Ngoại lệ có lý do (Rule 18) |
+ | 2026-10-14 | `sd-tab-group` — sau khi đổi sang DOM Material | Còn khác catalog: (1) thẻ `<sd-tab>` vẫn nằm trong `.mat-mdc-tab-body-content` (display: contents) — HTML không có ng-template, JS trang tìm / gỡ `sd-tab`; (2) thân tab chưa chọn ẩn hẳn nội dung (Angular lazy — thân rỗng; bản chụp tĩnh của catalog có nội dung nhưng `visibility:hidden`); (3) không có ripple / hiệu ứng trượt gạch chân; (4) kit thêm viền `:focus-visible` (Rule 9). Catalog vẽ `pills` / `segmented` vẫn có lớp `mat-mdc-tab-group-stretch-tabs` dù mẫu khai `[stretchTabs]="false"` — kit theo mã thư viện (`[mat-stretch-tabs]="stretchTabs()"` → false thì gỡ lớp); hình không đổi vì theme ép `flex-grow:0` | (1)(2) bắt buộc để JS các trang chạy; (3) catalog tĩnh cũng không có |
+@@ -170,7 +170,7 @@
+ | ~~Icon nằm trong nút~~ **ĐÃ ĐỔI 2026-10-13** | `mat-icon.c-zoom` / `mat-icon.c-close` của upload tự bấm được | như catalog: `mat-icon` mang lớp, không bọc nút; thêm `role="button"` `tabindex="0"` `aria-label` (Rule 9, không đổi hình) | Builder: *"những phần icon theo Catalog luôn nhé"*. Các nút × của ô nhập vẫn là `button.sd-clear-btn` — đúng catalog |
+ | ~~`sd-button` trong mục khác~~ **ĐÃ ĐỔI 2026-10-13** | `#c-button` / `#c-tree` / `#c-import-excel` / `#c-upload-file` / `#c-section`: viền; `#c-table` / `#c-modal` / `#c-side-drawer` / `#c-quick-action` / `#c-form-generic`: ĐẶC với cùng markup | **theo vật chứa, y như catalog** — bộ quan sát `sdIconContextFix()` đổi font khi nút không khai `fontSet` | Builder: *"icon theo Catalog luôn"*. Hệ quả: nút có icon trong bảng / modal / drawer / thanh thao tác của prototype nay icon đặc |
+ | ~~Biến thể lớp của cùng một icon giữa các mục~~ **ĐÃ ĐỔI 2026-10-13** | trong `#c-table`: `mat-icon … mat-ligature-font`; trong `#c-form-generic`: rút gọn `mat-icon …` | theo vật chứa (cùng bộ quan sát) | Như trên |
+-| Icon chỉ kit có | lịch (‹ ›), cuộn tab, phân trang / sắp xếp bảng: catalog vẽ bằng SVG / CSS | glyph font | Rule 4 (không inline SVG) — đã ghi từ trước |
++| Icon chỉ kit có | lịch (‹ ›), cuộn tab, phân trang bảng: catalog vẽ bằng SVG | glyph font | Rule 4 (không inline SVG) — đã ghi từ trước. (Mũi tên **sắp xếp** bảng nay theo catalog — `background-image` CSS, 2026-10-14) |
+ | Không có mẫu catalog | toast, hover-copy, toolbar editor (SVG của CKEditor), data-state | giữ như cũ | Catalog không dựng icon ở các mục này. (`.msi` của form-builder: 2026-10-13 theo catalog — font Material Symbols, xem mục `sd-form-builder`) |
+ | `fit_screen` | font đặc của catalog thiếu glyph — demo cũng vỡ | cùng font, cùng vỡ khi offline | Font Google trực tuyến có glyph này |
+ 
+@@ -1011,8 +1011,8 @@
+ | Chỗ | Catalog | Kit | Vì sao |
+ |---|---|---|---|
+ | Lệnh trên dòng hiện mấy nút | `[view, edit, more(children)]` → đúng 2 nút: `visibility` + `more_vert` „Thao tác khác“ | Quy tắc suy từ DOM đó: lệnh đầu (type normal) là nút, còn lại (kể cả con của `children`) vào menu | Catalog chỉ có một ví dụ; nếu bản thật có quy tắc khác (vd tối đa N nút) thì sửa `_commandList` |
+-| Menu „Thao tác khác“ | catalog ghi „panel select/menu … không dựng“ | Giữ lớp nổi `.c-table-menu-dropdown` cũ của kit | Catalog im lặng |
+-| Mũi tên sắp xếp | `background-image` SVG #7A7A7A 16px | glyph font cùng tên, cùng chỗ/cỡ/màu | Rule 4 |
++| Menu „Thao tác khác“ | catalog ghi „panel select/menu … không dựng“ | Giữ HÌNH `.c-table-menu-dropdown` cũ của kit; từ 2026-10-14 nó chỉ có khi mở, dựng ở overlay `.cdk-overlay-pane.sd-table-pane` (đóng thì ô lệnh chỉ còn nút như catalog) | Catalog im lặng về hình menu |
++| ~~Mũi tên sắp xếp~~ **ĐÃ ĐỔI 2026-10-14** | `background-image` SVG #7A7A7A 16px | nay chép nguyên luật catalog (`.mat-sort-header[aria-sort=…]`), bỏ glyph `span.c-sort-ind` | Rule 4 (phạm vi): icon bên trong `sd-*` theo đúng catalog |
+ | Cột canh phải | `div.c-header-title.justify-content-end.text-right` — KHÔNG có `.mat-sort-header` → không mũi tên dù `sortable` | Kit theo đúng DOM: không vẽ mũi tên; bấm vẫn sắp xếp (container có `tabindex=0` như catalog) | Chép nguyên DOM catalog |
+ | Icon lệnh / nút chân bảng / ‹ › | `material-icons` (đặc) / SVG | `material-icons-outlined` | Rule 4 |
+ | Giờ trong cột datetime | `span.text-black400` — nhưng bundle `#c-table` KHÔNG khai `.text-black400` nên catalog vẽ chữ đen | Kit tô xám theo nghĩa lớp của sd-core | Theo DOM class, không theo thiếu sót của bundle demo |
+@@ -1071,7 +1071,7 @@
+ | `sd-change` | `(sdChange)` | `{ checked, value }` | `value` là attribute HTML của ô |
+ | DOM (2026-10-14) | `mat-checkbox` Material | **nay đúng `mat-checkbox`** (DOM + 67 luật CSS nguyên văn) — 13/13 mẫu khớp cấu trúc + style | Builder: *„Checkbox và switch, vì dùng ở rất nhiều trang“* |
+ | `data-disabled` / `data-empty` / `data-value` | template thư viện CÓ (trên `mat-checkbox`); bản chụp catalog KHÔNG có | **không vẽ** (trước: vẽ trên `input` — sai chỗ) | Theo catalog. `data-autoid` vẫn có (trên `mat-checkbox`, như thư viện) khi khai `autoId`. Builder cần các data-* này cho kiểm thử tự động thì nói — thêm lại đúng chỗ |
+-| Ô chọn trong `sd-table` | `mat-checkbox` thuần (`c-selection px-8 mat-primary`) | vẫn là `<sd-checkbox>` bọc ngoài (bên trong nay là `mat-checkbox`) | `sd-tree` đã đổi 2026-10-14; `sd-table` đổi ở vòng "lệch nhỏ — table" |
++| ~~Ô chọn trong `sd-table`~~ **ĐÃ SỬA 2026-10-14** | `mat-checkbox` thuần (`c-selection px-8 mat-primary`) | nay đúng như vậy (móc `data-sel-row` / `data-sel-all`, `aria-label` Rule 9) | — |
+ 
+ ## `sd-chip` — rà soát `#c-chip` 2026-10-12
+ 
+@@ -1215,13 +1215,34 @@
+ | `onAction` | demo catalog chỉ gọi hàm của app | gọi `onAction`, KHÔNG tự đóng | Theo đúng demo; chưa có nguồn nói thư viện thật có đóng hay không — nếu Builder thấy app thật tự đóng thì thêm `self._close(t)` |
+ | Docs `sd-service.md` | — | **chưa cập nhật** (còn ghi hàng chờ 3 toast, 4 s) | Phase 2 của `build.md`, chờ Builder duyệt preview |
+ 
++## `sd-table` — sau khi dựng lại DOM mat-table (2026-10-14)
++
++Đối chiếu 3 mẫu `#c-table` (bỏ cây con ô lọc): dòng / ô / ô chọn / nút lệnh / chân bảng trùng style 100%. Còn khác:
++
++| Chỗ | Catalog | Kit | Vì sao |
++|---|---|---|---|
++| Lớp cột Ngân hàng | DOM chụp `mat-column-bank`, nhưng mã ví dụ của chính catalog khai `field: 'bankId'` | `mat-column-bankId` (theo mã ví dụ — Angular sinh lớp từ `field`) | Catalog tự mâu thuẫn |
++| Ô lọc trong đầu cột (`column-filter`) | `sd-input` / `sd-input-number` không có `mat-primary` / `ng-*`, không có dòng `subscript`, viền `mdc-notched-outline--upgraded` | DOM `sd-input` chuẩn của kit (như mục `#c-input`) | Bản dựng giản lược của trang catalog — cùng loại dòng `data-ff` ở form-generic; không sửa |
++| Icon ‹ › của phân trang | `svg.mat-mdc-paginator-icon` | `mat-icon` glyph `chevron_left/right` cùng cỡ / màu | Rule 4 |
++| Nút "Tải lại" khi khoá | host `sd-button` không có lớp | host có `sd-disabled` | Lớp trạng thái chung của `sd-button` kit, không riêng bảng |
++| `selector-action` | catalog đặt ở khung demo (ngoài `sd-table`) cho dễ chụp | trong `sd-table` (như template thư viện) | Vị trí demo |
++| Giờ trong ô datetime | `span.T14R.text-black400` ra màu .87 (mục `#c-table` thiếu tiện ích `text-black400`) | `--sd-black400` (tiện ích sd-core thật) | Catalog thiếu luật |
++| Viền / bo 8px quanh bảng trong `sd-section` | không có | có | Quyết định Builder 2026-10-14 (mục `sd-table` trong `sd-section`) |
++| Viền focus bàn phím của nút lệnh, ô chọn, ‹ › | không (DOM chụp không có focus-indicator / ripple) | `outline` 2px `--sd-primary` khi `:focus-visible` | Rule 9 |
++| Menu lệnh của dòng | không chụp | `.c-table-menu-dropdown` ở overlay khi mở | xem dòng „Menu Thao tác khác“ |
++
++Móc JS đổi theo (trang / kịch bản cũ cần đổi selector): ô chọn `sd-checkbox[data-sel-row]` → `mat-checkbox[data-sel-row]` (đang chọn:
++`.mat-mdc-checkbox-checked`); nút lệnh `.c-command-btn` → `desktop-command button[title]`; nút ⋮ → `button[data-menu-target]`;
++menu `sd-table .c-table-menu-dropdown` → `body .sd-table-pane .c-table-menu-dropdown`; ô chọn / ô lệnh không còn lớp `c-td`;
++chữ bảng rỗng `.c-no-data-title` → `.c-no-data-row > .T16R / .T16M`. Prototype `danh-sach-workitem.html` đã đổi theo.
++
+ ## `sd-table` — lệch CÓ CHỦ Ý, bổ sung 2026-10-12
+ 
+ | Chỗ | Catalog | Kit | Vì sao |
+ |---|---|---|---|
+ | ~~Ô dữ liệu không có thẻ bọc trong~~ **ĐÃ ĐỔI 2026-10-12** | `td.c-td.px-0 > desktop-cell.d-block.px-8 > view > div.text-break` | Kit nay dựng đúng cấu trúc đó | Lý do cũ sai: catalog td KHÔNG có đệm dọc, kit đệm 8px làm ô 2 dòng cao 56px thay vì 40px |
+-| `overflow:hidden; text-overflow:ellipsis` trên ô | `.mdc-data-table__cell` và `.mat-mdc-header-cell` đều cắt tràn | **Không áp dụng** | Menu lệnh theo dòng của kit (`.c-table-menu-dropdown`) là **con của `<td>`**, và panel ô lọc là con của `<th>`; catalog thì cả hai là overlay CDK gắn ở `body`. Bật `overflow:hidden` sẽ cắt cụt menu và panel. Cùng kiểu lệch đã ghi cho `sd-tree` / `sd-query-bar` / `sd-operator` (2026-10-12) |
+-| ~~Chỗ chừa cho mũi tên sắp xếp~~ **ĐÃ ĐỔI 2026-10-12** | `.mat-sort-header{padding-right:24px}` + mũi tên ở mép phải | Kit nay chừa 24px và đặt glyph 16px #7A7A7A ở mép phải tiêu đề | Bỏ nút sort cạnh chữ |
++| ~~`overflow:hidden; text-overflow:ellipsis` trên ô~~ **ĐÃ ÁP 2026-10-14** | `.mdc-data-table__cell` và `.mat-mdc-header-cell` đều cắt tràn | Nay chép nguyên catalog | Menu lệnh và panel ô lọc đều đã ra overlay nên không còn gì bị cắt |
++| ~~Chỗ chừa cho mũi tên sắp xếp~~ **ĐÃ ĐỔI 2026-10-12** | `.mat-sort-header{padding-right:24px}` + mũi tên ở mép phải | Kit nay chừa 24px; mũi tên là `background-image` của catalog (2026-10-14 — trước là glyph 16px) | Bỏ nút sort cạnh chữ |
+ | ~~Cột dính khi cuộn ngang~~ **ĐÃ ĐỔI 2026-10-12** | cột chọn (left 0) và cột lệnh (left 42px) `position:sticky` | Kit dính cả hai | Bóng cột dính khi cuộn — catalog cũng ghi „không dựng“ |
+ 
+ ## Lệch có chủ ý — KHÔNG phải lỗi, đừng "sửa cho giống"
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-14 10:29:58.759719620 +0000
++++ b/_memory/lessons.md	2026-10-14 10:57:09.015227553 +0000
+@@ -1495,3 +1495,14 @@
+   luật của mẫu demo (`fx-` / `demo-`).
+ - Đổi DOM thì rà **kịch bản kiểm** (selector cũ `.form-field-datepicker-day`, `.sd-date-popup`) trước khi tin kết quả "qua".
+ 
++## Dựng lại DOM `sd-table` theo mat-table (2026-10-14)
++
++- Đổi lớp xong thì **rà mọi móc** trước: JS component (`closest('.c-table-menu-btn')`…), JS prototype (`sd-checkbox[data-sel-row][checked]`),
++  CSS prototype (`tr.c-row`), kịch bản kiểm thử (đếm `td.c-td`). Giữ lớp nào catalog CŨNG có (`c-row`, `c-td`, `c-th`, `c-first-header`) —
++  móc bằng `data-*` cho phần kit riêng; đừng giữ lớp kit thừa (bộ so coi là lệch cấu trúc).
++- Bỏ một lớp khỏi một số ô (ô chọn / ô lệnh không còn `c-td`) làm **lệch chỉ số cột** của mã đếm `td.c-td` — kiểm cả chỉ số, không chỉ selector.
++- Tiện ích `!important` (`px-8`, `px-0`) của catalog thắng `style` inline thường — thụt cấp bảng cây phải ghi `padding-left: … !important`.
++- Phần kit dời ra overlay (menu) thì **CSS cũng phải dời phạm vi** (`:is(sd-table, :where(.sd-table-pane))`) — test toạ độ vẫn qua dù menu mất
++  nền / viền; luôn chụp ảnh so trước / sau.
++- Bộ so tự động dừng ở nút lệch đầu tiên: muốn thấy lệch style phía sau thì so riêng (bỏ cây con đã biết, chuẩn hoá lớp trạng thái demo).
++
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-data.md b/design-system/components/sd-data.md
+--- a/design-system/components/sd-data.md	2026-10-14 10:29:58.707993616 +0000
++++ b/design-system/components/sd-data.md	2026-10-14 10:56:41.923599316 +0000
+@@ -49,6 +49,13 @@
+ `[data-sd-pagesize]` rồi click `mat-option[data-value="50"]`; đọc số đang chọn ở
+ `.mat-mdc-paginator-page-size .mat-mdc-select-min-line` (đừng dùng `.mat-mdc-select-min-line` trơn — ô lọc cột cũng có lớp này).
+ 
++**DOM dòng / ô (2026-10-14) = mat-table của catalog.** JS trang / kịch bản kiểm thử tìm theo:
++dòng `tr.c-row` (có `data-row-key`), ô dữ liệu `td.c-td.mat-column-<field>` (ô chọn / ô lệnh **không** có `c-td`),
++ô chọn `mat-checkbox[data-sel-row]` / `[data-sel-all]` (bấm vào `input` bên trong; đang chọn = `.mat-mdc-checkbox-checked`),
++nút lệnh `desktop-command button[title="…"]`, nút ⋮ `button[data-menu-target]`. Menu lệnh của dòng chỉ có khi mở và nằm ở
++overlay `<body>` (`.cdk-overlay-pane.sd-table-pane .c-table-menu-dropdown .c-table-menu-item`), không nằm trong ô. Bảng rỗng:
++chữ là `.c-no-data-row > .T16R` (lọc rỗng: `.T16M` + `.T16R`).
++
+ **`option.items` dạng mảng** (chế độ client, 2026-10-14) = như attribute `data`; attribute `data` khai tay vẫn thắng.
+ 
+ **Phân trang (2026-10-14 — trước đó chỉ là UI tĩnh):** `paginated` (hoặc `option.paginate`) cắt dòng THẬT theo
+@@ -125,7 +132,7 @@
+ 
+ ### Sortable columns
+ 
+-Bất kỳ cột nào (trừ `action`/`menu`/`raw`) đều thêm được `"sortable": true` — cả vùng tiêu đề bấm được, mũi tên 16px `#7A7A7A` ở mép phải (unfold_more / arrow_upward / arrow_downward). Cột canh phải (`align: "right"`) không vẽ mũi tên — đúng DOM catalog:
++Bất kỳ cột nào (trừ `action`/`menu`/`raw`) đều thêm được `"sortable": true` — cả vùng tiêu đề bấm được, mũi tên 16px `#7A7A7A` ở mép phải (unfold_more / arrow_upward / arrow_downward — `background-image` CSS như catalog, không có phần tử riêng). Cột canh phải (`align: "right"`) không vẽ mũi tên — đúng DOM catalog:
+ 
+ ```json
+ {"field": "amount", "title": "Giá trị (VND)", "type": "number", "align": "right", "sortable": true}
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-14 10:29:58.760889290 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-14 10:42:01.623279302 +0000
+@@ -950,6 +950,7 @@
+    lệch validation / read-page — thử 2026-10-13); riêng `sd-import-excel` theo catalog: inline. */
+ sd-badge { display: inline-block; }
+ sd-import-excel sd-badge { display: inline; }
++sd-table sd-badge { display: inline; }   /* catalog #c-table đo: inline (2026-10-14) */
+ 
+ /* Tiện ích sd-core mà template badge dùng (nguyên văn catalog `#c-badge .d-flex{…!important}` …) —
+    bọc trong sd-badge để không đụng vào namespace utility chung của kit. */
+@@ -3919,26 +3920,6 @@
+      filter          : tiêu đề `T16M` (16px/500/24px, màu chữ mặc định)
+                        + dòng gợi ý `T16R text-secondary`
+    Bản trước kit để 14px/20px màu --sd-black400. */
+-sd-table .c-no-data-row .c-no-data-title {
+-  font-family: var(--sd-font-family);
+-  font-size: 16px;
+-  font-weight: 400;
+-  line-height: 24px;
+-  color: var(--sd-secondary);
+-  text-align: center;
+-}
+-sd-table .c-no-data-row .c-no-data-title--strong {
+-  font-weight: 500;
+-  color: var(--sd-black500);
+-}
+-sd-table .c-no-data-row .c-no-data-hint {
+-  font-family: var(--sd-font-family);
+-  font-size: 16px;
+-  font-weight: 400;
+-  line-height: 24px;
+-  color: var(--sd-secondary);
+-  text-align: center;
+-}
+ /* Lớp phủ khi đang tải — chừa 56px dưới cho paginator, đúng catalog */
+ sd-table .c-container .c-loading {
+   position: absolute;
+@@ -3952,53 +3933,25 @@
+ /* ══ sd-table — đầu bảng / dòng / cột chọn / cột lệnh — rà soát #c-table 2026-10-12 ══
+    Markup kit nay theo đúng DOM catalog (xem SdTable._render). Số đo chép từ
+    css/components/table.css của catalog + token M3 trên `#c-table`. */
+-sd-table thead tr { height: 40px; }                       /* tr.c-first-header */
+-sd-table .c-th {
+-  padding: 0;
+-  vertical-align: middle;
+-  font-weight: 500;
+-  font-size: 14px;
+-  line-height: 20px;
+-  color: #212121;
+-  letter-spacing: .006rem;          /* --mat-sys-title-small-tracking (đo 0.096px) */
+-  background: #f2f3f4;
+-  border-bottom: 0;
+-  border-bottom-color: #f2f2f2;
+-  position: sticky;
+-  top: 0;
+-  z-index: 100;
+-  text-align: left;
+-  box-sizing: border-box;
+-  overflow: hidden;
+-}
+-sd-table th.c-col-th { padding: 8px; }                    /* th.px-8.py-8 */
+-sd-table .c-header-title {
+-  height: 40px;
+-  display: flex;
+-  align-items: center;
+-  position: relative;
+-}
+-sd-table .c-header-title.justify-content-end { justify-content: flex-end; }
+-sd-table .c-header-title.mat-sort-header { cursor: pointer; padding-right: 24px; }
+-sd-table .c-header-title.mat-sort-header-disabled { cursor: default; padding-right: 0; }
+-sd-table .mat-sort-header-container { display: flex; align-items: flex-start; letter-spacing: normal; outline: 0; }
+-sd-table .mat-sort-header-content { display: block; text-align: left; width: 100%; }
+-sd-table .mat-sort-header-container:focus-visible { outline: 2px solid var(--sd-primary); outline-offset: 2px; }
+-/* Mũi tên sắp xếp — catalog vẽ bằng background-image SVG #7A7A7A 16px ở mép
+-   phải tiêu đề (unfold_more / arrow_upward / arrow_downward). Kit dùng đúng ba
+-   glyph đó bằng font icon (Rule 4), cùng vị trí, cỡ, màu. */
+-sd-table .c-sort-ind {
+-  position: absolute;
+-  right: 0;
+-  top: 50%;
+-  transform: translateY(-50%);
+-  width: 16px;
+-  height: 16px;
+-  font-size: 16px;
+-  line-height: 16px;
+-  color: #7a7a7a;
+-  pointer-events: none;
+-}
++/* Tiêu đề cột + sắp xếp — NGUYÊN VĂN catalog table.css (2026-10-14; trước là luật tay cùng giá trị, thêm `position:relative`
++   cho glyph mũi tên cũ). `.c-header-title` / `.justify-content-end` có ở khối `.c-header-title` phía trên + tiện ích toàn cục. */
++sd-table .mat-sort-header{cursor:pointer}
++sd-table .mat-sort-header-disabled{cursor:default}
++sd-table .mat-sort-header-container{display:flex;align-items:center;letter-spacing:normal;outline:0}
++sd-table .mat-sort-header-container::before{margin:calc(calc(var(--mat-focus-indicator-border-width, 3px) + 2px)*-1)}
++sd-table .mat-sort-header-content{display:flex;align-items:center}
++sd-table .mat-sort-header-content{display:block;text-align:left;width:100%}
++sd-table .mat-sort-header-disabled{background-image:none!important;cursor:default!important;padding-right:0!important}
++sd-table .mat-sort-header-container{align-items:start!important}
++sd-table .mat-sort-header{cursor:pointer}
++sd-table .mat-sort-header-container:focus-visible { outline: 2px solid var(--sd-primary); outline-offset: 2px; }   /* kit — Rule 9 */
++/* Mũi tên sắp xếp — NGUYÊN VĂN catalog (table.css): `background-image` SVG #7A7A7A 16px ở mép phải `.mat-sort-header[aria-sort]`
++   (unfold_more / arrow_upward / arrow_downward). 2026-10-14: thay glyph `span.c-sort-ind` cũ — Rule 4 nay cho icon bên trong
++   `sd-*` theo đúng catalog (AGENTS Rule 4, phạm vi), và catalog không có phần tử riêng cho mũi tên. */
++sd-table .mat-sort-header[aria-sort]{background-repeat:no-repeat;background-position:center right 0;background-size:16px 16px;cursor:pointer;padding-right:24px}
++sd-table .mat-sort-header[aria-sort=none]{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='%23000000'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath fill='%237A7A7A' d='M12 5.83L15.17 9l1.41-1.41L12 3 7.41 7.59 8.83 9 12 5.83zm0 12.34L8.83 15l-1.41 1.41L12 21l4.59-4.59L15.17 15 12 18.17z'/%3E%3C/svg%3E")}
++sd-table .mat-sort-header[aria-sort=ascending]{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='%23000000'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath fill='%237A7A7A' d='M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z'/%3E%3C/svg%3E")}
++sd-table .mat-sort-header[aria-sort=descending]{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 0 24 24' width='24px' fill='%23000000'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath fill='%237A7A7A' d='M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z'/%3E%3C/svg%3E")}
+ sd-table column-filter { display: block; }
+ sd-table column-filter .c-inline-column { width: 100%; max-width: 100%; }
+ sd-table column-filter .c-inline-column > * { flex: 1 1 0%; min-width: 0; width: 100%; }
+@@ -4019,69 +3972,82 @@
+ sd-table column-filter .c-inline-column > sd-date-range .mat-date-range-input-inner { color: rgba(0, 0, 0, .87); }
+ sd-table column-filter .c-inline-column > sd-date-range .mat-date-range-input-inner::placeholder { color: rgba(0, 0, 0, .6); }
+ 
+-/* Cột chọn dòng: 42px cố định, dính trái; checkbox thu còn 85%. */
+-sd-table .sd-selection-cell { width: 42px; min-width: 42px; max-width: 42px; }
+-sd-table .c-td.sd-selection-cell, sd-table .c-th.sd-selection-cell { padding: 0; text-align: left; }
+-/* catalog: mat-checkbox.c-selection.px-8 (28px + 2×8px) thu 85% quanh tâm */
+-sd-table sd-checkbox.c-selection {
+-  display: inline-block;
+-  padding: 0 8px;
+-  vertical-align: middle;
+-  transform: scale(.85);
+-  transform-origin: center;
+-}
+-sd-table .c-sticky-col { position: sticky; z-index: 1; }
+-sd-table th.c-sticky-col { z-index: 103; }
+-/* Cột lệnh: dính trái sau cột chọn; nút icon 24px, icon 16px --sd-black400. */
+-sd-table td.c-td.c-command-cell { padding: 0 8px; white-space: nowrap; }
+-sd-table th.c-th.c-command-cell { padding: 0; }
+-sd-table desktop-command { display: flex; align-items: center; }
+-sd-table desktop-command .c-command-btn {
+-  display: inline-block;
+-  width: 24px;
+-  height: 24px;
+-  line-height: 24px;
+-  padding: 0;
+-  border: 0;
+-  border-radius: 50%;
+-  background: transparent;
+-  color: rgb(68, 71, 78);           /* --mat-sys-on-surface-variant */
+-  cursor: pointer;
+-  text-align: center;
+-  flex-shrink: 0;
+-}
+-sd-table desktop-command .c-command-btn .c-icon {
+-  display: inline-block;
+-  width: 16px; height: 16px; font-size: 16px; line-height: 16px;
+-  color: var(--sd-black400) !important;
+-  vertical-align: top;
+-  margin-top: 4px;
+-}
+-sd-table desktop-command .c-command-btn:hover { background: transparent; }
+-sd-table .c-command-btn:focus-visible { outline: 2px solid var(--sd-primary); outline-offset: 1px; }
+-sd-table .c-command-cell { position: sticky; }
+-
+-/* Dòng dữ liệu — td KHÔNG đệm, đệm ngang 8px nằm ở desktop-cell (catalog
+-   `td.c-td.px-0 > desktop-cell.d-block.px-8`), dòng cao 40px. */
+-sd-table tbody tr.c-row { height: 40px; }
+-sd-table .c-td {
+-  padding: 0;
+-  font-size: 14px;
+-  line-height: 20px;
+-  color: rgba(0, 0, 0, .87);
+-  letter-spacing: .016rem;          /* --mat-sys-body-medium-tracking (đo 0.256px) */
+-  border-bottom: 0;
+-  vertical-align: middle;
+-  text-align: left;
+-  box-sizing: border-box;
+-}
+-sd-table desktop-cell { display: block; padding: 0 8px; }
++
++/* ══ sd-table — dòng / ô theo DOM mat-table của catalog (2026-10-14, Builder: „tiếp tục làm cả 3 mục“ — mục 2) ══
++   Markup: `tr.mat-mdc-header-row.mdc-data-table__header-row.c-first-header` · `th.mat-mdc-header-cell.mdc-data-table__header-cell
++   .px-8.py-8.c-th.mat-column-<khoá>` · cột chọn `.sd-selection-cell.p-0.mat-mdc-table-sticky.mat-column-sdSelection` (mat-checkbox
++   thuần `.c-selection.px-8.mat-primary`) · cột lệnh `.mat-column-sdCommand` (`desktop-command > button[mat-icon-button]`) ·
++   `tr.mat-mdc-row.mdc-data-table__row.c-row` > `td.mat-mdc-cell.mdc-data-table__cell.c-td.px-0` > `desktop-cell.d-block.px-8` ·
++   `tr.c-detail-row > td.mat-column-sdSubInformation`; vị trí dính là inline style như CDK.
++   CSS dưới là NGUYÊN VĂN `css/components/table.css` của catalog — chỉ các luật của dòng / ô / ô chọn / nút lệnh — phạm vi
++   `#c-table X` → `sd-table X` (luật `#c-table sd-table X` → `sd-table X`); luật mdc-checkbox bó vào `.c-selection`, luật nút
++   bó vào `desktop-command` để không chạm `sd-checkbox` / `sd-button` lồng trong ô. Token `--mat-sys-*` lấy từ material-tokens.css.
++   Sinh bằng reviews/ds-mirror/table/gencss.py. Thay các luật tay `.c-th` / `.c-td` / `.c-sticky-col` / `.c-command-btn` /
++   `sd-checkbox.c-selection` / `.c-detail-cell` cũ. */
++sd-table{--mat-sys-body-medium-font:Roboto;--mat-sys-body-medium-line-height:1.25rem;--mat-sys-body-medium-size:0.875rem;--mat-sys-body-medium-tracking:0.016rem;--mat-sys-body-medium-weight:400;--mat-sys-corner-full:9999px;--mat-sys-on-primary:#ffffff;--mat-sys-on-surface:#1a1b1f;--mat-sys-on-surface-variant:#44474e;--mat-sys-outline:#74777f;--mat-sys-primary:#005cbb;--mat-sys-surface:#faf9fd;--mat-sys-title-small-font:Roboto;--mat-sys-title-small-line-height:1.25rem;--mat-sys-title-small-size:0.875rem;--mat-sys-title-small-tracking:0.006rem;--mat-sys-title-small-weight:500;--mat-table-background-color:#fff;--mat-table-header-headline-color:rgba(0,0,0,.87);--mat-table-row-item-label-text-color:rgba(0,0,0,.87);--mat-table-row-item-outline-color:rgba(0,0,0,.12);--mat-table-row-item-outline-width:1px;--mat-table-header-container-height:44px;--mat-table-row-item-container-height:40px;--mat-table-footer-container-height:40px}
++sd-table .c-selection{--mat-checkbox-state-layer-size:28px;--mat-checkbox-unselected-icon-color:rgba(0,0,0,.54);--mat-checkbox-selected-checkmark-color:#fff;--mat-checkbox-label-text-color:rgba(0,0,0,.87)}
++sd-table desktop-command{--mat-icon-button-state-layer-size:36px;--mat-icon-button-icon-size:24px;--mat-icon-button-container-shape:50%;--mat-icon-button-icon-color:inherit;--mat-icon-button-state-layer-color:rgba(0,0,0,.87);--mat-icon-button-disabled-icon-color:rgba(0,0,0,.33)}
++sd-table .mat-mdc-checkbox.mat-primary.c-selection{--mat-checkbox-selected-icon-color:#ae7129;--mat-checkbox-selected-hover-icon-color:#ae7129;--mat-checkbox-selected-focus-icon-color:#ae7129;--mat-checkbox-selected-hover-state-layer-color:#ae7129;--mat-checkbox-selected-pressed-state-layer-color:rgba(0,0,0,.87);--mat-checkbox-unselected-hover-state-layer-color:rgba(0,0,0,.87)}
++sd-table .mat-mdc-table-sticky{position:sticky !important}
++sd-table .mat-mdc-table{min-width:100%;border:0;border-spacing:0;table-layout:auto;white-space:normal;background-color:var(--mat-table-background-color, var(--mat-sys-surface))}
++sd-table .mdc-data-table__cell{box-sizing:border-box;overflow:hidden;text-align:left;text-overflow:ellipsis}
++sd-table .mdc-data-table__cell,sd-table .mdc-data-table__header-cell{padding:0 16px}
++sd-table .mat-mdc-header-row{height:var(--mat-table-header-container-height, 56px);color:var(--mat-table-header-headline-color, var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87)));font-family:var(--mat-table-header-headline-font, var(--mat-sys-title-small-font, Roboto, sans-serif));line-height:var(--mat-table-header-headline-line-height, var(--mat-sys-title-small-line-height));font-size:var(--mat-table-header-headline-size, var(--mat-sys-title-small-size, 14px));font-weight:var(--mat-table-header-headline-weight, var(--mat-sys-title-small-weight, 500))}
++sd-table .mat-mdc-row{height:var(--mat-table-row-item-container-height, 52px);color:var(--mat-table-row-item-label-text-color, var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87)))}
++sd-table .mat-mdc-row,sd-table .mdc-data-table__content{font-family:var(--mat-table-row-item-label-text-font, var(--mat-sys-body-medium-font, Roboto, sans-serif));line-height:var(--mat-table-row-item-label-text-line-height, var(--mat-sys-body-medium-line-height));font-size:var(--mat-table-row-item-label-text-size, var(--mat-sys-body-medium-size, 14px));font-weight:var(--mat-table-row-item-label-text-weight, var(--mat-sys-body-medium-weight))}
++sd-table .mat-mdc-header-cell{border-bottom-color:var(--mat-table-row-item-outline-color, var(--mat-sys-outline, rgba(0, 0, 0, 0.12)));border-bottom-width:var(--mat-table-row-item-outline-width, 1px);border-bottom-style:solid;letter-spacing:var(--mat-table-header-headline-tracking, var(--mat-sys-title-small-tracking));font-weight:inherit;line-height:inherit;box-sizing:border-box;text-overflow:ellipsis;overflow:hidden;outline:none;text-align:left}
++sd-table .mdc-data-table__row:last-child>.mat-mdc-header-cell{border-bottom:none}
++sd-table .mat-mdc-cell{border-bottom-color:var(--mat-table-row-item-outline-color, var(--mat-sys-outline, rgba(0, 0, 0, 0.12)));border-bottom-width:var(--mat-table-row-item-outline-width, 1px);border-bottom-style:solid;letter-spacing:var(--mat-table-row-item-label-text-tracking, var(--mat-sys-body-medium-tracking));line-height:inherit}
++sd-table .mdc-data-table__row:last-child>.mat-mdc-cell{border-bottom:none}
++sd-table .mat-mdc-table tbody,sd-table .mat-mdc-table tfoot,sd-table .mat-mdc-table thead,sd-table .mat-mdc-cell,sd-table .mat-mdc-header-row,sd-table .mat-mdc-row,sd-table .mat-mdc-table .mat-mdc-header-cell{background:inherit}
++sd-table .c-selection .mdc-checkbox{display:inline-block;position:relative;flex:0 0 18px;box-sizing:content-box;width:18px;height:18px;line-height:0;white-space:nowrap;cursor:pointer;vertical-align:bottom;padding:calc((var(--mat-checkbox-state-layer-size, 40px) - 18px)/2);margin:calc((var(--mat-checkbox-state-layer-size, 40px) - var(--mat-checkbox-state-layer-size, 40px))/2)}
++sd-table .c-selection .mdc-checkbox .mdc-checkbox__native-control{position:absolute;margin:0;padding:0;opacity:0;cursor:inherit;z-index:1;width:var(--mat-checkbox-state-layer-size, 40px);height:var(--mat-checkbox-state-layer-size, 40px);top:calc((var(--mat-checkbox-state-layer-size, 40px) - var(--mat-checkbox-state-layer-size, 40px))/2);right:calc((var(--mat-checkbox-state-layer-size, 40px) - var(--mat-checkbox-state-layer-size, 40px))/2);left:calc((var(--mat-checkbox-state-layer-size, 40px) - var(--mat-checkbox-state-layer-size, 40px))/2)}
++sd-table .c-selection .mdc-checkbox__background{display:inline-flex;position:absolute;align-items:center;justify-content:center;box-sizing:border-box;width:18px;height:18px;border:2px solid currentColor;border-radius:2px;background-color:rgba(0,0,0,0);pointer-events:none;border-color:var(--mat-checkbox-unselected-icon-color, var(--mat-sys-on-surface-variant));top:calc((var(--mat-checkbox-state-layer-size, 40px) - 18px)/2);left:calc((var(--mat-checkbox-state-layer-size, 40px) - 18px)/2)}
++sd-table .c-selection .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background,sd-table .c-selection .mdc-checkbox__native-control:enabled:indeterminate~.mdc-checkbox__background{border-color:var(--mat-checkbox-selected-icon-color, var(--mat-sys-primary));background-color:var(--mat-checkbox-selected-icon-color, var(--mat-sys-primary))}
++sd-table .c-selection .mdc-checkbox__checkmark{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;opacity:0;color:var(--mat-checkbox-selected-checkmark-color, var(--mat-sys-on-primary))}
++sd-table .c-selection .mdc-checkbox__checkmark-path{stroke:currentColor;stroke-width:3.12px;stroke-dashoffset:29.7833385;stroke-dasharray:29.7833385}
++sd-table .c-selection .mdc-checkbox__mixedmark{width:100%;height:0;transform:scaleX(0) rotate(0deg);border-width:1px;border-style:solid;opacity:0;border-color:var(--mat-checkbox-selected-checkmark-color, var(--mat-sys-on-primary))}
++sd-table .c-selection .mdc-checkbox__native-control:checked~.mdc-checkbox__background>.mdc-checkbox__checkmark>.mdc-checkbox__checkmark-path,sd-table .c-selection .mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background>.mdc-checkbox__checkmark>.mdc-checkbox__checkmark-path{stroke-dashoffset:0}
++sd-table .c-selection .mdc-checkbox__native-control:checked~.mdc-checkbox__background>.mdc-checkbox__checkmark{opacity:1}
++sd-table .c-selection .mdc-checkbox__native-control:checked~.mdc-checkbox__background>.mdc-checkbox__mixedmark{transform:scaleX(1) rotate(-45deg)}
++sd-table .c-selection .mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background>.mdc-checkbox__checkmark{transform:rotate(45deg);opacity:0}
++sd-table .c-selection .mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background>.mdc-checkbox__mixedmark{transform:scaleX(1) rotate(0deg);opacity:1}
++sd-table .mat-mdc-checkbox.c-selection{display:inline-block;position:relative}
++sd-table .mat-mdc-checkbox.c-selection label{cursor:pointer}
++sd-table .mat-mdc-checkbox.c-selection .mat-internal-form-field{color:var(--mat-checkbox-label-text-color, var(--mat-sys-on-surface));font-family:var(--mat-checkbox-label-text-font, var(--mat-sys-body-medium-font));line-height:var(--mat-checkbox-label-text-line-height, var(--mat-sys-body-medium-line-height));font-size:var(--mat-checkbox-label-text-size, var(--mat-sys-body-medium-size));letter-spacing:var(--mat-checkbox-label-text-tracking, var(--mat-sys-body-medium-tracking));font-weight:var(--mat-checkbox-label-text-weight, var(--mat-sys-body-medium-weight))}
++sd-table .mat-mdc-checkbox.c-selection label:empty{display:none}
++sd-table .c-selection .mat-internal-form-field{display:inline-flex;align-items:center;vertical-align:middle}
++sd-table .c-selection .mat-internal-form-field>label{margin-left:0;margin-right:auto;padding-left:4px;padding-right:0;order:0}
++sd-table desktop-command .mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:var(--mat-icon-button-container-shape, var(--mat-sys-corner-full, 50%));flex-shrink:0;text-align:center;width:var(--mat-icon-button-state-layer-size, 40px);height:var(--mat-icon-button-state-layer-size, 40px);padding:calc(calc(var(--mat-icon-button-state-layer-size, 40px) - var(--mat-icon-button-icon-size, 24px)) / 2);font-size:var(--mat-icon-button-icon-size, 24px);color:var(--mat-icon-button-icon-color, var(--mat-sys-on-surface-variant))}
++sd-table desktop-command .mat-mdc-icon-button .mat-mdc-button-persistent-ripple,sd-table desktop-command .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}
++sd-table desktop-command .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}
++sd-table desktop-command .mat-mdc-icon-button .mdc-button__label,sd-table desktop-command .mat-mdc-icon-button .mat-icon{z-index:1;position:relative}
++sd-table desktop-command .mat-mdc-icon-button .mat-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit}
++sd-table desktop-command .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-state-layer-color, var(--mat-sys-on-surface-variant))}
++sd-table desktop-command .mat-mdc-icon-button[disabled],sd-table desktop-command .mat-mdc-icon-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-icon-button-disabled-icon-color, color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent))}
++sd-table desktop-command .mat-mdc-icon-button img,sd-table desktop-command .mat-mdc-icon-button svg{width:var(--mat-icon-button-icon-size, 24px);height:var(--mat-icon-button-icon-size, 24px);vertical-align:baseline}
++sd-table desktop-command .mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:var(--mat-icon-button-container-shape, var(--mat-sys-corner-full, 50%))}
++sd-table .c-container .c-table table tr.c-first-header.mat-mdc-header-row{height:40px}
++sd-table .c-container .c-table table tr.c-detail-row{height:0}
++sd-table .c-container .c-table table tr.c-row.selected{background-color:#eef2ff}
++sd-table .c-container .c-table table tr.c-row td{border-bottom-width:0}
++sd-table .c-container .c-table table th.mat-mdc-header-cell{background-color:#f2f3f4;border-bottom:0!important}
++sd-table .c-container .c-table table td.mat-mdc-cell,sd-table .c-container .c-table table th.mat-mdc-header-cell{border-bottom-color:#f2f2f2!important}
++sd-table .c-container .c-table .c-th{vertical-align:middle;font-weight:500;font-size:14px;line-height:20px;color:#212121}
++sd-table .sd-selection-cell{width:42px;min-width:42px;max-width:42px}
++sd-table .c-selection{transform:scale(.85);transform-origin:center}
++sd-table desktop-command{display:flex;align-items:center}
++sd-table desktop-command button[mat-icon-button]{width:24px;height:24px;line-height:24px;padding:0}
++sd-table desktop-command mat-icon.c-icon{color:var(--sd-black400)!important;width:16px;height:16px;font-size:16px;line-height:16px}
++sd-table desktop-command .mat-icon{-webkit-user-select:none;user-select:none;background-repeat:no-repeat;display:inline-block;fill:currentColor;height:24px;width:24px;overflow:hidden}
++sd-table desktop-command .mat-mdc-icon-button{border-radius:50%}
++sd-table desktop-command .mat-mdc-button-base{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;position:relative;user-select:none;cursor:pointer;outline:0;border:none;overflow:visible;vertical-align:middle;background:transparent;text-decoration:none}
++sd-table desktop-command .mat-mdc-button-persistent-ripple{position:absolute;inset:0;pointer-events:none;border-radius:inherit}
++sd-table desktop-command .mat-mdc-button-persistent-ripple::before{content:"";position:absolute;inset:0;opacity:0;border-radius:inherit}
++/* Kit thêm (Rule 9): viền focus bàn phím — DOM catalog không có ripple / focus-indicator của Material */
++sd-table desktop-command .mat-mdc-icon-button:focus-visible { outline: 2px solid var(--sd-primary); outline-offset: 1px; }
++sd-table .c-selection .mdc-checkbox__native-control:focus-visible ~ .mdc-checkbox__background { outline: 2px solid var(--sd-primary); outline-offset: 2px; }
+ sd-table .text-break { word-break: break-word; overflow-wrap: break-word; }
+-/* Đường kẻ giữa hai dòng: ô của `tr.c-detail-row` (cao 0) mang viền dưới 1px
+-   #f2f2f2; dòng cuối không kẻ. */
+-sd-table tr.c-detail-row { height: 0; }
+-sd-table .c-detail-cell { padding: 0; border-bottom: 1px solid #f2f2f2; }
+-sd-table tbody tr:last-child > .c-detail-cell { border-bottom: none; }
+ /* Dòng đang chọn: #eef2ff (catalog). Catalog KHÔNG có nền rê chuột cho dòng —
+    nền --sd-black100 khi hover của bản trước đã gỡ (Rule 18). */
+ sd-table .c-row.c-selected,
+@@ -4126,6 +4092,8 @@
+ /* (luật `sd-table input[type=checkbox]` 16px của bản cũ đã gỡ — cột chọn nay là sd-checkbox) */
+ 
+ /* Row action menu (type: "menu") — 3-dot button + dropdown */
++/* (2026-10-14) bảng chọn `.c-table-menu-dropdown` nay dựng ở overlay `.cdk-overlay-pane.sd-table-pane` khi mở (catalog: ô lệnh chỉ
++   có nút) — luật viết `:is(sd-table, :where(.sd-table-pane)) …` (cùng độ ưu tiên với bản cũ). */
+ /* Nút lệnh trên dòng — catalog `desktop-command button[mat-icon-button]` 24px,
+    icon 16px màu --sd-black400. Bản trước 32px. */
+ sd-table .c-table-menu-btn .material-icons-outlined ,sd-table .c-table-menu-btn .mat-icon {
+@@ -4150,7 +4118,7 @@
+   background: var(--sd-black50);
+   color: var(--sd-primary);
+ }
+-sd-table .c-table-menu-dropdown {
++:is(sd-table, :where(.sd-table-pane)) .c-table-menu-dropdown {
+   display: none;
+   position: fixed;
+   min-width: 180px;
+@@ -4161,10 +4129,10 @@
+   padding: 4px 0;
+   z-index: var(--z-max, 9999);
+ }
+-sd-table .c-table-menu-dropdown.open {
++:is(sd-table, :where(.sd-table-pane)) .c-table-menu-dropdown.open {
+   display: block;
+ }
+-sd-table .c-table-menu-item {
++:is(sd-table, :where(.sd-table-pane)) .c-table-menu-item {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+@@ -4179,18 +4147,18 @@
+   text-decoration: none;
+   cursor: pointer;
+ }
+-sd-table .c-table-menu-item:hover {
++:is(sd-table, :where(.sd-table-pane)) .c-table-menu-item:hover {
+   background: var(--sd-black100);
+ }
+-sd-table .c-table-menu-item .material-icons-outlined ,
+-sd-table .c-table-menu-item .mat-icon {
++:is(sd-table, :where(.sd-table-pane)) .c-table-menu-item .material-icons-outlined ,
++:is(sd-table, :where(.sd-table-pane)) .c-table-menu-item .mat-icon {
+   font-size: 18px;
+   color: var(--sd-black400);
+ }
+ /* Item có option.color (mirror command con có màu riêng — vd success cho "Duyệt",
+    info cho "Hoàn tất", Portal /pattern/table/children) — tái dùng class .text-*
+    có sẵn (không thêm token màu mới, Rule 1); icon ăn theo màu chữ luôn. */
+-sd-table .c-table-menu-item[class*="text-"] .material-icons-outlined ,sd-table .c-table-menu-item[class*="text-"] .mat-icon {
++:is(sd-table, :where(.sd-table-pane)) .c-table-menu-item[class*="text-"] .material-icons-outlined ,:is(sd-table, :where(.sd-table-pane)) .c-table-menu-item[class*="text-"] .mat-icon {
+   color: inherit;
+ }
+ 
+@@ -4362,24 +4330,27 @@
+ .sd-paginator-pane.mat-mdc-select-panel-above div.mat-mdc-select-panel{border-bottom-left-radius:0;border-bottom-right-radius:0;transform-origin:bottom center}
+ sd-table .mat-mdc-paginator-range-actions { display: flex; align-items: center; }
+ sd-table .mat-mdc-paginator-range-label { margin: 0 4px; }
+-sd-table .c-paginator-btn {
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  width: 36px;
+-  height: 36px;
+-  padding: 0;
+-  border: 0;
+-  border-radius: 50%;
+-  background: transparent;
+-  color: rgb(68, 71, 78);
+-  cursor: pointer;
+-}
+-sd-table .c-paginator-btn .material-icons-outlined ,
+-sd-table .c-paginator-btn .mat-icon { font-size: 24px; width: 24px; height: 24px; line-height: 24px; color: rgba(0, 0, 0, .54); }
+-sd-table .c-paginator-btn[aria-disabled="true"],
+-sd-table .c-paginator-btn[aria-disabled="true"] .material-icons-outlined ,
+-sd-table .c-paginator-btn[aria-disabled="true"] .mat-icon { color: rgba(0, 0, 0, .33); cursor: default; pointer-events: none; }
++/* Nút ‹ › — DOM catalog `button[mat-icon-button].mdc-icon-button.mat-mdc-icon-button.mat-mdc-button-base` (2026-10-14; trước là
++   lớp kit `.c-paginator-btn`). CSS nút NGUYÊN VĂN catalog table.css (luật mat-icon-button + mat-mdc-button-base), phạm vi
++   `#c-table X` → `sd-table .mat-mdc-paginator-range-actions X`. Bên trong kit giữ glyph `mat-icon` thay svg `.mat-mdc-paginator-icon`
++   (Rule 4 — ghi known-gaps): cỡ 24px, màu = `--mat-paginator-enabled-icon-color` .54 / khoá .33 như fill của svg catalog. */
++sd-table .mat-mdc-paginator-range-actions{--mat-icon-button-state-layer-size:36px;--mat-icon-button-icon-size:24px;--mat-icon-button-container-shape:50%;--mat-icon-button-icon-color:inherit;--mat-icon-button-state-layer-color:rgba(0,0,0,.87);--mat-icon-button-disabled-icon-color:rgba(0,0,0,.33)}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:var(--mat-icon-button-container-shape, var(--mat-sys-corner-full, 50%));flex-shrink:0;text-align:center;width:var(--mat-icon-button-state-layer-size, 40px);height:var(--mat-icon-button-state-layer-size, 40px);padding:calc(calc(var(--mat-icon-button-state-layer-size, 40px) - var(--mat-icon-button-icon-size, 24px)) / 2);font-size:var(--mat-icon-button-icon-size, 24px);color:var(--mat-icon-button-icon-color, var(--mat-sys-on-surface-variant))}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button .mat-mdc-button-persistent-ripple,sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button .mdc-button__label,sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button .mat-icon{z-index:1;position:relative}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button .mat-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:var(--mat-icon-button-state-layer-color, var(--mat-sys-on-surface-variant))}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button[disabled],sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button.mat-mdc-button-disabled{cursor:default;pointer-events:none;color:var(--mat-icon-button-disabled-icon-color, color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent))}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button img,sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button svg{width:var(--mat-icon-button-icon-size, 24px);height:var(--mat-icon-button-icon-size, 24px);vertical-align:baseline}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:var(--mat-icon-button-container-shape, var(--mat-sys-corner-full, 50%))}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button{border-radius:50%}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-button-base{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;position:relative;user-select:none;cursor:pointer;outline:0;border:none;overflow:visible;vertical-align:middle;background:transparent;text-decoration:none}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-button-persistent-ripple{position:absolute;inset:0;pointer-events:none;border-radius:inherit}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-button-persistent-ripple::before{content:"";position:absolute;inset:0;opacity:0;border-radius:inherit}
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button .mat-icon { font-size: 24px; width: 24px; height: 24px; line-height: 24px; color: rgba(0, 0, 0, .54); }
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button[aria-disabled="true"] .mat-icon { color: rgba(0, 0, 0, .33); }
++sd-table .mat-mdc-paginator-range-actions .mat-mdc-icon-button:focus-visible { outline: 2px solid var(--sd-primary); outline-offset: 1px; }   /* kit — Rule 9 */
+ 
+ 
+ /* Empty table */
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-14 10:29:58.763648475 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-14 10:41:52.487836803 +0000
+@@ -8416,6 +8416,30 @@
+      Column types: string, number, date, datetime, boolean, values, status, link, action, menu
+      ══════════════════════════════════════════════════════════ */
+   var SD_TABLE_PG_SEQ = 0;   /* id nhãn "Đang hiển thị" (aria-labelledby của mat-select số dòng) */
++  var SD_TABLE_MENU_OWNER = null;   /* bảng đang mở menu lệnh của dòng (chỉ một menu mở một lúc) */
++  /* DOM mat-table của catalog #c-table (2026-10-14, Builder: „tiếp tục làm cả 3 mục“ — mục 2):
++     lớp cột `mat-column-<khoá>` như `cssClassFriendlyName` của CDK. */
++  function sdMatColumnClass(field) { return 'mat-column-' + String(field == null ? '' : field).replace(/[^a-z0-9_-]/gi, '-'); }
++  /* Ô chọn dòng — `mat-checkbox` thuần, nguyên văn catalog `mat-checkbox.mat-mdc-checkbox.c-selection.px-8.mat-primary`
++     (không touch-target / ripple — đúng bản chụp catalog). Móc JS: `data-sel-row` / `data-sel-all`; `aria-label` của kit (Rule 9). */
++  function sdTableCheckboxHtml(checked, hook, label) {
++    return '<mat-checkbox class="mat-mdc-checkbox c-selection px-8 mat-primary' + (checked ? ' mat-mdc-checkbox-checked' : '') + '" ' + hook + '>' +
++      '<div class="mdc-form-field mat-internal-form-field"><div class="mdc-checkbox">' +
++        '<input type="checkbox" class="mdc-checkbox__native-control' + (checked ? ' mdc-checkbox--selected' : '') + '" aria-label="' + label + '"' + (checked ? ' checked' : '') + '>' +
++        '<div class="mdc-checkbox__background">' +
++          '<svg focusable="false" viewBox="0 0 24 24" aria-hidden="true" class="mdc-checkbox__checkmark">' +
++            '<path fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59" class="mdc-checkbox__checkmark-path"></path></svg>' +
++          '<div class="mdc-checkbox__mixedmark"></div>' +
++        '</div>' +
++      '</div><label class="mdc-label"></label></div></mat-checkbox>';
++  }
++  /* Nút lệnh trên dòng — catalog `desktop-command > button[mat-icon-button].mdc-icon-button.mat-mdc-icon-button.mat-mdc-button-base`
++     > ripple + `mat-icon.c-icon.mat-secondary`. `type` / `aria-label` của kit (Rule 9). */
++  function sdTableCmdBtnHtml(icon, title, attrs) {
++    return '<button type="button" mat-icon-button="" class="mdc-icon-button mat-mdc-icon-button mat-mdc-button-base" title="' + escAttr(title || '') + '" aria-label="' + escAttr(title || '') + '"' + attrs + '>' +
++      '<span class="mat-mdc-button-persistent-ripple mdc-icon-button__ripple"></span>' +
++      '<mat-icon class="mat-icon c-icon mat-secondary material-icons mat-ligature-font" aria-hidden="true">' + esc(icon || 'circle') + '</mat-icon></button>';
++  }
+   class SdTable extends HTMLElement {
+     static get observedAttributes() {
+       return ['columns', 'data', 'tree', 'selectable', 'paginated', 'pagesize', 'total', 'pagesizes',
+@@ -8472,6 +8496,7 @@
+     connectedCallback() {
+ 
+       sdSyncAutoId(this, 'components-table-'); this._render(); this._bind(); }
++    disconnectedCallback() { this._closeRowMenu(); if (this._pgPane) this._closePageSizePanel(); }
+     attributeChangedCallback(name) {
+       sdSyncAutoId(this, 'components-table-');
+       // Reset tree state when data or tree config changes
+@@ -8780,6 +8805,8 @@
+ 
+     _render() {
+       if (this._pgPane) this._closePageSizePanel();   /* khung ô "Đang hiển thị" sắp được vẽ lại */
++      this._closeRowMenu();                            /* menu lệnh của dòng nằm ở overlay — vẽ lại dòng thì đóng */
++      this._menus = {};
+       var columns = this._getColumns();
+       var data = this._getData();
+       var treeConfig = this._getTree();
+@@ -8846,8 +8873,10 @@
+       }
+ 
+       // THEAD — markup theo catalog #c-table (rà soát 2026-10-12):
+-      //   th.c-th.sd-selection-cell (42px, dính trái) · th.c-th.c-command-cell (dính trái)
+-      //   th.c-th.c-col-th > div > div.c-header-title[.mat-sort-header|.mat-sort-header-disabled][aria-sort]
++      //   (2026-10-14 — DOM mat-table: mọi th là `th.mat-mdc-header-cell.mdc-data-table__header-cell`)
++      //   th.sd-selection-cell.p-0.mat-mdc-table-sticky.mat-column-sdSelection (42px, dính trái) ·
++      //   th.p-0.mat-mdc-table-sticky.mat-mdc-table-sticky-border-elem-left.mat-column-sdCommand (dính trái)
++      //   th.px-8.py-8.c-th.mat-column-<khoá> > div > div.c-header-title[.mat-sort-header|.mat-sort-header-disabled][aria-sort]
+       //        > .mat-sort-header-container > .mat-sort-header-content > column-title
+       //      + column-filter > div.c-inline-column > ô lọc (sd-input / sd-select /
+       //        sd-input-number / sd-date-range cỡ sm)
+@@ -8863,8 +8892,13 @@
+       var isEmptyRows = false; // cập nhật sau khi lọc
+       var colWidth = function (col) {
+         var w = col.width || (col.option && col.option.width && col.type !== 'action' && col.type !== 'menu' ? col.option.width : '');
+-        return w ? 'width:' + escAttr(w) + ';min-width:' + escAttr(w) + ';' : '';
++        return w ? 'width: ' + escAttr(w) + '; min-width: ' + escAttr(w) + '; ' : '';
+       };
++      /* inline style dính của CDK (`mat-mdc-table-sticky` + style) — nguyên văn catalog #c-table */
++      var STICKY_TOP = 'position: sticky; top: 0px; z-index: 100;';
++      var HCELL = 'mat-mdc-header-cell mdc-data-table__header-cell';
++      var BCELL = 'mat-mdc-cell mdc-data-table__cell';
++      var selBorder = hasCommands ? '' : ' mat-mdc-table-sticky-border-elem-left';   /* cột dính cuối bên trái */
+       var filterHtml = function (col) {
+         var _fv = self._filterState[col.field];
+         var has = function (v) { return v !== undefined && v !== null && v !== ''; };
+@@ -8898,16 +8932,17 @@
+             return '<sd-input' + f + (has(_fv) ? ' value="' + escAttr(String(_fv)) + '"' : '') + '></sd-input>';
+         }
+       };
+-      var theadHtml = '<tr class="c-first-header">';
++      var theadHtml = '<tr class="mat-mdc-header-row mdc-data-table__header-row c-first-header">';
+       if (selectable) {
+-        theadHtml += '<th class="c-th sd-selection-cell c-sticky-col" style="left:' + selLeft + 'px;">' +
++        theadHtml += '<th class="' + HCELL + ' sd-selection-cell p-0 mat-mdc-table-sticky' + selBorder + ' mat-column-sdSelection" style="position: sticky; left: ' + selLeft + 'px; top: 0px; z-index: 103;">' +
+           '<span class="c-selection-slot"></span></th>';   // ô chọn tất cả: điền sau khi biết số dòng
+       }
+       if (isTree) {
+-        theadHtml += '<th class="c-th" style="width:36px;"></th>';
++        /* cột mở / đóng cây — kit (catalog không có mẫu bảng cây) */
++        theadHtml += '<th class="' + HCELL + ' p-0 c-th c-tree-toggle-cell" style="width: 36px; ' + STICKY_TOP + '"></th>';
+       }
+       if (hasCommands) {
+-        theadHtml += '<th class="c-th c-command-cell c-sticky-col c-sticky-col--last" style="left:' + cmdLeft + 'px;width:50px;"></th>';
++        theadHtml += '<th class="' + HCELL + ' p-0 mat-mdc-table-sticky mat-mdc-table-sticky-border-elem-left mat-column-sdCommand" style="position: sticky; left: ' + cmdLeft + 'px; top: 0px; z-index: 103; width: 50px;"></th>';
+       }
+       columns.forEach(function (col) {
+         var right = col.align === 'right';
+@@ -8915,7 +8950,7 @@
+           /* Cột lệnh kiểu cũ của kit (type action/menu) — catalog dùng `option.commands`.
+              Giữ để trang cũ không vỡ. */
+           var narrowWidth = (col.option && col.option.width) || (col.type === 'menu' ? '44px' : '48px');
+-          theadHtml += '<th class="c-th c-col-th" style="width:' + escAttr(narrowWidth) + ';text-align:center;">' +
++          theadHtml += '<th class="' + HCELL + ' px-8 py-8 c-th ' + sdMatColumnClass(col.field) + '" style="width: ' + escAttr(narrowWidth) + '; text-align: center; ' + STICKY_TOP + '">' +
+             (col.title ? esc(col.title) : '') + '</th>';
+           return;
+         }
+@@ -8927,14 +8962,13 @@
+            phải → `justify-content-end text-right`, KHÔNG có mũi tên. */
+         var titleCls = right ? 'c-header-title justify-content-end text-right'
+           : 'c-header-title ' + (col.sortable ? 'mat-sort-header' : 'mat-sort-header-disabled');
+-        var sortIcon = (!right && col.sortable)
+-          ? '<span class="material-icons-outlined c-sort-ind" aria-hidden="true">' +
+-            (sortDir === 'asc' ? 'arrow_upward' : (sortDir === 'desc' ? 'arrow_downward' : 'unfold_more')) + '</span>'
+-          : '';
+-        theadHtml += '<th class="c-th c-col-th' + (hasFilter ? ' c-has-filter' : '') + '" style="' + colWidth(col) + '">' +
++        /* mũi tên sắp xếp: catalog vẽ bằng `background-image` của `.mat-sort-header[aria-sort]` (CSS) — không có phần tử
++           riêng (2026-10-14; trước là glyph `span.c-sort-ind`) */
++        var sortIcon = '';
++        theadHtml += '<th class="' + HCELL + ' px-8 py-8 c-th ' + sdMatColumnClass(col.field) + '" style="' + colWidth(col) + STICKY_TOP + '">' +
+           '<div><div class="' + titleCls + '" aria-sort="' + ariaSort + '"' +
+             (col.sortable ? ' data-sort-field="' + escAttr(col.field) + '"' : '') + '>' +
+-            '<div class="mat-sort-header-container"' + (col.sortable ? ' tabindex="0" role="button" aria-label="Sắp xếp theo ' + escAttr(labelText) + '"' : '') + '>' +
++            '<div class="mat-sort-header-container mat-focus-indicator' + (sortDir ? ' mat-sort-header-sorted' : '') + '"' + (col.sortable ? ' tabindex="0" role="button" aria-label="Sắp xếp theo ' + escAttr(labelText) + '"' : '') + '>' +
+               '<div class="mat-sort-header-content"><column-title>' + esc(labelText) + '</column-title></div>' +
+             '</div>' + sortIcon +
+           '</div>' +
+@@ -9095,7 +9129,7 @@
+         var rkey = rowKeyOf(item);
+         var isSel = !!self._sel[rkey];
+ 
+-        var rowClass = 'c-row' + (isSel ? ' selected' : '');
++        var rowClass = 'mat-mdc-row mdc-data-table__row c-row' + (isSel ? ' selected' : '');
+         if (isTree && hasChildren) rowClass += ' c-row--tree-parent';
+         if (isTree && treeEnterKeys && !treeEnterKeys.has(key)) rowClass += ' sd-tree-row-entering';
+ 
+@@ -9103,19 +9137,19 @@
+           (isTree ? ' data-tree-key="' + escAttr(key) + '"' : '') + '>';
+ 
+         if (selectable) {
+-          tbodyHtml += '<td class="c-td sd-selection-cell c-sticky-col" style="left:' + selLeft + 'px;">' +
+-            '<sd-checkbox class="c-selection" data-sel-row' + (isSel ? ' checked' : '') + '></sd-checkbox></td>';
++          tbodyHtml += '<td class="' + BCELL + ' sd-selection-cell p-0 mat-mdc-table-sticky' + selBorder + ' mat-column-sdSelection" style="position: sticky; left: ' + selLeft + 'px; z-index: 1;">' +
++            sdTableCheckboxHtml(isSel, 'data-sel-row', 'Chọn dòng') + '</td>';
+         }
+ 
+         if (isTree) {
+           if (hasChildren) {
+             var icon = isExpanded ? 'expand_less' : 'expand_more';
+-            tbodyHtml += '<td class="c-td c-tree-toggle-cell">' +
++            tbodyHtml += '<td class="' + BCELL + ' c-td px-0 c-tree-toggle-cell">' +
+               '<button class="sd-tree-toggle" data-tree-key="' + escAttr(key) + '">' +
+               '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true">' + icon + '</mat-icon>' +
+               '</button></td>';
+           } else {
+-            tbodyHtml += '<td class="c-td c-tree-toggle-cell"></td>';
++            tbodyHtml += '<td class="' + BCELL + ' c-td px-0 c-tree-toggle-cell"></td>';
+           }
+         }
+ 
+@@ -9129,16 +9163,19 @@
+           }
+           var cellVal = row[col.field];
+           var inner = self._cellContent(cellVal, col, row);
+-          var pad = (isTree && isFirstDataCol && indent > 0) ? ' style="padding-left:' + (8 + indent) + 'px;"' : '';
+-          /* catalog: td.c-td (không đệm) > desktop-cell.d-block (đệm ngang 8px) > view > div.text-break */
+-          tbodyHtml += '<td class="c-td">' +
+-            '<desktop-cell class="d-block"' + pad + '><view><div class="text-break"' +
+-            (col.align === 'right' ? ' style="text-align:right"' : '') + '>' + inner + '</div></view></desktop-cell></td>';
++          /* thụt cấp của bảng cây phải thắng `px-8` (!important) của desktop-cell */
++          var pad = (isTree && isFirstDataCol && indent > 0) ? ' style="padding-left: ' + (8 + indent) + 'px !important;"' : '';
++          /* catalog: td.mat-mdc-cell.c-td.px-0.mat-column-<khoá> > desktop-cell.d-block.px-8 > view > div.text-break */
++          /* ô badge (boolean / useBadge / status): catalog đặt `sd-badge` thẳng trong `view`, không bọc `div.text-break` */
++          var isBadge = /^<sd-badge[\s>]/.test(inner) && /<\/sd-badge>$/.test(inner) && inner.split('<sd-badge').length === 2;
++          tbodyHtml += '<td class="' + BCELL + ' c-td px-0 ' + sdMatColumnClass(col.field) + '">' +
++            '<desktop-cell class="d-block px-8"' + pad + '><view>' + (isBadge ? inner : '<div class="text-break"' +
++            (col.align === 'right' ? ' style="text-align: right !important;"' : '') + '>' + inner + '</div>') + '</view></desktop-cell></td>';
+         });
+         tbodyHtml += '</tr>';
+         /* Dòng chi tiết rỗng sau mỗi dòng — catalog `tr.c-detail-row` cao 0; đường
+            kẻ 1px giữa các dòng nằm ở ô của dòng này, không ở dòng dữ liệu. */
+-        tbodyHtml += '<tr class="c-detail-row"><td class="c-detail-cell" colspan="' + nCols + '"></td></tr>';
++        tbodyHtml += '<tr class="mat-mdc-row mdc-data-table__row c-detail-row"><td class="' + BCELL + ' p-0 mat-column-sdSubInformation mat-mdc-table-sticky" colspan="' + nCols + '" style="position: sticky; left: 0px; z-index: 1;"></td></tr>';
+       });
+       isEmptyRows = rowsToRender.length === 0;
+ 
+@@ -9164,7 +9201,7 @@
+           var pgLblId = 'sd-table-pg-lbl-' + this._pgUid;
+           var opts = pageSizes.split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+           if (opts.indexOf(String(pageSize)) < 0) opts.unshift(String(pageSize));
+-          footerHtml += '<div class="mat-mdc-paginator' + (nRows ? '' : ' d-none') + '">' +
++          footerHtml += '<mat-paginator role="group" class="mat-mdc-paginator' + (nRows ? '' : ' d-none') + '">' +
+             '<div class="mat-mdc-paginator-outer-container"><div class="mat-mdc-paginator-container">' +
+               '<div class="mat-mdc-paginator-page-size">' +
+                 '<div class="mat-mdc-paginator-page-size-label" id="' + pgLblId + '"> Đang hiển thị </div>' +
+@@ -9181,14 +9218,20 @@
+               '</div>' +
+               '<div class="mat-mdc-paginator-range-actions">' +
+                 '<div aria-live="polite" class="mat-mdc-paginator-range-label"> ' + start + '-' + endItem + '/' + total + ' </div>' +
+-                '<button type="button" class="c-paginator-btn mat-mdc-paginator-navigation-previous" aria-label="Trang trước" data-sd-page="prev"' +
++                /* catalog: button[mat-icon-button].mdc-icon-button…(.mat-mdc-button-disabled.mat-mdc-button-disabled-interactive) > ripple + svg;
++                   kit giữ glyph `mat-icon` thay svg (Rule 4 — đã ghi known-gaps) */
++                '<button mat-icon-button="" type="button" class="mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-paginator-navigation-previous' +
++                  (prevOff ? ' mat-mdc-button-disabled mat-mdc-button-disabled-interactive' : '') + '" aria-label="Trang trước" data-sd-page="prev"' +
+                   (prevOff ? ' aria-disabled="true" tabindex="-1"' : '') + '>' +
++                  '<span class="mat-mdc-button-persistent-ripple mdc-icon-button__ripple"></span>' +
+                   '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true">chevron_left</mat-icon></button>' +
+-                '<button type="button" class="c-paginator-btn mat-mdc-paginator-navigation-next" aria-label="Trang sau" data-sd-page="next"' +
++                '<button mat-icon-button="" type="button" class="mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-paginator-navigation-next' +
++                  ((!realPaging || endItem >= total) ? ' mat-mdc-button-disabled mat-mdc-button-disabled-interactive' : '') + '" aria-label="Trang sau" data-sd-page="next"' +
+                   ((!realPaging || endItem >= total) ? ' aria-disabled="true" tabindex="-1"' : '') + '>' +
++                  '<span class="mat-mdc-button-persistent-ripple mdc-icon-button__ripple"></span>' +
+                   '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true">chevron_right</mat-icon></button>' +
+               '</div>' +
+-            '</div></div></div>';
++            '</div></div></mat-paginator>';
+         }
+         footerHtml += '</div>';
+       }
+@@ -9217,17 +9260,19 @@
+            Bản trước kit dùng CHUNG một minh hoạ và tự viết câu chữ khác. Ba file
+            SVG dưới đây trích nguyên văn từ `content:url(...)` của catalog. */
+         var st = this._emptyState();
++        /* chữ: lớp tiện ích như `<template data-empty>` của catalog — `T16R text-secondary`; trạng thái lọc rỗng:
++           tiêu đề `T16M` + gợi ý `T16R text-secondary` (2026-10-14 — trước là lớp kit `.c-no-data-title/-hint`) */
+         noDataHtml = '<div class="c-no-data-row">' +
+           '<img class="c-image sd-image-' + st.img + '" src="' + escAttr(sdAssetPath(st.file)) + '" alt="' + escAttr(st.img) + '">' +
+-          '<div class="c-no-data-title' + (st.hint ? ' c-no-data-title--strong' : '') + '">' + esc(st.title) + '</div>' +
+-          (st.hint ? '<div class="c-no-data-hint">' + esc(st.hint) + '</div>' : '') +
++          '<div class="' + (st.hint ? 'T16M' : 'T16R text-secondary') + '">' + esc(st.title) + '</div>' +
++          (st.hint ? '<div class="T16R text-secondary">' + esc(st.hint) + '</div>' : '') +
+           '</div>';
+       }
+ 
+       /* Ô chọn tất cả ở đầu cột — catalog bỏ trống khi bảng rỗng. */
+       var nSel = this._selAll.filter(function (k) { return self._sel[k]; }).length;
+       theadHtml = theadHtml.replace('<span class="c-selection-slot"></span>', isEmptyRows ? '' :
+-        '<sd-checkbox class="c-selection" data-sel-all' + (nSel && nSel === this._selAll.length ? ' checked' : '') + '></sd-checkbox>');
++        sdTableCheckboxHtml(!!(nSel && nSel === this._selAll.length), 'data-sel-all', 'Chọn tất cả'));
+       /* Đang tải (chế độ server, Promise chưa xong) — catalog: .c-loading phủ
+          bảng trừ 56px dưới + mat-spinner 100px. */
+       var loadingHtml = this._serverPending
+@@ -9236,7 +9281,7 @@
+         '<div class="c-table">' +
+         '<table class="mat-mdc-table mdc-data-table__table cdk-table mat-sort">' +   /* lớp như catalog #c-table (2026-10-14) */
+         '<thead>' + theadHtml + '</thead>' +
+-        '<tbody>' + tbodyHtml + '</tbody>' +
++        '<tbody class="mdc-data-table__content">' + tbodyHtml + '</tbody><tfoot></tfoot>' +
+         '</table>' +
+         noDataHtml +
+         '</div>' +
+@@ -9290,21 +9335,31 @@
+         if (btn) { e.preventDefault(); doSort(btn); }
+       });
+ 
+-      /* Chọn dòng — sd-checkbox bắn sd-change. */
+-      this.addEventListener('sd-change', function (e) {
+-        var cb = e.target.closest && e.target.closest('sd-checkbox[data-sel-row], sd-checkbox[data-sel-all]');
++      /* Chọn dòng — `mat-checkbox` thuần (catalog): `change` của ô input bên trong (2026-10-14; trước là
++         `<sd-checkbox>` bắn sd-change). Vẽ lại xong trả focus về đúng ô vừa bấm (bàn phím Space). */
++      this.addEventListener('change', function (e) {
++        var inp = e.target;
++        if (!inp || !inp.classList || !inp.classList.contains('mdc-checkbox__native-control')) return;
++        var cb = inp.closest('mat-checkbox[data-sel-row], mat-checkbox[data-sel-all]');
+         if (!cb || !self.contains(cb)) return;
+         e.stopPropagation();
+-        var on = !!(e.detail && e.detail.checked);
++        var on = !!inp.checked;
+         if (!self._sel) self._sel = {};
++        var k = null;
+         if (cb.hasAttribute('data-sel-all')) {
+-          (self._selAll || []).forEach(function (k) { if (on) self._sel[k] = true; else delete self._sel[k]; });
++          (self._selAll || []).forEach(function (kk) { if (on) self._sel[kk] = true; else delete self._sel[kk]; });
+         } else {
+           var tr = cb.closest('tr');
+-          var k = tr && tr.getAttribute('data-row-key');
++          k = tr && tr.getAttribute('data-row-key');
+           if (k) { if (on) self._sel[k] = true; else delete self._sel[k]; }
+         }
++        var hadFocus = document.activeElement === inp;
+         self._render();
++        if (hadFocus) {
++          var nx = k ? Array.prototype.filter.call(self.querySelectorAll('tr.c-row'), function (r) { return r.getAttribute('data-row-key') === k; })[0] : null;
++          var ni = (k ? (nx && nx.querySelector('mat-checkbox[data-sel-row] input')) : self.querySelector('mat-checkbox[data-sel-all] input'));
++          if (ni) ni.focus();
++        }
+       });
+       this.addEventListener('click', function (e) {
+         var t = e.target;
+@@ -9327,15 +9382,7 @@
+           self._render(); return;
+         }
+         var cmdEl = t.closest('[data-cmd-key]');
+-        if (cmdEl) {
+-          self.querySelectorAll('.c-table-menu-dropdown.open').forEach(function (d) { d.classList.remove('open'); });
+-          var cmd = self._findCommand(cmdEl.getAttribute('data-cmd-key'));
+-          var ri = parseInt(cmdEl.getAttribute('data-cmd-row'), 10);
+-          var entry = self._lastRowsToRender && self._lastRowsToRender[ri];
+-          if (cmd && typeof cmd.click === 'function') cmd.click(entry ? entry.row : null);
+-          self.dispatchEvent(new CustomEvent('sd-table-command', { bubbles: true,
+-            detail: { key: cmdEl.getAttribute('data-cmd-key'), row: entry ? entry.row : null, rowIndex: ri } }));
+-        }
++        if (cmdEl) { self._closeRowMenu(); self._runCommand(cmdEl); }
+       });
+ 
+       // Inline column filter — mỗi sd-input/sd-select/sd-date/sd-input-number trong hàng filter
+@@ -9454,72 +9501,107 @@
+         }
+       });
+ 
+-      // Row action menu — 3-dot button toggles dropdown, positioned via fixed coords
+-      // so it escapes the scrollable table container (.c-table has overflow:auto).
++      // Menu lệnh của dòng (nút ⋮ "Thao tác khác" của `option.commands` và cột `type:"menu"` kiểu cũ) — từ
++      // 2026-10-14 bảng chọn KHÔNG nằm trong ô nữa: mở thì dựng ở overlay (`body > .cdk-overlay-container >
++      // .cdk-overlay-pane.sd-table-pane`), đóng thì gỡ — ô lệnh chỉ còn các nút như DOM catalog. Hình và
++      // toạ độ giữ như bản trước (catalog không chụp menu mở của bảng).
+       this.addEventListener('click', function (e) {
+-        var btn = e.target.closest('.c-table-menu-btn');
+-        if (btn) {
+-          e.stopPropagation();
+-          var dropdown = self.querySelector('#' + btn.getAttribute('data-menu-target'));
+-          if (!dropdown) return;
+-          var wasOpen = dropdown.classList.contains('open');
+-          self.querySelectorAll('.c-table-menu-dropdown.open').forEach(function (d) { d.classList.remove('open'); });
+-          if (!wasOpen) {
+-            dropdown.classList.add('open');
+-            var dh = dropdown.offsetHeight;
+-            var dw = dropdown.offsetWidth;
+-            var r = btn.getBoundingClientRect();
+-            var spaceBelow = window.innerHeight - r.bottom;
+-            dropdown.style.top = (spaceBelow < dh + 8 && r.top > dh)
+-              ? (r.top - dh - 4) + 'px'
+-              : (r.bottom + 4) + 'px';
+-            // Mở về phía bên phải của nút 3 chấm — clamp lại nếu tràn viewport.
+-            var leftPos = r.right + 4;
+-            if (leftPos + dw > window.innerWidth) {
+-              leftPos = Math.max(4, window.innerWidth - dw - 4);
+-            }
+-            dropdown.style.right = 'auto';
+-            dropdown.style.left = leftPos + 'px';
+-          }
+-          return;
+-        }
+-        var itemEl = e.target.closest('.c-table-menu-item');
+-        if (itemEl) {
+-          self.querySelectorAll('.c-table-menu-dropdown.open').forEach(function (d) { d.classList.remove('open'); });
+-          // Item không có href (render <button>) — bắn sự kiện mang đủ row + item để trang
+-          // tự wire hành vi thật (mirror command.click(rowData) thật, xem ghi chú _render()).
+-          if (itemEl.tagName === 'BUTTON' && itemEl.hasAttribute('data-menu-row')) {
+-            var rowIdx = parseInt(itemEl.getAttribute('data-menu-row'), 10);
+-            var mField = itemEl.getAttribute('data-menu-col');
+-            var mItemIdx = parseInt(itemEl.getAttribute('data-menu-item'), 10);
+-            var mCol = self._getColumns().filter(function (c) { return c.field === mField; })[0];
+-            var mItemCfg = (mCol && mCol.option && mCol.option.items && mCol.option.items[mItemIdx]) || null;
+-            var rowEntry = self._lastRowsToRender && self._lastRowsToRender[rowIdx];
+-            self.dispatchEvent(new CustomEvent('sd-table-menu-click', {
+-              detail: {
+-                field: mField,
+-                itemId: mItemCfg && mItemCfg.id,
+-                itemIndex: mItemIdx,
+-                label: mItemCfg && mItemCfg.label,
+-                row: rowEntry ? rowEntry.row : null,
+-                rowIndex: rowIdx
+-              },
+-              bubbles: true
+-            }));
+-          }
+-        }
++        var btn = e.target.closest('[data-menu-target]');
++        if (!btn || !self.contains(btn)) return;
++        e.stopPropagation();
++        self._openRowMenu(btn);
+       });
+ 
+       // Click outside (anywhere else in the document) closes any open row menu
+-      document.addEventListener('click', function () {
+-        self.querySelectorAll('.c-table-menu-dropdown.open').forEach(function (d) { d.classList.remove('open'); });
+-      });
++      document.addEventListener('click', function () { self._closeRowMenu(); });
+ 
+-      // Scrolling the table body would misalign a fixed-position dropdown — close it.
++      // Scrolling the table body would misalign the dropdown — close it.
+       // Capture phase: scroll doesn't bubble, but capture still fires for descendant targets.
+-      this.addEventListener('scroll', function () {
+-        self.querySelectorAll('.c-table-menu-dropdown.open').forEach(function (d) { d.classList.remove('open'); });
+-      }, true);
++      this.addEventListener('scroll', function () { self._closeRowMenu(); }, true);
++    }
++
++    _runCommand(cmdEl) {
++      var cmd = this._findCommand(cmdEl.getAttribute('data-cmd-key'));
++      var ri = parseInt(cmdEl.getAttribute('data-cmd-row'), 10);
++      var entry = this._lastRowsToRender && this._lastRowsToRender[ri];
++      if (cmd && typeof cmd.click === 'function') cmd.click(entry ? entry.row : null);
++      this.dispatchEvent(new CustomEvent('sd-table-command', { bubbles: true,
++        detail: { key: cmdEl.getAttribute('data-cmd-key'), row: entry ? entry.row : null, rowIndex: ri } }));
++    }
++    _menuItemClick(itemEl) {
++      // Item không có href (render <button>) — bắn sự kiện mang đủ row + item để trang
++      // tự wire hành vi thật (mirror command.click(rowData) thật, xem ghi chú _render()).
++      if (itemEl.tagName !== 'BUTTON' || !itemEl.hasAttribute('data-menu-row')) return;
++      var rowIdx = parseInt(itemEl.getAttribute('data-menu-row'), 10);
++      var mField = itemEl.getAttribute('data-menu-col');
++      var mItemIdx = parseInt(itemEl.getAttribute('data-menu-item'), 10);
++      var mCol = this._getColumns().filter(function (c) { return c.field === mField; })[0];
++      var mItemCfg = (mCol && mCol.option && mCol.option.items && mCol.option.items[mItemIdx]) || null;
++      var rowEntry = this._lastRowsToRender && this._lastRowsToRender[rowIdx];
++      this.dispatchEvent(new CustomEvent('sd-table-menu-click', {
++        detail: {
++          field: mField,
++          itemId: mItemCfg && mItemCfg.id,
++          itemIndex: mItemIdx,
++          label: mItemCfg && mItemCfg.label,
++          row: rowEntry ? rowEntry.row : null,
++          rowIndex: rowIdx
++        },
++        bubbles: true
++      }));
++    }
++    _openRowMenu(btn) {
++      var self = this;
++      var id = btn.getAttribute('data-menu-target');
++      var same = this._menuBtn === btn;
++      this._closeRowMenu();
++      if (same) return;                                  /* bấm lại nút đang mở → đóng */
++      var html = this._menus && this._menus[id];
++      if (!html) return;
++      /* nút ⋮ chặn nổi bọt nên "bấm ra ngoài" của bảng khác không chạy — đóng menu đang mở của bảng khác */
++      if (SD_TABLE_MENU_OWNER && SD_TABLE_MENU_OWNER !== this) SD_TABLE_MENU_OWNER._closeRowMenu();
++      SD_TABLE_MENU_OWNER = this;
++      var pane = document.createElement('div');
++      pane.className = 'cdk-overlay-pane sd-float-pane sd-table-pane';
++      pane.innerHTML = '<div class="c-table-menu-dropdown open" id="' + escAttr(id) + '" role="menu">' + html + '</div>';
++      pane.addEventListener('click', function (e) {
++        e.stopPropagation();
++        var cmdEl = e.target.closest && e.target.closest('[data-cmd-key]');
++        var itemEl = e.target.closest && e.target.closest('.c-table-menu-item');
++        if (!cmdEl && !itemEl) return;
++        self._closeRowMenu();
++        if (cmdEl) self._runCommand(cmdEl);
++        else self._menuItemClick(itemEl);
++      });
++      sdOverlayContainer().appendChild(pane);
++      this._menuPane = pane; this._menuBtn = btn;
++      btn.setAttribute('aria-expanded', 'true');
++      /* toạ độ như bản trước: dưới nút 4px (lật lên khi thiếu chỗ), mở về bên phải nút, kẹp trong màn hình */
++      var dh = pane.offsetHeight, dw = pane.offsetWidth, r = btn.getBoundingClientRect();
++      var spaceBelow = window.innerHeight - r.bottom;
++      pane.style.top = ((spaceBelow < dh + 8 && r.top > dh) ? (r.top - dh - 4) : (r.bottom + 4)) + 'px';
++      var leftPos = r.right + 4;
++      if (leftPos + dw > window.innerWidth) leftPos = Math.max(4, window.innerWidth - dw - 4);
++      pane.style.left = leftPos + 'px';
++      this._menuOff = function (e) {
++        if (e.type === 'keydown') { if (e.key !== 'Escape') return; var b = self._menuBtn; self._closeRowMenu(); if (b && b.isConnected) b.focus(); return; }
++        if (e.type === 'scroll' && pane.contains(e.target)) return;
++        self._closeRowMenu();
++      };
++      window.addEventListener('scroll', this._menuOff, true);
++      window.addEventListener('resize', this._menuOff);
++      document.addEventListener('keydown', this._menuOff, true);
++    }
++    _closeRowMenu() {
++      if (this._menuPane && this._menuPane.parentNode) this._menuPane.parentNode.removeChild(this._menuPane);
++      if (this._menuBtn) this._menuBtn.removeAttribute('aria-expanded');
++      if (this._menuOff) {
++        window.removeEventListener('scroll', this._menuOff, true);
++        window.removeEventListener('resize', this._menuOff);
++        document.removeEventListener('keydown', this._menuOff, true);
++      }
++      this._menuPane = this._menuBtn = this._menuOff = null;
++      if (SD_TABLE_MENU_OWNER === this) SD_TABLE_MENU_OWNER = null;
+     }
+ 
+     /* Cột lệnh kiểu cũ của kit (`type: "action"` / `type: "menu"`). Catalog
+@@ -9540,7 +9622,7 @@
+             var hoverOn  = "this.style.background='var(--sd-black50)';this.style.color='var(--sd-primary)'";
+             var hoverOff = "this.style.background='';this.style.color='var(--sd-black400)'";
+             if (actionOnclick) {
+-              html += '<td class="c-td" style="width:48px;text-align:center;">' +
++              html += '<td class="mat-mdc-cell mdc-data-table__cell c-td px-0 ' + sdMatColumnClass(col.field) + '" style="width:48px;text-align:center;">' +
+                 '<button type="button" onclick="' + escAttr(actionOnclick) + '" class="c-action-icon"' +
+                 ' title="' + escAttr(actionTooltip) + '"' +
+                 ' style="' + commonStyle + '"' +
+@@ -9548,7 +9630,7 @@
+                 '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true" style="font-size:16px;color:var(--sd-black400);">' + esc(actionIcon) + '</mat-icon>' +
+                 '</button></td>';
+             } else {
+-              html += '<td class="c-td" style="width:48px;text-align:center;">' +
++              html += '<td class="mat-mdc-cell mdc-data-table__cell c-td px-0 ' + sdMatColumnClass(col.field) + '" style="width:48px;text-align:center;">' +
+                 '<a href="' + escAttr(actionHref) + '" class="c-action-icon"' +
+                 ' title="' + escAttr(actionTooltip) + '"' +
+                 ' style="' + commonStyle + '"' +
+@@ -9581,12 +9663,12 @@
+                 '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true">' + esc(mi.icon || 'circle') + '</mat-icon>' +
+                 '<span>' + esc(mi.label || '') + '</span></' + tag + '>';
+             }).join('');
+-            html += '<td class="c-td" style="width:' + escAttr(menuWidth) + ';text-align:center;position:relative;">' +
++            self._menus[menuId] = menuItemsHtml;   /* bảng chọn dựng ở overlay khi mở — _openRowMenu */
++            html += '<td class="mat-mdc-cell mdc-data-table__cell c-td px-0 ' + sdMatColumnClass(col.field) + '" style="width:' + escAttr(menuWidth) + ';text-align:center;position:relative;">' +
+               '<button type="button" class="c-table-menu-btn" data-menu-target="' + menuId + '"' +
+               ' aria-label="Thao tác" aria-haspopup="true">' +
+               '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true" style="font-size:16px;color:var(--sd-black400);">' + esc(menuIcon) + '</mat-icon>' +
+               '</button>' +
+-              '<div class="c-table-menu-dropdown" id="' + menuId + '" role="menu">' + menuItemsHtml + '</div>' +
+               '</td>';
+           }
+       return html;
+@@ -9611,7 +9693,7 @@
+       return this._formatCell(value, col);
+     }
+ 
+-    /* Ô lệnh — catalog: td.c-command-cell (dính trái, sau cột chọn) >
++    /* Ô lệnh — catalog: td.mat-column-sdCommand (dính trái, sau cột chọn) >
+        desktop-command > nút icon 24px (icon 16px, --sd-black400, `title`).
+        Với [view, edit, more(children)] catalog vẽ ĐÚNG HAI nút: `visibility`
+        "Xem chi tiết" và `more_vert` "Thao tác khác". Kit theo đúng quy tắc đó:
+@@ -9631,22 +9713,18 @@
+     }
+     _commandCellHtml(row, displayIdx, commands, left) {
+       var l = this._commandList(row, commands);
+-      var btn = function (icon, title, attrs) {
+-        return '<button type="button" class="c-command-btn" title="' + escAttr(title || '') + '" aria-label="' + escAttr(title || '') + '"' + attrs + '>' +
+-          '<mat-icon class="mat-icon c-icon mat-secondary material-icons mat-ligature-font" aria-hidden="true">' + esc(icon || 'circle') + '</mat-icon></button>';
+-      };
+-      var html = '<td class="c-td c-command-cell c-sticky-col c-sticky-col--last" style="left:' + left + 'px;"><desktop-command>';
+-      if (l.inline) html += btn(l.inline.icon, l.inline.title, ' data-cmd-row="' + displayIdx + '" data-cmd-key="' + escAttr(l.inline.key || l.inline.title || '') + '"');
++      /* catalog: td.mat-mdc-cell.px-8.mat-mdc-table-sticky.mat-mdc-table-sticky-border-elem-left.mat-column-sdCommand */
++      var html = '<td class="mat-mdc-cell mdc-data-table__cell px-8 mat-mdc-table-sticky mat-mdc-table-sticky-border-elem-left mat-column-sdCommand" style="position: sticky; left: ' + left + 'px; z-index: 1;"><desktop-command>';
++      if (l.inline) html += sdTableCmdBtnHtml(l.inline.icon, l.inline.title, ' data-cmd-row="' + displayIdx + '" data-cmd-key="' + escAttr(l.inline.key || l.inline.title || '') + '"');
+       if (l.menu.length) {
+         var menuId = 'sdtc-' + (this._menuUid = (this._menuUid || 0) + 1);
+-        html += '<button type="button" class="c-command-btn c-table-menu-btn" title="Thao tác khác" aria-label="Thao tác khác"' +
+-          ' aria-haspopup="menu" data-menu-target="' + menuId + '">' +
+-          '<mat-icon class="mat-icon c-icon mat-secondary material-icons mat-ligature-font" aria-hidden="true">more_vert</mat-icon></button>';
+-        html += '<div class="c-table-menu-dropdown" id="' + menuId + '" role="menu">' + l.menu.map(function (c) {
++        html += sdTableCmdBtnHtml('more_vert', 'Thao tác khác', ' aria-haspopup="menu" data-menu-target="' + menuId + '"');
++        /* bảng chọn dựng ở overlay khi mở — _openRowMenu */
++        this._menus[menuId] = l.menu.map(function (c) {
+           return '<button type="button" role="menuitem" class="c-table-menu-item' + (c.color ? ' text-' + escAttr(c.color) : '') + '"' +
+             ' data-cmd-row="' + displayIdx + '" data-cmd-key="' + escAttr(c.key || c.title || '') + '">' +
+             '<mat-icon class="mat-icon material-icons mat-ligature-font" aria-hidden="true">' + esc(c.icon || 'circle') + '</mat-icon><span>' + esc(c.title || '') + '</span></button>';
+-        }).join('') + '</div>';
++        }).join('');
+       }
+       return html + '</desktop-command></td>';
+     }
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/prototypes/cam-nang-phan-quyen/danh-sach-workitem.html b/prototypes/cam-nang-phan-quyen/danh-sach-workitem.html
+--- a/prototypes/cam-nang-phan-quyen/danh-sach-workitem.html	2026-10-14 10:29:58.703571660 +0000
++++ b/prototypes/cam-nang-phan-quyen/danh-sach-workitem.html	2026-10-14 10:40:13.951233160 +0000
+@@ -811,7 +811,8 @@
+       // Bỏ chọn qua đúng nút ❌ của thanh chọn dòng sd-table (đường người dùng bấm).
+       var table = document.getElementById('wi-right-table');
+       var clearBtn = table && table.querySelector('[data-sel-clear]');
+-      if (clearBtn && table.querySelector('sd-checkbox[data-sel-row][checked]')) clearBtn.click();
++      // (2026-10-14) ô chọn dòng của sd-table nay là mat-checkbox thuần như catalog — đang chọn = lớp mat-mdc-checkbox-checked
++      if (clearBtn && table.querySelector('[data-sel-row].mat-mdc-checkbox-checked')) clearBtn.click();
+     }
+ 
+     function initWorkItemTable() {

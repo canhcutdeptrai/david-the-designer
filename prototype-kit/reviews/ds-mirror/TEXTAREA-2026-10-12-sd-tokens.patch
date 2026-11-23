@@ -1,0 +1,120 @@
+--- /tmp/sd-tokens.bak4	2026-10-12 10:11:22.964972364 +0000
++++ prototype-kit-CATALOG-1012m/design-system/core/styles/sd-tokens.css	2026-10-12 10:13:23.292038650 +0000
+@@ -1436,6 +1436,13 @@
+ .sd-form-field.sd-error .sd-label {
+   color: #f44336;          /* catalog: --mat-form-field-outlined-error-label-text-color */
+ }
++/* catalog: --mat-form-field-outlined-disabled-label-text-color =
++   color-mix(on-surface 38%) với on-surface = rgba(0,0,0,.87) → alpha .33.
++   Đo cùng giá trị ở `#c-input` và `#c-textarea`; kit trước để .54 như ô thường
++   (rà soát 2026-10-12). */
++.sd-form-field.sd-disabled .sd-label {
++  color: color-mix(in srgb, rgba(0, 0, 0, .87) 38%, transparent);
++}
+ /* Hide placeholder only when a floating label exists (to avoid double-text in resting state) */
+ .sd-form-field:not(:focus-within):not(.sd-has-value):has(.sd-label) .sd-input::placeholder,
+ .sd-form-field:not(:focus-within):not(.sd-has-value):has(.sd-label) .sd-chip-input::placeholder {
+@@ -1891,25 +1898,69 @@
+   .sd-data-state[data-state="loading"] .sd-data-state__icon { animation: none; }
+ }
+ 
+-/* Textarea field — auto height */
++/* ══ Textarea — rà soát 2026-10-12 theo catalog `#c-textarea` ══
++   Đo trên catalog: ô gõ nằm ở (16, 10) trong khung, mỗi dòng 24px, đáy chừa 8px
++   → `rows=3` khung 90px, `rows=4` khung 114px.
++   Bản trước có BA lỗi chồng nhau:
++     1. `rows` KHÔNG CÓ TÁC DỤNG — `.sd-form-field .sd-input { height: 21px }`
++        (luật của sd-input) cũng ăn vào `<textarea class="sd-input">`, rồi
++        `min-height: 60px` thắng → mọi textarea cao đúng 60px dù rows = mấy.
++     2. dòng 20px thay vì 24px (`line-height` kế thừa của `.mat-mdc-form-field`).
++     3. `resize: vertical` — catalog: `sd-textarea textarea.mat-mdc-input-element
++        { resize: none }`. */
+ .sd-form-field.sd-textarea-field {
+   align-items: flex-start;
+   min-height: auto;
+-  padding: 8px 12px;
++  padding: 9px 15px 7px;     /* + 1px viền = (16, 10) trên, 8px đáy — như catalog */
+ }
+ .sd-form-field.sd-textarea-field .sd-textarea {
+-  resize: vertical;
+-  min-height: 60px;
+-  line-height: 20px;
++  height: auto;              /* gỡ height:21px của .sd-form-field .sd-input */
++  min-height: 0;
++  line-height: 24px;
++  resize: none;
+ }
+-/* Textarea label — resting at top-left inside field */
++/* Nhãn lúc nghỉ: ở góc trên trong khung (chữ 14px, tâm dòng ngang tâm dòng đầu) */
+ .sd-form-field.sd-textarea-field .sd-label {
+   top: 10px;
+   transform: none;
+ }
++/* Nhãn nổi: DÙNG ĐÚNG -7.75px của sd-input. Bản trước ghi đè thành -10px nên chữ
++   nhãn của textarea nằm cao hơn catalog 2.2px (đo bằng Range, 2026-10-12). */
+ .sd-form-field.sd-textarea-field:focus-within .sd-label,
+ .sd-form-field.sd-textarea-field.sd-has-value .sd-label {
+-  top: -10px;
++  top: -7.75px;
++}
++/* Disabled: catalog `sd-textarea textarea.mat-mdc-input-element:disabled
++   { color: var(--sd-black400) !important }` — chữ xám, không phải .87. */
++.sd-form-field.sd-textarea-field.sd-disabled .sd-textarea {
++  color: var(--sd-black400);
++  -webkit-text-fill-color: var(--sd-black400);
++}
++
++/* ── viewed='inline' — biến thể SỬA ĐƯỢC, "mat-form-field bị làm phẳng, nền xám
++   nhạt" (catalog `#c-textarea`). Chép nguyên văn sáu luật `.sd-inline-textarea`:
++   nền `#0000000a` · hover `#00000014` · focus `#0000000f` + viền trong 1px
++   primary · bỏ khung viền + nhãn (`.mdc-notched-outline{display:none}`) · bỏ
++   vùng lỗi (`subscript-wrapper{display:none}`) · lề ngang 6px.
++   Đo: ô gõ ở (6, 10), đáy 8px → `rows=2` khung 66px. */
++sd-textarea .sd-textarea-field-wrap.sd-inline-textarea {
++  cursor: text;
++  border-radius: 4px;
++  background-color: #0000000a;
++  transition: background-color .15s ease;
++}
++sd-textarea .sd-textarea-field-wrap.sd-inline-textarea:hover {
++  background-color: #00000014;
++}
++sd-textarea .sd-textarea-field-wrap.sd-inline-textarea:focus-within {
++  background-color: #0000000f;
++  box-shadow: inset 0 0 0 1px var(--sd-primary);
++}
++sd-textarea .sd-inline-textarea .sd-form-field.sd-textarea-field {
++  border: 0;
++  background: transparent;
++  box-shadow: none;
++  padding: 10px 6px 8px;
+ }
+ 
+ /* Date/datetime suffix icon */
+@@ -1929,6 +1980,26 @@
+   color: var(--sd-error);
+   margin-top: 4px;
+ }
++/* Dòng lỗi / gợi ý NẰM DƯỚI MỘT KHUNG FORM — mirror `mat-form-field` của catalog.
++   Đo ở cả sáu mục #c-input · #c-textarea · #c-select · #c-date ·
++   #c-input-number · #c-chip-calendar: chữ thụt 16px
++   (`.mat-mdc-form-field-error-wrapper, .mat-mdc-form-field-hint-wrapper
++   { padding: 0 16px }`), màu `#f44336` (`--mat-form-field-error-text-color`),
++   đỉnh chữ cách đáy khung 5px (= margin-top 4px sẵn có). Kit trước để sát mép
++   trái và màu `--sd-error` (#f82c13).
++   Chỉ áp khi đứng SAU `.sd-form-field`: sd-checkbox / sd-radio / sd-upload-file
++   cũng phát hai lớp này nhưng không có khung `mat-form-field` (rà soát 2026-10-12). */
++/* `sd-input` (và các ô dựng trên nó) bọc khung trong `.sd-input-field-wrap`,
++   nên dòng lỗi là anh em của LỚP BỌC chứ không phải của `.sd-form-field`. */
++.sd-form-field ~ .sd-error-text,
++.sd-input-field-wrap ~ .sd-error-text {
++  padding: 0 16px;
++  color: #f44336;
++}
++.sd-form-field ~ .sd-helper-text,
++.sd-input-field-wrap ~ .sd-helper-text {
++  padding: 0 16px;
++}
+ 
+ /* --- Nút suffix/xoá/icon-lỗi dùng chung cho sd-date, sd-datetime,
+    sd-input-number (class đặt tên theo sd-date vì viết trước, các

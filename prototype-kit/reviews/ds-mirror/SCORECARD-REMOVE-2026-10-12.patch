@@ -1,0 +1,802 @@
+--- /tmp/cmp.bak.sc	2026-10-12 11:20:25.653219532 +0000
++++ design-system/core/styles/components.css	2026-10-12 11:20:25.731572667 +0000
+@@ -2426,236 +2426,10 @@
+ }
+ 
+ 
+-/* ── Scorecard ────────────────────────────────────────────── */
+-/* KPI tile — Figma: OMEU-Scorecard. 2 types (default, compact),
+-   3 interaction states (default, hover, active), 5 meaning colors
+-   (success, warning, danger, info, neutral). */
+-
+-.sd-scorecard {
+-  position: relative;
+-  display: inline-flex;
+-  align-items: center;
+-  gap: var(--space-3);
+-  width: 300px;
+-  height: 80px;
+-  padding: var(--space-4);
+-  background: var(--surface-primary);
+-  border: 1px solid var(--border-primary);
+-  border-radius: var(--radius-md);
+-  cursor: pointer;
+-  transition: var(--transition-colors), var(--transition-shadow);
+-  box-sizing: border-box;
+-}
+-
+-/* Hover (Active=No) — light gray fill */
+-.sd-scorecard:hover {
+-  background: var(--surface-hover);
+-  border-color: var(--border-strong);
+-}
+-
+-.sd-scorecard:hover .sd-scorecard__filter {
+-  opacity: 1;
+-}
+-
+-/* Active=Yes — selected for filter (border vẫn 1px, đổi sang primary) */
+-.sd-scorecard.sd-scorecard--active {
+-  border-color: var(--color-primary-500);
+-}
+-
+-/* Hover on Active — keep primary border, tinted brand bg */
+-.sd-scorecard.sd-scorecard--active:hover {
+-  background: var(--color-primary-50);
+-  border-color: var(--color-primary-500);
+-}
+-
+-/* Active filter icon — always visible, primary tile with white outline icon */
+-.sd-scorecard.sd-scorecard--active .sd-scorecard__filter {
+-  opacity: 1;
+-  background: var(--color-primary-500);
+-  color: #ffffff;
+-  border-radius: var(--radius-sm);
+-}
+-
+-.sd-scorecard.sd-scorecard--active .sd-scorecard__filter:hover {
+-  background: var(--color-primary-600);
+-  color: #ffffff;
+-}
+-
+-/* ── Compact variant — 160×60, vẫn giữ border 1px như default ─ */
+-.sd-scorecard--compact {
+-  width: 160px;
+-  height: 60px;
+-  padding: var(--space-2) var(--space-3);
+-  gap: var(--space-2);
+-}
+-
+-.sd-scorecard--compact:hover {
+-  background: var(--surface-hover);
+-  border-color: var(--border-strong);
+-}
+-
+-.sd-scorecard--compact.sd-scorecard--active {
+-  background: var(--surface-primary);
+-  border-color: var(--color-primary-500);
+-}
+-
+-.sd-scorecard--compact.sd-scorecard--active:hover {
+-  background: var(--color-primary-50);
+-  border-color: var(--color-primary-500);
+-}
+-
+-/* ── Meaning Icon — 32×32 rounded tile with tinted bg ─────── */
+-.sd-scorecard__icon {
+-  flex-shrink: 0;
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  width: 32px;
+-  height: 32px;
+-  border-radius: var(--radius-md);
+-  background: var(--color-neutral-100);
+-  color: var(--color-neutral-700);
+-}
+-
+-.sd-scorecard__icon .material-icons-outlined,
+-.sd-scorecard__icon .material-icons {
+-  font-size: 18px;
+-  line-height: 1;
+-}
+-
+-.sd-scorecard__icon--success { background: var(--color-success-50);  color: var(--color-success-600); }
+-.sd-scorecard__icon--warning { background: var(--color-warning-50);  color: var(--color-warning-600); }
+-.sd-scorecard__icon--danger  { background: var(--color-error-50);    color: var(--color-error-600); }
+-.sd-scorecard__icon--info    { background: var(--color-info-50);     color: var(--color-info-600); }
+-.sd-scorecard__icon--neutral { background: var(--color-neutral-100); color: var(--color-neutral-800); }
+-
+-/* Compact icon — slightly smaller */
+-.sd-scorecard--compact .sd-scorecard__icon {
+-  width: 24px;
+-  height: 24px;
+-}
+-
+-.sd-scorecard--compact .sd-scorecard__icon .material-icons-outlined,
+-.sd-scorecard--compact .sd-scorecard__icon .material-icons {
+-  font-size: 16px;
+-}
+-
+-/* ── Body (label + value + unit) ──────────────────────────── */
+-.sd-scorecard__body {
+-  display: flex;
+-  flex-direction: column;
+-  gap: var(--space-0-5);
+-  min-width: 0;
+-  flex: 1;
+-}
+-
+-.sd-scorecard__label {
+-  font-size: var(--text-sm);
+-  font-weight: var(--font-regular);
+-  color: var(--text-secondary);
+-  line-height: var(--leading-tight);
+-  white-space: nowrap;
+-  overflow: hidden;
+-  text-overflow: ellipsis;
+-}
+-
+-.sd-scorecard__value-row {
+-  display: flex;
+-  align-items: baseline;
+-  gap: var(--space-1);
+-  min-width: 0;
+-}
+-
+-.sd-scorecard__value {
+-  font-size: var(--text-xl);
+-  font-weight: var(--font-bold);
+-  color: var(--text-primary);
+-  line-height: var(--leading-tight);
+-}
+-
+-.sd-scorecard__unit {
+-  font-size: var(--text-sm);
+-  font-weight: var(--font-regular);
+-  color: var(--text-secondary);
+-  line-height: var(--leading-tight);
+-}
+-
+-/* Compact body — tighter typography */
+-.sd-scorecard--compact .sd-scorecard__label {
+-  font-size: var(--text-xs);
+-}
+-
+-.sd-scorecard--compact .sd-scorecard__value {
+-  font-size: var(--text-base);
+-}
+-
+-.sd-scorecard--compact .sd-scorecard__unit {
+-  font-size: var(--text-xs);
+-}
+-
+-/* ── Filter Button — top-right action ─────────────────────── */
+-.sd-scorecard__filter {
+-  position: absolute;
+-  top: var(--space-2);
+-  right: var(--space-2);
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  width: 24px;
+-  height: 24px;
+-  border: none;
+-  background: transparent;
+-  color: var(--icon-default);
+-  opacity: 0;
+-  cursor: pointer;
+-  border-radius: var(--radius-sm);
+-  transition: opacity var(--duration-fast) var(--ease-default),
+-              color var(--duration-fast) var(--ease-default),
+-              background var(--duration-fast) var(--ease-default);
+-  padding: 0;
+-}
+-
+-.sd-scorecard__filter:hover {
+-  color: var(--color-primary-600);
+-}
+-
+-.sd-scorecard__filter .material-icons-outlined,
+-.sd-scorecard__filter .material-icons {
+-  font-size: 16px;
+-  line-height: 1;
+-}
+-
+-/* Compact filter button — sits higher/tighter */
+-.sd-scorecard--compact .sd-scorecard__filter {
+-  top: var(--space-1);
+-  right: var(--space-1);
+-  width: 20px;
+-  height: 20px;
+-}
+-
+-.sd-scorecard--compact .sd-scorecard__filter .material-icons-outlined,
+-.sd-scorecard--compact .sd-scorecard__filter .material-icons {
+-  font-size: 14px;
+-}
+-
+-/* Non-interactive variant — operator can disable click behavior */
+-.sd-scorecard[data-interactive="false"] {
+-  cursor: default;
+-}
+-
+-.sd-scorecard[data-interactive="false"]:hover {
+-  background: var(--surface-primary);
+-  border-color: var(--border-primary);
+-}
+-
+-.sd-scorecard--compact[data-interactive="false"]:hover {
+-  background: transparent;
+-  border-color: transparent;
+-}
+-
+-.sd-scorecard[data-interactive="false"] .sd-scorecard__filter {
+-  display: none;
+-}
++/* ── Scorecard — ĐÃ GỠ 2026-10-12 ─────────────────────────────
++   `.sd-scorecard*` thuộc component `sd-scorecard` riêng của kit (Figma
++   OMEU-Scorecard) mà Core UI catalog không có. Builder quyết gỡ theo Rule 18;
++   dùng `bpm-filter-scorecard` / `bpm-kpi-card` (CSS ở sd-tokens.css). */
+ 
+ 
+ /* ── Filter Bar (External Filter Panel) ───────────────────── */
+--- /tmp/sddata.bak.sc	2026-10-12 11:20:25.655011262 +0000
++++ design-system/components/sd-data.md	2026-10-12 11:20:25.732462950 +0000
+@@ -1,150 +1,8 @@
+ # sd-* Data Components
+ 
+-*Group: KPI scorecard + Data table — dùng trong Dashboard, Browse pages và Read pages.*
++*Group: Data table — dùng trong Browse pages và Read pages.*
+ 
+----
+-
+-## sd-scorecard
+-
+-KPI tile — hiển thị một chỉ số quan trọng kèm nhãn, đơn vị và meaning icon. Dùng cho dashboard, KPI panel ở đầu trang Browse, hoặc filter group dạng "card".
+-
+-| Attribute | Values | Default |
+-|-----------|--------|---------|
+-| `type` | `default`, `compact` | `default` |
+-| `label` | Tiêu đề chỉ số (string) | — |
+-| `value` | Số liệu chính (string \| number) | — |
+-| `unit` | Đơn vị / hậu tố kèm value | — |
+-| `meaning` | `success`, `warning`, `danger`, `info`, `neutral` | — |
+-| `icon` | Material Icons Outlined name — override icon mặc định | theo `meaning` |
+-| `active` | boolean (presence) — selected for filter | — |
+-| `interactive` | `true`, `false` — tắt hover/click & ẩn filter button | `true` |
+-| `filterIcon` | Material Icons Outlined name | `filter_alt` |
+-
+-### Types
+-
+-| Type | Size | Dùng khi |
+-|------|------|---------|
+-| `default` | 300×80 | Dashboard chính, KPI panel — chỉ số đầu trang |
+-| `compact` | 160×60 | Sidebar, filter panel, summary phụ — nhiều thẻ cùng lúc |
+-
+-### Meaning → icon + color mặc định
+-
+-| meaning | Default icon | Color tokens (text / bg) |
+-|---------|--------------|---------------------------|
+-| `success` | `trending_up` | `--color-success-600` / `--color-success-50` |
+-| `warning` | `warning_amber` | `--color-warning-600` / `--color-warning-50` |
+-| `danger` | `trending_down` | `--color-error-600` / `--color-error-50` |
+-| `info` | `insights` | `--color-info-600` / `--color-info-50` |
+-| `neutral` | `remove` | `--color-neutral-800` / `--color-neutral-100` |
+-
+-> Bỏ trống `meaning` → không hiện meaning icon. Override glyph riêng bằng `icon`.
+-
+-### States
+-
+-- **Default** — border 1px `--border-primary`, bg surface.
+-- **Hover** — border `--border-strong`, bg `--surface-hover`. Filter button mờ → rõ.
+-- **Active** — border 1px `--color-primary-500`, filter button thành tile 24×24 nền primary, icon outline trắng. Hover trên active → bg `--color-primary-50`.
+-- `interactive="false"` — tắt hover + click, ẩn filter button (chỉ hiển thị).
+-
+-### Examples
+-
+-```html
+-<!-- Default — KPI trong dashboard -->
+-<sd-scorecard label="Số gói đang tham gia" value="30"
+-              unit="đơn vị" meaning="success"></sd-scorecard>
+-
+-<!-- Compact — KPI trong sidebar/filter panel -->
+-<sd-scorecard type="compact" label="Doanh thu" value="1.250"
+-              unit="triệu đồng" meaning="warning"></sd-scorecard>
+-
+-<!-- Active — đang được chọn để filter -->
+-<sd-scorecard label="Gói hoạt động" value="15" unit="gói"
+-              meaning="info" active></sd-scorecard>
+-
+-<!-- Override icon -->
+-<sd-scorecard label="Doanh thu tháng" value="1.250" unit="triệu"
+-              meaning="success" icon="payments"></sd-scorecard>
+-
+-<!-- Non-interactive — chỉ hiển thị -->
+-<sd-scorecard label="Tổng đơn" value="248" meaning="neutral"
+-              interactive="false"></sd-scorecard>
+-```
+-
+-### Filter group — Compact scorecards as segmented filter
+-
+-```html
+-<div class="flex gap-3 flex-wrap" id="status-filter">
+-  <sd-scorecard type="compact" label="Tất cả"    value="248" meaning="neutral" active></sd-scorecard>
+-  <sd-scorecard type="compact" label="Hoạt động" value="180" meaning="success"></sd-scorecard>
+-  <sd-scorecard type="compact" label="Tạm dừng"  value="42"  meaning="warning"></sd-scorecard>
+-  <sd-scorecard type="compact" label="Lỗi"       value="26"  meaning="danger"></sd-scorecard>
+-</div>
+-```
+-
+-```js
+-document.getElementById('status-filter')
+-  .addEventListener('sd-scorecard-click', function (e) {
+-    var clicked = e.target.closest('sd-scorecard');
+-    if (!clicked) return;
+-    var isActive = clicked.hasAttribute('active');
+-    this.querySelectorAll('sd-scorecard').forEach(function (c) {
+-      c.removeAttribute('active');
+-    });
+-    if (!isActive) clicked.setAttribute('active', '');
+-    // → filter sd-table bên dưới theo clicked.getAttribute('label')
+-  });
+-```
+-
+-### Events
+-
+-| Event | detail | Khi nào fire |
+-|-------|--------|--------------|
+-| `sd-scorecard-click` | `{ active: boolean }` | User click vào card (chỉ khi `interactive` ≠ `false`). Dùng để toggle filter group. |
+-| `sd-scorecard-filter-click` | `{ active: boolean }` | User click vào filter icon góc trên phải. |
+-
+-### Trạng thái rỗng và đường kẻ dòng (rà soát 2026-10-11)
+-
+-**Bảng không có dòng nào** nay dựng `.c-no-data-row` theo catalog `#c-table`: minh
+-hoạ rộng 96px, câu chữ canh giữa, `position: sticky; left: 0` để khối vẫn nằm giữa
+-khung nhìn khi bảng cuộn ngang. Trước đợt này bảng rỗng **không render gì cả**
+-dưới phần đầu bảng.
+-
+-**Ba trạng thái rỗng (rà soát 2026-10-11 lần 2).** Catalog có ba
+-`<template data-empty="…">` với ba ảnh và ba câu chữ riêng; kit trước đó dùng
+-chung một minh hoạ và tự viết câu chữ khác:
+-
+-| Khi nào | Lớp ảnh | Chữ |
+-|---|---|---|
+-| Chưa có dữ liệu | `sd-image-data-empty` | "Chưa có dữ liệu" |
+-| Có bộ lọc mà không ra gì | `sd-image-filter-empty` | "Không có kết quả phù hợp" (đậm 500) + "Vui lòng tìm kiếm hoặc lọc theo tiêu chí khác" |
+-| Bắt buộc chọn bộ lọc trước | `sd-image-filter-required` | "Vui lòng chọn bộ lọc để bắt đầu" |
+-
+-Chữ 16px/24px (`T16R` / `T16M` của catalog), màu `--sd-secondary` cho dòng phụ.
+-Ba SVG trích **nguyên văn** từ `content:url(...)` của catalog, lưu thành file
+-`core/assets/table-{data-empty,filter-empty,filter-required}.svg` theo Rule 12.
+-
+-Trạng thái thứ ba bật bằng attribute **`filterRequired`** — tên do kit đặt, vì
+-catalog chỉ có nút bật/tắt trong trang demo và **không khai tên input nào** cho
+-nó (ghi ở `_memory/known-gaps.md`).
+-
+-> ⚠ **Catalog bỏ hẳn đường kẻ ngang giữa các dòng dữ liệu**
+-> (`tr.c-row td { border-bottom-width: 0 }`) — phân tách dòng bằng nền hover và nền
+-> dòng đang chọn. Kit đã mirror theo. Đây là chỗ đáng cân nhắc cho bảng back-office
+-> dày đặc; muốn trả lại đường kẻ thì bỏ rule
+-> `sd-table tr.c-row .c-td { border-bottom-width: 0 }` trong `sd-tokens.css`.
+-> Ghi ở `_memory/known-gaps.md`.
+-
+-Các số đo khác theo catalog: host là cột flex tự cuộn · `.c-header-title` 40px ·
+-lớp phủ khi tải `inset: 0 0 56px` (chừa chỗ paginator) · ô checkbox chọn dòng rộng
+-cố định 42px, checkbox thu nhỏ 85% · nút lệnh trên dòng 24px với icon 16px ·
+-paginator `justify-content: space-between`.
+-
+-### Quy tắc
+-
+-- **Dashboard:** 3–4 thẻ Default ở đầu trang — không quá 6 thẻ cùng row.
+-- **Filter group:** dùng Compact + 1 thẻ "Tất cả" (meaning `neutral`), `active` mặc định.
+-- **Chọn meaning đúng ngữ nghĩa** — success/warning/danger phản ánh trạng thái chỉ số (đạt mục tiêu / cảnh báo / nguy hiểm), không phải màu yêu thích.
+-- **Không dùng cho** danh sách chi tiết (→ `sd-table`), so sánh nhiều chiều (→ chart), hoặc card có nhiều action phức tạp (→ `sd-section` + `sd-button`).
++> `sd-scorecard` **đã gỡ 2026-10-12** (Core UI catalog không có). Thẻ số liệu / thẻ lọc: xem `sd-components.md` → `bpm-kpi-card`, `bpm-filter-scorecard`.
+ 
+ ---
+ 
+--- /tmp/sdcmd.bak.sc	2026-10-12 11:20:25.656899965 +0000
++++ design-system/components/sd-components.md	2026-10-12 11:20:25.733216653 +0000
+@@ -14,7 +14,7 @@
+ | `sd-interactive.md` | **sd-button**, **sd-badge** + STATUS_MAP |
+ | `sd-form.md` | **sd-input**, **sd-select**, **sd-textarea**, **sd-date**, **sd-datetime**, **sd-input-number**, **sd-switch**, **sd-chip**, **sd-chip-calendar**, **sd-upload-file**, viewed mode |
+ | `sd-layout.md` | **sd-section** (5 variants + slots), **sd-section-item**, **sd-tab-group**, **sd-tab**, **sd-stepper**, **sd-step**, **sd-anchor**, **sd-anchor-item**, **sd-splitter**, **sd-splitter-panel** |
+-| `sd-data.md` | **sd-scorecard** (KPI tile), **sd-table** (column types, status/link/values, filter rules), **sd-query-bar** (filter chip row 7 field types), **sd-data-state** (loading/empty/error) |
++| `sd-data.md` | **sd-table** (column types, status/link/values, filter rules), **sd-query-bar** (filter chip row 7 field types), **sd-data-state** (loading/empty/error) |
+ | `sd-overlay.md` | **sd-modal**, **sd-side-drawer**, **sd-avatar** |
+ | `sd-service.md` | **SdNotifyService**, **SdConfirmService**, **SdLoadingService** (services - window globals, không phải thẻ HTML) |
+ 
+@@ -38,7 +38,8 @@
+ | Wizard nhiều bước có thứ tự | `sd-layout.md` → sd-stepper + sd-step |
+ | Điều hướng giữa các phần của trang dài | `sd-layout.md` → sd-anchor + sd-anchor-item |
+ | Bố cục panel co dãn (workspace, sidebar + main) | `sd-layout.md` → sd-splitter + sd-splitter-panel |
+-| KPI tile / scorecard cho dashboard, filter group | `sd-data.md` → sd-scorecard |
++| Thẻ số liệu chỉ xem (KPI) | `sd-components.md` → bpm-kpi-card |
++| Thẻ đếm bấm để lọc nhanh bảng | `sd-components.md` → bpm-filter-scorecard |
+ | Data table, column types | `sd-data.md` → sd-table |
+ | Filter chip row (7 field types, popover/inline, saved filters) | `sd-data.md` → sd-query-bar |
+ | Trạng thái vùng dữ liệu (loading/empty/error) | `sd-data.md` → sd-data-state |
+--- /tmp/nav.bak.sc	2026-10-12 11:20:25.659488338 +0000
++++ design-system/preview/shared-nav.js	2026-10-12 11:20:25.733544788 +0000
+@@ -69,7 +69,6 @@
+       { kw: 'sd-splitter chia cột kéo', label: 'Splitter', file: 'components/splitter.html' }
+     ]},
+     { kw: 'dữ liệu', group: 'Data', id: 'sub-data', items: [
+-      { kw: 'kpi thẻ số liệu', label: 'Scorecard', file: 'components/scorecard.html' },
+       // Đổi nhãn từ "Table" -> "sd-table" (2026-09-23): sidebar có 2 mục trùng tên
+       // "Table" — mục Patterns (patterns/table.html, filter-bar + sd-table trong
+       // Browse page, KHÔNG có sort/menu) và mục Data này (components/table.html,
+@@ -83,7 +82,7 @@
+       { kw: 'sd-tree cây phân cấp', label: 'Tree', file: 'components/tree.html' },
+       { kw: 'sd-history lịch sử', label: 'History', file: 'components/history.html' },
+       { kw: 'sd-org-chart sơ đồ tổ chức', label: 'Org Chart', file: 'components/org-chart.html' },
+-      { kw: 'bpm trung tâm công việc', label: 'Work Center (lib-bpm)', file: 'components/work-center.html' },
++      { kw: 'bpm trung tâm công việc kpi thẻ số liệu scorecard filter scorecard thẻ lọc', label: 'Work Center (lib-bpm)', file: 'components/work-center.html' },
+       { kw: 'trạng thái rỗng loading', label: 'Data State', file: 'components/data-state.html' }
+     ]},
+     { kw: 'lớp phủ nổi', group: 'Overlay', id: 'sub-overlay', items: [
+--- /tmp/scorecard.html.bak	2026-10-12 11:20:25.661541330 +0000
++++ /dev/null	2026-10-09 20:45:46.433064200 +0000
+@@ -1,361 +0,0 @@
+-<!DOCTYPE html>
+-<html lang="vi">
+-<head>
+-  <meta charset="UTF-8">
+-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-  <title>sd-scorecard — Preview</title>
+-
+-  <link rel="preconnect" href="https://fonts.googleapis.com">
+-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+-
+-  <link rel="stylesheet" href="../../core/styles/tokens.css">
+-  <link rel="stylesheet" href="../../core/styles/layout.css">
+-  <link rel="stylesheet" href="../../core/styles/components.css">
+-  <link rel="stylesheet" href="../../core/styles/utilities.css">
+-  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+-  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+-</head>
+-<body>
+-
+-<div class="app-shell">
+-
+-  <aside class="sidebar" id="sidebar"></aside>
+-
+-  <div class="main-area">
+-
+-    <div data-pattern="page-header" data-variant="browse"
+-         data-title="sd-scorecard"
+-         data-subtitle="KPI tile — hiển thị một chỉ số quan trọng kèm nhãn, đơn vị và meaning icon"
+-         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+-
+-    <div class="content-zone">
+-
+-      <!-- ── Tab: Preview ──────────────────────────────────── -->
+-      <div class="tab-panel" data-tab-panel="0">
+-
+-        <!-- Types -->
+-        <sd-section title="Types — Default vs Compact">
+-          <p class="text-sm text-secondary mb-3">Default (300×80) — dùng cho dashboard chính, KPI panel.</p>
+-          <div class="flex gap-3 flex-wrap mb-6">
+-            <sd-scorecard label="Số gói đang tham gia" value="30" unit="đơn vị" meaning="success"></sd-scorecard>
+-            <sd-scorecard label="Tổng doanh thu" value="1.250" unit="triệu đồng" meaning="warning"></sd-scorecard>
+-            <sd-scorecard label="Đơn cần xử lý" value="42" unit="đơn" meaning="danger"></sd-scorecard>
+-            <sd-scorecard label="Người dùng mới" value="128" unit="user" meaning="info"></sd-scorecard>
+-          </div>
+-
+-          <p class="text-sm text-secondary mb-3">Compact (160×60) — dùng cho sidebar, filter panel, bảng tổng quan phụ.</p>
+-          <div class="flex gap-3 flex-wrap">
+-            <sd-scorecard type="compact" label="Tất cả" value="248" meaning="neutral"></sd-scorecard>
+-            <sd-scorecard type="compact" label="Hoạt động" value="180" meaning="success"></sd-scorecard>
+-            <sd-scorecard type="compact" label="Tạm dừng" value="42" meaning="warning"></sd-scorecard>
+-            <sd-scorecard type="compact" label="Lỗi" value="26" meaning="danger"></sd-scorecard>
+-          </div>
+-        </sd-section>
+-
+-        <!-- Active state -->
+-        <sd-section title="Active state — selected for filter">
+-          <p class="text-sm text-secondary mb-3">Khi user click vào thẻ để filter/highlight data — viền cam 2px, filter icon filled.</p>
+-          <div class="flex gap-3 flex-wrap mb-6">
+-            <sd-scorecard label="Số gói đang tham gia" value="30" unit="đơn vị" meaning="success"></sd-scorecard>
+-            <sd-scorecard label="Số gói đang tham gia" value="30" unit="đơn vị" meaning="success" active></sd-scorecard>
+-          </div>
+-
+-          <p class="text-sm text-secondary mb-3">Compact — Active state.</p>
+-          <div class="flex gap-3 flex-wrap">
+-            <sd-scorecard type="compact" label="Hoạt động" value="180" meaning="success"></sd-scorecard>
+-            <sd-scorecard type="compact" label="Hoạt động" value="180" meaning="success" active></sd-scorecard>
+-          </div>
+-        </sd-section>
+-
+-        <!-- Meaning variants -->
+-        <sd-section title="Meaning Icon — 5 màu báo trạng thái">
+-          <p class="text-sm text-secondary mb-3">
+-            <code>meaning</code> quyết định màu và icon mặc định của tile bên trái. Override icon riêng bằng attribute <code>icon</code>.
+-          </p>
+-          <div class="flex gap-3 flex-wrap">
+-            <sd-scorecard label="Đạt mục tiêu" value="98" unit="%" meaning="success" interactive="false"></sd-scorecard>
+-            <sd-scorecard label="Cảnh báo tồn kho" value="12" unit="SKU" meaning="warning" interactive="false"></sd-scorecard>
+-            <sd-scorecard label="Đơn lỗi" value="5" unit="đơn" meaning="danger" interactive="false"></sd-scorecard>
+-            <sd-scorecard label="Khách hàng mới" value="84" unit="user" meaning="info" interactive="false"></sd-scorecard>
+-            <sd-scorecard label="Tổng giao dịch" value="2.450" unit="lần" meaning="neutral" interactive="false"></sd-scorecard>
+-          </div>
+-        </sd-section>
+-
+-        <!-- Variants control: optional parts -->
+-        <sd-section title="Variants control — ẩn/hiện thành phần">
+-          <p class="text-sm text-secondary mb-3">Default — đầy đủ meaning icon, label, value, unit.</p>
+-          <div class="mb-4">
+-            <sd-scorecard label="Số gói đang tham gia" value="30" unit="đơn vị" meaning="success"></sd-scorecard>
+-          </div>
+-
+-          <p class="text-sm text-secondary mb-3">Không có meaning icon (<code>meaning</code> bỏ trống).</p>
+-          <div class="mb-4">
+-            <sd-scorecard label="Số gói đang tham gia" value="30" unit="đơn vị"></sd-scorecard>
+-          </div>
+-
+-          <p class="text-sm text-secondary mb-3">Không có unit (<code>unit</code> bỏ trống).</p>
+-          <div class="mb-4">
+-            <sd-scorecard label="Tổng số đơn hàng" value="1.248" meaning="info"></sd-scorecard>
+-          </div>
+-
+-          <p class="text-sm text-secondary mb-3">Override icon — dùng <code>icon</code> để chọn glyph khác mặc định của meaning.</p>
+-          <div>
+-            <sd-scorecard label="Doanh thu tháng" value="1.250" unit="triệu" meaning="success" icon="payments"></sd-scorecard>
+-          </div>
+-        </sd-section>
+-
+-        <!-- Interactive demo: filter group -->
+-        <sd-section title="Interactive demo — click để lọc dữ liệu">
+-          <p class="text-sm text-secondary mb-3">
+-            Click vào thẻ bên dưới để chuyển active. Click tiếp lần nữa để bỏ chọn. Trong page thật, click sẽ filter bảng dữ liệu bên dưới.
+-          </p>
+-          <div class="flex gap-3 flex-wrap" id="filter-demo">
+-            <sd-scorecard type="compact" label="Tất cả" value="248" meaning="neutral" active></sd-scorecard>
+-            <sd-scorecard type="compact" label="Hoạt động" value="180" meaning="success"></sd-scorecard>
+-            <sd-scorecard type="compact" label="Tạm dừng" value="42" meaning="warning"></sd-scorecard>
+-            <sd-scorecard type="compact" label="Lỗi" value="26" meaning="danger"></sd-scorecard>
+-          </div>
+-        </sd-section>
+-
+-      </div><!-- /tab-panel: Preview -->
+-
+-      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+-      <div class="tab-panel" data-tab-panel="1" style="display:none">
+-
+-        <sd-section title="Hướng dẫn BA / PO">
+-          <div class="ds-guide">
+-
+-            <div class="ds-guide-do-dont">
+-
+-              <div class="ds-guide-do">
+-                <div class="ds-guide-box-header">
+-                  <span class="material-icons-outlined mi-16">check_circle</span>
+-                  Dùng khi
+-                </div>
+-                <ul class="ds-guide-list">
+-                  <li>Cần hiển thị một chỉ số quan trọng (KPI) trong dashboard hoặc summary bar — số liệu tổng hợp cần người dùng thấy ngay khi vào trang.</li>
+-                  <li>Operator cần focus vào nhóm dữ liệu cụ thể bằng cách click vào thẻ để filter bảng bên dưới (kết hợp với <code>active</code> state).</li>
+-                  <li>Tổng quan trạng thái hệ thống — đếm số đơn đang chờ, số tài khoản hoạt động, doanh thu hôm nay…</li>
+-                </ul>
+-              </div>
+-
+-              <div class="ds-guide-dont">
+-                <div class="ds-guide-box-header">
+-                  <span class="material-icons-outlined mi-16">cancel</span>
+-                  Không dùng khi
+-                </div>
+-                <ul class="ds-guide-list">
+-                  <li>Hiển thị danh sách chi tiết hoặc so sánh nhiều chiều — dùng <code>sd-table</code> hoặc Chart.</li>
+-                  <li>Nhóm quá nhiều thẻ cùng lúc (&gt;6 thẻ) không có phân nhóm rõ — gây quá tải thông tin, chuyển sang Compact + group.</li>
+-                  <li>Cần thao tác phức tạp (sửa giá trị, multiple action) — dùng card với <code>sd-button</code>.</li>
+-                </ul>
+-              </div>
+-
+-            </div>
+-
+-            <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Khi nào chọn Default vs Compact</p>
+-              <table class="ds-guide-table">
+-                <thead>
+-                  <tr><th>Câu hỏi ngữ cảnh</th><th>Lựa chọn</th></tr>
+-                </thead>
+-                <tbody>
+-                  <tr><td>Dashboard chính, đủ không gian hiển thị KPI?</td><td>→ <code>type="default"</code></td></tr>
+-                  <tr><td>Sidebar, panel hẹp, nhiều thẻ cùng lúc?</td><td>→ <code>type="compact"</code></td></tr>
+-                  <tr><td>Cần user click để filter/highlight dữ liệu?</td><td>→ Thêm <code>active</code> khi được chọn</td></tr>
+-                </tbody>
+-              </table>
+-            </div>
+-
+-            <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Cách chọn meaning</p>
+-              <table class="ds-guide-table">
+-                <thead>
+-                  <tr><th>Loại chỉ số</th><th>meaning</th><th>Ví dụ</th></tr>
+-                </thead>
+-                <tbody>
+-                  <tr><td>Chỉ số tích cực, đạt mục tiêu, tăng trưởng</td><td><code>success</code></td><td>Doanh thu đạt mục tiêu, tỉ lệ thành công 98%</td></tr>
+-                  <tr><td>Chỉ số cảnh báo, tiếp cận ngưỡng</td><td><code>warning</code></td><td>Tồn kho thấp, đơn sắp quá hạn</td></tr>
+-                  <tr><td>Chỉ số nguy hiểm, vượt ngưỡng, giảm sút</td><td><code>danger</code></td><td>Số đơn lỗi, tài khoản bị khoá</td></tr>
+-                  <tr><td>Chỉ số trung lập, hiển thị thông tin</td><td><code>info</code></td><td>Người dùng mới, số request mới</td></tr>
+-                  <tr><td>Không có sắc thái — chỉ là số đếm</td><td><code>neutral</code></td><td>Tổng số, tất cả, số bản ghi</td></tr>
+-                </tbody>
+-              </table>
+-            </div>
+-
+-            <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+-              <div class="ds-guide-prd">
+-                <p>"Dashboard hiển thị 4 Scorecard ở đầu trang, type <code>default</code>: <strong>Số gói đang tham gia</strong> (30 đơn vị, meaning success), <strong>Tổng doanh thu</strong> (1.250 triệu đồng, meaning warning), <strong>Đơn cần xử lý</strong> (42 đơn, meaning danger), <strong>Người dùng mới</strong> (128 user, meaning info). Khi user click vào một thẻ, thẻ chuyển sang <code>active</code> và bảng bên dưới filter theo nhóm tương ứng."</p>
+-              </div>
+-            </div>
+-
+-          </div>
+-        </sd-section>
+-
+-      </div><!-- /tab-panel: BA/PO -->
+-
+-      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+-      <div class="tab-panel" data-tab-panel="2" style="display:none">
+-
+-        <sd-section title="Hướng dẫn Dev">
+-          <div class="ds-guide">
+-
+-            <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Cú pháp</p>
+-              <div class="ds-guide-code-wrap">
+-                <div class="ds-guide-code-bar">
+-                  <span class="ds-guide-code-lang">HTML</span>
+-                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+-                </div>
+-                <pre class="ds-guide-code">&lt;!-- Default — KPI trong dashboard --&gt;
+-&lt;sd-scorecard label="Số gói đang tham gia" value="30"
+-              unit="đơn vị" meaning="success"&gt;&lt;/sd-scorecard&gt;
+-
+-&lt;!-- Compact — KPI trong sidebar/filter --&gt;
+-&lt;sd-scorecard type="compact" label="Doanh thu" value="1.250"
+-              unit="triệu đồng" meaning="warning"&gt;&lt;/sd-scorecard&gt;
+-
+-&lt;!-- Active state — đang được chọn để filter --&gt;
+-&lt;sd-scorecard label="Gói hoạt động" value="15" unit="gói"
+-              meaning="info" active&gt;&lt;/sd-scorecard&gt;
+-
+-&lt;!-- Override icon — dùng glyph khác mặc định --&gt;
+-&lt;sd-scorecard label="Doanh thu" value="1.250" unit="triệu"
+-              meaning="success" icon="payments"&gt;&lt;/sd-scorecard&gt;
+-
+-&lt;!-- Non-interactive — chỉ hiển thị, không click --&gt;
+-&lt;sd-scorecard label="Tổng đơn" value="248" meaning="neutral"
+-              interactive="false"&gt;&lt;/sd-scorecard&gt;</pre>
+-              </div>
+-            </div>
+-
+-            <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Attributes</p>
+-              <table class="ds-guide-table">
+-                <thead>
+-                  <tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr>
+-                </thead>
+-                <tbody>
+-                  <tr><td><code>type</code></td><td><code>default</code> | <code>compact</code></td><td><code>default</code></td><td>Default 300×80 cho dashboard, compact 160×60 cho sidebar</td></tr>
+-                  <tr><td><code>label</code></td><td>string</td><td>—</td><td>Tiêu đề chỉ số</td></tr>
+-                  <tr><td><code>value</code></td><td>string | number</td><td>—</td><td>Số liệu chính (bold)</td></tr>
+-                  <tr><td><code>unit</code></td><td>string</td><td>—</td><td>Đơn vị/hậu tố kèm theo value</td></tr>
+-                  <tr><td><code>meaning</code></td><td><code>success</code> | <code>warning</code> | <code>danger</code> | <code>info</code> | <code>neutral</code></td><td>—</td><td>Quyết định màu và icon mặc định. Bỏ trống = không hiện icon</td></tr>
+-                  <tr><td><code>icon</code></td><td>Material Icons Outlined name</td><td>theo <code>meaning</code></td><td>Override icon mặc định</td></tr>
+-                  <tr><td><code>active</code></td><td>boolean (presence)</td><td>—</td><td>Trạng thái selected — viền cam 2px, filter icon filled</td></tr>
+-                  <tr><td><code>interactive</code></td><td><code>true</code> | <code>false</code></td><td><code>true</code></td><td><code>false</code> = tắt hover/click, ẩn filter button</td></tr>
+-                  <tr><td><code>filterIcon</code></td><td>Material Icons Outlined name</td><td><code>filter_alt</code></td><td>Glyph cho filter button góc phải</td></tr>
+-                </tbody>
+-              </table>
+-            </div>
+-
+-            <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Mapping meaning → màu + icon mặc định</p>
+-              <table class="ds-guide-table">
+-                <thead>
+-                  <tr><th>meaning</th><th>Default icon</th><th>Color token (text)</th><th>Color token (bg)</th><th>Preview</th></tr>
+-                </thead>
+-                <tbody>
+-                  <tr><td><code>success</code></td><td><code>trending_up</code></td><td>color-success-600</td><td>color-success-50</td><td><span class="sd-scorecard__icon sd-scorecard__icon--success"><span class="material-icons-outlined">trending_up</span></span></td></tr>
+-                  <tr><td><code>warning</code></td><td><code>warning_amber</code></td><td>color-warning-600</td><td>color-warning-50</td><td><span class="sd-scorecard__icon sd-scorecard__icon--warning"><span class="material-icons-outlined">warning_amber</span></span></td></tr>
+-                  <tr><td><code>danger</code></td><td><code>trending_down</code></td><td>color-error-600</td><td>color-error-50</td><td><span class="sd-scorecard__icon sd-scorecard__icon--danger"><span class="material-icons-outlined">trending_down</span></span></td></tr>
+-                  <tr><td><code>info</code></td><td><code>insights</code></td><td>color-info-600</td><td>color-info-50</td><td><span class="sd-scorecard__icon sd-scorecard__icon--info"><span class="material-icons-outlined">insights</span></span></td></tr>
+-                  <tr><td><code>neutral</code></td><td><code>remove</code></td><td>color-neutral-800</td><td>color-neutral-100</td><td><span class="sd-scorecard__icon sd-scorecard__icon--neutral"><span class="material-icons-outlined">remove</span></span></td></tr>
+-                </tbody>
+-              </table>
+-            </div>
+-
+-            <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Events</p>
+-              <table class="ds-guide-table">
+-                <thead>
+-                  <tr><th>Event</th><th>detail</th><th>Khi nào fire</th></tr>
+-                </thead>
+-                <tbody>
+-                  <tr>
+-                    <td><code>sd-scorecard-click</code></td>
+-                    <td><code>{ active: boolean }</code></td>
+-                    <td>User click vào card (chỉ khi <code>interactive</code> ≠ <code>false</code>). Dùng để toggle filter group.</td>
+-                  </tr>
+-                  <tr>
+-                    <td><code>sd-scorecard-filter-click</code></td>
+-                    <td><code>{ active: boolean }</code></td>
+-                    <td>User click vào filter icon góc trên phải.</td>
+-                  </tr>
+-                </tbody>
+-              </table>
+-            </div>
+-
+-          </div>
+-        </sd-section>
+-
+-      </div><!-- /tab-panel: Dev -->
+-
+-    </div>
+-
+-  </div>
+-
+-</div>
+-
+-<script src="../../sd-components/sd-components.js"></script>
+-<script src="../../patterns/page-header.js"></script>
+-<script src="../../patterns/sidebar.js"></script>
+-<script src="../../core/js/pattern-loader.js"></script>
+-<script src="../../core/js/shell.js"></script>
+-<script src="../shared-nav.js"></script>
+-
+-<script>
+-  // Wire the page's own page-tab-zone to tab panels
+-  (function () {
+-    function initPreviewTabs() {
+-      var pageHeader = document.querySelector('.main-area > .page-header');
+-      if (!pageHeader) return;
+-      var tabZone = pageHeader.querySelector('.page-tab-zone');
+-      if (!tabZone) return;
+-      var tabs = tabZone.querySelectorAll('.tab');
+-      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+-
+-      function showPanel(index) {
+-        panels.forEach(function (p) {
+-          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+-        });
+-        tabs.forEach(function (t, i) {
+-          t.classList.toggle('active', i === index);
+-        });
+-      }
+-
+-      tabs.forEach(function (tab, i) {
+-        tab.addEventListener('click', function () { showPanel(i); });
+-      });
+-
+-      // Show first panel on load
+-      showPanel(0);
+-    }
+-
+-    initPreviewTabs();
+-  })();
+-
+-  // Interactive demo — toggle active among cards in #filter-demo
+-  (function () {
+-    var group = document.getElementById('filter-demo');
+-    if (!group) return;
+-    group.addEventListener('sd-scorecard-click', function (e) {
+-      var clicked = e.target.closest('sd-scorecard');
+-      if (!clicked) return;
+-      var isActive = clicked.hasAttribute('active');
+-      // Clear all
+-      group.querySelectorAll('sd-scorecard').forEach(function (c) {
+-        c.removeAttribute('active');
+-      });
+-      // Toggle clicked
+-      if (!isActive) clicked.setAttribute('active', '');
+-    });
+-  })();
+-</script>
+-
+-</body>
+-</html>

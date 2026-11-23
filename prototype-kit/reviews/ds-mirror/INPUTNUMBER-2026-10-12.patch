@@ -1,0 +1,268 @@
+--- a/design-system/sd-components/sd-components.js
++++ b/design-system/sd-components/sd-components.js
+@@ -4802,8 +4802,19 @@
+     get required() { return this.hasAttribute('required'); }
+     get disabled() { return this.hasAttribute('disabled'); }
+     get readOnly() { return this.hasAttribute('readonly') || this.hasAttribute('readOnly'); }
+-    get viewed() { return this.hasAttribute('viewed'); }
+-    get clearable() { return this.hasAttribute('clearable'); }
++    /* viewed = true | 'inline'. viewed="false" là KHÔNG xem (booleanAttribute). */
++    get viewedMode() {
++      var raw = this.getAttribute('viewed');
++      if (raw === null) return false;
++      if (raw === 'inline') return 'inline';
++      return String(raw) !== 'false';
++    }
++    get viewed() { return this.viewedMode === true; }
++    /* Nút × LUÔN có — catalog #c-input-number không có input `clearable`; nút
++       (sd-hover) hiện ở mọi ô có giá trị. Bản trước kit phải khai `clearable` mới
++       có. Thuộc tính `clearable` cũ được bỏ qua (tương thích ngược, Rule 18 ngoại
++       lệ 3); không có cách tắt vì catalog không có. Rà soát 2026-10-12. */
++    get clearable() { return true; }
+     get helperText() { return this._attr('helperText') || ''; }
+     get hideInlineError() { return this.hasAttribute('hideInlineError') || this.hasAttribute('hideinlineerror'); }
+     get autoId() { var raw = this._attr('autoId'); return raw ? 'forms-input-number-' + raw : ''; }
+@@ -4876,7 +4887,7 @@
+     }
+ 
+     _render() {
+-      sdSyncFieldHostClass(this, this.label, this.viewed);
++      sdSyncFieldHostClass(this, this.label, this.viewedMode !== false);   // catalog gắn sd-viewed cho cả 'inline'
+       var label = this.label, placeholder = this.placeholder, size = this.size,
+           required = this.required, disabled = this.disabled, readOnly = this.readOnly,
+           clearable = this.clearable, helperText = this.helperText, hideInlineError = this.hideInlineError,
+@@ -4887,6 +4898,16 @@
+         this.innerHTML = sdViewHtml(label, displayVal);
+         return;
+       }
++      /* viewed='inline' — catalog dựng thẳng <sd-inline-text> (chrome standalone):
++         ô chữ co giãn theo nội dung, nền xám nhạt, × khi rê chuột. Bản trước kit
++         coi 'inline' như viewed thường (chỉ xem). */
++      if (this.viewedMode === 'inline') {
++        this.innerHTML = '<sd-inline-text placeholder="' + escAttr(placeholder) + '"' +
++          (displayVal ? ' value="' + escAttr(displayVal) + '"' : '') +
++          (disabled ? ' disabled' : '') + '></sd-inline-text>';
++        this._bindInline();
++        return;
++      }
+ 
+       var errorMsg = this._computeError();
+       var showError = !!errorMsg && (this._touched || !!this.inlineError);
+@@ -4899,15 +4920,16 @@
+       var errorClass = showError ? (hideIE ? ' sd-error sd-hide-inline-error' : ' sd-error') : '';
+       var reqHtml = required ? '<span class="sd-required">*</span>' : '';
+       var labelHtml = label ? '<label class="sd-label">' + esc(label) + reqHtml + '</label>' : '';
+-      var showClear = clearable && val !== null && !required && !disabled && !readOnly;
++      var showClear = clearable && val !== null && !disabled && !readOnly;
+       var showErrorIcon = showError && hideInlineError;
+       var showErrorText = showError && !hideInlineError;
+       var suffixIcon = this.suffixIcon, suffixText = this.suffix;
+       // Mirror <ng-template sdSuffixDef> - luôn đứng SAU CÙNG (bên phải nhất), sau cả
+       // clear-btn/error-icon, đúng thứ tự matSuffix trong input-number.component.html thật.
++      /* catalog: <span class="T14R text-black400">VND</span> trong hàng suffix */
+       var suffixHtml = suffixIcon
+         ? '<span class="material-icons-outlined sd-input-suffix-icon">' + esc(suffixIcon) + '</span>'
+-        : (suffixText ? '<span class="sd-input-suffix-text">' + esc(suffixText) + '</span>' : '');
++        : (suffixText ? '<span class="T14R text-black400 sd-input-suffix-text">' + esc(suffixText) + '</span>' : '');
+ 
+       this.innerHTML =
+         '<div class="sd-form-field' + sizeClass + disabledClass + hasValueClass + errorClass + '">' +
+@@ -4923,8 +4945,10 @@
+           (showErrorIcon
+             ? '<span class="material-icons-outlined sd-date-error-icon" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</span>'
+             : '') +
++          /* catalog: <button class="sd-clear-btn sd-hover"> — ẩn cho tới khi rê
++             chuột / focus; bản trước kit dùng nút xoá của sd-date luôn hiện. */
+           (showClear
+-            ? '<button type="button" class="sd-date-clear-btn" title="' + escAttr(SD_NUM_TEXT.clear) + '" aria-label="' + escAttr(SD_NUM_TEXT.clear) + '">' +
++            ? '<button type="button" class="sd-clear-btn sd-hover" title="' + escAttr(SD_NUM_TEXT.clear) + '" aria-label="' + escAttr(SD_NUM_TEXT.clear) + '">' +
+               '<span class="material-icons-outlined">close</span></button>'
+             : '') +
+           suffixHtml +
+@@ -4972,10 +4996,24 @@
+           }
+         });
+       }
+-      var clearBtn = this.querySelector('.sd-date-clear-btn');
++      var clearBtn = this.querySelector('.sd-clear-btn');
+       if (clearBtn) clearBtn.addEventListener('click', function (e) { self.clear(e); });
+     }
+ 
++    /* viewed='inline': gõ trên sd-inline-text, chốt model khi rời ô (blur). */
++    _bindInline() {
++      var self = this;
++      var it = this.querySelector('sd-inline-text');
++      if (!it) return;
++      it.addEventListener('sd-blur', function () {
++        var sep = sdNumSeparators(self.format);
++        var raw = (it.getAttribute('value') || '').split(sep.thousand).join('').split(sep.decimal).join('.');
++        var num = raw === '' || isNaN(Number(raw)) ? null : Number(raw);
++        self._commit(num);
++      });
++      it.addEventListener('sd-cleared', function () { self._commit(null); });
++    }
++
+     /* Chặn phím gõ ra ký tự không hợp lệ theo regex - mirror #checkValue/onKeydown.
+        Điểm dễ bỏ sót (đã dẫm phải rồi sửa): dấu phân cách hàng nghìn do chính
+        _onInputEvent tự chèn vào sau mỗi lần gõ phải được BỎ RA trước khi build
+--- a/design-system/core/styles/sd-tokens.css
++++ b/design-system/core/styles/sd-tokens.css
+@@ -2138,9 +2138,20 @@
+ /* Suffix cuối field (mirror <ng-template sdSuffixDef> — vd đơn vị "VNĐ", "%", icon)
+    của sd-input-number. Đặt tên chung "sd-input-suffix-*" (không phải "sd-date-*") vì
+    component này không có nút suffix mở picker — để input khác sau này tái dùng được. */
++/* Hàng suffix của sd-input-number — catalog `.mat-mdc-form-field-icon-suffix
++   {padding:0 12px; gap:8px}` (sd-md): phần tử ĐẦU cách chữ 12px, các phần tử
++   cách nhau 8px, phần tử CUỐI cách mép phải 12px (kit: padding 15 + viền 1
++   = 16 → lùi -4px). Cùng cách đã làm cho mũi tên sd-select. Rà soát 2026-10-12. */
++sd-input-number .sd-form-field > .sd-input + * { margin-left: 12px; }
++sd-input-number .sd-form-field > .sd-input ~ * + * { margin-left: 8px; }
++sd-input-number .sd-form-field:not(.sd-sm):not(.sd-lg) > .sd-input ~ *:last-child { margin-right: -4px; }
++sd-input-number .sd-form-field .sd-date-error-icon {
++  font-size: 20px; width: 20px; height: 20px; line-height: 20px;
++}
++/* Giá trị khi disabled — catalog `--sd-black400`, bản trước .87 */
++sd-input-number .sd-form-field.sd-disabled .sd-input { color: var(--sd-black400); -webkit-text-fill-color: var(--sd-black400); }
+ sd-input-number .sd-input-suffix-text {
+   flex-shrink: 0;
+-  margin-left: 4px;
+   font-family: var(--sd-font-family);
+   font-size: 14px;
+   line-height: 20px;
+--- a/design-system/preview/components/input-number.html
++++ b/design-system/preview/components/input-number.html
+@@ -36,6 +36,46 @@
+       <!-- ── Tab: Preview ──────────────────────────────────── -->
+       <div class="tab-panel" data-tab-panel="0">
+ 
++        <!-- ══ Mirror catalog #c-input-number — 5 biến thể, cùng nội dung. Khung
++             280px bằng inline style chỉ để giữ bề ngang như catalog. ══ -->
++        <sd-section title="Mặc định và có giá trị" subtitle="format portal 1.234.567,89: chấm phân cách nghìn, phẩy thập phân">
++          <div class="d-flex flex-wrap gap-16">
++            <div style="width:280px"><sd-input-number label="Hạn mức tín dụng"></sd-input-number></div>
++            <div style="width:280px"><sd-input-number label="Hạn mức tín dụng" value="250000000000"></sd-input-number></div>
++            <div style="width:280px"><sd-input-number label="Lãi suất (%/năm)" precision="2" type="positive" value="7.25"></sd-input-number></div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Hậu tố (sdSuffixDef)" subtitle="kit: attribute suffix — đang gõ: số được định dạng lại theo từng phím">
++          <div class="d-flex flex-wrap gap-16">
++            <div style="width:280px"><sd-input-number label="Số tiền giải ngân" placeholder="Nhập số tiền" value="1500000000" suffix="VND"></sd-input-number></div>
++            <div style="width:280px"><sd-input-number label="Số tiền giải ngân" placeholder="Nhập số tiền" suffix="VND"></sd-input-number></div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Bắt buộc và lỗi min / max" subtitle="chuỗi lỗi core.form.input-number.*">
++          <div class="d-flex flex-wrap gap-16">
++            <div style="width:280px"><sd-input-number class="num-cat-touch" label="Số tiền đề xuất" required></sd-input-number></div>
++            <div style="width:280px"><sd-input-number class="num-cat-touch" label="Tỷ lệ tài trợ (%)" min="0" max="100" value="120"></sd-input-number></div>
++            <div style="width:280px"><sd-input-number class="num-cat-touch" label="Kỳ hạn vay (tháng)" min="1" precision="0" value="0"></sd-input-number></div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Disabled, readonly, hideInlineError">
++          <div class="d-flex flex-wrap gap-16">
++            <div style="width:280px"><sd-input-number label="Dư nợ hiện tại" disabled value="48600000000"></sd-input-number></div>
++            <div style="width:280px"><sd-input-number label="Phí trả nợ trước hạn (%)" readonly value="1.5"></sd-input-number></div>
++            <div style="width:280px"><sd-input-number class="num-cat-touch" label="Số tiền đề xuất" required hideInlineError></sd-input-number></div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Chế độ xem: viewed và viewed='inline'" subtitle="viewed hiển thị qua pipe sdFormatNumber; inline là sd-inline-text sửa được">
++          <div class="d-flex flex-wrap gap-16 align-items-center">
++            <div style="width:280px"><sd-input-number label="Hạn mức được duyệt" viewed value="250000000000"></sd-input-number></div>
++            <sd-input-number label="Số tiền" viewed="inline" value="1500000000"></sd-input-number>
++          </div>
++        </sd-section>
++
+         <!-- Normal -->
+         <sd-section title="Normal">
+           <div class="grid grid-cols-3 gap-6">
+@@ -116,10 +156,10 @@
+           </p>
+         </sd-section>
+ 
+-        <!-- Clearable / helperText -->
+-        <sd-section title="Clearable · helperText">
++        <!-- helperText / readonly -->
++        <sd-section title="Nút xoá · helperText · readonly">
+           <div class="grid grid-cols-3 gap-6">
+-            <sd-input-number label="Có nút xoá" value="12345" clearable></sd-input-number>
++            <sd-input-number label="Rê chuột để thấy nút ×" value="12345"></sd-input-number>
+             <sd-input-number label="Có ghi chú" helperText="Đơn vị: VNĐ"></sd-input-number>
+             <sd-input-number label="Readonly" value="99999" readonly></sd-input-number>
+           </div>
+@@ -216,9 +256,9 @@
+                   <tr><td>required</td><td>boolean</td><td>false</td><td>Hiện dấu * + báo lỗi khi trống lúc blur</td></tr>
+                   <tr><td>disabled</td><td>boolean</td><td>false</td><td>Vô hiệu hoá input</td></tr>
+                   <tr><td>readonly</td><td>boolean</td><td>false</td><td>Chỉ đọc — vẫn focus/copy được, không sửa</td></tr>
+-                  <tr><td>viewed</td><td>boolean</td><td>false</td><td>Chế độ xem — text tĩnh, format đầy đủ</td></tr>
++                  <tr><td>viewed</td><td>boolean | <code>inline</code></td><td>false</td><td>Chế độ xem — text tĩnh, format đầy đủ. <code>viewed="inline"</code>: text tĩnh, bấm vào để sửa tại chỗ (<code>sd-inline-text</code>), blur thì lưu</td></tr>
+                   <tr><td>size</td><td><code>sm</code>, <code>md</code>, <code>lg</code></td><td>md</td><td>Chiều cao field</td></tr>
+-                  <tr><td>clearable</td><td>boolean</td><td>false</td><td>Hiện nút xoá khi có giá trị (ẩn nếu required/disabled/readonly)</td></tr>
++                  <tr><td>clearable</td><td>—</td><td>—</td><td><b>Không có trong catalog.</b> Nút × luôn có ở ô có giá trị, hiện khi rê chuột/focus (ẩn nếu disabled/readonly). Markup cũ có <code>clearable</code> vẫn chạy — thuộc tính bị bỏ qua</td></tr>
+                   <tr><td>helperText</td><td>string</td><td>-</td><td>Dòng chú thích dưới field khi không có lỗi</td></tr>
+                   <tr><td>hideInlineError</td><td>boolean</td><td>false</td><td>Ẩn dòng lỗi chữ, thay bằng icon đỏ + tooltip</td></tr>
+                   <tr><td>suffix</td><td>string</td><td>-</td><td>Text hiện cuối field (đơn vị: "VNĐ", "%"...) — mirror <code>&lt;ng-template sdSuffixDef&gt;</code></td></tr>
+@@ -310,6 +350,11 @@
+     // so call directly — DOM is ready at this point.
+     initPreviewTabs();
+   })();
++
++  // Khối catalog: các ô lỗi hiện như đã chạm
++  (function () {
++    document.querySelectorAll('.num-cat-touch').forEach(function (el) { el._touched = true; el._render(); });
++  })();
+ </script>
+ 
+ </body>
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -8,6 +8,26 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `#c-input-number`: `sd-input-number` khớp catalog — nút xoá, hàng hậu tố, disabled, `viewed="inline"`
++
++Builder: *"Tiếp tục phần Input number"*. Đo 13 ô mẫu của catalog (mặc định · có giá trị ·
++precision · hậu tố VND · required · min/max · disabled · readonly · hideInlineError ·
++viewed · viewed="inline") với 13 ô kit cùng nội dung. Sau khi sửa, cả 13 ô trùng toạ độ
++nhãn, chữ, hậu tố, nút xoá, icon lỗi, dòng lỗi; chỉ còn hai lệch đã ghi từ trước của khung
++form dùng chung (viền thật + nền trắng thay ba mảnh `mdc-notched-outline`; tâm chữ lệch 0.25px).
++
++| | Catalog | Kit trước | Kit nay |
++|---|---|---|---|
++| `clearable` | **mặc định bật** — nút × (`sd-clear-btn sd-hover`) có ở mọi ô có giá trị, ẩn tới khi rê chuột / focus | phải khai `clearable`; nút luôn hiện; ô `required` không có nút | khớp — catalog không có input `clearable` nên kit cũng không có cách tắt; `clearable` cũ bị bỏ qua; ô `required` cũng có nút |
++| Hàng hậu tố | `padding:0 12px; gap:8px` — phần tử đầu cách chữ 12px, cuối cách mép phải 12px | cách chữ 4px, mép phải 16px | khớp |
++| Chữ hậu tố (VND) | `T14R text-black400` | 14px, màu riêng | khớp (dùng đúng class catalog) |
++| Icon lỗi (`hideInlineError`) | 20×20px | 24px | khớp |
++| Giá trị khi disabled | `--sd-black400` | `.87` đen | khớp |
++| `viewed="inline"` | dựng `sd-inline-text` (ô co giãn theo chữ, nền xám nhạt, × khi rê chuột), **sửa được** | coi như `viewed` thường — chỉ xem | khớp — rời ô thì chốt giá trị theo `format` |
++
++Preview `input-number.html` thêm 5 mục mẫu theo đúng catalog ở đầu trang; bảng thuộc tính
++ghi `clearable` là thuộc tính không có trong catalog (bị bỏ qua) và `viewed` nhận `inline`. 97 trang, 0 lỗi JS.
++
+ ### Changed — `#c-label`: tooltip của icon gợi ý chuyển sang kiểu `matTooltip`; icon theo màu nhãn
+ 
+ Builder: *"Tiếp tục phần Label"*. Đo 7 nhãn mẫu của catalog (label · required ·
+--- a/_memory/known-gaps.md
++++ b/_memory/known-gaps.md
+@@ -110,6 +110,18 @@
+ | Icon `cleaning_services` / `settings` / `expand_less` | `material-icons` (filled) | `material-icons-outlined` | Rule 4 của `AGENTS.md`. Cùng vị trí, cùng cỡ; riêng `settings` nhìn rỗng ruột hơn |
+ | Icon nút đầu trong header ("xoá bộ lọc") | `cleaning_services` (cây chổi) | **`restart_alt`** (mũi tên vòng), `aria-label="Đặt lại bộ lọc"` | **QUYẾT ĐỊNH CỦA BUILDER 2026-10-12** — *"đổi icon trên external filter thành icon reset"*. Lệch catalog CÓ CHỦ Ý, đừng sửa ngược. Cỡ 16px, vị trí, màu, kiểu nút giữ đúng catalog |
+ 
++## `sd-input-number` — rà soát `#c-input-number` 2026-10-12
++
++| Chỗ | Catalog | Kit | Vì sao |
++|---|---|---|---|
++| Hậu tố | `<ng-template sdSuffixDef>` (nội dung tuỳ ý) | thuộc tính `suffix` (chữ) / `suffixIcon` (icon) | Rule 18, ngoại lệ 2: HTML tĩnh không truyền được template. Kết quả dựng ra cùng markup `T14R text-black400` |
++| `placeholder` của ô ĐANG có giá trị | bản chụp DOM ghi `placeholder` = nhãn | giữ `placeholder` đã khai | Không nhìn thấy được (có giá trị thì placeholder không hiện); ô trống thì hai bên trùng nhau. Không chép |
++| Icon × của `viewed="inline"` | `<mat-icon class="material-icons">` | `<span class="material-icons-outlined">` | Rule 4 (icon outlined). Glyph `close` hai bộ giống hệt, cùng toạ độ |
++| Ô `<input>` bên trong | cao 24px, line-height 24px | cao 21px | Khung form dùng chung của mọi ô nhập; tâm chữ lệch 0.25px — không thấy được |
++| `autoId` · `inlineError` | không có trong API catalog | có | Cùng nhóm "chờ Builder quyết" với sd-select / sd-radio |
++| `suffixIcon` | không có (icon thì đặt trong template `sdSuffixDef`) | có | Trải phẳng template (ngoại lệ 2) như `suffix`; chưa trang nào dùng. Muốn gỡ thì báo |
++| `clearable` | không có — nút × luôn có | thuộc tính bị bỏ qua | Đã gỡ khả năng tắt nút (2026-10-12); markup cũ vẫn chạy |
++
+ ## Hai kiểu tooltip — `sdTooltip` vs `matTooltip` (rà soát `#c-label` 2026-10-12)
+ 
+ Catalog có **hai** loại tooltip khác nhau: directive `[sdTooltip]` của sd-core (#616161,

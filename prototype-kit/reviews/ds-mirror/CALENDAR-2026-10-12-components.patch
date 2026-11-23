@@ -1,0 +1,269 @@
+--- /tmp/components.bak3	2026-10-12 09:48:31.755085277 +0000
++++ prototype-kit-CATALOG-1012m/design-system/core/styles/components.css	2026-10-12 09:52:00.159764369 +0000
+@@ -1048,22 +1048,27 @@
+ }
+ 
+ .form-field-datepicker {
++  /* ══ LỊCH DÙNG CHUNG — mirror `mat-calendar` của Core UI Catalog ══
++     Rà soát 2026-10-12. Đo cùng số ở `#c-date` · `#c-chip-calendar` ·
++     `#c-date-range` · `#c-datetime`. Bố cục và locale theo catalog (en-US,
++     tuần bắt đầu Chủ nhật) — Builder chốt "Đổi theo catalog để khớp sát nhất".
++
++     `--sd-cal-w` là bề ngang khung lịch: catalog `mat-datepicker-content`
++     296px (sd-date, sd-date-range), `mat-menu` 280px (sd-chip-calendar).
++     Mọi khoảng cách % của Material tính trên (bề ngang − 16px), nên thanh
++     tiêu đề phải biết bề ngang này. */
++  --sd-cal-w: 296px;
+   display: none;
+   position: absolute;
+   top: calc(100% + 4px);
+   left: 0;
+-  width: 280px;
+-  /* Rà soát 2026-10-12 với `mat-menu` chứa `mat-calendar` của catalog —
+-     cùng số đo ở cả `#c-date`, `#c-chip-calendar`, `#c-date-range`, `#c-datetime`:
+-       bo góc 4px (không phải 8px) · KHÔNG viền, chỉ bóng ba lớp của Material ·
+-       lề trong 8px dưới + 8px hai bên (không phải 12px đều).
+-     Bản trước: viền 1px, bo 8px, padding 12px. */
++  width: var(--sd-cal-w);
+   background: var(--surface-primary);
+   border: none;
+   border-radius: 4px;
+   box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12);
+   z-index: var(--z-dropdown);
+-  padding: 8px 8px 16px;
++  padding: 0;
+   user-select: none;
+ }
+ 
+@@ -1071,76 +1076,149 @@
+   display: block;
+ }
+ 
+-/* Catalog: `.mat-calendar-header { padding: 8px 8px 0 }` — ở kit phần lề ngang
+-   đã nằm ở panel, nên chỉ giữ khoảng cách xuống dưới. */
++/* ─ Thanh tiêu đề: [OCT 2026 ▾] · khoảng đệm · [‹] [›]
++     Catalog: `.mat-calendar-header{padding:8px 8px 0}` bọc
++     `.mat-calendar-controls{display:flex; margin:5% calc(4.7142857143% - 16px)}`,
++     % tính trên bề ngang nội dung (W − 16). Kit gộp hai lớp đó làm một nên
++     cộng sẵn 8px đệm vào lề. */
+ .form-field-datepicker-header {
+   display: flex;
+   align-items: center;
+-  justify-content: space-between;
+-  margin-bottom: var(--space-2);
++  height: 36px;
++}
++.form-field-datepicker > .form-field-datepicker-header {
++  margin:
++    calc(8px + (var(--sd-cal-w) - 16px) * .05)
++    calc(8px + (var(--sd-cal-w) - 16px) * .047142857 - 16px)
++    calc((var(--sd-cal-w) - 16px) * .05);
+ }
+ 
+-.form-field-datepicker-title {
++/* Nút kỳ: cao 24px, đệm 0 8px, lề 0 8px, bo 4px, chữ 14px/500.
++   Catalog đứng YÊN — không mở bảng chọn tháng/năm (xem sd-components.js). */
++.form-field-datepicker-period {
++  display: inline-flex;
++  align-items: center;
++  flex: 0 1 auto;
++  height: 24px;
++  margin: 0 8px;
++  padding: 0 8px;
++  border: none;
++  border-radius: 4px;
++  background: none;
+   font-family: var(--font-family-sans);
+-  font-size: var(--text-base);
+-  font-weight: var(--font-medium);
+-  color: var(--text-primary);
++  font-size: 14px;
++  font-weight: 500;
++  /* `--mat-sys-title-small-tracking: .006rem` = 0.096px — đo được trên catalog */
++  letter-spacing: .006rem;
++  color: rgba(0, 0, 0, .87);
++  cursor: pointer;
++  white-space: nowrap;
++}
++/* Lớp phủ trạng thái 4% của nút Material (cùng cách `sd-button` đã mirror) */
++.form-field-datepicker-period:hover,
++.form-field-datepicker-nav:hover {
++  background: rgba(0, 0, 0, .04);
++}
++
++.form-field-datepicker-title {
++  font: inherit;
++  color: inherit;
+ }
+ 
++/* Mũi tên ▾ — catalog vẽ bằng <svg> polygon 10×5, fill `rgba(0,0,0,.54)`,
++   cách chữ 5px. Kit vẽ bằng tam giác CSS cùng số đo: Rule 4 của AGENTS.md
++   cấm inline SVG cho icon, và Material Icons không có glyph 10×5. */
++.form-field-datepicker-caret {
++  flex: 0 0 auto;
++  width: 0;
++  height: 0;
++  margin-left: 5px;
++  border-left: 5px solid transparent;
++  border-right: 5px solid transparent;
++  border-top: 5px solid rgba(0, 0, 0, .54);
++}
++
++.form-field-datepicker-spacer {
++  flex: 1 1 auto;
++}
++
++/* Nút ‹ ›: icon-button tròn 36px, đệm 6px, icon 24px. Bản trước 28px bo 4px. */
+ .form-field-datepicker-nav {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+-  width: 28px;
+-  height: 28px;
++  flex: 0 0 auto;
++  width: 36px;
++  height: 36px;
+   border: none;
+   background: none;
+-  border-radius: var(--radius-sm);
++  border-radius: 50%;
+   cursor: pointer;
+-  color: var(--icon-default);
+-  padding: 0;
++  color: rgba(0, 0, 0, .87);
++  padding: 6px;
+ }
+-
+-.form-field-datepicker-nav:hover {
+-  background: var(--surface-hover);
++.form-field-datepicker-nav .material-icons-outlined {
++  font-size: 24px;
+ }
+ 
++/* ─ Nhãn thứ: catalog `th` 14px/500 `rgba(0,0,0,.54)`, đệm `0 0 8px` */
+ .form-field-datepicker-weekdays {
+   display: grid;
+   grid-template-columns: repeat(7, 1fr);
+-  gap: 0;
+-  margin-bottom: var(--space-1);
++  padding: 0 8px;
+ }
+ 
+-/* Catalog `.mat-calendar-table-header th`: 14px / 500 / `rgba(0,0,0,.54)`,
+-   đệm `0 0 8px`. Bản trước 12px, màu --text-secondary, đệm `4px 0`. */
+ .form-field-datepicker-weekday {
+   font-family: var(--font-family-sans);
+   font-size: 14px;
+   font-weight: var(--font-medium);
+   color: rgba(0, 0, 0, .54);
++  letter-spacing: .006rem;
+   text-align: center;
+   padding: 0 0 8px;
+   line-height: 16px;
+ }
+ 
++/* Đường kẻ dưới hàng thứ: catalog `th.mat-calendar-table-header-divider` cao 8px,
++   `::after` 1px `rgba(0,0,0,.12)` tràn ra hai bên 8px — tức đúng mép khung. */
++.form-field-datepicker-divider {
++  position: relative;
++  height: 8px;
++}
++.form-field-datepicker-divider::after {
++  content: '';
++  position: absolute;
++  top: 0;
++  left: 0;
++  right: 0;
++  height: 1px;
++  background: rgba(0, 0, 0, .12);
++}
++
++/* ─ Lưới ngày. `container-type` để nhãn tháng và chiều cao hàng tính được theo
++     bề ngang LƯỚI (catalog dùng % của bảng), không theo bề ngang ô. */
+ .form-field-datepicker-days {
+   display: grid;
+   grid-template-columns: repeat(7, 1fr);
+-  gap: 2px 0;   /* catalog: ô kề nhau theo chiều ngang, cách nhau theo chiều dọc */
++  gap: 0;
++  padding: 0 8px 8px;
++  container-type: inline-size;
+ }
+ 
+-/* Catalog `.mat-calendar-body-cell-content`: ô TRÒN (`border-radius:999px`),
+-   chữ 14px thường, màu `rgba(0,0,0,.87)`, và viền trong suốt 1px để ô "hôm nay"
+-   chỉ đổi MÀU viền chứ không nhảy kích thước. Bản trước của kit: vuông bo 4px,
+-   chữ 12px (--text-sm). */
++/* Ô ngày: catalog `.mat-calendar-body-cell-content` TRÒN, rộng 90% ô, chữ
++   14px thường `rgba(0,0,0,.87)`, viền trong suốt 1px. Lề % của phần tử lưới
++   tính trên bề ngang Ô, nên `5% auto` + `aspect-ratio:1` cho đúng ô vuông
++   cạnh = bề ngang ô (37.7px ở khung 280, 40px ở khung 296) — y hệt bảng của
++   catalog. */
+ .form-field-datepicker-day {
++  position: relative;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+-  width: 34px;
+-  height: 34px;
+-  margin: 0 auto;
++  width: 90%;
++  height: auto;
++  aspect-ratio: 1 / 1;
++  margin: 5% auto;
+   font-family: var(--font-family-sans);
+   font-size: 14px;
+   font-weight: var(--font-regular);
+@@ -1156,19 +1234,17 @@
+   background: var(--surface-hover);
+ }
+ 
+-/* Catalog: ô hôm nay chỉ có VIỀN `rgba(0,0,0,.54)`, không nền, không đậm chữ
+-   (`.mat-calendar-body-today:not(.mat-calendar-body-selected)`). */
++/* Catalog: ô hôm nay chỉ có VIỀN `rgba(0,0,0,.54)`, không nền, không đậm chữ. */
+ .form-field-datepicker-day.today {
+   border-color: rgba(0, 0, 0, .54);
+ }
+ 
+-/* Catalog `.mat-calendar-body-selected`: nền `#AE7129` đặc, chữ trắng, KHÔNG
+-   đậm thêm. Riêng `sd-chip-calendar` dùng kiểu khác — xem rule trong sd-tokens.css. */
++/* Catalog `.mat-calendar-body-selected`: nền `#AE7129` đặc, chữ trắng. */
+ .form-field-datepicker-day.selected {
+   background: var(--color-primary-500);
+   color: var(--text-on-primary);
+ }
+-/* Ô hôm nay ĐỒNG THỜI đang chọn: catalog lồng một vòng trắng vào trong
++/* Hôm nay ĐỒNG THỜI đang chọn: vòng trắng lồng trong
+    (`.mat-calendar-body-selected.mat-calendar-body-today{box-shadow:inset 0 0 0 1px #fff}`). */
+ .form-field-datepicker-day.selected.today {
+   border-color: transparent;
+@@ -1185,6 +1261,30 @@
+   pointer-events: none;
+ }
+ 
++/* Nhãn tháng ("OCT") đầu lưới — catalog `.mat-calendar-body-label`:
++   14px/500 `rgba(0,0,0,.54)`, căn trái, lề trái 4.7142857143% bề ngang bảng,
++   cao đúng một hàng ô. */
++.form-field-datepicker-label {
++  display: flex;
++  align-items: center;
++  min-height: calc(100cqi / 7);
++  padding-left: 4.7142857143cqi;
++  font-family: var(--font-family-sans);
++  font-size: 14px;
++  font-weight: var(--font-medium);
++  letter-spacing: .006rem;
++  color: rgba(0, 0, 0, .54);
++}
++.form-field-datepicker-blank { min-height: calc(100cqi / 7); }
++
++.sd-cal-span-1 { grid-column: span 1; }
++.sd-cal-span-2 { grid-column: span 2; }
++.sd-cal-span-3 { grid-column: span 3; }
++.sd-cal-span-4 { grid-column: span 4; }
++.sd-cal-span-5 { grid-column: span 5; }
++.sd-cal-span-6 { grid-column: span 6; }
++.sd-cal-span-7 { grid-column: span 7; }
++
+ /* --- Type: DateTime (Date + Time picker) --- */
+ .form-field-datetime {
+   position: relative;

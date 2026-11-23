@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-operator — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-operator"
+         data-subtitle="Nút chọn toán tử so sánh cho bộ lọc — đồng bộ Core UI #c-operator"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <sd-section title="Nút kích hoạt">
+          <p class="fs-12 text-black400 mb-12">Nút trong suốt màu <code>--sd-primary</code>; rê chuột → tooltip (matTooltip, phía trên) là nhãn đã dịch của toán tử đang chọn. Chưa chọn → icon phễu, không tooltip.</p>
+          <div style="display:flex;align-items:flex-end;gap:20px 28px;flex-wrap:wrap;padding-top:24px;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;">
+            <sd-operator operators='["EQUAL","NOT_EQUAL","GREATER_THAN","LESS_THAN","GREATER_OR_EQUAL","LESS_OR_EQUAL","BETWEEN"]'></sd-operator><span class="fs-12 text-black400 font-mono">chưa chọn (phễu)</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;">
+            <sd-operator model="EQUAL" operators='["EQUAL","NOT_EQUAL","GREATER_THAN","LESS_THAN","GREATER_OR_EQUAL","LESS_OR_EQUAL","BETWEEN"]'></sd-operator><span class="fs-12 text-black400 font-mono">EQUAL</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;">
+            <sd-operator model="CONTAIN" operators='["CONTAIN","NOT_CONTAIN","START_WITH","NOT_START_WITH","END_WITH","NOT_END_WITH","IN","NOT_IN","NULL","NOT_NULL"]'></sd-operator><span class="fs-12 text-black400 font-mono">CONTAIN</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;">
+            <sd-operator model="BETWEEN" operators='["EQUAL","NOT_EQUAL","GREATER_THAN","LESS_THAN","GREATER_OR_EQUAL","LESS_OR_EQUAL","BETWEEN"]'></sd-operator><span class="fs-12 text-black400 font-mono">BETWEEN</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;">
+            <sd-operator model="NOT_NULL" operators='["CONTAIN","NOT_CONTAIN","START_WITH","NOT_START_WITH","END_WITH","NOT_END_WITH","IN","NOT_IN","NULL","NOT_NULL"]'></sd-operator><span class="fs-12 text-black400 font-mono">NOT_NULL</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;">
+            <sd-operator model="EQUAL" operators='["EQUAL"]' disabled></sd-operator><span class="fs-12 text-black400 font-mono">disabled</span></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Menu — danh sách toán tử theo đúng thứ tự truyền vào">
+          <p class="fs-12 text-black400 mb-12">Bấm nút để mở menu: mỗi dòng icon · nhãn (VI_MESSAGES) · mã; dòng đang chọn tô <code>--sd-primary-light</code>. Bàn phím: Enter / Space mở · ↑ ↓ Home End di chuyển · Enter chọn · Esc / Tab đóng.</p>
+          <div style="display:flex;gap:24px 48px;flex-wrap:wrap;min-height:540px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:300px;">
+              <span class="fs-12 text-black400 font-mono">Số tiền giải ngân</span>
+              <sd-operator id="op-num" model="GREATER_OR_EQUAL" autoId="loc-so-tien" operators='["EQUAL","NOT_EQUAL","GREATER_THAN","LESS_THAN","GREATER_OR_EQUAL","LESS_OR_EQUAL","BETWEEN"]'></sd-operator>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:300px;">
+              <span class="fs-12 text-black400 font-mono">Tên ngân hàng</span>
+              <sd-operator id="op-text" model="CONTAIN" autoId="loc-ngan-hang" operators='["CONTAIN","NOT_CONTAIN","START_WITH","NOT_START_WITH","END_WITH","NOT_END_WITH","IN","NOT_IN","NULL","NOT_NULL"]'></sd-operator>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px;">
+              <sd-button id="btn-op-open" title="open() — mở menu &quot;Số tiền giải ngân&quot;" type="light" color="primary" prefixIcon="menu_open"></sd-button>
+            </div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Event log">
+          <p class="fs-12 text-black400 mb-12"><code>sd-change</code> ≙ <code>(modelChange)</code> của <code>[(model)]</code> — chỉ phát khi đổi sang toán tử khác.</p>
+          <pre class="ds-guide-code" id="op-event-log">Chưa có sự kiện nào.</pre>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Ô lọc cần cho người dùng chọn cách so sánh: bằng, lớn hơn, trong khoảng, chứa…</li>
+                  <li>Dựng điều kiện trong sd-query-bar / sd-query-builder (hai component này đã dùng sẵn)</li>
+                  <li>Chỉ cho phép một số toán tử theo kiểu dữ liệu (số tiền, chuỗi, ngày)</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Ô lọc luôn so sánh một kiểu cố định — không cần cho chọn</li>
+                  <li>Chọn giá trị dữ liệu (trạng thái, chi nhánh) — dùng sd-select</li>
+                  <li>Bộ lọc nhiều điều kiện lồng nhau — dùng sd-query-builder</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Cạnh ô Số tiền giải ngân có sd-operator cho chọn: Bằng, Không bằng, Lớn hơn, Nhỏ hơn, Lớn hơn hoặc bằng, Nhỏ hơn hoặc bằng, Trong khoảng — mặc định Lớn hơn hoặc bằng. Chọn Trong khoảng thì ô nhập đổi thành hai ô Từ / Đến."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-operator id="op-so-tien" model="GREATER_OR_EQUAL" autoId="loc-so-tien"
+  operators='["EQUAL","NOT_EQUAL","GREATER_THAN","LESS_THAN","GREATER_OR_EQUAL","LESS_OR_EQUAL","BETWEEN"]'&gt;&lt;/sd-operator&gt;
+
+&lt;script&gt;
+  var op = document.getElementById('op-so-tien');
+  op.addEventListener('sd-change', function (e) { /* e.detail.value */ });
+  op.open();    // mở menu bằng code (như sd-query-bar khi dựng điều kiện)
+&lt;/script&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes / property</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Tên</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>model</td><td>mã toán tử</td><td>-</td><td>Toán tử đang chọn (<code>[(model)]</code>). Rỗng / mã lạ → icon phễu, không tooltip</td></tr>
+                  <tr><td>operators</td><td>JSON · "A,B,C" · property JS</td><td>[]</td><td>Toán tử được phép, giữ đúng thứ tự truyền vào. Không khai → menu rỗng (như thư viện)</td></tr>
+                  <tr><td>disabled</td><td>boolean</td><td>false</td><td>Nút xám <code>rgba(0,0,0,.26)</code>, không mở được menu</td></tr>
+                  <tr><td>autoId</td><td>string</td><td>-</td><td><code>data-autoId</code> trên nút, nguyên giá trị (không tiền tố)</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">17 mã toán tử (bảng OPERATORS · nhãn VI_MESSAGES)</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Mã</th><th>Nhãn</th><th>Mã</th><th>Nhãn</th></tr></thead>
+                <tbody>
+                  <tr><td>EQUAL</td><td>Bằng</td><td>NOT_EQUAL</td><td>Không bằng</td></tr>
+                  <tr><td>GREATER_THAN</td><td>Lớn hơn</td><td>LESS_THAN</td><td>Nhỏ hơn</td></tr>
+                  <tr><td>GREATER_OR_EQUAL</td><td>Lớn hơn, hoặc bằng</td><td>LESS_OR_EQUAL</td><td>Nhỏ hơn, hoặc bằng</td></tr>
+                  <tr><td>CONTAIN</td><td>Chứa</td><td>NOT_CONTAIN</td><td>Không chứa</td></tr>
+                  <tr><td>START_WITH</td><td>Bắt đầu bởi</td><td>NOT_START_WITH</td><td>Không bắt đầu bởi</td></tr>
+                  <tr><td>END_WITH</td><td>Kết thúc bởi</td><td>NOT_END_WITH</td><td>Không kết thúc bởi</td></tr>
+                  <tr><td>IN</td><td>Nằm trong</td><td>NOT_IN</td><td>Không nằm trong</td></tr>
+                  <tr><td>BETWEEN</td><td>Trong khoảng</td><td>NULL · NOT_NULL</td><td>Là rỗng · Không rỗng</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Method · Event</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Tên</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>open()</td><td>Mở menu (thư viện) — focus mục đầu</td></tr>
+                  <tr><td>close()</td><td>Đóng menu (kit thêm)</td></tr>
+                  <tr><td>sd-change</td><td>detail <code>{ value }</code> ≙ <code>(modelChange)</code> — chỉ khi đổi giá trị</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      showPanel(0);
+    }
+    initPreviewTabs();
+  })();
+
+  (function () {
+    var log = document.getElementById('op-event-log'), empty = 'Chưa có sự kiện nào.';
+    document.addEventListener('sd-change', function (e) {
+      if (!e.target.matches || !e.target.matches('sd-operator')) return;
+      log.textContent = (log.textContent === empty ? '' : log.textContent + '\n') +
+        'sd-change #' + (e.target.id || 'sd-operator') + ' { value: "' + e.detail.value + '" }';
+    });
+    document.getElementById('btn-op-open').addEventListener('click', function (e) {
+      e.stopPropagation();
+      document.getElementById('op-num').open();
+    });
+  })();
+</script>
+
+</body>
+</html>

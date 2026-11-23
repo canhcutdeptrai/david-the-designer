@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-button — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-button"
+         data-subtitle="4 kiểu × 6 màu × 3 cỡ — fill, light, outline, link; icon, nút vuông, loading, disabled, block / width (catalog #c-button)"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <!-- 7 ví dụ đúng thứ tự catalog #c-button; khung .bt-* là của trang demo -->
+      <div class="tab-panel" data-tab-panel="0" data-catalog-section="c-button">
+
+        <sd-section title="type × color — size=&quot;sm&quot; (mặc định); type mặc định &quot;light&quot;, color mặc định &quot;secondary&quot;">
+          <div class="bt-grid">
+              <span></span>
+              <span class="bt-head">primary</span>
+              <span class="bt-head">secondary</span>
+              <span class="bt-head">info</span>
+              <span class="bt-head">success</span>
+              <span class="bt-head">warning</span>
+              <span class="bt-head">error</span>
+              <span class="bt-head">fill</span>
+              <sd-button type="fill" color="primary" title="Primary"></sd-button>
+              <sd-button type="fill" color="secondary" title="Secondary"></sd-button>
+              <sd-button type="fill" color="info" title="Info"></sd-button>
+              <sd-button type="fill" color="success" title="Success"></sd-button>
+              <sd-button type="fill" color="warning" title="Warning"></sd-button>
+              <sd-button type="fill" color="error" title="Error"></sd-button>
+              <span class="bt-head">light</span>
+              <sd-button type="light" color="primary" title="Primary"></sd-button>
+              <sd-button type="light" color="secondary" title="Secondary"></sd-button>
+              <sd-button type="light" color="info" title="Info"></sd-button>
+              <sd-button type="light" color="success" title="Success"></sd-button>
+              <sd-button type="light" color="warning" title="Warning"></sd-button>
+              <sd-button type="light" color="error" title="Error"></sd-button>
+              <span class="bt-head">outline</span>
+              <sd-button type="outline" color="primary" title="Primary"></sd-button>
+              <sd-button type="outline" color="secondary" title="Secondary"></sd-button>
+              <sd-button type="outline" color="info" title="Info"></sd-button>
+              <sd-button type="outline" color="success" title="Success"></sd-button>
+              <sd-button type="outline" color="warning" title="Warning"></sd-button>
+              <sd-button type="outline" color="error" title="Error"></sd-button>
+              <span class="bt-head">link</span>
+              <sd-button type="link" color="primary" title="Primary"></sd-button>
+              <sd-button type="link" color="secondary" title="Secondary"></sd-button>
+              <sd-button type="link" color="info" title="Info"></sd-button>
+              <sd-button type="link" color="success" title="Success"></sd-button>
+              <sd-button type="link" color="warning" title="Warning"></sd-button>
+              <sd-button type="link" color="error" title="Error"></sd-button>
+          </div>
+          <pre class="ds-guide-code mt-12">&lt;sd-button type="fill" color="primary" title="Primary"&gt;&lt;/sd-button&gt;
+&lt;sd-button type="light" color="primary" title="Primary"&gt;&lt;/sd-button&gt;
+&lt;sd-button type="outline" color="primary" title="Primary"&gt;&lt;/sd-button&gt;
+&lt;sd-button type="link" color="primary" title="Primary"&gt;&lt;/sd-button&gt;
+&lt;!-- color: primary · secondary (#000 đen tuyền) · info · success · warning · error --&gt;</pre>
+        </sd-section>
+
+        <sd-section title="Kích thước sm / md / lg — cao 32 / 40 / 48px; nút vuông khi chỉ có icon">
+          <div class="bt-col">
+            <div class="bt-row">
+              <sd-button type="fill" color="primary" size="sm" prefixIcon="add" title="Tạo hồ sơ sm"></sd-button>
+              <sd-button type="fill" color="primary" size="md" prefixIcon="add" title="Tạo hồ sơ md"></sd-button>
+              <sd-button type="fill" color="primary" size="lg" prefixIcon="add" title="Tạo hồ sơ lg"></sd-button>
+              <sd-button type="fill" color="primary" size="sm" prefixIcon="edit"></sd-button>
+              <sd-button type="fill" color="primary" size="md" prefixIcon="edit"></sd-button>
+              <sd-button type="fill" color="primary" size="lg" prefixIcon="edit"></sd-button>
+            </div>
+            <div class="bt-row">
+              <sd-button type="outline" color="secondary" size="sm" prefixIcon="add" title="Tạo hồ sơ sm"></sd-button>
+              <sd-button type="outline" color="secondary" size="md" prefixIcon="add" title="Tạo hồ sơ md"></sd-button>
+              <sd-button type="outline" color="secondary" size="lg" prefixIcon="add" title="Tạo hồ sơ lg"></sd-button>
+              <sd-button type="outline" color="secondary" size="sm" prefixIcon="edit"></sd-button>
+              <sd-button type="outline" color="secondary" size="md" prefixIcon="edit"></sd-button>
+              <sd-button type="outline" color="secondary" size="lg" prefixIcon="edit"></sd-button>
+            </div>
+          </div>
+          <pre class="ds-guide-code mt-12">&lt;sd-button type="fill" color="primary" size="md" prefixIcon="add" title="Tạo hồ sơ md"&gt;&lt;/sd-button&gt;
+&lt;!-- Không có title + có icon → c-square: 32 / 40 / 48px --&gt;
+&lt;sd-button type="fill" color="primary" size="md" prefixIcon="edit"&gt;&lt;/sd-button&gt;</pre>
+        </sd-section>
+
+        <sd-section title="prefixIcon / suffixIcon — fontSet mặc định material-icons-outlined">
+          <div class="bt-row">
+            <sd-button type="fill" color="primary" prefixIcon="add" title="Thêm khoản vay"></sd-button>
+            <sd-button type="light" color="primary" prefixIcon="file_download" title="Xuất Excel"></sd-button>
+            <sd-button type="outline" color="secondary" prefixIcon="filter_list" title="Bộ lọc"></sd-button>
+            <sd-button type="light" color="info" suffixIcon="arrow_forward" title="Xem dòng tiền"></sd-button>
+            <sd-button type="link" color="primary" suffixIcon="open_in_new" title="Lịch sử phê duyệt"></sd-button>
+            <sd-button type="fill" color="success" prefixIcon="send" suffixIcon="expand_more" title="Gửi phê duyệt"></sd-button>
+          </div>
+        </sd-section>
+
+        <sd-section title="Nút vuông (chỉ icon) — c-square tự bật khi có icon mà không có title; dùng kèm tooltip">
+          <div class="bt-row">
+            <sd-button type="fill" color="primary" prefixIcon="add" tooltip="Thêm mới"></sd-button>
+            <sd-button type="light" color="primary" prefixIcon="edit" tooltip="Sửa"></sd-button>
+            <sd-button type="light" color="error" prefixIcon="delete" tooltip="Xoá"></sd-button>
+            <sd-button type="outline" color="secondary" prefixIcon="more_vert"></sd-button>
+            <sd-button type="outline" color="secondary" prefixIcon="filter_alt"></sd-button>
+            <sd-button type="link" color="info" prefixIcon="visibility"></sd-button>
+            <sd-button type="light" color="secondary" prefixIcon="refresh"></sd-button>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">Nút chỉ-icon luôn dùng <code>prefixIcon</code>. Chỉ khai <code>suffixIcon</code>
+            (không title, không prefixIcon) thì template thư viện vẽ <strong>hai icon</strong> — đúng bản thật, kit giữ y vậy.</p>
+        </sd-section>
+
+        <sd-section title="loading — spinner 18px thay prefixIcon, chặn click; bấm &quot;Lưu hồ sơ&quot; để xem chuyển trạng thái">
+          <div class="bt-row">
+            <sd-button type="fill" color="primary" title="Đang lưu" loading></sd-button>
+            <sd-button type="outline" color="secondary" title="Đang xuất" loading></sd-button>
+            <sd-button type="light" color="secondary" prefixIcon="refresh" loading></sd-button>
+            <span class="bt-sep"></span>
+            <sd-button type="fill" color="primary" prefixIcon="save" title="Lưu hồ sơ" id="btn-save"></sd-button>
+            <span class="fs-12 text-black400">Click nhận được: <strong id="btn-click-count">0</strong></span>
+          </div>
+          <pre class="ds-guide-code mt-12">&lt;sd-button type="fill" color="primary" prefixIcon="save" title="Lưu hồ sơ" id="btnSave"&gt;&lt;/sd-button&gt;
+&lt;script&gt;
+  btnSave.addEventListener('click', () =&gt; {       // ≙ (click)="save()" — bị chặn khi loading / disabled
+    btnSave.setAttribute('loading', '');          // ≙ [loading]="saving()"
+    luu().finally(() =&gt; btnSave.removeAttribute('loading'));
+  });
+&lt;/script&gt;</pre>
+        </sd-section>
+
+        <sd-section title="disabled — nền #e9e9e9 + chữ #a6a6a6 (!important) và opacity .5, áp cho mọi type">
+          <div class="bt-row">
+            <sd-button type="fill" color="primary" title="Phê duyệt" disabled></sd-button>
+            <sd-button type="light" color="primary" title="Phê duyệt" disabled></sd-button>
+            <sd-button type="outline" color="primary" title="Phê duyệt" disabled></sd-button>
+            <sd-button type="link" color="primary" title="Phê duyệt" disabled></sd-button>
+            <sd-button type="fill" color="error" prefixIcon="block" title="Từ chối" disabled></sd-button>
+            <sd-button type="outline" color="secondary" prefixIcon="delete" disabled></sd-button>
+          </div>
+        </sd-section>
+
+        <sd-section title="block / width — block chiếm 100% khung chứa; width đặt thẳng lên &lt;button&gt;, title dài bị ellipsis">
+          <div class="bt-row">
+            <div class="bt-box">
+              <sd-button type="fill" color="primary" size="md" title="Gửi phê duyệt hồ sơ" block></sd-button>
+              <sd-button type="outline" color="secondary" size="md" title="Lưu nháp" block></sd-button>
+            </div>
+            <div class="bt-box">
+              <sd-button type="light" color="primary" title="Rộng 240px" width="240px"></sd-button>
+              <sd-button type="fill" color="info" title="Tiêu đề rất dài sẽ bị cắt bằng dấu ba chấm" width="200px"></sd-button>
+            </div>
+          </div>
+        </sd-section>
+
+        <sd-section title="htmlType — nút trong form">
+          <p class="fs-12 text-black400 mb-12">
+            Mặc định <code>button</code> nên nút không tự submit form. Khai <code>htmlType="submit"</code>
+            mới submit, <code>htmlType="reset"</code> để xoá form.
+          </p>
+          <form id="btn-form" class="flex gap-12 flex-wrap align-items-center" onsubmit="return false">
+            <sd-input label="Ô thử" id="btn-form-input"></sd-input>
+            <sd-button type="fill" color="primary" title="Submit" htmlType="submit"></sd-button>
+            <sd-button type="light" color="secondary" title="Reset" htmlType="reset"></sd-button>
+            <span class="fs-12 text-black400">Đã submit: <strong id="btn-form-count">0</strong> lần</span>
+          </form>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Trigger hành động người dùng (lưu, tạo mới, xóa, xuất)</li>
+                  <li>Actions trong page-header, form footer, table rows</li>
+                  <li>Dialog/drawer confirmation buttons</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Navigation giữa các trang (dùng link)</li>
+                  <li>Toggle on/off trạng thái đơn thuần (dùng checkbox/switch)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Nút Tạo mới (fill primary) và Bỏ qua (link primary) ở cuối form. Nút Xoá (light error, chỉ icon) trong hàng table."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-button type="fill" color="primary" title="Tạo mới" prefixIcon="add"&gt;&lt;/sd-button&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>type</td><td>fill | light | outline | link</td><td><strong>light</strong></td><td>Kiểu hiển thị. <code>text</code> là bí danh đầu vào của <code>link</code>. Giá trị khác (so đúng chữ) → thư viện <strong>không vẽ nút</strong>, kit y vậy</td></tr>
+                  <tr><td>color</td><td>primary | secondary | info | success | warning | error</td><td><strong>secondary</strong></td><td>Màu sắc. <code>secondary</code> của catalog là <strong>#000</strong></td></tr>
+                  <tr><td>size</td><td>sm | md | lg</td><td><strong>sm</strong></td><td>Cao 32 / 40 / 48px; icon 16 / 20 / 24px</td></tr>
+                  <tr><td>title</td><td>string</td><td>-</td><td>Nhãn nút. Bỏ trống mà có icon thì nút thành vuông (<code>c-square</code>)</td></tr>
+                  <tr><td>prefixIcon</td><td>tên icon</td><td>-</td><td>Icon trước nhãn; nhãn nhận thêm <code>.ml-8</code></td></tr>
+                  <tr><td>suffixIcon</td><td>tên icon</td><td>-</td><td>Icon sau nhãn; nhãn nhận thêm <code>.mr-8</code>. Chỉ suffixIcon (không title / prefixIcon) → thư viện vẽ hai icon, nên nút chỉ-icon dùng <code>prefixIcon</code></td></tr>
+                  <tr><td>fontSet</td><td>string</td><td>material-icons-outlined</td><td>Bộ icon dùng cho prefix/suffix</td></tr>
+                  <tr><td>tooltip</td><td>string</td><td>-</td><td><code>matTooltip</code>: bong bóng kiểu Material, hiện ngay, vị trí <code>above</code></td></tr>
+                  <tr><td>width</td><td>CSS length</td><td>-</td><td>Đặt thẳng lên <code>&lt;button&gt;</code>; nhãn dài bị cắt ba chấm</td></tr>
+                  <tr><td>block</td><td>boolean</td><td>false</td><td>Chiếm 100% khung chứa</td></tr>
+                  <tr><td>htmlType</td><td>button | submit | reset</td><td>button</td><td>Thuộc tính <code>type</code> của thẻ <code>&lt;button&gt;</code></td></tr>
+                  <tr><td>autoId</td><td>string</td><td>-</td><td>Ra <code>data-autoid="components-button-{autoId}"</code></td></tr>
+                  <tr><td>disabled</td><td>boolean</td><td>false</td><td>Nền <code>#e9e9e9</code>, chữ <code>#a6a6a6</code>, mờ <code>.5</code> — áp cho mọi type</td></tr>
+                  <tr><td>loading</td><td>boolean</td><td>false</td><td>Vòng xoay 18px thay <code>prefixIcon</code>, nút mờ <code>.85</code>, con trỏ <code>wait</code></td></tr>
+                  <tr><td>(click)</td><td>sự kiện <code>click</code> trên thẻ</td><td>-</td><td>Bị nghiền ở pha capture khi disabled / loading; throttle 300ms. Nội dung viết trong thẻ <strong>không hiện</strong> (thư viện không có ng-content) — dùng <code>title</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+  /* khung demo của catalog #c-button (button.css .bt-*) — chỉ của trang demo */
+  /* catalog đặt lưới trong .stage (flex) nên lưới co theo nội dung → max-content */
+  .bt-grid { display: grid; grid-template-columns: auto repeat(6, max-content); gap: 12px; align-items: center; width: max-content; max-width: 100%; }
+  .bt-head { font-family: var(--font-family-mono); font-size: 11.5px; color: #6b6b6b; }
+  .bt-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .bt-col { display: flex; flex-direction: column; gap: 12px; }
+  .bt-box { display: flex; flex-direction: column; gap: 8px; width: 320px; max-width: 100%; }
+  .bt-box + .bt-box { flex-direction: row; flex-wrap: wrap; width: auto; }
+  .bt-sep { width: 1px; align-self: stretch; background: #e0e0e0; margin: 0 4px; }
+</style>
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      // Show first panel on load
+      showPanel(0);
+    }
+
+    // patterns:loaded already fired before this inline script runs,
+    // so call directly — DOM is ready at this point.
+    initPreviewTabs();
+  })();
+
+  // Demo: "Lưu hồ sơ" — click → loading 1.5s (≙ [loading]="saving()"); click lúc loading bị chặn
+  (function () {
+    var btn = document.getElementById('btn-save'), out = document.getElementById('btn-click-count'), n = 0;
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      out.textContent = ++n;
+      btn.setAttribute('loading', '');
+      setTimeout(function () { btn.removeAttribute('loading'); }, 1500);
+    });
+  })();
+
+  // Demo: htmlType="submit"
+  (function () {
+    var form = document.getElementById('btn-form');
+    var out = document.getElementById('btn-form-count');
+    if (!form || !out) return;
+    var n = 0;
+    form.addEventListener('submit', function (e) { e.preventDefault(); out.textContent = ++n; });
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,646 @@
+# POPUP-OVERLAY 2026-10-14 — popup của sd-date / sd-date-range / sd-datetime / sd-chip-calendar / sd-autocomplete ra overlay (body > .cdk-overlay-container) như catalog; sd-select gỡ panel khỏi thẻ khi đóng
+# Quyết định Builder: 'Làm phần này trước: … 2. Chuyển popup ra lớp nổi'
+# 6 file: sd-components.js (sdFloatInstall + 5 component + SdSelect), sd-tokens.css (67 luật :is(sd-x, :where(.sd-x-pane)) + pane), sd-form.md, CHANGELOG, known-gaps, lessons
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/POPUP-OVERLAY-2026-10-14.patch
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-14 08:47:49.363259724 +0000
++++ b/CHANGELOG.md	2026-10-14 09:16:28.264627117 +0000
+@@ -8,6 +8,26 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — popup ra lớp nổi: lịch / bảng gợi ý nằm ở overlay như catalog (Builder 2026-10-14: *„Chuyển popup ra lớp nổi“*)
++
++- `sd-date` · `sd-date-range` · `sd-datetime` · `sd-chip-calendar` · `sd-autocomplete`: khối mở (lịch, bảng gợi ý) trước là con
++  `absolute` NẰM TRONG thẻ (kể cả khi đóng) → bị bảng / khung cuộn / khay cắt. Nay: đóng thì thẻ chỉ còn ô; mở thì khối vào
++  `body > .cdk-overlay-container > .cdk-overlay-pane.sd-float-pane.sd-<tên>-pane`, đặt ngay dưới khung ô, **lật lên** khi dưới
++  thiếu chỗ, **dời trái** khi tràn mép phải, bám theo khi cuộn, ẩn khi ô bị cuộn khuất (như CDK). `sd-select`: panel đã ở overlay từ
++  2026-10-13, nay thêm — đóng thì gỡ panel khỏi thẻ. Host các thẻ này bỏ `position:relative` (catalog `static`).
++- Làm bằng một lớp chung `sdFloatInstall` (sd-components.js) — **không viết lại** logic từng component: khối được tách khỏi thẻ
++  sau mỗi lần vẽ; `el.querySelector(...)` / `el.contains(...)` của thẻ tìm cả trong khối; sự kiện trong pane chuyển cho listener
++  của thẻ. CSS: 67 luật `sd-x … <phần trong popup>` đổi thành `:is(sd-x, :where(.sd-x-pane)) …` (cùng độ ưu tiên —
++  `reviews/ds-mirror/float/rewrite.py`).
++- **Kiểm**: chụp computed style mọi nút của 120 popup (9 trang) trước / sau → chỉ còn khác ở chỗ chủ ý (chữ kế thừa từ overlay
++  Roboto 400 / #212529 như catalog thay vì từ ô lọc của bảng; lật lên / dời trái khi thiếu chỗ). Đối chiếu tự động: thẻ
++  date / date-range / datetime / chip-calendar / autocomplete / select **không còn khối popup bên trong**. Kịch bản mới bấm thật 26
++  bước (chọn ngày, › tháng, bấm ra ngoài, Esc, khoảng ngày, giờ + Xác nhận, chip lịch, gợi ý, select, lịch ô lọc của bảng không tràn):
++  đều qua. 0 lỗi JS / 94 trang; kịch bản prototype chạy lại đủ; ảnh 96 trang: chỉ 4 trang preview có mẫu "đang mở" khác.
++- **Còn khác** (known-gaps): ruột lịch vẫn là lưới `.form-field-datepicker-*` của kit, chưa phải `mat-calendar`.
++- Docs: `design-system/components/sd-form.md` (JS trang tìm popup qua chính thẻ). Kịch bản `pos-interact.mjs` đổi chỗ tìm bảng gợi ý.
++  Bản vá: `reviews/ds-mirror/POPUP-OVERLAY-2026-10-14.patch`.
++
+ ### Changed — `sd-checkbox` và `sd-switch` dựng đúng DOM Material của catalog (Builder 2026-10-14: *„Checkbox và switch, vì dùng ở rất nhiều trang“*)
+ 
+ - **`sd-checkbox`**: trước là `label.c-checkbox-wrap > span.c-checkbox-hit > input.c-checkbox-input…` tự dựng. Nay đúng
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-14 08:47:49.364169539 +0000
++++ b/_memory/known-gaps.md	2026-10-14 09:11:58.404611076 +0000
+@@ -14,14 +14,15 @@
+ 
+ | Ngày ghi | Chỗ | Triệu chứng | Vì sao hoãn |
+ |---|---|---|---|
+-| 2026-10-13 | Popup lịch / gợi ý trong khung bị cắt: `sd-date-range` (ô lọc cột ngày của `sd-table` — lịch 296px tràn mép phải, bị khung bảng cắt), `sd-date`, `sd-datetime`, `sd-chip-calendar`, `sd-autocomplete` | Popup vẫn là con `position:absolute` của host → bị `overflow` của khung chứa (bảng, `sd-section`, khay, modal) cắt. `sd-select` đã chuyển panel ra overlay ở `<body>` (mục bên dưới) | Builder chỉ nêu ô select; mỗi popup có luồng sự kiện riêng — làm cùng cách trong một đợt riêng |
++| 2026-10-13 | ~~Popup lịch / gợi ý trong khung bị cắt~~ **ĐÃ SỬA 2026-10-14** (popup ra overlay — mục `Popup nổi` bên dưới): `sd-date-range` (ô lọc cột ngày của `sd-table` — lịch 296px tràn mép phải, bị khung bảng cắt), `sd-date`, `sd-datetime`, `sd-chip-calendar`, `sd-autocomplete` | Popup vẫn là con `position:absolute` của host → bị `overflow` của khung chứa (bảng, `sd-section`, khay, modal) cắt. `sd-select` đã chuyển panel ra overlay ở `<body>` (mục bên dưới) | Builder chỉ nêu ô select; mỗi popup có luồng sự kiện riêng — làm cùng cách trong một đợt riêng |
+ | 2026-10-13 | **[ĐÃ THAY THẾ 2026-10-13 — xem mục "Style chung — THEO CORE UI" bên dưới]** **Style chung** (tiện ích + reboot + token Figma) | Rà soát toàn cục so với `sd-core.scss` 19.0.10: token `--sd-*` 25/25 khớp, lớp màu 81/81 khớp; nhưng thang spacing kit (Tailwind ×4px) **cùng tên khác nghĩa** với sd-core (px) ở 20 lớp / 732 chỗ dùng, kit thiếu ~4.300 lớp sd-core, reboot khác (margin 0, link, form control), token `--color-*` OMEU lệch màu trạng thái catalog, bóng Tailwind thay vì `mat-elevation`. Báo cáo: `reviews/ds-mirror/GLOBAL-STYLES-AUDIT-2026-10-13.md` | Đụng mọi trang — CHỜ BUILDER chọn hướng |
+ | 2026-10-11 | `sd-table` — đường kẻ dòng | Catalog `#c-table` **bỏ hẳn** `border-bottom` của ô trong dòng dữ liệu (`tr.c-row td { border-bottom-width: 0 }`), phân tách dòng chỉ bằng nền hover và nền dòng đang chọn. Kit đã làm theo. **Builder nên xem lại:** bảng back-office dày đặc mất đường kẻ ngang thì dò theo hàng khó hơn, mà Data Density là một trong các nguyên tắc thiết kế của OMEU | Đã mirror đúng catalog theo yêu cầu "mọi thứ giống catalog". Muốn trả lại đường kẻ thì bỏ rule `sd-table tr.c-row .c-td { border-bottom-width: 0 }` trong `sd-tokens.css` — một dòng |
+ | 2026-10-11 | `sd-button` `color="secondary"` | Catalog cho `secondary` màu **#000 đen tuyền**, trùng hệt `black`; kit trước đây dùng `--sd-secondary` (#212121). Kéo theo: nút `fill secondary` nay **đen tuyền**, và nút `secondary` lúc `disabled` **vẫn giữ nền/chữ đen** (chuỗi `!important` của catalog thắng rule disabled). **Builder nên xem lại:** nút đen tuyền khá nặng trong giao diện back-office, và `secondary` disabled nhìn không giống đang bị khoá | Đã mirror đúng catalog theo yêu cầu "mọi thứ giống catalog". Muốn trả lại: đổi `#000` thành `var(--sd-secondary)` ở bốn rule `.c-{fill,light,outline,link}.mat-secondary` trong `sd-tokens.css` |
+ | 2026-10-11 | Ô nhập — viền khi hover / focus / lỗi | Catalog ghim màu viền ô nhập ở **mọi trạng thái** bằng `!important` (`.mat-mdc-notch-piece.mdc-notched-outline__leading{border-color:var(--sd-black200)!important}`), nên hover không đổi màu, focus chỉ **dày lên 2px** chứ không chuyển nâu, và **ô lỗi vẫn giữ viền xám** — chỉ `hideInlineError` mới cho viền đỏ. Kit đã làm theo. **Builder nên xem lại:** bản cũ của kit (hover xám đậm, focus nâu + quầng, lỗi viền đỏ) dễ thấy hơn nhiều khi điền form dài | Đã mirror đúng catalog theo yêu cầu "mọi thứ giống catalog". Từ 2026-10-13 mọi `sd-*` dùng DOM Material: luật nằm ở các khối `catalog #c-…` (`.mat-mdc-notch-piece… {border-color:var(--sd-black200)!important}`) trong `sd-tokens.css` — muốn trả lại thì sửa ở đó. Ba rule `.sd-form-field:hover` / `:focus-within` / `.sd-error` nay chỉ còn áp cho markup viết tay |
+ | 2026-10-11 | **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]** `sd-stepper` — nhãn bước đang làm | Catalog **có** rule tô nhãn bước đang làm màu brand + 600, nhưng rule `.mat-step-label-active` đứng trước lại nhiều class hơn nên luôn thắng → nhãn bước đang làm KHÔNG khác các bước khác. Kit chép lại đúng tương quan điểm đó. **Builder nên xem lại:** bước đang làm giờ chỉ phân biệt bằng vòng tròn (số, nền đặc), nhãn thì giống hệt bước khác | Đây là hành vi THẬT của catalog (nhiều khả năng là lỗi thứ tự rule của thư viện). Muốn trả lại: nâng điểm rule `sd-stepper .sd-stepper__label--selected` |
+ | 2026-10-14 | Kit có, `.d.ts` 19.0.10 không có (phát hiện khi sinh `html-to-angular-api.md`) | `sd-select showSelectAll` / `hideReadError` · `sd-input-number clearable` · `sd-radio helperText` · `sd-date-range inlineError` · `autoId` trên `sd-label` / `sd-view` / `sd-history` / `sd-import-excel` / `sd-form-builder` / `sd-document-builder` / `sd-header-footer-builder` · `sd-table addable` / `filterRequired` / cột number `option.precision`. Ngược lại `.d.ts` CÓ mà kit đã gỡ theo bảng API catalog: `sd-tab-group disableRipple` / `autoId`; `sd-side-drawer` 19.0.10 chỉ có `[sdFooter]` (không `sdFooterLeft/Right`) | Rule 18 đo theo **bảng API catalog**, còn `.d.ts` là mã thật — hai nguồn lệch nhau. Chờ Builder chọn nguồn khi rà Rule 18. Bảng dịch đã ghi "Kit-only — bỏ khi dịch" |
+-| 2026-10-14 | **Đối chiếu tổng kit ↔ catalog** — `reviews/ds-mirror/DOI-CHIEU-TONG-2026-10-14.md` | Khớp hẳn: button, badge, avatar, radio, anchor, history, org-chart, preview-image, inform, tooltip, tab-group, kpi-card, filter-scorecard. **Lệch cấu trúc thật:** ~~`sd-checkbox` / `sd-switch`~~ (**ĐÃ SỬA 2026-10-14** — DOM Material, 13/13 + 13/13 khớp), `sd-tree` (ô chọn / nút lệnh / spinner), khối popup ẩn trong thẻ của select / autocomplete / date / date-range / datetime / chip-calendar, `sd-upload-file` thiếu `<preview>`, `sd-chip` viewed, `sd-query-builder`. Lệch nhỏ: `sd-label` cao 22 thay 20px, dòng lỗi form-generic, lớp `<table>` của sd-table. Chưa so được: modal / drawer / confirm (overlay), stepper, splitter, chart, import-excel | Builder mới yêu cầu đối chiếu — chờ chọn thứ tự sửa (đề xuất ở cuối báo cáo) |
++| 2026-10-14 | **Đối chiếu tổng kit ↔ catalog** — `reviews/ds-mirror/DOI-CHIEU-TONG-2026-10-14.md` | Khớp hẳn: button, badge, avatar, radio, anchor, history, org-chart, preview-image, inform, tooltip, tab-group, kpi-card, filter-scorecard. **Lệch cấu trúc thật:** ~~`sd-checkbox` / `sd-switch`~~ (**ĐÃ SỬA 2026-10-14** — DOM Material, 13/13 + 13/13 khớp), `sd-tree` (ô chọn / nút lệnh / spinner), ~~khối popup ẩn trong thẻ của select / autocomplete / date / date-range / datetime / chip-calendar~~ (**ĐÃ SỬA 2026-10-14** — ra overlay), `sd-upload-file` thiếu `<preview>`, `sd-chip` viewed, `sd-query-builder`. Lệch nhỏ: `sd-label` cao 22 thay 20px, dòng lỗi form-generic, lớp `<table>` của sd-table. Chưa so được: modal / drawer / confirm (overlay), stepper, splitter, chart, import-excel | Builder mới yêu cầu đối chiếu — chờ chọn thứ tự sửa (đề xuất ở cuối báo cáo) |
++| 2026-10-14 | **Popup nổi** (`sd-date` / `sd-date-range` / `sd-datetime` / `sd-chip-calendar` / `sd-autocomplete`, + `sd-select` khi đóng) — sau khi ra overlay | Thẻ host nay trùng catalog (chỉ có ô; `position` static). Còn khác: (1) **ruột lịch vẫn là bộ `.form-field-datepicker-*` tự dựng** (lưới div), catalog là `mat-datepicker-content > mat-calendar` (bảng `table.mat-calendar-table`) — hình đã đo khớp từ trước, DOM thì chưa; (2) pane là `cdk-overlay-pane sd-float-pane sd-<tên>-pane` (catalog: `mat-datepicker-popup` / `mat-mdc-autocomplete-panel`…); (3) `sd-select` / `sd-autocomplete` còn lớp trạng thái `sd-open` trên host khi mở (catalog không có); (4) mẫu "đang mở" của trang preview nay nổi theo màn hình (trước nằm trong khung demo) | (1) là việc lớn riêng (dựng lại lịch theo `mat-calendar` cho 4 component) — chờ Builder quyết; (2)(3) đổi cùng (1) |
+ | 2026-10-14 | `sd-tab-group` — sau khi đổi sang DOM Material | Còn khác catalog: (1) thẻ `<sd-tab>` vẫn nằm trong `.mat-mdc-tab-body-content` (display: contents) — HTML không có ng-template, JS trang tìm / gỡ `sd-tab`; (2) thân tab chưa chọn ẩn hẳn nội dung (Angular lazy — thân rỗng; bản chụp tĩnh của catalog có nội dung nhưng `visibility:hidden`); (3) không có ripple / hiệu ứng trượt gạch chân; (4) kit thêm viền `:focus-visible` (Rule 9). Catalog vẽ `pills` / `segmented` vẫn có lớp `mat-mdc-tab-group-stretch-tabs` dù mẫu khai `[stretchTabs]="false"` — kit theo mã thư viện (`[mat-stretch-tabs]="stretchTabs()"` → false thì gỡ lớp); hình không đổi vì theme ép `flex-grow:0` | (1)(2) bắt buộc để JS các trang chạy; (3) catalog tĩnh cũng không có |
+ | 2026-10-14 | ~~`page-header` — tab trang~~ **ĐÃ SỬA 2026-10-14** (nay `sd-tab-group`, cầu tương thích `phBindPageTabs` giữ lớp móc `.tab`) | ~~`data-page-tabs` vẫn là `.page-tab-zone .tabs button.tab` của kit, không phải `sd-tab-group` như portal (chỉ dời xuống dưới khung header) | Bản đóng băng `tra-cuu-cam-nang.html` (không được sửa), `tra-cuu-cam-nang-v2.html` và ~45 trang preview gắn JS thẳng vào DOM này — đổi sang `sd-tab-group` là phải viết lại JS các trang đó~~ |
+ | 2026-10-14 | ~~`page-header` — `data-site-tabs`~~ **ĐÃ GỠ 2026-10-14** (Builder: *„không hiện trong kit và các prototype“*) | Tab kiểu trình duyệt — Core / portal-template không có. Chỉ trang demo `preview/patterns/page-header.html` dùng | — |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-14 08:47:49.364593448 +0000
++++ b/_memory/lessons.md	2026-10-14 09:11:58.413436547 +0000
+@@ -1448,3 +1448,18 @@
+   bằng tay mẫu đó (so từng nút bỏ qua host) trước khi kết luận.
+ - **Mẫu đặt thẳng trong `sd-section` (không trong ô flex) thì host inline** → chiều cao / display khác catalog dù component
+   đúng. Bọc mẫu preview đúng như `.stage` của catalog (ô flex) rồi mới so.
++
++## Đưa popup có sẵn ra overlay mà không viết lại component (2026-10-14)
++
++- **Nâng cấp custom element: `attributeChangedCallback` chạy TRƯỚC `connectedCallback`** (và `isConnected` đã là true)
++  → component vẽ lần đầu ngay trong đó. Cài móc (MutationObserver, ghi đè `addEventListener`) phải ở `constructor`,
++  cài ở `connectedCallback` là trễ — popup đầu tiên không bị bắt.
++- Ghi đè `querySelector(All)` / `contains` **trên riêng instance** để tìm cả trong khối đã tách: mã cũ của component
++  và JS trang chạy y nguyên. Hệ quả: công cụ đo DOM phải gọi `Element.prototype.querySelectorAll.call(el, '*')`,
++  không thì vẫn "thấy" popup trong host (bộ đối chiếu tổng đã sửa theo).
++- Sự kiện trong pane không nổi bọt qua host → pane gọi lại các listener đã gắn lên host (ghi lại lúc `addEventListener`).
++- Khối chuyển từ `absolute` sang con của pane: **lề của con đầu tiên gộp ra ngoài** (absolute là BFC, khối thường thì
++  không) → lịch tụt 22px. Pane `display:flex` (như `.cdk-overlay-pane` của CDK) là hết.
++- CSS phạm vi host: đổi `sd-x X` → `:is(sd-x, :where(.sd-x-pane)) X` CHỈ cho luật mà phần sau có thể trúng nút trong
++  popup (`reviews/ds-mirror/float/rewrite.py`); kiểm bằng chụp computed style mọi nút popup trước / sau (`popcs.mjs` + `cmp.py`).
++- Ô nằm trong khay / tab đang ẩn thì khung có kích thước 0 → ẩn pane theo, không thì lịch hiện giữa chừng trên màn.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-form.md b/design-system/components/sd-form.md
+--- a/design-system/components/sd-form.md	2026-10-13 20:23:30.562490432 +0000
++++ b/design-system/components/sd-form.md	2026-10-14 09:11:58.396611075 +0000
+@@ -54,8 +54,12 @@
+    `.mdc-floating-label`. Lớp `.sd-form-field` vẫn còn CSS cho markup viết tay (không phải `sd-*`).
+ 
+ Bảng chọn / lịch (`.sd-dropdown-menu`, `.sd-date-popup`, `.sd-dt-popup`, `.sd-range-popup`,
+-`.sd-cc-popup`) vẫn là khối của kit nằm **trong host**, neo sát mép dưới khung (đã trừ 20px
+-vạch dưới); catalog dùng overlay CDK ở `body` — xem `_memory/known-gaps.md`.
++`.sd-cc-popup`, `.sd-autocomplete-panel`) **nằm ở overlay** như catalog (2026-10-14):
++`body > .cdk-overlay-container > .cdk-overlay-pane.sd-<tên>-pane` khi mở, đóng thì không còn — thẻ host chỉ chứa ô.
++Mở ngay dưới khung ô, lật lên khi dưới thiếu chỗ, dời sang trái khi tràn mép phải; không bị bảng / khung cuộn cắt.
++JS trang tìm popup thì gọi trên **chính thẻ**: `el.querySelector('.sd-date-popup')` vẫn trả về khối (thẻ tự tìm cả
++trong overlay); `document.querySelector('sd-date .sd-date-popup')` thì KHÔNG còn thấy. CSS viết cho phần trong popup
++phải là `:is(sd-date, :where(.sd-date-pane)) …` (xem `sdFloatInstall` trong sd-components.js).
+ 
+ ---
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-14 08:47:49.366163687 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-14 09:05:37.355919518 +0000
+@@ -1041,6 +1041,9 @@
+ sd-autocomplete,
+ sd-date-range,
+ sd-upload-file { display: block; position: relative; }
++/* (2026-10-14) Thẻ có popup nay đưa popup ra overlay (`sdFloatInstall`, sd-select `_syncOverlay`) → không còn con
++   `absolute` nào neo theo host (đã kiểm: 0 phần tử) → bỏ `position:relative` cho khớp catalog (host `static`). */
++sd-select, sd-date, sd-datetime, sd-autocomplete, sd-date-range { position: static; }
+ 
+ /* Chừa chỗ cho nhãn nổi — catalog khai cho TỪNG component form:
+    `sd-input:not(._ng).sd-has-label{padding-top:4px}` /
+@@ -1284,7 +1287,7 @@
+ /* --- sd-chip / sd-chip-calendar — từ 2026-10-13 dựng DOM Material (mat-chip-grid) y hệt
+    catalog; toàn bộ luật khung + chip nằm ở khối `catalog #c-chip` / `catalog #c-chip-calendar`
+    gần đầu file. Bộ luật `.sd-chip-list` / `.sd-chip` / `.sd-cc-*` cũ đã gỡ. --- */
+-sd-chip-calendar { display: block; position: relative; }
++sd-chip-calendar { display: block; }   /* (2026-10-14) bỏ `position:relative` — lịch đã ra overlay, như catalog */
+ 
+ /* Ngày ĐÃ CHỌN trong lịch của `sd-chip-calendar` khác hẳn `sd-date`.
+    Catalog có hẳn một rule riêng trong `css/components/chip-calendar.css`:
+@@ -1301,8 +1304,8 @@
+    GHIM cỡ lịch: `.mat-datepicker-content .mat-calendar{width:296px;height:354px}`
+    (date.css, date-range.css). Tháng chỉ có 5 hàng thì phần dưới để trống — đúng
+    hành vi thật. `sd-chip-calendar` (mat-menu) và `sd-datetime` KHÔNG có luật này. */
+-sd-date .sd-date-popup,
+-sd-date-range .sd-range-popup {
++:is(sd-date, :where(.sd-date-pane)) .sd-date-popup,
++:is(sd-date-range, :where(.sd-date-range-pane)) .sd-range-popup {
+   height: 354px;
+   /* `mat-datepicker-content` nằm SÁT mép dưới khung (khe 0, không phải 4px như
+      mat-select / mat-menu) và đổ bóng mức 4 của Material — đo ở cả #c-date và
+@@ -1314,29 +1317,29 @@
+    `.mat-datepicker-content .mat-calendar-previous-button:not(.mat-mdc-button-disabled)
+    { color: rgba(0,0,0,.54) }`. Lịch trong `mat-menu` của chip-calendar KHÔNG có
+    luật này nên nút ra màu chữ đậm — đúng như đo được trên catalog. */
+-sd-date .sd-date-popup .form-field-datepicker-nav,
+-sd-date-range .sd-range-popup .form-field-datepicker-nav {
++:is(sd-date, :where(.sd-date-pane)) .sd-date-popup .form-field-datepicker-nav,
++:is(sd-date-range, :where(.sd-date-range-pane)) .sd-range-popup .form-field-datepicker-nav {
+   color: rgba(0, 0, 0, .54);
+ }
+ /* Khung lịch của chip-calendar là `mat-menu` (280px, `.mat-mdc-menu-content
+    { padding: 8px 0 }`), không phải `mat-datepicker-content` 296px như sd-date. */
+-sd-chip-calendar .sd-cc-popup {
++:is(sd-chip-calendar, :where(.sd-chip-calendar-pane)) .sd-cc-popup {
+   --sd-cal-w: 280px;
+   padding: 8px 0;
+ }
+-sd-chip-calendar .sd-cc-days .form-field-datepicker-day.selected {
++:is(sd-chip-calendar, :where(.sd-chip-calendar-pane)) .sd-cc-days .form-field-datepicker-day.selected {
+   border-radius: 50%;
+   background: var(--sd-primary-light);
+   color: var(--sd-primary);
+ }
+-sd-chip-calendar .sd-cc-days .form-field-datepicker-day.selected.today {
++:is(sd-chip-calendar, :where(.sd-chip-calendar-pane)) .sd-cc-days .form-field-datepicker-day.selected.today {
+   border-color: rgba(0, 0, 0, .54);
+   box-shadow: none;
+ }
+ /* `.sd-field-suffix` (icon `today` cũ) đã gỡ khỏi JS từ trước — bỏ luật CSS mồ côi
+    (rà soát #c-chip-calendar 2026-10-12). Icon lỗi giữ căn giữa khung vì khung nay
+    căn đầu (align-items:flex-start). */
+-sd-chip-calendar .sd-cc-popup {
++:is(sd-chip-calendar, :where(.sd-chip-calendar-pane)) .sd-cc-popup {
+   z-index: calc(var(--z-dropdown) + 1);
+   /* mat-menu của catalog nằm SÁT mép dưới khung (đo #c-chip-calendar: khe 0). Bản
+      trước kế thừa khe 4px của `.form-field-datepicker`. Rà soát 2026-10-12. */
+@@ -1595,8 +1598,8 @@
+   margin-left: 4px;
+   cursor: default;
+ }
+-sd-date .form-field-datepicker-day:disabled,
+-sd-datetime .form-field-datepicker-day:disabled {
++:is(sd-date, :where(.sd-date-pane)) .form-field-datepicker-day:disabled,
++:is(sd-datetime, :where(.sd-datetime-pane)) .form-field-datepicker-day:disabled {
+   cursor: not-allowed;
+ }
+ /* Suffix cuối field (mirror <ng-template sdSuffixDef> — vd đơn vị "VNĐ", "%", icon)
+@@ -1702,10 +1705,10 @@
+ :is(sd-chip, sd-chip-calendar){--mat-sys-body-large-font:Roboto;--mat-sys-body-large-line-height:1.5rem;--mat-sys-body-large-size:1rem;--mat-sys-body-large-tracking:0.031rem;--mat-sys-body-large-weight:400;--mat-sys-body-small-font:Roboto;--mat-sys-body-small-line-height:1rem;--mat-sys-body-small-size:0.75rem;--mat-sys-body-small-tracking:0.025rem;--mat-sys-body-small-weight:400;--mat-sys-on-surface:#1a1b1f;--mat-sys-on-surface-variant:#44474e;--mat-sys-label-large-font:Roboto;--mat-sys-label-large-line-height:1.25rem;--mat-sys-label-large-size:0.875rem;--mat-sys-label-large-tracking:0.006rem;--mat-sys-label-large-weight:500}
+ :is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range){--mat-form-field-outlined-outline-width:1px;--mat-form-field-outlined-focus-outline-width:2px;--mat-form-field-outlined-container-shape:4px;--mat-form-field-outlined-caret-color:#ae7129;--mat-form-field-outlined-focus-outline-color:#ae7129;--mat-form-field-outlined-focus-label-text-color:color-mix(in srgb, #ae7129 87%, transparent);--mat-form-field-disabled-input-text-placeholder-color:color-mix(in srgb, rgba(0, 0, 0, 0.87) 38%, transparent);--mat-form-field-error-text-color:#f44336;--mat-form-field-error-trailing-icon-color:#f82c13;--mat-form-field-error-hover-trailing-icon-color:#ba200e;--mat-form-field-error-focus-trailing-icon-color:#ba200e;--mat-form-field-outlined-label-text-color:rgba(0,0,0,.54);--mat-form-field-outlined-hover-label-text-color:rgba(0,0,0,.87);--mat-form-field-outlined-disabled-label-text-color:color-mix(in srgb, rgba(0, 0, 0, 0.87) 38%, transparent);--mat-form-field-outlined-input-text-color:rgba(0,0,0,.87);--mat-form-field-outlined-disabled-input-text-color:color-mix(in srgb, rgba(0, 0, 0, 0.87) 38%, transparent);--mat-form-field-outlined-input-text-placeholder-color:rgba(0,0,0,.54);--mat-form-field-outlined-error-caret-color:#f44336;--mat-form-field-outlined-error-focus-label-text-color:#f44336;--mat-form-field-outlined-error-label-text-color:#f44336;--mat-form-field-outlined-error-hover-label-text-color:#f44336;--mat-form-field-outlined-outline-color:rgba(0,0,0,.38);--mat-form-field-outlined-disabled-outline-color:color-mix(in srgb, rgba(0, 0, 0, 0.87) 12%, transparent);--mat-form-field-outlined-hover-outline-color:rgba(0,0,0,.87);--mat-form-field-outlined-error-focus-outline-color:#f44336;--mat-form-field-outlined-error-hover-outline-color:#f44336;--mat-form-field-outlined-error-outline-color:#f44336;--mat-form-field-container-height:44px;--mat-form-field-container-vertical-padding:10px}
+ :is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) label{display:inline-block;margin-bottom:.5rem}
+-:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) input,:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) button,:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) select,:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) optgroup,:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) textarea{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
+-:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) button,:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) input{overflow:visible}
+-:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) button{border-radius:0}
+-:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) button:not(:disabled),:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) [type=button]:not(:disabled){cursor:pointer}
++:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range, :where(.sd-date-pane), :where(.sd-datetime-pane), :where(.sd-autocomplete-pane), :where(.sd-date-range-pane)) input,:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range, :where(.sd-date-pane), :where(.sd-datetime-pane), :where(.sd-autocomplete-pane), :where(.sd-date-range-pane)) button,:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) select,:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) optgroup,:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) textarea{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
++:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range, :where(.sd-date-pane), :where(.sd-datetime-pane), :where(.sd-autocomplete-pane), :where(.sd-date-range-pane)) button,:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range, :where(.sd-date-pane), :where(.sd-datetime-pane), :where(.sd-autocomplete-pane), :where(.sd-date-range-pane)) input{overflow:visible}
++:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range, :where(.sd-date-pane), :where(.sd-datetime-pane), :where(.sd-autocomplete-pane), :where(.sd-date-range-pane)) button{border-radius:0}
++:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range, :where(.sd-date-pane), :where(.sd-datetime-pane), :where(.sd-autocomplete-pane), :where(.sd-date-range-pane)) button:not(:disabled),:is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range, :where(.sd-date-pane), :where(.sd-datetime-pane), :where(.sd-autocomplete-pane), :where(.sd-date-range-pane)) [type=button]:not(:disabled){cursor:pointer}
+ :is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) textarea{overflow:auto;resize:vertical}
+ :is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) .mat-icon.material-icons{font-family:'Material Icons';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga';-webkit-font-smoothing:antialiased}
+ :is(sd-input-number, sd-input, sd-textarea, sd-date, sd-datetime, sd-select, sd-autocomplete, sd-date-range) .mat-icon{color:var(--mat-icon-color, inherit)}
+@@ -2692,8 +2695,8 @@
+ sd-datetime .mat-mdc-form-field.mat-form-field-animations-enabled .mat-mdc-form-field-hint-wrapper,sd-datetime .mat-mdc-form-field.mat-form-field-animations-enabled .mat-mdc-form-field-error-wrapper{animation-duration:300ms}
+ sd-datetime .mdc-notched-outline .mdc-floating-label{max-width:calc(100% + 1px)}
+ sd-datetime .mdc-notched-outline--upgraded .mdc-floating-label--float-above{max-width:calc(133.3333333333% + 1px)}
+-sd-datetime sd-datetime-picker:not(._ng){display:block;background:#fff;border-radius:12px;box-shadow:0 10px 24px #0000001f,0 2px 6px #0000000f;overflow:hidden;font-family:inherit}
+-sd-datetime .sd-datetime-picker:not(._ng){display:flex;flex-direction:column;width:320px;animation:sd-picker-enter .18s ease-out}
++:is(sd-datetime, :where(.sd-datetime-pane)) sd-datetime-picker:not(._ng){display:block;background:#fff;border-radius:12px;box-shadow:0 10px 24px #0000001f,0 2px 6px #0000000f;overflow:hidden;font-family:inherit}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-datetime-picker:not(._ng){display:flex;flex-direction:column;width:320px;animation:sd-picker-enter .18s ease-out}
+ sd-datetime:is(sd-datetime):not(._ng){display:block}
+ sd-datetime:is(sd-datetime):not(._ng).sd-has-label{padding-top:4px}
+ sd-datetime:is(sd-datetime):not(._ng).sd-viewed{padding-top:0}
+@@ -3090,6 +3093,27 @@
+ .sd-select-pane > .sd-dropdown-menu.mat-mdc-select-panel-above {
+   border-radius: 4px 4px 0 0;
+ }
++/* Popup nổi của sd-date / sd-date-range / sd-datetime / sd-chip-calendar / sd-autocomplete (2026-10-14) — xem
++   `sdFloatInstall` trong sd-components.js. Toạ độ do JS đặt (ngay dưới khung ô, lật lên khi thiếu chỗ); khối bên
++   trong bỏ `absolute` của bản cũ (vốn neo theo host). Luật `sd-x …` của phần trong popup đã đổi thành
++   `:is(sd-x, :where(.sd-x-pane)) …` (cùng độ ưu tiên). */
++.cdk-overlay-pane.sd-float-pane {
++  /* = `.cdk-overlay-pane` của CDK: absolute + flex (khối con không gộp lề với con đầu của nó) */
++  position: absolute;
++  z-index: 1000;
++  pointer-events: auto;
++  box-sizing: border-box;
++  display: flex;
++  flex-direction: column;
++  max-width: 100%;
++}
++.cdk-overlay-pane.sd-float-pane > * {
++  position: static;
++  top: auto; right: auto; bottom: auto; left: auto;
++}
++/* bản cũ: `sd-autocomplete.sd-open .sd-dropdown-menu { display:block }` — pane chỉ tồn tại khi đang mở */
++.sd-autocomplete-pane > .sd-dropdown-menu { display: block; }
++.sd-autocomplete-pane.sd-float-above > .sd-dropdown-menu { border-radius: 4px 4px 0 0; }
+ 
+ /* Ô tìm kiếm trong panel — catalog `#c-select`:
+    "tự hiện ô tìm kiếm khi danh sách > 10 phần tử hoặc items là hàm tải từ
+@@ -6200,7 +6224,7 @@
+    `.sd-autocomplete-panel .mat-mdc-option{min-height:36px!important}`. Phần
+    `padding:8px 12px` và `font-size:14px` thì `.sd-dropdown-item` dùng chung đã
+    có sẵn, trùng khít. */
+-sd-autocomplete .sd-dropdown-menu {
++:is(sd-autocomplete, :where(.sd-autocomplete-pane)) .sd-dropdown-menu {
+   display: none;
+   position: absolute;
+   top: calc(100% + 4px - var(--sd-field-sub, 0px));
+@@ -6222,7 +6246,7 @@
+ /* Dòng gợi ý — catalog `--mat-option-*`: chữ rgba(0,0,0,.87) giãn .006rem; rê chuột
+    nền đen 4%; dòng đang chọn nền đen 12% + chữ primary. Bản trước: #212121, không
+    giãn, hover --sd-black100, đang chọn nền --sd-primary-light (rà soát 2026-10-12). */
+-sd-autocomplete .sd-dropdown-item {
++:is(sd-autocomplete, :where(.sd-autocomplete-pane)) .sd-dropdown-item {
+   display: flex;
+   align-items: center;
+   min-height: 36px;
+@@ -6236,19 +6260,19 @@
+   cursor: pointer;
+   transition: background .1s ease;
+ }
+-sd-autocomplete .sd-dropdown-item:hover { background: color-mix(in srgb, rgba(0, 0, 0, .87) 4%, transparent); }
+-sd-autocomplete .sd-dropdown-item.sd-selected {
++:is(sd-autocomplete, :where(.sd-autocomplete-pane)) .sd-dropdown-item:hover { background: color-mix(in srgb, rgba(0, 0, 0, .87) 4%, transparent); }
++:is(sd-autocomplete, :where(.sd-autocomplete-pane)) .sd-dropdown-item.sd-selected {
+   background: color-mix(in srgb, rgba(0, 0, 0, .87) 12%, transparent);
+   color: var(--sd-primary);
+ }
+ /* disabledField: catalog `.mdc-list-item--disabled{cursor:default;pointer-events:none}`
+    + chữ `opacity:.38`. */
+-sd-autocomplete .sd-dropdown-item.sd-item-disabled {
++:is(sd-autocomplete, :where(.sd-autocomplete-pane)) .sd-dropdown-item.sd-item-disabled {
+   cursor: default;
+   pointer-events: none;
+   opacity: .38;
+ }
+-sd-autocomplete .sd-dropdown-menu .c-filter-empty {
++:is(sd-autocomplete, :where(.sd-autocomplete-pane)) .sd-dropdown-menu .c-filter-empty {
+   padding: 8px 12px;
+   font-size: 14px;
+   line-height: 20px;
+@@ -6281,7 +6305,7 @@
+   color: #6b7280;   /* catalog var(--sd-text-secondary, #6b7280); portal không khai biến này */
+   transition: color .15s ease;
+ }
+-sd-autocomplete .sd-inline-view .sd-inline-clear .material-icons-outlined ,
++:is(sd-autocomplete, :where(.sd-autocomplete-pane)) .sd-inline-view .sd-inline-clear .material-icons-outlined ,
+ sd-autocomplete .sd-inline-view .sd-inline-clear .mat-icon {
+   font-size: 16px; width: 16px; height: 16px;
+ }
+@@ -6338,9 +6362,9 @@
+    (100% + 2px viền) / 18 = đúng 5% bề ngang ô ở mỗi phía. `z-index:-1` đưa
+    dải xuống dưới nền tròn của ô đầu/cuối — lưới ngày là stacking context
+    (`container-type`), nên dải vẫn nằm TRÊN nền trắng của khung. */
+-sd-date-range .form-field-datepicker-day.sd-range-in::before,
+-sd-date-range .form-field-datepicker-day.sd-range-start::before,
+-sd-date-range .form-field-datepicker-day.sd-range-end::before {
++:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day.sd-range-in::before,
++:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day.sd-range-start::before,
++:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day.sd-range-end::before {
+   content: '';
+   position: absolute;
+   top: -1px;
+@@ -6350,19 +6374,19 @@
+   z-index: -1;
+   background: color-mix(in srgb, var(--sd-primary) 20%, transparent);
+ }
+-sd-date-range .form-field-datepicker-day.sd-range-start::before {
++:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day.sd-range-start::before {
+   left: -1px;
+   border-radius: 999px 0 0 999px;
+ }
+-sd-date-range .form-field-datepicker-day.sd-range-end::before {
++:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day.sd-range-end::before {
+   right: -1px;
+   border-radius: 0 999px 999px 0;
+ }
+ /* Chỉ chọn MỘT đầu (đang chờ bấm đầu kia): không có dải. */
+-sd-date-range .form-field-datepicker-day.sd-range-start.sd-range-end::before {
++:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day.sd-range-start.sd-range-end::before {
+   content: none;
+ }
+-sd-date-range .form-field-datepicker-day:disabled {
++:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day:disabled {
+   color: var(--text-disabled);
+   cursor: not-allowed;
+   pointer-events: none;
+@@ -7961,7 +7985,7 @@
+       bỏ, và thêm rule tương đương cho lịch của kit.
+    3. `animation: sd-picker-enter` — catalog ghi rõ trong phần "Lược bỏ" là
+       KHÔNG dùng, nên kit cũng không khai keyframes này. */
+-sd-datetime .form-field-datetime-popup {
++:is(sd-datetime, :where(.sd-datetime-pane)) .form-field-datetime-popup {
+   top: calc(100% + 4px - var(--sd-field-sub, 0px));
+   background: none;
+   border: 0;
+@@ -7970,54 +7994,54 @@
+   overflow: visible;
+   padding: 0;
+ }
+-sd-datetime .form-field-datetime-popup.open { display: block; }
++:is(sd-datetime, :where(.sd-datetime-pane)) .form-field-datetime-popup.open { display: block; }
+ 
+-sd-datetime sd-datetime-picker{display:block;background:#fff;border-radius:12px;box-shadow:0 10px 24px #0000001f,0 2px 6px #0000000f;overflow:hidden;font-family:inherit}
+-sd-datetime .sd-datetime-picker{display:flex;flex-direction:column;width:320px}
+-sd-datetime .picker-calendar{padding:4px 8px 0}
++:is(sd-datetime, :where(.sd-datetime-pane)) sd-datetime-picker{display:block;background:#fff;border-radius:12px;box-shadow:0 10px 24px #0000001f,0 2px 6px #0000000f;overflow:hidden;font-family:inherit}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-datetime-picker{display:flex;flex-direction:column;width:320px}
++:is(sd-datetime, :where(.sd-datetime-pane)) .picker-calendar{padding:4px 8px 0}
+ /* Thay cho `.picker-calendar .mat-calendar*` của catalog — xem điểm 2 ở trên. */
+ /* Thanh tiêu đề lịch: catalog `.picker-calendar .mat-calendar-header{padding:4px 4px 0}`
+    bọc `.mat-calendar-controls{margin:5% calc(4.7142857143% - 16px)}` — % tính trên
+    bề ngang nội dung 304 − 8 = 296px. Kit gộp hai lớp làm một nên cộng sẵn 4px
+    đệm vào lề: trên 18.8 · hai bên 1.95 · dưới 14.8. Bản trước chỉ có đệm 4px, thiếu
+    phần lề % → mọi thứ bên dưới thanh tiêu đề cao hơn catalog 33.6px. (2026-10-12) */
+-sd-datetime .picker-calendar .form-field-datepicker-header{padding:0;margin:calc(4px + 296px * .05) calc(4px + 296px * .047142857 - 16px) calc(296px * .05)}
++:is(sd-datetime, :where(.sd-datetime-pane)) .picker-calendar .form-field-datepicker-header{padding:0;margin:calc(4px + 296px * .05) calc(4px + 296px * .047142857 - 16px) calc(296px * .05)}
+ /* Hàng thứ không cần đệm dưới nữa: ô thứ đã có `padding-bottom:8px` và đường kẻ
+    `.form-field-datepicker-divider` riêng — đúng cấu trúc thead của catalog
+    (rà soát 2026-10-12). */
+-sd-datetime .picker-calendar .form-field-datepicker-weekdays{padding:0 8px}
+-sd-datetime .picker-calendar .form-field-datepicker-days{padding:0 8px 8px}
+-sd-datetime .picker-divider{height:1px;background:var(--sd-black200);margin:0 16px}
+-sd-datetime .picker-time{padding:8px 0}
+-sd-datetime .picker-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 12px 12px;gap:8px;border-top:1px solid var(--sd-black100)}
+-sd-datetime .picker-footer .footer-actions{display:flex;align-items:center;gap:6px}
+-
+-sd-datetime .sd-time-spinner{display:flex;align-items:center;justify-content:center;gap:4px;padding:6px 12px}
+-sd-datetime .sd-time-spinner .unit{display:flex;flex-direction:column;align-items:center;gap:2px}
+-sd-datetime .sd-time-spinner .unit .step{width:32px;height:20px;padding:0;border:0;background:transparent;color:var(--sd-black300);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background-color .15s ease,color .15s ease,transform .1s ease}
+-sd-datetime .sd-time-spinner .unit .step svg{width:14px;height:14px;display:block}
+-sd-datetime .sd-time-spinner .unit .step:hover{background:var(--sd-primary-light);color:var(--sd-primary)}
+-sd-datetime .sd-time-spinner .unit .step:active{transform:scale(.92)}
++:is(sd-datetime, :where(.sd-datetime-pane)) .picker-calendar .form-field-datepicker-weekdays{padding:0 8px}
++:is(sd-datetime, :where(.sd-datetime-pane)) .picker-calendar .form-field-datepicker-days{padding:0 8px 8px}
++:is(sd-datetime, :where(.sd-datetime-pane)) .picker-divider{height:1px;background:var(--sd-black200);margin:0 16px}
++:is(sd-datetime, :where(.sd-datetime-pane)) .picker-time{padding:8px 0}
++:is(sd-datetime, :where(.sd-datetime-pane)) .picker-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 12px 12px;gap:8px;border-top:1px solid var(--sd-black100)}
++:is(sd-datetime, :where(.sd-datetime-pane)) .picker-footer .footer-actions{display:flex;align-items:center;gap:6px}
++
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-time-spinner{display:flex;align-items:center;justify-content:center;gap:4px;padding:6px 12px}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-time-spinner .unit{display:flex;flex-direction:column;align-items:center;gap:2px}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-time-spinner .unit .step{width:32px;height:20px;padding:0;border:0;background:transparent;color:var(--sd-black300);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background-color .15s ease,color .15s ease,transform .1s ease}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-time-spinner .unit .step svg{width:14px;height:14px;display:block}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-time-spinner .unit .step:hover{background:var(--sd-primary-light);color:var(--sd-primary)}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-time-spinner .unit .step:active{transform:scale(.92)}
+ /* font-family: catalog `input` kế thừa Roboto; thiếu dòng này thì ô số rơi về Arial mặc định của <input> (rà soát 2026-10-12) */
+-sd-datetime .sd-time-spinner .unit .value{width:44px;height:36px;padding:0;text-align:center;font-family:inherit;font-size:20px;font-weight:600;line-height:1;color:var(--sd-black500);font-variant-numeric:tabular-nums;background:transparent;border:1.5px solid transparent;border-radius:6px;outline:none;cursor:text;transition:border-color .15s ease,background-color .15s ease}
+-sd-datetime .sd-time-spinner .unit .value:hover:not(:focus){background:var(--sd-black100)}
+-sd-datetime .sd-time-spinner .unit .value:focus{border-color:var(--sd-primary);background:#fff}
+-sd-datetime .sd-time-spinner .unit .value:disabled{color:var(--sd-black400);cursor:not-allowed}
+-sd-datetime .sd-time-spinner .unit:hover .step{color:var(--sd-black400)}
+-sd-datetime .sd-time-spinner .sep{font-size:20px;font-weight:600;color:var(--sd-black400);padding-bottom:2px;user-select:none}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-time-spinner .unit .value{width:44px;height:36px;padding:0;text-align:center;font-family:inherit;font-size:20px;font-weight:600;line-height:1;color:var(--sd-black500);font-variant-numeric:tabular-nums;background:transparent;border:1.5px solid transparent;border-radius:6px;outline:none;cursor:text;transition:border-color .15s ease,background-color .15s ease}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-time-spinner .unit .value:hover:not(:focus){background:var(--sd-black100)}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-time-spinner .unit .value:focus{border-color:var(--sd-primary);background:#fff}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-time-spinner .unit .value:disabled{color:var(--sd-black400);cursor:not-allowed}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-time-spinner .unit:hover .step{color:var(--sd-black400)}
++:is(sd-datetime, :where(.sd-datetime-pane)) .sd-time-spinner .sep{font-size:20px;font-weight:600;color:var(--sd-black400);padding-bottom:2px;user-select:none}
+ 
+ /* `.btn*` — catalog khai trong phạm vi `#c-datetime`, kit giữ nguyên phạm vi
+    `sd-datetime` nên KHÔNG đụng tới `.btn` toàn cục của kit. */
+-sd-datetime .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:6px;font-size:13px;font-weight:500;line-height:1;cursor:pointer;transition:background-color .15s ease,color .15s ease,transform .1s ease;white-space:nowrap}
+-sd-datetime .btn svg{width:14px;height:14px;flex-shrink:0}
+-sd-datetime .btn:active:not(:disabled){transform:scale(.97)}
+-sd-datetime .btn:disabled{opacity:.5;cursor:not-allowed}
+-sd-datetime .btn.btn-ghost{background:transparent;color:var(--sd-black400)}
+-sd-datetime .btn.btn-ghost:hover:not(:disabled){background:var(--sd-black100);color:var(--sd-primary)}
+-sd-datetime .btn.btn-text{background:transparent;color:var(--sd-black500)}
+-sd-datetime .btn.btn-text:hover:not(:disabled){background:var(--sd-black100)}
+-sd-datetime .btn.btn-primary{background:var(--sd-primary);color:#fff;box-shadow:0 1px 2px #0000000d}
+-sd-datetime .btn.btn-primary:hover:not(:disabled){background:var(--sd-primary-dark)}
++:is(sd-datetime, :where(.sd-datetime-pane)) .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:6px;font-size:13px;font-weight:500;line-height:1;cursor:pointer;transition:background-color .15s ease,color .15s ease,transform .1s ease;white-space:nowrap}
++:is(sd-datetime, :where(.sd-datetime-pane)) .btn svg{width:14px;height:14px;flex-shrink:0}
++:is(sd-datetime, :where(.sd-datetime-pane)) .btn:active:not(:disabled){transform:scale(.97)}
++:is(sd-datetime, :where(.sd-datetime-pane)) .btn:disabled{opacity:.5;cursor:not-allowed}
++:is(sd-datetime, :where(.sd-datetime-pane)) .btn.btn-ghost{background:transparent;color:var(--sd-black400)}
++:is(sd-datetime, :where(.sd-datetime-pane)) .btn.btn-ghost:hover:not(:disabled){background:var(--sd-black100);color:var(--sd-primary)}
++:is(sd-datetime, :where(.sd-datetime-pane)) .btn.btn-text{background:transparent;color:var(--sd-black500)}
++:is(sd-datetime, :where(.sd-datetime-pane)) .btn.btn-text:hover:not(:disabled){background:var(--sd-black100)}
++:is(sd-datetime, :where(.sd-datetime-pane)) .btn.btn-primary{background:var(--sd-primary);color:#fff;box-shadow:0 1px 2px #0000000d}
++:is(sd-datetime, :where(.sd-datetime-pane)) .btn.btn-primary:hover:not(:disabled){background:var(--sd-primary-dark)}
+ 
+ /* Nhóm radio xếp dọc — tên lớp của catalog (`#c-radio .c-radio-group-column`).
+    Chép nguyên văn; kit vẫn giữ `.c-radio-group.c-column` cũ nên hai rule cùng
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-14 08:47:49.369055738 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-14 09:04:30.328584441 +0000
+@@ -641,6 +641,120 @@
+   var SD_CHECKBOX_TEXT = { checked: 'Có', unchecked: 'Không' };
+   var SD_CHECKBOX_COLORS = ['primary', 'secondary', 'info', 'success', 'warning', 'error'];
+ 
++  /* ══ Popup nổi ra overlay (2026-10-14, Builder: „Chuyển popup ra lớp nổi“) ══
++     Catalog: thẻ `sd-date` / `sd-date-range` / `sd-datetime` / `sd-chip-calendar` / `sd-autocomplete` CHỈ chứa ô nhập;
++     khối mở (lịch, bảng gợi ý) nằm trong `body > .cdk-overlay-container > .cdk-overlay-pane` khi mở, đóng thì không còn.
++     Kit trước đây để khối đó là con `absolute` của thẻ → bị khung cuộn / ô `overflow:hidden` cắt (known-gaps 2026-10-13).
++
++     Cách làm — giữ NGUYÊN mã của từng component, chỉ thêm một lớp chung:
++       · sau mỗi lần vẽ, khối popup (con trực tiếp của host khớp `cfg.root`) được TÁCH khỏi host và giữ ở `host._sdFloat.el`;
++       · mở (lớp `open` trên khối / `sd-open` trên host) → khối vào `.cdk-overlay-pane.sd-float-pane.<tag>-pane` trong overlay
++         dùng chung, đặt ngay dưới khung ô (lật lên khi dưới thiếu chỗ — như CDK); đóng → gỡ pane;
++       · `host.querySelector(All)` / `host.contains` của RIÊNG host đó tìm cả trong khối đã tách (đúng thứ tự tài liệu cũ:
++         khung trước, khối sau) — mã cũ `this.querySelector('.sd-date-popup')`, "bấm ra ngoài" chạy y nguyên;
++       · sự kiện nổi bọt trong pane được chuyển cho các listener đã gắn lên host (như khi khối còn là con của host).
++     CSS: luật `sd-x … <phần trong popup>` đã đổi thành `:is(sd-x, :where(.sd-x-pane)) …` — cùng độ ưu tiên
++     (công cụ: reviews/ds-mirror/float/rewrite.py). */
++  var SD_FLOAT_EVENTS = ['click', 'mousedown', 'mouseup', 'pointerdown', 'input', 'change', 'keydown', 'keyup', 'focusin', 'focusout'];
++  var SD_NQ = HTMLElement.prototype.querySelector, SD_NQA = HTMLElement.prototype.querySelectorAll,
++      SD_NCONTAINS = Node.prototype.contains, SD_NADD = EventTarget.prototype.addEventListener;
++  function sdFloatInstall(host, cfg) {
++    if (host._sdFloat) return;
++    var st = host._sdFloat = { cfg: cfg, el: null, pane: null, rec: [] };
++    var hasRoot = function () { return !!SD_NQ.call(host, cfg.root); };
++    host.querySelector = function (s) {
++      var r = SD_NQ.call(this, s);
++      if (r || !st.el || hasRoot()) return r;
++      return st.el.matches(s) ? st.el : st.el.querySelector(s);
++    };
++    host.querySelectorAll = function (s) {
++      var a = SD_NQA.call(this, s);
++      if (!st.el || hasRoot()) return a;
++      var extra = Array.prototype.slice.call(st.el.querySelectorAll(s));
++      if (st.el.matches(s)) extra.unshift(st.el);
++      return extra.length ? Array.prototype.slice.call(a).concat(extra) : a;
++    };
++    host.contains = function (n) { return SD_NCONTAINS.call(this, n) || !!(st.el && n && SD_NCONTAINS.call(st.el, n)); };
++    host.addEventListener = function (type, fn, opt) {
++      SD_NADD.call(this, type, fn, opt);
++      if (SD_FLOAT_EVENTS.indexOf(type) !== -1) st.rec.push({ type: type, fn: fn });
++    };
++    st.mo = new MutationObserver(function () { sdFloatSync(host); });
++    st.mo.observe(host, { childList: true, attributes: true, attributeFilter: ['class'] });
++  }
++  function sdFloatSync(host) {
++    var st = host._sdFloat; if (!st) return;
++    var cfg = st.cfg;
++    var fresh = SD_NQ.call(host, cfg.root);
++    if (fresh) {
++      if (st.el && st.el !== fresh && st.el.parentNode) st.el.parentNode.removeChild(st.el);
++      st.el = fresh;
++      fresh.parentNode.removeChild(fresh);
++      st.mo.observe(fresh, { attributes: true, attributeFilter: ['class'] });
++    } else if (st.el && !SD_NQ.call(host, 'mat-form-field')) {
++      /* host chuyển sang chế độ xem — không còn ô, bỏ khối */
++      sdFloatClose(host); st.el = null;
++    }
++    var open = !!st.el && host.isConnected && cfg.isOpen(host, st.el);
++    if (open) {
++      if (!st.pane) {
++        var pane = st.pane = document.createElement('div');
++        pane.className = 'cdk-overlay-pane sd-float-pane ' + cfg.pane;
++        SD_FLOAT_EVENTS.forEach(function (type) {
++          pane.addEventListener(type, function (e) {
++            for (var i = 0; i < st.rec.length; i++) if (st.rec[i].type === type) st.rec[i].fn.call(host, e);
++          });
++        });
++        st.reposition = function () { if (!host.isConnected) { sdFloatClose(host); return; } sdFloatPlace(host); };
++      }
++      if (st.el.parentNode !== st.pane) st.pane.appendChild(st.el);
++      if (!st.pane.isConnected) {
++        sdOverlayContainer().appendChild(st.pane);
++        window.addEventListener('scroll', st.reposition, true);
++        window.addEventListener('resize', st.reposition);
++      }
++      sdFloatPlace(host);
++    } else {
++      sdFloatClose(host);
++    }
++    st.mo.takeRecords();
++  }
++  function sdFloatClose(host) {
++    var st = host._sdFloat;
++    if (!st || !st.pane || !st.pane.isConnected) return;
++    st.pane.parentNode.removeChild(st.pane);
++    window.removeEventListener('scroll', st.reposition, true);
++    window.removeEventListener('resize', st.reposition);
++  }
++  function sdFloatPlace(host) {
++    var st = host._sdFloat, pane = st.pane, cfg = st.cfg;
++    var anchor = SD_NQ.call(host, '.mat-mdc-text-field-wrapper') || host;
++    var hr = host.getBoundingClientRect(), ar = anchor.getBoundingClientRect();
++    var gap = cfg.gap || 0;
++    var vh = window.innerHeight, vw = document.documentElement.clientWidth;
++    if (cfg.matchWidth) pane.style.width = hr.width + 'px';
++    pane.style.top = '0px'; pane.style.left = '0px';
++    var w = pane.offsetWidth, h = pane.offsetHeight;
++    var below = vh - ar.bottom - gap, above = ar.top - gap;
++    var up = h > below && above > below;
++    pane.classList.toggle('sd-float-above', up);
++    pane.style.top = Math.round(up ? ar.top - gap - h : ar.bottom + gap) + 'px';
++    pane.style.left = Math.round(w + 16 < vw ? Math.max(8, Math.min(hr.left, vw - 8 - w)) : hr.left) + 'px';
++    /* ô bị khung cuộn chứa nó che khuất thì ẩn pane theo (như sd-select / CDK isOriginClipped) */
++    var clipped = false;
++    for (var a = host.parentElement; a && a !== document.body && !clipped; a = a.parentElement) {
++      var ov = getComputedStyle(a);
++      if (ov.overflowX === 'visible' && ov.overflowY === 'visible') continue;
++      var cr = a.getBoundingClientRect();
++      clipped = ar.bottom <= cr.top || ar.top >= cr.bottom || ar.right <= cr.left || ar.left >= cr.right;
++    }
++    /* ô đang bị ẩn (khay / tab đóng: không có khung, hoặc visibility:hidden) thì không hiện popup */
++    if (!ar.width && !ar.height) clipped = true;
++    else if (getComputedStyle(host).visibility === 'hidden') clipped = true;
++    pane.style.visibility = clipped ? 'hidden' : '';
++  }
++  var SD_FLOAT_OPEN_CLS = function (host, el) { return el.classList.contains('open'); };
++
+   /* ── mat-checkbox của Angular Material — DOM nguyên văn catalog (#c-checkbox, 2026-10-14).
+      Dùng chung cho sd-checkbox; sd-table / sd-tree (catalog vẽ mat-checkbox thuần) sẽ dùng ở vòng sau. ── */
+   var SD_MAT_CHECKBOX_SEQ = 0;
+@@ -1746,6 +1860,7 @@
+     }
+     constructor() {
+       super();
++      sdFloatInstall(this, { root: ':scope > .sd-cc-popup', pane: 'sd-chip-calendar-pane', gap: 0, isOpen: SD_FLOAT_OPEN_CLS });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */
+       this._values = [];
+       this._userChange = false;
+       this._touched = false;
+@@ -1757,6 +1872,7 @@
+       this._bindGlobal();
+     }
+     disconnectedCallback() {
++      sdFloatClose(this);
+       if (this._boundOutside) {
+         document.removeEventListener('click', this._boundOutside, true);
+         this._boundOutside = null;
+@@ -3018,7 +3134,12 @@
+     _syncOverlay() {
+       var self = this;
+       var fresh = this.querySelector(':scope > .sd-dropdown-menu');
+-      if (!this.classList.contains('sd-open') || !fresh || !this.isConnected) { this._closePane(); return; }
++      if (!this.classList.contains('sd-open') || !fresh || !this.isConnected) {
++        this._closePane();
++        /* (2026-10-14) đóng thì thẻ chỉ còn ô — như catalog (panel chỉ tồn tại trong overlay khi mở) */
++        if (fresh) fresh.parentNode.removeChild(fresh);
++        return;
++      }
+       if (!this._pane) {
+         var pane = this._pane = document.createElement('div');
+         pane.className = 'cdk-overlay-pane sd-select-pane';
+@@ -3329,6 +3450,7 @@
+     _applyFilter() {
+       var menu = (this._pane && this._pane.isConnected && this._pane.querySelector('.sd-dropdown-menu')) || this.querySelector('.sd-dropdown-menu');
+       if (!menu) return;
++      if (!menu) return;
+       var q = (this._filterText || '').trim().toLowerCase();
+       var rows = menu.querySelectorAll('.sd-dropdown-item:not(.sd-select-all)');
+       var shown = 0;
+@@ -3859,12 +3981,15 @@
+     }
+     constructor() {
+       super();
++      sdFloatInstall(this, { root: ':scope > .sd-date-popup', pane: 'sd-date-pane', gap: 0, isOpen: SD_FLOAT_OPEN_CLS });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */
+       this._touched = false;
+       this._viewYear = null;
+       this._viewMonth = null;
+     }
+-    connectedCallback() { this._render(); this._bindGlobal(); }
++    connectedCallback() {
++      this._render(); this._bindGlobal(); }
+     disconnectedCallback() {
++      sdFloatClose(this);
+       if (this._boundOutside) { document.removeEventListener('click', this._boundOutside, true); this._boundOutside = null; }
+       if (this._boundEscape) { document.removeEventListener('keydown', this._boundEscape); this._boundEscape = null; }
+     }
+@@ -4337,14 +4462,17 @@
+     }
+     constructor() {
+       super();
++      sdFloatInstall(this, { root: ':scope > .sd-dt-popup', pane: 'sd-datetime-pane', gap: 4, isOpen: SD_FLOAT_OPEN_CLS });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */
+       this._touched = false;
+       this._invalidFormat = false;
+       this._draft = null;
+       this._viewYear = null;
+       this._viewMonth = null;
+     }
+-    connectedCallback() { this._render(); this._bindGlobal(); }
++    connectedCallback() {
++      this._render(); this._bindGlobal(); }
+     disconnectedCallback() {
++      sdFloatClose(this);
+       if (this._boundOutside) { document.removeEventListener('click', this._boundOutside, true); this._boundOutside = null; }
+       if (this._boundEscape) { document.removeEventListener('keydown', this._boundEscape); this._boundEscape = null; }
+     }
+@@ -14328,10 +14456,13 @@
+               'hideinlineerror', 'hideInlineError', 'inlineerror', 'inlineError',
+               'name', 'autoid', 'autoId'];
+     }
+-    constructor() { super(); this._touched = false; this._query = null; }
+-    connectedCallback() { this._render(); this._bind(); }
++    constructor() { super();
++      sdFloatInstall(this, { root: ':scope > .sd-autocomplete-panel', pane: 'sd-autocomplete-pane', gap: 4, isOpen: function (h) { return h.classList.contains('sd-open'); }, matchWidth: true });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */ this._touched = false; this._query = null; }
++    connectedCallback() {
++      this._render(); this._bind(); }
+     attributeChangedCallback() { if (this.isConnected) this._render(); }
+     disconnectedCallback() {
++      sdFloatClose(this);
+       if (this._outside) document.removeEventListener('click', this._outside);
+       this._outside = null;
+     }
+@@ -14712,12 +14843,15 @@
+     }
+     constructor() {
+       super();
++      sdFloatInstall(this, { root: ':scope > .sd-range-popup', pane: 'sd-date-range-pane', gap: 0, isOpen: SD_FLOAT_OPEN_CLS });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */
+       this._touched = false;
+       this._viewYear = null;
+       this._viewMonth = null;
+     }
+-    connectedCallback() { this._render(); this._bindGlobal(); }
++    connectedCallback() {
++      this._render(); this._bindGlobal(); }
+     disconnectedCallback() {
++      sdFloatClose(this);
+       if (this._outside) { document.removeEventListener('click', this._outside, true); this._outside = null; }
+     }
+     attributeChangedCallback() {

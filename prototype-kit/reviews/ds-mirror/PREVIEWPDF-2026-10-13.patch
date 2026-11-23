@@ -1,0 +1,2900 @@
+# PREVIEWPDF-2026-10-13 — sd-preview-pdf chạy pdf.js, khớp catalog #c-preview-pdf
+# Bản vá này KHÔNG chứa 4 file mới chép nguyên (quá lớn để xem diff):
+#   design-system/vendor/pdfjs/{pdf.min.js, pdf.worker.min.js, LICENSE}  (pdfjs-dist 4.10.38, esbuild IIFE)
+#   design-system/preview/assets/sd-preview-pdf-demo.js                 (PDF mẫu base64)
+diff -ruN --text -x '*.DS_Store' -x vendor -x sd-preview-pdf-demo.js a/AGENTS.md b/AGENTS.md
+--- a/AGENTS.md	2026-10-13 04:54:35.391078628 +0000
++++ b/AGENTS.md	2026-10-13 04:54:35.410209299 +0000
+@@ -193,6 +193,7 @@
+ │   ├── patterns/            ← Pattern definitions (page-header, filter-bar, data-table, sidebar)
+ │   ├── components/          ← Component docs (button.md, form.md, table.md...)
+ │   ├── preview/             ← Preview pages (patterns/ + components/)
++│   ├── vendor/              ← Thư viện ngoài đóng gói sẵn, chạy offline (pdfjs/ cho sd-preview-pdf — đúng bản Core UI dùng)
+ │   └── shell/               ← template.html
+ │
+ └── prototypes/            ← Builder output — generated pages
+diff -ruN --text -x '*.DS_Store' -x vendor -x sd-preview-pdf-demo.js a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-13 04:54:35.387819679 +0000
++++ b/CHANGELOG.md	2026-10-13 04:54:35.405201710 +0000
+@@ -8,6 +8,32 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `sd-preview-pdf` chạy pdf.js thật, khớp catalog `#c-preview-pdf` + mã thư viện
++
++Builder: *„Tiếp tục phần Preview PDF `sd-preview-pdf`…“* → chọn **„Nhúng pdf.js vào kit“**.
++
++- **Nhúng pdf.js 4.10.38** — đúng bản `@sd-angular/core` 19.0.10 dùng — ở `design-system/vendor/pdfjs/`
++  (đóng gói lại thành script thường để mở được bằng file://; giữ nguyên license Apache-2.0). Viewer tự
++  nạp khi trang có `<sd-preview-pdf>`.
++- **Viết lại component theo mã thật của thư viện** (`npm pack @sd-angular/core@19.0.10`): template,
++  mặc định (`sidebarOpen` / `showToolbar` / `downloadable` = true), chuỗi tiếng Việt, phím tắt, các
++  phương thức công khai. Nay chạy thật: số trang ("12 trang"), thumbnail từng trang (vẽ lười, có
++  cache), chuyển trang (nút · ô số trang · thumbnail · phím), zoom ± / Vừa trang / Vừa rộng / Ctrl+lăn
++  chuột, xoay, tìm chữ toàn văn (phân biệt hoa thường · nguyên từ · ↑↓ · Enter/F3 · tab "Tìm" liệt kê
++  kết quả + `sd-search-change`), trạng thái **đang tải %** / **lỗi** (hỏng file · mật khẩu · mạng ·
++  khác) với "Thử lại" / "Tải file gốc", `password`, `httpHeaders`. Bỏ `<iframe>` và mọi nút "cần pdf.js".
++- Theo thư viện (Rule 18): tab Mục lục hiện "Mục lục sẽ được bổ sung trong phiên bản kế tiếp.",
++  "Từng trang" chỉ đổi nhãn, **Esc không còn phát `sd-close`** (chỉ đóng thanh tìm).
++- CSS chép nguyên thứ tự `preview-pdf.css` của catalog (bỏ trang giả của demo). So khung với 4 mẫu
++  catalog: tên lớp + toạ độ / màu / chữ trùng hết (lệch duy nhất: ô tìm đang focus).
++- Trang preview dựng lại theo 3 biến thể catalog (mặc định · tìm kiếm · trạng thái) + modal, dùng PDF
++  mẫu 12 trang "Hop_dong_tin_dung_VCB_2026.pdf" (`design-system/preview/assets/sd-preview-pdf-demo.js`,
++  có bản khoá mật khẩu `123456`). Docs `sd-overlay.md`, `export.md` (nhúng pdf.js khi export).
++
++Kiểm: 97 trang, 0 lỗi JS; thử tương tác đủ nút / phím / tìm / mật khẩu / file hỏng; ảnh chụp 97 trang
++chỉ đổi đúng trang preview-pdf. Chi tiết lệch có chủ ý: `_memory/known-gaps.md`. Bản vá:
++`reviews/ds-mirror/PREVIEWPDF-2026-10-13.patch`.
++
+ ### Changed — Mọi ô nhập dùng DOM Material y hệt catalog (`mat-form-field`), vạch dưới 20px
+ 
+ Builder: *„Đồng bộ tiếp phần còn khác với catalog“* → chọn **„Cả hai nhóm, mọi ô nhập“**.
+diff -ruN --text -x '*.DS_Store' -x vendor -x sd-preview-pdf-demo.js a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-13 04:54:35.391215088 +0000
++++ b/_memory/known-gaps.md	2026-10-13 04:54:35.410906018 +0000
+@@ -191,6 +191,31 @@
+ `tao-workitem` bọc `sd-date` trong `<div class="sd-form-field">` viết tay (đã sai từ trước — khung
+ đôi) nên nay lệch thêm. Đề xuất một lượt dọn prototype riêng.
+ 
++## `sd-preview-pdf` — ĐỒNG BỘ 2026-10-13, nhúng pdf.js (Builder: *„Nhúng pdf.js vào kit“*)
++
++Nguồn đối chiếu: catalog `#c-preview-pdf` + **mã thật của thư viện** (`npm pack @sd-angular/core@19.0.10`
++→ `fesm2022/sd-angular-core-components-preview.mjs`: template, logic, mặc định; `sd-angular-core-i18n.mjs`:
++chuỗi tiếng Việt). So khung (header · thanh tìm · thanh bên · toolbar · trạng thái) với 4 mẫu catalog:
++**tên lớp từng thẻ trùng thứ tự, toạ độ / màu / chữ trùng** (bỏ phần trang giả của catalog); còn 1 dòng
++lệch = ô tìm đang focus.
++
++| Chỗ | Catalog / thư viện | Kit | Vì sao |
++|---|---|---|---|
++| pdf.js | `pdfjs-dist` ^4.10.38, ES module + worker module | **cùng bản 4.10.38**, đóng gói lại thành script thường (esbuild IIFE) ở `design-system/vendor/pdfjs/`; worker chạy trên luồng chính (fake worker) | Chrome chặn ES module và Worker khi mở bằng file://. Không sửa mã pdf.js. Tài liệu rất nặng sẽ làm trang khựng lúc mở |
++| Trang + thumbnail | `<canvas>` (catalog vẽ trang HTML giả, zoom 68% là số minh hoạ) | `<canvas>` vẽ thật; zoom tính theo khung (vd 53%) | Catalog không nạp pdf.js |
++| Đoạn trích kết quả tìm | catalog viết tay `…Điều 3. <mark>Lãi suất</mark>…` | 30 ký tự trước/sau, không dấu `…` | Đúng code thư viện (`text.slice(start-30)`) |
++| `.sd-pdf-search-overlay` / `mark.sd-pdf-search-hi` | thư viện tạo bằng `document.createElement` → CSS (emulated) không áp → `<mark>` mặc định ngay dưới trang | y hệt — không có luật CSS | Catalog ghi rõ đây là hành vi app thật |
++| Chữ tab Trang/Mục lục/Tìm, ô tìm, ô số trang | 14px/21px (reboot `.sd-scope input,button{font-size:inherit}` của catalog thắng luật 12–13px của component) | 14px/21px — chép đúng thứ hạng ưu tiên | Theo catalog. Trên app Angular thật (encapsulation) có thể là 12/13px |
++| Toolbar khi tìm chữ | toolbar nằm trong `.sd-preview-pdf-stage` cuộn được; `scrollIntoView` kết quả kéo cả toolbar đi | y hệt | Hành vi thư viện |
++| Mục lục · cuộn liên tục · in | thư viện 19.0.10 **chưa làm** ("Mục lục sẽ được bổ sung…", `scrollMode="continuous"` chỉ đổi nhãn + console.warn, `printFile()` warn) | y hệt | Không tự thêm thứ mốc chuẩn chưa có (Rule 18) |
++| Esc | KHÔNG phát `close` (chỉ đóng thanh tìm) | y hệt — **bản cũ của kit phát `sd-close` khi Esc** | Trang nào dựa vào Esc để đóng modal phải tự lo (prototype hiện không có trang nào dùng) |
++| Tên file khi tải xuống | `filename` (tên file / `document.pdf` với Blob / bytes), không lấy `title` | y hệt | Code thư viện |
++| Host tự focus sau lần vẽ đầu | `afterNextRender → focus({preventScroll:true})` | y hệt | Hai viewer trên một trang: viewer sau cùng giữ focus |
++| `detail` của sự kiện | Angular phát số trần cho `pageChange` / `zoomChange` | `{ page }` / `{ zoom }` | Giữ dạng cũ của kit (trang đang dùng không vỡ); các sự kiện khác trùng payload |
++| `data-autoid` trên thẻ host | không có (thư viện chỉ gắn `data-autoId` cho nút con) | có cả hai | Quy ước kit-wide của `sd-autoid-inspector` |
++| `src` | không có | bí danh của `source` | Ngoại lệ 3 Rule 18 (markup cũ) |
++| Export prototype (1 file HTML) | — | trang có `sd-preview-pdf` phải nhúng thêm `vendor/pdfjs/*.js` (~1,7 MB) | Ghi ở `ai-instructions/export.md` |
++
+ ## `sd-query-bar` — rà soát `#c-query-bar` 2026-10-13
+ 
+ Đo 6 thanh của catalog (popover mặc định · chip popover mở · field picker mở · inline · comfortable +
+@@ -587,11 +612,11 @@
+ | `.c-sd-tooltip-panel.pos-{top,bottom,left,right}` | Lớp ĐỊNH VỊ của Angular CDK, đặt tooltip tương đối so với phần tử kích hoạt | Kit định vị bằng JS trên một node `position:fixed` dùng chung | Node dùng chung tránh bị `overflow:hidden` của khung cha cắt mất. Bong bóng vẫn mang tên `.c-sd-tooltip-container` của catalog nên CSS viết theo catalog khớp; chỉ lớp định vị là không có (2026-10-11) |
+ | `sd-splitter` — `flex-direction` trên thẻ host | `sd-splitter.sd-splitter--horizontal{flex-direction:row}` | Kit để `flex-direction` trên khung bọc bên trong (`[data-orientation]`) | Thẻ host của kit là `display:block` bọc một khung flex; `flex-direction` đặt lên block không có tác dụng. Lớp `--horizontal`/`--vertical` của catalog **vẫn được gắn** lên host để CSS ngoài nhận ra hướng (2026-10-11) |
+ | `.sd-image-*` của sd-table | Catalog nhúng ảnh bằng `content:url("data:image/svg+xml,…")` ngay trong CSS | Kit tách ra **ba file SVG** trong `design-system/core/assets/` và đặt vào `<img src>` | Rule 12 của AGENTS.md: ảnh trạng thái rỗng lấy từ thư mục assets. Nội dung SVG trích **nguyên văn** từ catalog, chỉ đổi cách nạp (2026-10-11) |
+-| `sidebar="search"` + `(searchChange)` (sd-preview-pdf) | Mở thanh tìm chữ trong tài liệu, bắn sự kiện mỗi lần tìm | **Không dựng** — kit render ô tìm kiếm ở trạng thái **vô hiệu**, tooltip "cần pdf.js" | Tìm chữ đòi trích text layer của PDF, chỉ pdf.js làm được; kit là prototype tĩnh không nhúng pdf.js. Hiện ô nhưng vô hiệu để bố cục toolbar khớp catalog (2026-10-11) |
+-| Chuyển trang · zoom · vừa trang · vừa rộng · xoay (sd-preview-pdf) | Toolbar nổi điều khiển tài liệu | **Không dựng** — các nút vẫn `disabled` + tooltip "cần pdf.js" | 2026-10-11 đã THỬ nối bằng **PDF Open Parameters** (`#page=` · `#zoom=` · `#view=FitH`) trên iframe — cơ chế kit đã dùng sẵn cho `startPage`. Nhưng **PDF viewer của Chromium headless không vẽ ra ảnh chụp**, nên không có cách nào xác nhận nút có thật sự chuyển trang. Nối rồi nói "chạy được" là đoán, nên dừng. Muốn làm thì phải kiểm trên trình duyệt có giao diện |
++| ~~`sidebar="search"` + `(searchChange)` (sd-preview-pdf)~~ **ĐÃ DỰNG 2026-10-13** — kit nhúng pdf.js, tìm chữ toàn văn + `sd-search-change` như thư viện | | | |
++| ~~Chuyển trang · zoom · vừa trang · vừa rộng · xoay (sd-preview-pdf)~~ **ĐÃ DỰNG 2026-10-13** — chạy bằng pdf.js, kiểm bằng ảnh chụp canvas | | | |
+ | `[sdSelectFooterAction]` (sd-select) | Vùng hành động dưới đáy panel chọn | **Không dựng** | Toàn catalog chỉ nhắc tên **một lần**, trong bảng API; không có markup, không có CSS, không có ví dụ. Dựng là đoán (2026-10-11) |
+ | `.c-document-image` của `#c-form-generic` | Hộp 20×24 nền đỏ/xanh, chữ `700 7px/24px` | Giữ bản của `#c-upload-file` (ảnh SVG `content:url(...)`, 24px) | Hai section vẽ cùng tên class theo hai kiểu khác nhau; `#c-form-generic` là **trang demo Form Generic** (component kit chưa dựng), `#c-upload-file` mới là component. Kit theo component (2026-10-11) |
+-| `httpHeaders` (sd-preview-pdf) | Header HTTP truyền cho pdf.js | **Không dựng** | Prototype tĩnh không gọi mạng; không có gì để truyền (2026-10-11) |
++| ~~`httpHeaders` (sd-preview-pdf)~~ **ĐÃ DỰNG 2026-10-13** — truyền cho `pdfjsLib.getDocument` như thư viện | | | |
+ | Ô tìm kiếm trong panel `sd-select` — icon | Catalog dùng `<mat-icon class="material-icons">` (filled) | `<span class="material-icons-outlined">` | Rule 4 của `AGENTS.md` cấm `material-icons` filled. Số đo và màu (#dadada, 24px) thì giữ đúng catalog (2026-10-11) |
+ | Ô tìm kiếm `sd-select` — placeholder và lúc đóng panel | Markup catalog KHÔNG có placeholder; không có bằng chứng về việc giữ hay xoá từ khoá khi đóng | Ô để trống (chỉ có `aria-label`); **đóng panel thì xoá từ khoá** | Không đoán placeholder. Xoá từ khoá khi đóng là lựa chọn của kit để lần mở sau không còn bộ lọc ẩn (2026-10-11) |
+ | `showSelectAll` (sd-select) | Catalog 19.0.10 **không có** input này | Kit giữ, nhãn "Tất cả" | Tính năng riêng của kit từ trước; 2026-10-11 phát hiện chuỗi nhãn chưa bao giờ được khai nên render ra RỖNG — đã bổ sung |
+diff -ruN --text -x '*.DS_Store' -x vendor -x sd-preview-pdf-demo.js a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-13 04:54:35.391167064 +0000
++++ b/_memory/lessons.md	2026-10-13 04:54:35.410601828 +0000
+@@ -1184,3 +1184,28 @@
+ (hoặc gỡ, nếu là thứ kit tự thêm — Rule 18). Không lấy hành vi của component khác „cùng
+ họ“ để suy ra. Chỉ hỏi Builder khi chính catalog tự mâu thuẫn.
+ 
++
++## Mã thật của catalog CÓ trên npm: `@sd-angular/core@19.0.10` (2026-10-13)
++
++`npm pack @sd-angular/core@19.0.10` tải về đúng bản thư viện mà catalog chụp. Trong đó có
++template Angular, logic, mặc định của input và chuỗi i18n tiếng Việt (`fesm2022/*.mjs`). Đối
++chiếu `sd-preview-pdf`: template trùng từng thẻ với DOM catalog — tức đây là nguồn đáng tin
++cho **hành vi** mà catalog (ảnh chụp tĩnh) không thể hiện được: mặc định (`sidebarOpen=true`,
++`showToolbar=true`), phím tắt, cách tìm chữ, chuỗi lỗi, Esc không phát `close`…
++
++→ Khi catalog không nói về hành vi, mở gói này đọc trước khi đoán. **Số đo, màu, markup vẫn
++lấy theo catalog** (catalog có những chỗ khác app thật do cách chụp — vd reboot `.sd-scope`
++làm chữ tab `sd-preview-pdf` 14px thay vì 12px; kit theo catalog và ghi known-gaps).
++→ Ghi chú cũ "npm `@sd-angular/core` có API khác" ở AGENTS.md là về bản npm CŨ, trước
++quyết định 2026-10-10.
++
++## pdf.js vẽ canvas → chụp ảnh headless KIỂM ĐƯỢC (2026-10-13)
++
++Lý do hoãn 2026-10-11 ("viewer PDF của Chromium headless không vẽ ra ảnh chụp") chỉ đúng với
++viewer CÓ SẴN của trình duyệt. pdf.js vẽ lên `<canvas>` nên chụp màn hình thấy được từng trang.
++Hai bẫy đã dẫm:
++- pdfjs 3.11 (bản UMD cuối cùng) + Chrome mới: font nhúng bị OTS từ chối (`Non zero cmap
++  subtable segment padding`) → chữ ra ô vuông. Bản 4.10.38 (đúng bản thư viện dùng) không bị.
++- pdfjs 4.x chỉ có ES module; Chrome chặn module + Worker khi mở file:// → đóng gói lại bằng
++  esbuild thành IIFE (`pdfjsLib` / `pdfjsWorker`) và nạp worker bằng `<script>` (fake worker).
++- PDF mẫu sinh bằng reportlab bị cùng lỗi OTS; sinh bằng Chromium print-to-PDF thì sạch.
+diff -ruN --text -x '*.DS_Store' -x vendor -x sd-preview-pdf-demo.js a/ai-instructions/export.md b/ai-instructions/export.md
+--- a/ai-instructions/export.md	2026-10-13 04:54:35.388679466 +0000
++++ b/ai-instructions/export.md	2026-10-13 04:54:35.408290428 +0000
+@@ -74,6 +74,7 @@
+ - **Inline tất cả JS tối thiểu** — chỉ giữ interaction (dropdown toggle, tab switch, checkbox select)
+ - **KHÔNG cần** pattern-loader.js, shared-nav.js, pattern definitions — tất cả đã render thành HTML tĩnh
+ - **Google Fonts + Material Icons** — giữ `<link>` external (cần internet, chấp nhận được)
++- **Trang có `sd-preview-pdf`** — viewer cần pdf.js (`design-system/vendor/pdfjs/pdf.min.js` + `pdf.worker.min.js`, ~1,7 MB). Inline cả hai vào `<script>` TRƯỚC `sd-components.js` (viewer thấy sẵn `window.pdfjsLib` / `window.pdfjsWorker` thì không nạp lại), hoặc báo Builder file sẽ nặng thêm ~1,7 MB
+ - **Multi-page** → dùng hash navigation: `#danh-sach`, `#chi-tiet` — mỗi page là 1 `<section>`, JS toggle visibility
+ - **UTF-8 encoding** — `<meta charset="UTF-8">` + ghi file với encoding UTF-8. Tuyệt đối không strip dấu tiếng Việt
+ 
+diff -ruN --text -x '*.DS_Store' -x vendor -x sd-preview-pdf-demo.js a/design-system/components/sd-overlay.md b/design-system/components/sd-overlay.md
+--- a/design-system/components/sd-overlay.md	2026-10-13 04:54:35.393482496 +0000
++++ b/design-system/components/sd-overlay.md	2026-10-13 04:54:35.415032408 +0000
+@@ -273,82 +273,82 @@
+ 
+ ## sd-preview-pdf
+ 
+-Viewer PDF. Thư viện thật `@sd-angular/core` chạy bằng pdf.js. Kit không được kéo thêm thư viện ngoài nên mirror ĐẦY ĐỦ API nhưng render nội dung qua `<iframe>` của trình duyệt; phần nào chỉ làm được bằng pdf.js thì render disabled kèm `data-sd-tooltip` "cần pdf.js".
++Trình xem PDF tự co theo phần tử cha (đặt trong khung có chiều cao: `<div style="height:600px">`,
++`sd-modal`, `sd-side-drawer`…). **Đồng bộ 2026-10-13** theo Core UI Catalog `#c-preview-pdf` **và mã
++thật của thư viện** `@sd-angular/core` 19.0.10 (template, logic, chuỗi tiếng Việt). Kit chạy đúng
++**pdf.js 4.10.38** như thư viện — đóng gói sẵn ở `design-system/vendor/pdfjs/` (script thường, tự nạp
++khi trang có viewer; mở bằng file:// vẫn chạy vì worker chạy trên luồng chính).
+ 
+ | Attribute | Values | Default |
+ |-----------|--------|---------|
+-| `source` | PdfSource (property JS) | - |
+-| `src` | string - một URL PDF (mirror thêm, Portal không có input này) | - |
+-| `sidebar` | `thumbnails`, `search` (catalog có ví dụ `sidebar="search"` mở thanh tìm); giá trị khác quy về `thumbnails` | `thumbnails` |
+-| `sidebarOpen` | boolean | **`true`** |
+-| `initialZoom` | `page-fit`, `width`, `actual`, số cụ thể (scale 0.25-4) | `page-fit` |
+-| `startPage` | number - mở sẵn ở trang thứ mấy (1-based); ghép vào `#page=N` của viewer trình duyệt | `1` |
+-| `password` | string - mật khẩu mở file PDF có khoá | - |
+-| `scrollMode` | `vertical`, `horizontal`, `wrapped`, `page` - ghi ra `data-scroll-mode` để CSS/trang đọc | **`page`** |
+-| `autoId` | string | - |
+-| `theme` | `dark`, `light` | `dark` |
+-| `showToolbar` | boolean | `false` |
++| `source` | URL (attribute) · property JS: `File` · `Blob` · `ArrayBuffer` · `Uint8Array` · `{ url, httpHeaders?, withCredentials? }` · `{ data }`. Bí danh cũ `src` | - |
++| `title` | string — tên hiển thị ở header | tên file |
++| `startPage` | number | `1` |
++| `initialZoom` | `page-fit` · `page-width` · `page-actual` · số (1 = 100%). Bí danh cũ: `width` · `actual` · `"150"`/`"150%"` | `page-fit` |
++| `sidebar` | `thumbnails` · `outline` · `search` · `none` | `thumbnails` |
++| `sidebarOpen` | boolean | `true` |
++| `scrollMode` | `page` · `continuous` (thư viện chưa dựng — vẫn từng trang + console.warn) | `page` |
++| `showToolbar` | boolean | `true` |
+ | `downloadable` | boolean | `true` |
+-| `title` | string - tên file hiển thị | - |
++| `password` | string (attribute / property) | - |
++| `httpHeaders` | JSON (attribute) · object (property) | - |
++| `theme` | `dark` · `light` | `dark` |
++| `autoId` | string → `data-autoId` cho từng nút: `components-preview-pdf-{id}-first` · `-next` · `-search` · `-thumb-0` … | - |
++
++**Events (bubbles) ↔ outputs Angular:**
++
++| Kit | Angular | detail | Khi nào |
++|-----|---------|--------|---------|
++| `sd-loaded` | `loaded` | `{ totalPages, meta: { title, author, subject, numPages } }` | Mở tài liệu xong |
++| `sd-page-change` | `pageChange` | `{ page }` | Lúc mở + mỗi lần đổi trang |
++| `sd-zoom-change` | `zoomChange` | `{ zoom }` | Sau mỗi lần vẽ trang |
++| `sd-search-change` | `searchChange` | `{ term, total, current }` | Mỗi lần tìm / chuyển kết quả / xoá |
++| `sd-download` | `download` | `{ filename }` | Bấm tải xuống |
++| `sd-load-error` | `loadError` | `{ reason: invalid · password · network · unknown, message }` | Không mở được |
++| `sd-close` | `close` | `{}` | **Chỉ** khi gọi `requestClose()` — Esc KHÔNG phát (thư viện để trang tự đóng) |
++
++**Phương thức (tên y hệt thư viện):** `goToPage(n)` · `nextPage()` · `prevPage()` · `firstPage()` ·
++`lastPage()` · `zoomIn()` · `zoomOut()` · `setZoom(mode)` · `rotate('right'|'left')` · `toggleSidebar()` ·
++`setSidebarMode(mode)` · `setScrollMode(mode)` · `search(term, { caseSensitive, wholeWord })` ·
++`searchNext()` · `searchPrev()` · `clearSearch()` · `openSearch()` · `closeSearch()` ·
++`toggleSearchCaseSensitive()` · `toggleSearchWholeWord()` · `downloadFile()` · `toggleFullscreen()` ·
++`retryLoad()` · `requestClose()` · `printFile()` (thư viện chưa làm — console.warn).
++
++**Phím tắt (gắn trên host, host tự focus sau lần vẽ đầu):** ← / PageUp · → / PageDown · Home · End ·
++`+` `=` `-` `0` (vừa trang) · `r` / `R` (xoay phải / trái) · `f` (toàn màn hình) · Ctrl/Cmd+F (mở tìm) ·
++trong ô tìm: Enter / Shift+Enter / F3 chuyển kết quả, Esc đóng. Ctrl/Cmd + lăn chuột trên trang = zoom.
+ 
+-`PdfSource = string | File | Blob | ArrayBuffer | Uint8Array | { url, httpHeaders?, withCredentials? } | { data: ArrayBuffer | Uint8Array }`.
+-`httpHeaders`/`withCredentials` được ghi nhận nhưng mirror không dùng (iframe trình duyệt không gửi header custom).
+-`sidebarOpen` mặc định `false` và `theme="light"` là giá trị suy ra, không đọc được từ bảng thử nghiệm Portal.
+-
+-**Events - ánh xạ kebab sang Angular:**
+-
+-| Mirror (kebab) | Angular | detail | Khi nào fire |
+-|----------------|---------|--------|--------------|
+-| `sd-loaded` | `loaded` | `{ totalPages: null, meta }` | Iframe load xong - `totalPages` luôn `null` vì mirror không có pdf.js |
+-| `sd-page-change` | `pageChange` | `{ page }` | Chỉ phát `page: 1` lúc load; đổi trang thật cần pdf.js |
+-| `sd-zoom-change` | `zoomChange` | `{ zoom }` | Chỉ phát giá trị `initialZoom` lúc load; zoom theo trang cần pdf.js |
+-| `sd-download` | `download` | `{ filename }` | Bấm nút tải xuống |
+-| `sd-load-error` | `loadError` | `{ reason: invalid, password, network, unknown }` | Mirror chỉ phát `reason: "unknown"` khi thiếu source |
+-| `sd-close` | `close` | `{}` | Bấm Escape trong viewer - consumer tự đóng modal/drawer |
+-
+-**Phần nào cần pdf.js mà mirror không làm được:**
+-
+-- Dải thumbnail từng trang, tìm chữ trong tài liệu, nhảy tới trang cụ thể
+-- Zoom theo từng trang: `remove`/`add`/phần trăm, vừa trang (`fit_screen`), vừa rộng (`swap_horiz`), xoay, chế độ từng trang (`description`), in
+-- Lấy `totalPages` thật, đổi trang và đổi zoom thật sự
+-
+-**Mirror được:** hiển thị tài liệu qua iframe, bật/tắt sidebar, chuyển tab thanh bên, tải xuống, fullscreen, 6 event đầy đủ.
+-
+-**Cấu trúc DOM (2026-10-11 dựng lại theo Core UI Catalog `#c-preview-pdf`):**
++**Cấu trúc DOM (template thư viện):**
+ 
+ ```
+-sd-preview-pdf.sd-preview-pdf-host[tabindex=0][data-theme][data-scroll-mode]
+-└ .sd-preview-pdf-shell
+-  ├ .sd-preview-pdf-header              (cao 57px)
+-  │ ├ __left : nút menu · __divider · .sd-preview-pdf-fileicon "PDF" 32px
+-  │ │          · __meta (__name + __sub)
+-  │ └ __right: tìm (disabled) · tải · toàn màn hình
+-  ├ .sd-preview-pdf-searchbar           (chỉ khi sidebar="search"; ô nhập disabled)
++sd-preview-pdf.sd-preview-pdf-host[tabindex=0][data-theme][.sd-preview-pdf-host--fullscreen]
++└ .sd-preview-pdf-shell[role=region]
++  ├ .sd-preview-pdf-header            ← chỉ khi đã mở xong (ẩn ở trạng thái rỗng / đang tải / lỗi)
++  │   __left: nút menu · __divider · .sd-preview-pdf-fileicon "PDF" · __meta (__name · __sub "12 trang")
++  │   __right: tìm kiếm · tải xuống (downloadable) · toàn màn hình
++  ├ .sd-preview-pdf-searchbar         ← khi mở thanh tìm (icon tìm / Ctrl+F / tab "Tìm")
++  │   icon · input · __counter "1 / 3" · ↑ ↓ · __divider · match_case · text_fields · __spacer · ×
+   └ .sd-preview-pdf-body
+-    ├ aside.sd-preview-pdf-sidebar      (rộng 240px)
+-    │ ├ __tabs: Trang · Mục lục · Tìm
+-    │ └ __content > __deferred          (ghi chú "cần pdf.js")
+-    └ .sd-preview-pdf-stage             (nền ca-rô 24px, đệm 32px 24px 96px)
+-      ├ .sd-preview-pdf-page-wrap > iframe.sd-preview-pdf-page
+-      └ .sd-preview-pdf-toolbar         (NỔI ở đáy: điều hướng trang · zoom ·
+-                                         Vừa trang · Vừa rộng · xoay · Từng trang)
++    ├ aside.sd-preview-pdf-sidebar    ← khi mở xong + sidebarOpen + sidebar ≠ none
++    │   __tabs: Trang · Mục lục · Tìm
++    │   __content: thumb-list (canvas vẽ lười) | __deferred "Mục lục sẽ được bổ sung…" | search-list
++    └ .sd-preview-pdf-stage
++        status (rỗng · spinner + % · lỗi + Thử lại / Tải file gốc) | page-wrap > canvas.sd-preview-pdf-page
++        .sd-preview-pdf-toolbar (showToolbar): ⏮ ‹ [n] / N › ⏭ · − 68% + · Vừa trang · Vừa rộng · ↻ · Từng trang
+ ```
+ 
+-`data-scroll-mode` nay nằm trên **chính thẻ host** (trước nằm trên `div` con).
+-Rule `.sd-preview-pdf-page{width:340px;aspect-ratio:612/792}` của catalog **không
+-chép**: đó là cỡ trang GIẢ mà trang demo tự vẽ, không phải style của component.
+-Toàn màn hình gắn lớp `sd-preview-pdf-host--fullscreen`.
+-
+ ```html
+-<sd-preview-pdf sidebarOpen showToolbar downloadable
+-  initialZoom="page-fit" theme="dark" title="Hợp đồng HD-2026-001"></sd-preview-pdf>
+-
++<div style="height: 600px">
++  <sd-preview-pdf title="Hop_dong_tin_dung_VCB_2026.pdf" startPage="2" initialZoom="page-fit" sidebar="thumbnails"></sd-preview-pdf>
++</div>
+ <script>
+-  viewer.source = 'https://cdn.example.vn/hop-dong.pdf';
+-  // hoặc viewer.source = { url: '...', withCredentials: true };
++  viewer.source = 'https://cdn.example.vn/hop-dong.pdf';   // hoặc File / Blob / Uint8Array
+ </script>
+ ```
+ 
++Lưu ý: "Vừa trang / Vừa rộng" đo khung **lúc vẽ** (như thư viện) — viewer nằm trong khung đang ẩn
++(modal chưa mở) thì gán `source` sau khi khung hiện. PDF mẫu cho trang thử:
++`design-system/preview/assets/sd-preview-pdf-demo.js` → `sdDemoPdf('contract' | 'locked')`.
+ 
+ ---
+ 
+diff -ruN --text -x '*.DS_Store' -x vendor -x sd-preview-pdf-demo.js a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-13 04:54:35.392490343 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-13 04:54:35.411995771 +0000
+@@ -7044,728 +7044,127 @@
+ }
+ 
+ /* ── sd-preview-pdf ────────────────────────────────────
+-   Rà soát 2026-10-11: dựng LẠI theo Core UI Catalog `#c-preview-pdf`.
+-   Bản trước kit tự đặt tên (`.sd-preview-pdf-toolbar-top/-bottom`,
+-   `-sidebar-tab`, `-panel-note`…) và bố cục lưới ba hàng. Catalog dùng
+-   `.sd-preview-pdf-shell` > `__header` + `__body`, thanh bên 240px có ba tab,
+-   thanh công cụ NỔI ở đáy khung trang. Toàn bộ giá trị dưới đây chép
+-   nguyên văn từ CSS của catalog; `mat-icon` đổi thành
+-   `.material-icons-outlined` theo Rule 4 của AGENTS.md.
++   ĐỒNG BỘ 2026-10-13 theo Core UI Catalog `#c-preview-pdf` (`css/components/preview-pdf.css`):
++   chép NGUYÊN THỨ TỰ mọi luật của component, phạm vi `#c-preview-pdf` → `sd-preview-pdf`
++   (luật catalog bắt đầu bằng thẻ → `sd-preview-pdf:is(sd-preview-pdf)…` để giữ thứ hạng
++   ưu tiên tương đối). KHÔNG chép phần trang giả của trang demo (`.pv-*`, `.pv-frame`,
++   `.sd-preview-pdf-page{width:340px;aspect-ratio:612/792}`) — kit vẽ trang thật bằng pdf.js.
++   Lớp `.sd-pdf-search-overlay` / `.sd-pdf-search-hi` cố ý KHÔNG có luật: thư viện tạo chúng
++   bằng document.createElement nên CSS (emulated) của component không áp — catalog ghi rõ.
+    ────────────────────────────────────────────────── */
+-sd-preview-pdf {
+-  --sd-pdf-shell-bg: #1a1c1f;
+-  --sd-pdf-sidebar-bg: #22252a;
+-  --sd-pdf-toolbar-bg: rgba(20, 22, 25, .94);
+-  --sd-pdf-page-bg: #ffffff;
+-  --sd-pdf-page-shadow: 0 4px 16px rgba(0, 0, 0, .4);
+-  --sd-pdf-divider: rgba(255, 255, 255, .08);
+-  --sd-pdf-fg: #f5f6f7;
+-  --sd-pdf-fg-muted: rgba(255, 255, 255, .6);
+-  --sd-pdf-fg-subtle: rgba(255, 255, 255, .4);
+-  --sd-pdf-accent: var(--sd-primary, #3b82f6);
+-  --sd-pdf-accent-soft: rgba(59, 130, 246, .2);
+-  --sd-pdf-danger: var(--sd-error, #ef4444);
+-  --sd-pdf-success: var(--sd-success, #22c55e);
+-  --sd-pdf-danger-soft: rgba(239, 68, 68, .1);
+-  --sd-pdf-danger-border: rgba(239, 68, 68, .3);
+-  --sd-pdf-danger-tint: rgba(239, 68, 68, .15);
+-  --sd-pdf-hover-bg: rgba(255, 255, 255, .1);
+-  --sd-pdf-search-hi: rgba(250, 204, 21, .55);
+-  --sd-pdf-search-hi-active: rgba(249, 115, 22, .85);
+-  display:block;
+-  width:100%;
+-  height:100%;
+-  min-height:320px;
+-  outline:none;
+-}
+-sd-preview-pdf * { box-sizing: border-box; }
+-sd-preview-pdf[data-theme=light] {
+-  --sd-pdf-shell-bg: #f7f8fa;
+-  --sd-pdf-sidebar-bg: #ffffff;
+-  --sd-pdf-toolbar-bg: rgba(255, 255, 255, .94);
+-  --sd-pdf-page-bg: #ffffff;
+-  --sd-pdf-page-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+-  --sd-pdf-divider: rgba(0, 0, 0, .08);
+-  --sd-pdf-fg: #1a1c1f;
+-  --sd-pdf-fg-muted: rgba(0, 0, 0, .62);
+-  --sd-pdf-fg-subtle: rgba(0, 0, 0, .42);
+-  --sd-pdf-accent: var(--sd-primary, #1f49bf);
+-  --sd-pdf-accent-soft: rgba(31, 73, 191, .18);
+-  --sd-pdf-danger: var(--sd-error, #ef4444);
+-  --sd-pdf-success: var(--sd-success, #22c55e);
+-  --sd-pdf-danger-soft: rgba(239, 68, 68, .08);
+-  --sd-pdf-danger-border: rgba(239, 68, 68, .25);
+-  --sd-pdf-danger-tint: rgba(239, 68, 68, .12);
+-  --sd-pdf-hover-bg: rgba(0, 0, 0, .06);
+-  --sd-pdf-search-hi: rgba(250, 204, 21, .55);
+-  --sd-pdf-search-hi-active: rgba(250, 204, 21, .9);
+-}
+-sd-preview-pdf.sd-preview-pdf-host--fullscreen {
+-  width:100vw;
+-  height:100vh;
+-  min-height:0;
+-}
+-sd-preview-pdf .sd-preview-pdf-shell {
+-  position:relative;
+-  display:flex;
+-  flex-direction:column;
+-  width:100%;
+-  height:100%;
+-  background:var(--sd-pdf-shell-bg);
+-  color:var(--sd-pdf-fg);
+-  border-radius:12px;
+-  overflow:hidden;
+-  box-shadow:0 30px 80px #0000008c,0 0 0 1px #ffffff0a;
+-  font-family:inherit;
+-}
+-sd-preview-pdf .sd-preview-pdf-header {
+-  display:flex;
+-  align-items:center;
+-  justify-content:space-between;
+-  gap:12px;
+-  height:57px;
+-  padding:0 12px;
+-  background:var(--sd-pdf-toolbar-bg);
+-  backdrop-filter:blur(12px);
+-  -webkit-backdrop-filter:blur(12px);
+-  border-bottom:1px solid var(--sd-pdf-divider);
+-  flex:0 0 auto;
+-  z-index:2;
+-}
+-sd-preview-pdf .sd-preview-pdf-header__left {
+-  display:flex;
+-  align-items:center;
+-  gap:8px;
+-  min-width:0;
+-  flex:1 1 auto;
+-}
+-sd-preview-pdf .sd-preview-pdf-header__right {
+-  display:flex;
+-  align-items:center;
+-  gap:4px;
+-  flex-shrink:0;
+-}
+-sd-preview-pdf .sd-preview-pdf-header__divider {
+-  display:inline-block;
+-  width:1px;
+-  height:20px;
+-  background:var(--sd-pdf-divider);
+-}
+-sd-preview-pdf .sd-preview-pdf-header__meta {
+-  display:flex;
+-  flex-direction:column;
+-  min-width:0;
+-}
+-sd-preview-pdf .sd-preview-pdf-header__name {
+-  font-size:14px;
+-  font-weight:500;
+-  color:var(--sd-pdf-fg);
+-  max-width:320px;
+-  overflow:hidden;
+-  text-overflow:ellipsis;
+-  white-space:nowrap;
+-}
+-sd-preview-pdf .sd-preview-pdf-header__sub {
+-  font-size:11px;
+-  color:var(--sd-pdf-fg-muted);
+-  margin-top:2px;
+-}
+-sd-preview-pdf .sd-preview-pdf-fileicon {
+-  display:inline-flex;
+-  align-items:center;
+-  justify-content:center;
+-  width:32px;
+-  height:32px;
+-  border-radius:6px;
+-  background:var(--sd-pdf-danger-tint);
+-  border:1px solid var(--sd-pdf-danger-border);
+-  color:var(--sd-error-light, #f87171);
+-  font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+-}
+-sd-preview-pdf .sd-preview-pdf-iconbtn {
+-  display:inline-flex;
+-  align-items:center;
+-  justify-content:center;
+-  gap:6px;
+-  min-width:32px;
+-  height:32px;
+-  padding:0 8px;
+-  background:transparent;
+-  border:none;
+-  color:var(--sd-pdf-fg);
+-  border-radius:6px;
+-  cursor:pointer;
+-  transition:background .12s,color .12s;
+-  white-space:nowrap;
+-  flex-shrink:0;
+-}
+-sd-preview-pdf .sd-preview-pdf-iconbtn .material-icons-outlined ,
+-sd-preview-pdf .sd-preview-pdf-iconbtn .mat-icon {
+-  font-size:18px;
+-  width:18px;
+-  height:18px;
+-}
+-sd-preview-pdf .sd-preview-pdf-iconbtn__label {
+-  font-size:13px;
+-  font-weight:500;
+-}
+-sd-preview-pdf .sd-preview-pdf-iconbtn:hover:not(:disabled) {
+-  background:var(--sd-pdf-hover-bg);
+-}
+-sd-preview-pdf .sd-preview-pdf-iconbtn:focus-visible {
+-  outline:2px solid var(--sd-pdf-accent);
+-  outline-offset:2px;
+-}
+-sd-preview-pdf .sd-preview-pdf-iconbtn:disabled {
+-  opacity:.35;
+-  cursor:not-allowed;
+-}
+-sd-preview-pdf .sd-preview-pdf-iconbtn--active {
+-  background:var(--sd-pdf-accent-soft);
+-  color:var(--sd-pdf-accent);
+-}
+-sd-preview-pdf .sd-preview-pdf-searchbar {
+-  display:flex;
+-  align-items:center;
+-  gap:6px;
+-  height:46px;
+-  padding:0 12px;
+-  background:var(--sd-pdf-toolbar-bg);
+-  border-bottom:1px solid var(--sd-pdf-divider);
+-  backdrop-filter:blur(12px);
+-  -webkit-backdrop-filter:blur(12px);
+-  flex:0 0 auto;
+-  z-index:2;
+-}
+-sd-preview-pdf .sd-preview-pdf-searchbar__icon {
+-  color:var(--sd-pdf-fg-muted);
+-  font-size:18px;
+-  width:18px;
+-  height:18px;
+-  flex-shrink:0;
+-}
+-sd-preview-pdf .sd-preview-pdf-searchbar__input {
+-  flex:0 1 360px;
+-  min-width:160px;
+-  height:30px;
+-  background:#ffffff0f;
+-  border:1px solid rgba(255,255,255,.08);
+-  color:var(--sd-pdf-fg);
+-  border-radius:6px;
+-  padding:0 10px;
+-  font-size:13px;
+-  outline:none;
+-}
+-sd-preview-pdf .sd-preview-pdf-searchbar__input::placeholder {
+-  color:var(--sd-pdf-fg-subtle);
+-}
+-sd-preview-pdf .sd-preview-pdf-searchbar__input:focus {
+-  border-color:var(--sd-pdf-accent);
+-  background:#ffffff17;
+-}
+-sd-preview-pdf .sd-preview-pdf-searchbar__counter {
+-  color:var(--sd-pdf-fg-muted);
+-  font-size:12px;
+-  font-variant-numeric:tabular-nums;
+-  min-width:48px;
+-  text-align:center;
+-  flex-shrink:0;
+-}
+-sd-preview-pdf .sd-preview-pdf-searchbar__divider {
+-  width:1px;
+-  height:20px;
+-  background:var(--sd-pdf-divider);
+-  flex-shrink:0;
+-}
+-sd-preview-pdf .sd-preview-pdf-searchbar__spacer {
+-  flex:1 1 auto;
+-}
+-sd-preview-pdf .sd-preview-pdf-body {
+-  position:relative;
+-  flex:1 1 auto;
+-  min-height:0;
+-  display:flex;
+-  flex-direction:row;
+-  overflow:hidden;
+-}
+-sd-preview-pdf .sd-preview-pdf-sidebar {
+-  width:240px;
+-  display:flex;
+-  flex-direction:column;
+-  background:var(--sd-pdf-sidebar-bg);
+-  border-right:1px solid var(--sd-pdf-divider);
+-  flex-shrink:0;
+-  min-height:0;
+-}
+-sd-preview-pdf .sd-preview-pdf-sidebar__tabs {
+-  display:flex;
+-  gap:4px;
+-  padding:8px;
+-  border-bottom:1px solid var(--sd-pdf-divider);
+-}
+-sd-preview-pdf .sd-preview-pdf-sidebar__tab {
+-  flex:1 1 0;
+-  display:inline-flex;
+-  align-items:center;
+-  justify-content:center;
+-  gap:4px;
+-  height:32px;
+-  padding:0 4px;
+-  background:transparent;
+-  border:none;
+-  color:var(--sd-pdf-fg-muted);
+-  border-radius:6px;
+-  cursor:pointer;
+-  font-size:12px;
+-  font-weight:500;
+-  white-space:nowrap;
+-  flex-shrink:0;
+-  transition:background .12s,color .12s;
+-}
+-sd-preview-pdf .sd-preview-pdf-sidebar__tab .material-icons-outlined ,
+-sd-preview-pdf .sd-preview-pdf-sidebar__tab .mat-icon {
+-  font-size:14px;
+-  width:14px;
+-  height:14px;
+-}
+-sd-preview-pdf .sd-preview-pdf-sidebar__tab:hover {
+-  background:#ffffff0f;
+-  color:var(--sd-pdf-fg);
+-}
+-sd-preview-pdf .sd-preview-pdf-sidebar__tab--active {
+-  background:var(--sd-pdf-accent-soft);
+-  color:var(--sd-pdf-accent);
+-}
+-sd-preview-pdf .sd-preview-pdf-sidebar__content {
+-  flex:1 1 auto;
+-  overflow:auto;
+-  padding:12px;
+-}
+-sd-preview-pdf .sd-preview-pdf-sidebar__deferred {
+-  display:flex;
+-  flex-direction:column;
+-  align-items:center;
+-  justify-content:center;
+-  gap:12px;
+-  padding:32px 16px;
+-  text-align:center;
+-  color:var(--sd-pdf-fg-subtle);
+-}
+-sd-preview-pdf .sd-preview-pdf-sidebar__deferred .material-icons-outlined ,
+-sd-preview-pdf .sd-preview-pdf-sidebar__deferred .mat-icon {
+-  font-size:28px;
+-  width:28px;
+-  height:28px;
+-  opacity:.6;
+-}
+-sd-preview-pdf .sd-preview-pdf-sidebar__deferred p {
+-  margin:0;
+-  font-size:12px;
+-  line-height:1.5;
+-}
+-sd-preview-pdf .sd-preview-pdf-thumb-list {
+-  list-style:none;
+-  margin:0;
+-  padding:0;
+-  display:flex;
+-  flex-direction:column;
+-  gap:12px;
+-}
+-sd-preview-pdf .sd-preview-pdf-thumb {
+-  display:flex;
+-  flex-direction:column;
+-  align-items:center;
+-  gap:4px;
+-  width:100%;
+-  padding:0;
+-  background:transparent;
+-  border:none;
+-  cursor:pointer;
+-}
+-sd-preview-pdf .sd-preview-pdf-thumb__page {
+-  width:152px;
+-  aspect-ratio:612/792;
+-  background:var(--sd-pdf-page-bg);
+-  border-radius:2px;
+-  outline:1px solid rgba(255,255,255,.08);
+-  outline-offset:-1px;
+-  box-shadow:0 2px 6px #0000004d;
+-  display:flex;
+-  align-items:center;
+-  justify-content:center;
+-  overflow:hidden;
+-  -webkit-user-select:none;
+-  user-select:none;
+-  background-image:linear-gradient(90deg,#0000,#0000000a,#0000);
+-  background-size:200% 100%;
+-  animation:sd-preview-pdf-thumb-skel 1.6s ease-in-out infinite;
+-}
+-sd-preview-pdf .sd-preview-pdf-thumb__canvas {
+-  display:block;
+-  max-width:100%;
+-  max-height:100%;
+-  background:var(--sd-pdf-page-bg);
+-}
+-sd-preview-pdf .sd-preview-pdf-thumb__label {
+-  font-size:11px;
+-  color:var(--sd-pdf-fg-muted);
+-  font-variant-numeric:tabular-nums;
+-}
+-sd-preview-pdf .sd-preview-pdf-thumb--active .sd-preview-pdf-thumb__page {
+-  outline:2px solid var(--sd-pdf-accent);
+-  outline-offset:-2px;
+-}
+-sd-preview-pdf .sd-preview-pdf-thumb--active .sd-preview-pdf-thumb__label {
+-  color:var(--sd-pdf-accent);
+-  font-weight:600;
+-}
+-sd-preview-pdf .sd-preview-pdf-thumb:focus-visible .sd-preview-pdf-thumb__page {
+-  outline:2px solid var(--sd-pdf-accent);
+-  outline-offset:2px;
+-}
+-sd-preview-pdf .sd-preview-pdf-stage {
+-  position:relative;
+-  flex:1 1 auto;
+-  min-width:0;
+-  min-height:0;
+-  background:var(--sd-pdf-shell-bg);
+-  background-image:linear-gradient(45deg,rgba(255,255,255,.015) 25%,transparent 25%),linear-gradient(-45deg,rgba(255,255,255,.015) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(255,255,255,.015) 75%),linear-gradient(-45deg,transparent 75%,rgba(255,255,255,.015) 75%);
+-  background-size:24px 24px;
+-  background-position:0 0,0 12px,12px -12px,-12px 0;
+-  overflow:auto;
+-  padding:32px 24px 96px;
+-  display:flex;
+-  justify-content:center;
+-  align-items:flex-start;
+-}
+-sd-preview-pdf[data-theme=light] .sd-preview-pdf-stage {
+-  background-image:linear-gradient(45deg,rgba(0,0,0,.015) 25%,transparent 25%),linear-gradient(-45deg,rgba(0,0,0,.015) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(0,0,0,.015) 75%),linear-gradient(-45deg,transparent 75%,rgba(0,0,0,.015) 75%);
+-}
+-sd-preview-pdf .sd-preview-pdf-page-wrap {
+-  display:inline-block;
+-  position:relative;
+-}
+-sd-preview-pdf .sd-preview-pdf-page {
+-  display:block;
+-  background:var(--sd-pdf-page-bg);
+-  border-radius:2px;
+-  box-shadow:var(--sd-pdf-page-shadow);
+-  max-width:100%;
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar {
+-  position:absolute;
+-  bottom:20px;
+-  left:50%;
+-  transform:translate(-50%);
+-  display:flex;
+-  align-items:center;
+-  gap:2px;
+-  padding:5px 6px;
+-  background:var(--sd-pdf-toolbar-bg);
+-  backdrop-filter:blur(14px);
+-  -webkit-backdrop-filter:blur(14px);
+-  border:1px solid var(--sd-pdf-divider);
+-  border-radius:10px;
+-  box-shadow:0 8px 30px #0006;
+-  z-index:4;
+-  max-width:calc(100% - 32px);
+-  overflow-x:auto;
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__btn {
+-  display:inline-flex;
+-  align-items:center;
+-  justify-content:center;
+-  gap:4px;
+-  min-width:30px;
+-  height:28px;
+-  padding:0 6px;
+-  background:transparent;
+-  border:none;
+-  color:var(--sd-pdf-fg);
+-  border-radius:6px;
+-  cursor:pointer;
+-  white-space:nowrap;
+-  flex-shrink:0;
+-  transition:background .12s,color .12s;
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__btn .material-icons-outlined ,
+-sd-preview-pdf .sd-preview-pdf-toolbar__btn .mat-icon {
+-  font-size:18px;
+-  width:18px;
+-  height:18px;
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__btn span {
+-  font-size:13px;
+-  font-weight:500;
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__btn--with-label {
+-  padding:0 10px;
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__btn--active {
+-  background:var(--sd-pdf-accent-soft);
+-  color:var(--sd-pdf-accent);
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__btn:hover:not(:disabled):not(.sd-preview-pdf-toolbar__btn--active) {
+-  background:var(--sd-pdf-hover-bg);
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__btn:focus-visible {
+-  outline:2px solid var(--sd-pdf-accent);
+-  outline-offset:2px;
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__btn:disabled {
+-  opacity:.35;
+-  cursor:not-allowed;
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__page {
+-  display:inline-flex;
+-  align-items:center;
+-  gap:4px;
+-  padding:0 6px;
+-  flex-shrink:0;
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__page-input {
+-  width:36px;
+-  height:24px;
+-  background:#ffffff14;
+-  border:1px solid rgba(255,255,255,.08);
+-  color:var(--sd-pdf-fg);
+-  border-radius:4px;
+-  text-align:center;
+-  font-size:13px;
+-  font-variant-numeric:tabular-nums;
+-  outline:none;
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__page-input:focus {
+-  border-color:var(--sd-pdf-accent);
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__page-total {
+-  font-size:13px;
+-  color:var(--sd-pdf-fg-muted);
+-  font-variant-numeric:tabular-nums;
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__zoom {
+-  min-width:56px;
+-  text-align:center;
+-  color:var(--sd-pdf-fg);
+-  font-size:13px;
+-  font-weight:500;
+-  font-variant-numeric:tabular-nums;
+-  background:#ffffff14;
+-  border-radius:4px;
+-  padding:2px 8px;
+-}
+-sd-preview-pdf .sd-preview-pdf-toolbar__divider {
+-  width:1px;
+-  height:20px;
+-  background:var(--sd-pdf-divider);
+-  margin:0 4px;
+-  flex-shrink:0;
+-}
+-sd-preview-pdf .sd-preview-pdf-status {
+-  margin:auto;
+-  display:flex;
+-  flex-direction:column;
+-  align-items:center;
+-  justify-content:center;
+-  gap:16px;
+-  text-align:center;
+-  padding:32px;
+-  max-width:420px;
+-}
+-sd-preview-pdf .sd-preview-pdf-status__tile {
+-  width:96px;
+-  height:96px;
+-  border-radius:24px;
+-  display:flex;
+-  align-items:center;
+-  justify-content:center;
+-  border:1px solid var(--sd-pdf-divider);
+-}
+-sd-preview-pdf .sd-preview-pdf-status__tile .material-icons-outlined ,
+-sd-preview-pdf .sd-preview-pdf-status__tile .mat-icon {
+-  font-size:48px;
+-  width:48px;
+-  height:48px;
+-}
+-sd-preview-pdf .sd-preview-pdf-status__tile--muted {
+-  background:#ffffff0d;
+-}
+-sd-preview-pdf .sd-preview-pdf-status__tile--muted .material-icons-outlined ,
+-sd-preview-pdf .sd-preview-pdf-status__tile--muted .mat-icon {
+-  color:var(--sd-pdf-fg-subtle);
+-}
+-sd-preview-pdf .sd-preview-pdf-status__tile--danger {
+-  background:var(--sd-pdf-danger-soft);
+-  border-color:var(--sd-pdf-danger-border);
+-}
+-sd-preview-pdf .sd-preview-pdf-status__tile--danger .material-icons-outlined ,
+-sd-preview-pdf .sd-preview-pdf-status__tile--danger .mat-icon {
+-  color:var(--sd-pdf-danger);
+-}
+-sd-preview-pdf .sd-preview-pdf-status__title {
+-  font-size:16px;
+-  font-weight:500;
+-  color:var(--sd-pdf-fg);
+-}
+-sd-preview-pdf .sd-preview-pdf-status__hint {
+-  font-size:13px;
+-  color:var(--sd-pdf-fg-muted);
+-  line-height:1.5;
+-}
+-sd-preview-pdf .sd-preview-pdf-status__actions {
+-  display:flex;
+-  gap:8px;
+-  margin-top:4px;
+-}
+-sd-preview-pdf .sd-preview-pdf-progress-pct {
+-  font-variant-numeric:tabular-nums;
+-  color:var(--sd-pdf-fg-muted);
+-}
+-sd-preview-pdf .sd-preview-pdf-progress {
+-  width:240px;
+-  height:4px;
+-  background:#ffffff14;
+-  border-radius:999px;
+-  overflow:hidden;
+-}
+-sd-preview-pdf .sd-preview-pdf-progress__fill {
+-  height:100%;
+-  background:var(--sd-pdf-accent);
+-  transition:width .12s linear;
+-}
+-sd-preview-pdf .sd-preview-pdf-spinner {
+-  width:56px;
+-  height:56px;
+-  border-radius:999px;
+-  border:3px solid rgba(255,255,255,.08);
+-  border-top-color:var(--sd-pdf-accent);
+-  animation:sd-preview-pdf-spin .9s linear infinite;
+-}
+-sd-preview-pdf .sd-preview-pdf-search-list {
+-  list-style:none;
+-  margin:0;
+-  padding:0;
+-  display:flex;
+-  flex-direction:column;
+-  gap:6px;
+-}
+-sd-preview-pdf .sd-preview-pdf-search-result {
+-  width:100%;
+-  display:flex;
+-  align-items:flex-start;
+-  gap:8px;
+-  padding:8px 10px;
+-  background:#ffffff0a;
+-  border:1px solid transparent;
+-  border-radius:6px;
+-  color:var(--sd-pdf-fg);
+-  cursor:pointer;
+-  text-align:left;
+-  transition:background .12s,border-color .12s;
+-}
+-sd-preview-pdf .sd-preview-pdf-search-result:hover {
+-  background:#ffffff12;
+-}
+-sd-preview-pdf .sd-preview-pdf-search-result--active {
+-  background:var(--sd-pdf-accent-soft);
+-  border-color:#3b82f673;
+-}
+-sd-preview-pdf .sd-preview-pdf-search-result__snippet {
+-  flex:1 1 auto;
+-  font-size:12px;
+-  line-height:1.4;
+-  color:var(--sd-pdf-fg);
+-  word-break:break-word;
+-}
+-sd-preview-pdf .sd-preview-pdf-search-result__snippet mark {
+-  background:var(--sd-pdf-search-hi);
+-  color:#000;
+-  padding:0 2px;
+-  border-radius:2px;
+-}
+-sd-preview-pdf .sd-preview-pdf-search-result__page {
+-  flex:0 0 auto;
+-  font-size:11px;
+-  font-variant-numeric:tabular-nums;
+-  color:var(--sd-pdf-fg-muted);
+-  background:#ffffff0f;
+-  padding:2px 6px;
+-  border-radius:4px;
+-}
+-sd-preview-pdf .sd-preview-pdf-btn-primary {
+-  display:inline-flex;
+-  align-items:center;
+-  gap:6px;
+-  height:36px;
+-  padding:0 16px;
+-  background:var(--sd-pdf-accent);
+-  color:#fff;
+-  border:none;
+-  border-radius:8px;
+-  cursor:pointer;
+-  font-size:13px;
+-  font-weight:500;
+-  transition:filter .12s;
+-}
+-sd-preview-pdf .sd-preview-pdf-btn-primary .material-icons-outlined ,
+-sd-preview-pdf .sd-preview-pdf-btn-primary .mat-icon {
+-  font-size:18px;
+-  width:18px;
+-  height:18px;
+-}
+-sd-preview-pdf .sd-preview-pdf-btn-primary:hover {
+-  filter:brightness(1.1);
+-}
+-sd-preview-pdf .sd-preview-pdf-btn-primary:focus-visible {
+-  outline:2px solid #fff;
+-  outline-offset:2px;
+-}
+-sd-preview-pdf .sd-preview-pdf-btn-secondary {
+-  display:inline-flex;
+-  align-items:center;
+-  gap:6px;
+-  height:36px;
+-  padding:0 16px;
+-  background:transparent;
+-  color:var(--sd-pdf-fg);
+-  border:1px solid var(--sd-pdf-divider);
+-  border-radius:8px;
+-  cursor:pointer;
+-  font-size:13px;
+-  font-weight:500;
+-  transition:background .12s;
+-}
+-sd-preview-pdf .sd-preview-pdf-btn-secondary .material-icons-outlined ,
+-sd-preview-pdf .sd-preview-pdf-btn-secondary .mat-icon {
+-  font-size:18px;
+-  width:18px;
+-  height:18px;
+-}
+-sd-preview-pdf .sd-preview-pdf-btn-secondary:hover {
+-  background:#ffffff0f;
+-}
+-sd-preview-pdf .sd-preview-pdf-btn-secondary:focus-visible {
+-  outline:2px solid var(--sd-pdf-accent);
+-  outline-offset:2px;
+-}
+-/* (Rule `.sd-preview-pdf-page{width:340px;aspect-ratio:612/792}` của catalog là
+-   cỡ TRANG GIẢ trong trang demo — catalog vẽ tay một trang placeholder. Kit vẽ
+-   tài liệu thật bằng <iframe> nên không chép cỡ cố định đó.) */
+-@keyframes sd-preview-pdf-spin {to{transform:rotate(360deg)}}
+-@keyframes sd-preview-pdf-thumb-skel {0%{background-position:200% 0}to{background-position:-200% 0}}
+-
+-/* Kit-only: nội dung trang là <iframe> trình duyệt (không có pdf.js), đặt
+-   vào đúng ô `.sd-preview-pdf-page` của catalog. */
+-sd-preview-pdf iframe.sd-preview-pdf-page {
+-  width: 100%;
+-  height: 100%;
+-  border: 0;
+-  aspect-ratio: auto;
+-}
+-sd-preview-pdf .sd-preview-pdf-page-wrap--frame {
+-  width: 100%;
+-  height: 100%;
+-}
++sd-preview-pdf:is(sd-preview-pdf){--sd-pdf-shell-bg: #1a1c1f;--sd-pdf-sidebar-bg: #22252a;--sd-pdf-toolbar-bg: rgba(20, 22, 25, .94);--sd-pdf-page-bg: #ffffff;--sd-pdf-page-shadow: 0 4px 16px rgba(0, 0, 0, .4);--sd-pdf-divider: rgba(255, 255, 255, .08);--sd-pdf-fg: #f5f6f7;--sd-pdf-fg-muted: rgba(255, 255, 255, .6);--sd-pdf-fg-subtle: rgba(255, 255, 255, .4);--sd-pdf-accent: var(--sd-primary, #3b82f6);--sd-pdf-accent-soft: rgba(59, 130, 246, .2);--sd-pdf-danger: var(--sd-error, #ef4444);--sd-pdf-success: var(--sd-success, #22c55e);--sd-pdf-danger-soft: rgba(239, 68, 68, .1);--sd-pdf-danger-border: rgba(239, 68, 68, .3);--sd-pdf-danger-tint: rgba(239, 68, 68, .15);--sd-pdf-hover-bg: rgba(255, 255, 255, .1);--sd-pdf-search-hi: rgba(250, 204, 21, .55);--sd-pdf-search-hi-active: rgba(249, 115, 22, .85);display:block;width:100%;height:100%;min-height:320px;outline:none}
++sd-preview-pdf:is(sd-preview-pdf)[data-theme=light]{--sd-pdf-shell-bg: #f7f8fa;--sd-pdf-sidebar-bg: #ffffff;--sd-pdf-toolbar-bg: rgba(255, 255, 255, .94);--sd-pdf-page-bg: #ffffff;--sd-pdf-page-shadow: 0 4px 16px rgba(0, 0, 0, .12);--sd-pdf-divider: rgba(0, 0, 0, .08);--sd-pdf-fg: #1a1c1f;--sd-pdf-fg-muted: rgba(0, 0, 0, .62);--sd-pdf-fg-subtle: rgba(0, 0, 0, .42);--sd-pdf-accent: var(--sd-primary, #1f49bf);--sd-pdf-accent-soft: rgba(31, 73, 191, .18);--sd-pdf-danger: var(--sd-error, #ef4444);--sd-pdf-success: var(--sd-success, #22c55e);--sd-pdf-danger-soft: rgba(239, 68, 68, .08);--sd-pdf-danger-border: rgba(239, 68, 68, .25);--sd-pdf-danger-tint: rgba(239, 68, 68, .12);--sd-pdf-hover-bg: rgba(0, 0, 0, .06);--sd-pdf-search-hi: rgba(250, 204, 21, .55);--sd-pdf-search-hi-active: rgba(250, 204, 21, .9)}
++sd-preview-pdf:is(sd-preview-pdf).sd-preview-pdf-host--fullscreen{width:100vw;height:100vh;min-height:0}
++sd-preview-pdf .sd-preview-pdf-shell{position:relative;display:flex;flex-direction:column;width:100%;height:100%;background:var(--sd-pdf-shell-bg);color:var(--sd-pdf-fg);border-radius:12px;overflow:hidden;box-shadow:0 30px 80px #0000008c,0 0 0 1px #ffffff0a;font-family:inherit}
++sd-preview-pdf .sd-preview-pdf-header{display:flex;align-items:center;justify-content:space-between;gap:12px;height:57px;padding:0 12px;background:var(--sd-pdf-toolbar-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--sd-pdf-divider);flex:0 0 auto;z-index:2}
++sd-preview-pdf .sd-preview-pdf-header__left{display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 auto}
++sd-preview-pdf .sd-preview-pdf-header__right{display:flex;align-items:center;gap:4px;flex-shrink:0}
++sd-preview-pdf .sd-preview-pdf-header__divider{display:inline-block;width:1px;height:20px;background:var(--sd-pdf-divider)}
++sd-preview-pdf .sd-preview-pdf-header__meta{display:flex;flex-direction:column;min-width:0}
++sd-preview-pdf .sd-preview-pdf-header__name{font-size:14px;font-weight:500;color:var(--sd-pdf-fg);max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
++sd-preview-pdf .sd-preview-pdf-header__sub{font-size:11px;color:var(--sd-pdf-fg-muted);margin-top:2px}
++sd-preview-pdf .sd-preview-pdf-fileicon{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;background:var(--sd-pdf-danger-tint);border:1px solid var(--sd-pdf-danger-border);color:var(--sd-error-light, #f87171);font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
++sd-preview-pdf .sd-preview-pdf-iconbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:32px;height:32px;padding:0 8px;background:transparent;border:none;color:var(--sd-pdf-fg);border-radius:6px;cursor:pointer;transition:background .12s,color .12s;white-space:nowrap;flex-shrink:0}
++sd-preview-pdf .sd-preview-pdf-iconbtn mat-icon{font-size:18px;width:18px;height:18px}
++sd-preview-pdf .sd-preview-pdf-iconbtn__label{font-size:13px;font-weight:500}
++sd-preview-pdf .sd-preview-pdf-iconbtn:hover:not(:disabled){background:var(--sd-pdf-hover-bg)}
++sd-preview-pdf .sd-preview-pdf-iconbtn:focus-visible{outline:2px solid var(--sd-pdf-accent);outline-offset:2px}
++sd-preview-pdf .sd-preview-pdf-iconbtn:disabled{opacity:.35;cursor:not-allowed}
++sd-preview-pdf .sd-preview-pdf-iconbtn--active{background:var(--sd-pdf-accent-soft);color:var(--sd-pdf-accent)}
++sd-preview-pdf .sd-preview-pdf-searchbar{display:flex;align-items:center;gap:6px;height:46px;padding:0 12px;background:var(--sd-pdf-toolbar-bg);border-bottom:1px solid var(--sd-pdf-divider);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);flex:0 0 auto;z-index:2}
++sd-preview-pdf .sd-preview-pdf-searchbar__icon{color:var(--sd-pdf-fg-muted);font-size:18px;width:18px;height:18px;flex-shrink:0}
++sd-preview-pdf .sd-preview-pdf-searchbar__input{flex:0 1 360px;min-width:160px;height:30px;background:#ffffff0f;border:1px solid rgba(255,255,255,.08);color:var(--sd-pdf-fg);border-radius:6px;padding:0 10px;font-size:13px;outline:none}
++sd-preview-pdf .sd-preview-pdf-searchbar__input::placeholder{color:var(--sd-pdf-fg-subtle)}
++sd-preview-pdf .sd-preview-pdf-searchbar__input:focus{border-color:var(--sd-pdf-accent);background:#ffffff17}
++sd-preview-pdf .sd-preview-pdf-searchbar__counter{color:var(--sd-pdf-fg-muted);font-size:12px;font-variant-numeric:tabular-nums;min-width:48px;text-align:center;flex-shrink:0}
++sd-preview-pdf .sd-preview-pdf-searchbar__divider{width:1px;height:20px;background:var(--sd-pdf-divider);flex-shrink:0}
++sd-preview-pdf .sd-preview-pdf-searchbar__spacer{flex:1 1 auto}
++sd-preview-pdf .sd-preview-pdf-body{position:relative;flex:1 1 auto;min-height:0;display:flex;flex-direction:row;overflow:hidden}
++sd-preview-pdf .sd-preview-pdf-sidebar{width:240px;display:flex;flex-direction:column;background:var(--sd-pdf-sidebar-bg);border-right:1px solid var(--sd-pdf-divider);flex-shrink:0;min-height:0}
++sd-preview-pdf .sd-preview-pdf-sidebar__tabs{display:flex;gap:4px;padding:8px;border-bottom:1px solid var(--sd-pdf-divider)}
++sd-preview-pdf .sd-preview-pdf-sidebar__tab{flex:1 1 0;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:0 4px;background:transparent;border:none;color:var(--sd-pdf-fg-muted);border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;white-space:nowrap;flex-shrink:0;transition:background .12s,color .12s}
++sd-preview-pdf .sd-preview-pdf-sidebar__tab mat-icon{font-size:14px;width:14px;height:14px}
++sd-preview-pdf .sd-preview-pdf-sidebar__tab:hover{background:#ffffff0f;color:var(--sd-pdf-fg)}
++sd-preview-pdf .sd-preview-pdf-sidebar__tab--active{background:var(--sd-pdf-accent-soft);color:var(--sd-pdf-accent)}
++sd-preview-pdf .sd-preview-pdf-sidebar__content{flex:1 1 auto;overflow:auto;padding:12px}
++sd-preview-pdf .sd-preview-pdf-sidebar__deferred{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:32px 16px;text-align:center;color:var(--sd-pdf-fg-subtle)}
++sd-preview-pdf .sd-preview-pdf-sidebar__deferred mat-icon{font-size:28px;width:28px;height:28px;opacity:.6}
++sd-preview-pdf .sd-preview-pdf-sidebar__deferred p{margin:0;font-size:12px;line-height:1.5}
++sd-preview-pdf .sd-preview-pdf-thumb-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
++sd-preview-pdf .sd-preview-pdf-thumb{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;padding:0;background:transparent;border:none;cursor:pointer}
++sd-preview-pdf .sd-preview-pdf-thumb__page{width:152px;aspect-ratio:612/792;background:var(--sd-pdf-page-bg);border-radius:2px;outline:1px solid rgba(255,255,255,.08);outline-offset:-1px;box-shadow:0 2px 6px #0000004d;display:flex;align-items:center;justify-content:center;overflow:hidden;-webkit-user-select:none;user-select:none;background-image:linear-gradient(90deg,#0000,#0000000a,#0000);background-size:200% 100%;animation:sd-preview-pdf-thumb-skel 1.6s ease-in-out infinite}
++sd-preview-pdf .sd-preview-pdf-thumb__canvas{display:block;max-width:100%;max-height:100%;background:var(--sd-pdf-page-bg)}
++sd-preview-pdf .sd-preview-pdf-thumb__label{font-size:11px;color:var(--sd-pdf-fg-muted);font-variant-numeric:tabular-nums}
++sd-preview-pdf .sd-preview-pdf-thumb--active .sd-preview-pdf-thumb__page{outline:2px solid var(--sd-pdf-accent);outline-offset:-2px}
++sd-preview-pdf .sd-preview-pdf-thumb--active .sd-preview-pdf-thumb__label{color:var(--sd-pdf-accent);font-weight:600}
++sd-preview-pdf .sd-preview-pdf-thumb:focus-visible .sd-preview-pdf-thumb__page{outline:2px solid var(--sd-pdf-accent);outline-offset:2px}
++sd-preview-pdf .sd-preview-pdf-stage{position:relative;flex:1 1 auto;min-width:0;min-height:0;background:var(--sd-pdf-shell-bg);background-image:linear-gradient(45deg,rgba(255,255,255,.015) 25%,transparent 25%),linear-gradient(-45deg,rgba(255,255,255,.015) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(255,255,255,.015) 75%),linear-gradient(-45deg,transparent 75%,rgba(255,255,255,.015) 75%);background-size:24px 24px;background-position:0 0,0 12px,12px -12px,-12px 0;overflow:auto;padding:32px 24px 96px;display:flex;justify-content:center;align-items:flex-start}
++sd-preview-pdf:is(sd-preview-pdf)[data-theme=light] .sd-preview-pdf-stage{background-image:linear-gradient(45deg,rgba(0,0,0,.015) 25%,transparent 25%),linear-gradient(-45deg,rgba(0,0,0,.015) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(0,0,0,.015) 75%),linear-gradient(-45deg,transparent 75%,rgba(0,0,0,.015) 75%)}
++sd-preview-pdf .sd-preview-pdf-page-wrap{display:inline-block;position:relative}
++sd-preview-pdf .sd-preview-pdf-page{display:block;background:var(--sd-pdf-page-bg);border-radius:2px;box-shadow:var(--sd-pdf-page-shadow);max-width:100%}
++sd-preview-pdf .sd-preview-pdf-toolbar{position:absolute;bottom:20px;left:50%;transform:translate(-50%);display:flex;align-items:center;gap:2px;padding:5px 6px;background:var(--sd-pdf-toolbar-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--sd-pdf-divider);border-radius:10px;box-shadow:0 8px 30px #0006;z-index:4;max-width:calc(100% - 32px);overflow-x:auto}
++sd-preview-pdf .sd-preview-pdf-toolbar__btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:30px;height:28px;padding:0 6px;background:transparent;border:none;color:var(--sd-pdf-fg);border-radius:6px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .12s,color .12s}
++sd-preview-pdf .sd-preview-pdf-toolbar__btn mat-icon{font-size:18px;width:18px;height:18px}
++sd-preview-pdf .sd-preview-pdf-toolbar__btn span{font-size:13px;font-weight:500}
++sd-preview-pdf .sd-preview-pdf-toolbar__btn--with-label{padding:0 10px}
++sd-preview-pdf .sd-preview-pdf-toolbar__btn--active{background:var(--sd-pdf-accent-soft);color:var(--sd-pdf-accent)}
++sd-preview-pdf .sd-preview-pdf-toolbar__btn:hover:not(:disabled):not(.sd-preview-pdf-toolbar__btn--active){background:var(--sd-pdf-hover-bg)}
++sd-preview-pdf .sd-preview-pdf-toolbar__btn:focus-visible{outline:2px solid var(--sd-pdf-accent);outline-offset:2px}
++sd-preview-pdf .sd-preview-pdf-toolbar__btn:disabled{opacity:.35;cursor:not-allowed}
++sd-preview-pdf .sd-preview-pdf-toolbar__page{display:inline-flex;align-items:center;gap:4px;padding:0 6px;flex-shrink:0}
++sd-preview-pdf .sd-preview-pdf-toolbar__page-input{width:36px;height:24px;background:#ffffff14;border:1px solid rgba(255,255,255,.08);color:var(--sd-pdf-fg);border-radius:4px;text-align:center;font-size:13px;font-variant-numeric:tabular-nums;outline:none}
++sd-preview-pdf .sd-preview-pdf-toolbar__page-input:focus{border-color:var(--sd-pdf-accent)}
++sd-preview-pdf .sd-preview-pdf-toolbar__page-total{font-size:13px;color:var(--sd-pdf-fg-muted);font-variant-numeric:tabular-nums}
++sd-preview-pdf .sd-preview-pdf-toolbar__zoom{min-width:56px;text-align:center;color:var(--sd-pdf-fg);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;background:#ffffff14;border-radius:4px;padding:2px 8px}
++sd-preview-pdf .sd-preview-pdf-toolbar__divider{width:1px;height:20px;background:var(--sd-pdf-divider);margin:0 4px;flex-shrink:0}
++sd-preview-pdf .sd-preview-pdf-status{margin:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:32px;max-width:420px}
++sd-preview-pdf .sd-preview-pdf-status__tile{width:96px;height:96px;border-radius:24px;display:flex;align-items:center;justify-content:center;border:1px solid var(--sd-pdf-divider)}
++sd-preview-pdf .sd-preview-pdf-status__tile mat-icon{font-size:48px;width:48px;height:48px}
++sd-preview-pdf .sd-preview-pdf-status__tile--muted{background:#ffffff0d}
++sd-preview-pdf .sd-preview-pdf-status__tile--muted mat-icon{color:var(--sd-pdf-fg-subtle)}
++sd-preview-pdf .sd-preview-pdf-status__tile--danger{background:var(--sd-pdf-danger-soft);border-color:var(--sd-pdf-danger-border)}
++sd-preview-pdf .sd-preview-pdf-status__tile--danger mat-icon{color:var(--sd-pdf-danger)}
++sd-preview-pdf .sd-preview-pdf-status__title{font-size:16px;font-weight:500;color:var(--sd-pdf-fg)}
++sd-preview-pdf .sd-preview-pdf-status__hint{font-size:13px;color:var(--sd-pdf-fg-muted);line-height:1.5}
++sd-preview-pdf .sd-preview-pdf-status__actions{display:flex;gap:8px;margin-top:4px}
++sd-preview-pdf .sd-preview-pdf-progress-pct{font-variant-numeric:tabular-nums;color:var(--sd-pdf-fg-muted)}
++sd-preview-pdf .sd-preview-pdf-progress{width:240px;height:4px;background:#ffffff14;border-radius:999px;overflow:hidden}
++sd-preview-pdf .sd-preview-pdf-progress__fill{height:100%;background:var(--sd-pdf-accent);transition:width .12s linear}
++sd-preview-pdf .sd-preview-pdf-spinner{width:56px;height:56px;border-radius:999px;border:3px solid rgba(255,255,255,.08);border-top-color:var(--sd-pdf-accent);animation:sd-preview-pdf-spin .9s linear infinite}
++@keyframes sd-preview-pdf-spin{to{transform:rotate(360deg)}}
++@keyframes sd-preview-pdf-thumb-skel{0%{background-position:200% 0}to{background-position:-200% 0}}
++sd-preview-pdf .sd-preview-pdf-search-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
++sd-preview-pdf .sd-preview-pdf-search-result{width:100%;display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:#ffffff0a;border:1px solid transparent;border-radius:6px;color:var(--sd-pdf-fg);cursor:pointer;text-align:left;transition:background .12s,border-color .12s}
++sd-preview-pdf .sd-preview-pdf-search-result:hover{background:#ffffff12}
++sd-preview-pdf .sd-preview-pdf-search-result--active{background:var(--sd-pdf-accent-soft);border-color:#3b82f673}
++sd-preview-pdf .sd-preview-pdf-search-result__snippet{flex:1 1 auto;font-size:12px;line-height:1.4;color:var(--sd-pdf-fg);word-break:break-word}
++sd-preview-pdf .sd-preview-pdf-search-result__snippet mark{background:var(--sd-pdf-search-hi);color:#000;padding:0 2px;border-radius:2px}
++sd-preview-pdf .sd-preview-pdf-search-result__page{flex:0 0 auto;font-size:11px;font-variant-numeric:tabular-nums;color:var(--sd-pdf-fg-muted);background:#ffffff0f;padding:2px 6px;border-radius:4px}
++sd-preview-pdf .sd-preview-pdf-btn-primary{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 16px;background:var(--sd-pdf-accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:filter .12s}
++sd-preview-pdf .sd-preview-pdf-btn-primary mat-icon{font-size:18px;width:18px;height:18px}
++sd-preview-pdf .sd-preview-pdf-btn-primary:hover{filter:brightness(1.1)}
++sd-preview-pdf .sd-preview-pdf-btn-primary:focus-visible{outline:2px solid #fff;outline-offset:2px}
++sd-preview-pdf .sd-preview-pdf-btn-secondary{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 16px;background:transparent;color:var(--sd-pdf-fg);border:1px solid var(--sd-pdf-divider);border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:background .12s}
++sd-preview-pdf .sd-preview-pdf-btn-secondary mat-icon{font-size:18px;width:18px;height:18px}
++sd-preview-pdf .sd-preview-pdf-btn-secondary:hover{background:#ffffff0f}
++sd-preview-pdf .sd-preview-pdf-btn-secondary:focus-visible{outline:2px solid var(--sd-pdf-accent);outline-offset:2px}
++/* reboot sd-core (_base.scss) của catalog — chép đúng THỨ HẠNG ƯU TIÊN: catalog khai
++   `#c-preview-pdf .sd-scope input,#c-preview-pdf .sd-scope button{…font-size:inherit;line-height:inherit}`
++   (id + class + thẻ) nên THẮNG `#c-preview-pdf .sd-preview-pdf-sidebar__tab{font-size:12px}` và
++   `.sd-preview-pdf-searchbar__input / __page-input{font-size:13px}` → trên catalog chữ tab Trang /
++   Mục lục / Tìm, ô tìm kiếm, ô số trang đều 14px/21px. `.sd-scope` (lớp) → `:not(._ng)` (lớp). */
++sd-preview-pdf:not(._ng) p{margin-top:0;margin-bottom:1rem}
++sd-preview-pdf:not(._ng) ul{margin-top:0;margin-bottom:1rem}
++sd-preview-pdf:not(._ng) ul ul{margin-bottom:0}
++sd-preview-pdf:not(._ng) input,sd-preview-pdf:not(._ng) button{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
++/* `catalog.css`: `.sd-scope button{border-radius:0;font-family:inherit}` + box-sizing — mức thấp */
++:where(sd-preview-pdf) button{border-radius:0;font-family:inherit}
++:where(sd-preview-pdf) *,:where(sd-preview-pdf) *::before,:where(sd-preview-pdf) *::after{box-sizing:border-box}
++/* đệm mặc định của trình duyệt cho <input>/<button> (catalog không reset; kit có `*{padding:0}` ở
++   layout.css) — ô số trang của toolbar catalog đệm 1px 2px */
++:where(sd-preview-pdf) input{padding:1px 2px}
++:where(sd-preview-pdf) button{padding:1px 6px}
++/* /sd-preview-pdf */
+ 
+ /* ── sd-upload-file ──────────────────────────────────────────
+    Mirror SCSS thật của `@sdcorejs/angular/components/upload-file`
+diff -ruN --text -x '*.DS_Store' -x vendor -x sd-preview-pdf-demo.js a/design-system/preview/components/preview-pdf.html b/design-system/preview/components/preview-pdf.html
+--- a/design-system/preview/components/preview-pdf.html	2026-10-13 04:54:35.394373991 +0000
++++ b/design-system/preview/components/preview-pdf.html	2026-10-13 04:54:35.419732430 +0000
+@@ -28,7 +28,7 @@
+ 
+     <div data-pattern="page-header" data-variant="browse"
+          data-title="sd-preview-pdf"
+-         data-subtitle="Viewer PDF (thư viện thật chạy pdf.js) - mirror render qua iframe, phần cần pdf.js để disabled"
++         data-subtitle="Trình xem PDF (pdf.js) tự co theo phần tử cha — đồng bộ Core UI #c-preview-pdf"
+          data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+ 
+     <div class="content-zone">
+@@ -36,46 +36,49 @@
+       <!-- ── Tab: Preview ──────────────────────────────────── -->
+       <div class="tab-panel" data-tab-panel="0">
+ 
+-        <sd-section title="Lưu ý mirror - phần nào cần pdf.js">
+-          <sd-inform type="warning" icon title="Mirror không kéo pdf.js về kit">
++        <sd-section title="pdf.js chạy thật trong kit">
++          <sd-inform type="info" icon title="Viewer dùng đúng pdf.js của Core UI (pdfjs-dist 4.10.38)">
+             <ul class="mb-0" style="margin-top:4px;padding-left:18px;">
+-              <li>Mirror được: hiển thị tài liệu qua iframe trình duyệt, bật/tắt sidebar, tải xuống, fullscreen, event loaded/pageChange/zoomChange (chỉ phát trạng thái khởi tạo).</li>
+-              <li>Cần pdf.js nên đang disabled kèm tooltip: dải thumbnail từng trang, tìm chữ, nhảy tới trang cụ thể, zoom theo từng trang (remove/20%/add, vừa trang, vừa rộng), xoay, chế độ từng trang, in.</li>
+-              <li>Event loaded luôn phát <code>totalPages: null</code> vì không đọc được số trang thật khi thiếu pdf.js.</li>
++              <li>Thư viện nằm ở <code>design-system/vendor/pdfjs/</code> (~1,7 MB), tự nạp khi trang có <code>&lt;sd-preview-pdf&gt;</code>; mở bằng file:// vẫn chạy.</li>
++              <li>Thumbnail từng trang, số trang, tìm chữ (phân biệt hoa thường · nguyên từ), chuyển trang, zoom, vừa trang / vừa rộng, xoay, toàn màn hình, tải xuống, phím tắt — giống thư viện thật.</li>
++              <li>Mục lục và cuộn liên tục: chính thư viện 19.0.10 <b>chưa làm</b> (tab Mục lục hiện "sẽ được bổ sung", nút Từng trang chỉ đổi nhãn) — kit giữ y vậy.</li>
+             </ul>
+           </sd-inform>
+         </sd-section>
+ 
+-        <sd-section title="Viewer cơ bản">
+-          <p class="text-sm text-secondary mb-3">source gán qua property JS (data: PDF sinh tại chỗ); sidebarOpen + showToolbar + downloadable + initialZoom="page-fit", theme dark (mặc định).</p>
+-          <sd-preview-pdf id="pdf-demo-basic" sidebarOpen showToolbar downloadable initialZoom="page-fit" theme="dark" title="Hợp đồng mẫu HD-2026-001"></sd-preview-pdf>
++        <sd-section title="Mặc định — theme dark, thanh bên thumbnail, toolbar nổi">
++          <p class="text-sm text-secondary mb-3">Bấm thumbnail để chuyển trang. Phím tắt khi viewer đang focus: ← → PageUp/PageDown · Home/End · + − 0 · r / R (xoay) · f (toàn màn hình) · Ctrl+F (tìm).</p>
++          <div style="height:600px">
++            <sd-preview-pdf id="pdf-demo-basic" title="Hop_dong_tin_dung_VCB_2026.pdf" startPage="2" initialZoom="page-fit" sidebar="thumbnails"></sd-preview-pdf>
++          </div>
+         </sd-section>
+ 
+-        <sd-section title="sidebarOpen bật / tắt">
+-          <div class="flex gap-4 flex-wrap">
+-            <div class="flex-1">
+-              <p class="text-sm text-secondary mb-3">sidebarOpen (bật) - nút menu trên toolbar bật/tắt sidebar</p>
+-              <sd-preview-pdf id="pdf-demo-open" sidebarOpen showToolbar downloadable></sd-preview-pdf>
+-            </div>
+-            <div class="flex-1">
+-              <p class="text-sm text-secondary mb-3">Sau khi bật sidebar đóng - initialZoom="150" (số cụ thể, suy ra)</p>
+-              <sd-preview-pdf id="pdf-demo-closed" sidebarOpen="false" showToolbar downloadable initialZoom="150"></sd-preview-pdf>
+-            </div>
++        <sd-section title="Tìm kiếm — theme light, thanh tìm kiếm mở, tab Tìm">
++          <p class="text-sm text-secondary mb-3">Bấm icon tìm kiếm → thanh tìm kiếm; kết quả liệt kê ở tab "Tìm". Enter / Shift+Enter (hoặc F3) chuyển kết quả, Esc đóng thanh tìm.</p>
++          <div style="height:600px">
++            <sd-preview-pdf id="pdf-demo-search" title="Hop_dong_tin_dung_VCB_2026.pdf" theme="light" sidebar="search"></sd-preview-pdf>
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="showToolbar tắt">
+-          <p class="text-sm text-secondary mb-3">Không showToolbar - chỉ còn vùng đọc PDF (sidebar vẫn mở nếu khai báo sidebarOpen).</p>
+-          <sd-preview-pdf id="pdf-demo-notoolbar" sidebarOpen showToolbar="false"></sd-preview-pdf>
++        <sd-section title="Trạng thái — không có tài liệu · đang tải · lỗi mật khẩu">
++          <p class="text-sm text-secondary mb-3">Trạng thái không có tài liệu / đang tải / lỗi ẩn header (theo template thư viện). File mẫu thứ ba có mật khẩu <code>123456</code> — bấm "Thử lại" sau khi gán <code>password</code>.</p>
++          <div class="flex gap-4 flex-wrap">
++            <div style="flex:1 1 280px;height:340px"><sd-preview-pdf id="pdf-demo-empty"></sd-preview-pdf></div>
++            <div style="flex:1 1 280px;height:340px"><sd-preview-pdf id="pdf-demo-loading"></sd-preview-pdf></div>
++            <div style="flex:1 1 280px;height:340px"><sd-preview-pdf id="pdf-demo-locked" sidebarOpen="false"></sd-preview-pdf></div>
++          </div>
++          <div class="mt-3"><sd-button id="btn-pdf-unlock" title="Gán password=&quot;123456&quot; rồi thử lại" type="light" color="primary" prefixIcon="lock_open"></sd-button></div>
+         </sd-section>
+ 
+         <sd-section title="Trong sd-modal">
+-          <p class="text-sm text-secondary mb-3">Như preview-image, component không tự bọc modal. Bấm Escape trong viewer phát sd-close để đóng modal.</p>
++          <p class="text-sm text-secondary mb-3">Component tự co theo phần tử cha, không tự bọc modal. Esc KHÔNG phát <code>sd-close</code> (thư viện để trang tự đóng) — dùng nút Thoát của modal.</p>
+           <sd-button id="btn-pdf-lightbox" title="Mở viewer PDF" type="fill" color="primary" prefixIcon="picture_as_pdf"></sd-button>
+ 
+           <!-- lazyLoadContent mặc định TRUE (đúng thư viện); trang gán source trước khi mở nên tắt tường minh. -->
+-          <sd-modal id="modal-pdf-lightbox" title="Xem PDF" width="860px" lazyLoadContent="false">
+-            <sd-preview-pdf id="pdf-demo-modal" sidebarOpen showToolbar downloadable theme="dark" title="PDF trong modal"></sd-preview-pdf>
++          <sd-modal id="modal-pdf-lightbox" title="Xem PDF" width="960px" lazyLoadContent="false">
++            <div style="height:620px">
++              <sd-preview-pdf id="pdf-demo-modal" title="Hop_dong_tin_dung_VCB_2026.pdf"></sd-preview-pdf>
++            </div>
+             <div sdFooterRight>
+               <sd-button id="btn-pdf-lightbox-close" title="Thoát" type="link" color="primary"></sd-button>
+             </div>
+@@ -83,7 +86,7 @@
+         </sd-section>
+ 
+         <sd-section title="Event log">
+-          <p class="text-sm text-secondary mb-3">sd-loaded (totalPages: null), sd-page-change, sd-zoom-change, sd-download, sd-load-error, sd-close.</p>
++          <p class="text-sm text-secondary mb-3">sd-loaded · sd-page-change · sd-zoom-change · sd-search-change · sd-download · sd-load-error · sd-close.</p>
+           <pre class="ds-guide-code" id="pdf-event-log">Chưa có sự kiện nào.</pre>
+         </sd-section>
+ 
+@@ -142,16 +145,18 @@
+                   <span class="ds-guide-code-lang">HTML + JS</span>
+                   <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                 </div>
+-                <pre class="ds-guide-code">&lt;sd-preview-pdf
+-  sidebarOpen showToolbar downloadable
+-  initialZoom="page-fit" theme="dark"
+-  title="Hợp đồng HD-2026-001"&gt;&lt;/sd-preview-pdf&gt;
+-
+-&lt;!-- Gán source bằng property JS --&gt;
+-// PdfSource = string | File | Blob | ArrayBuffer | Uint8Array
+-//           | { url, httpHeaders?, withCredentials? } | { data: ... }
++                <pre class="ds-guide-code">&lt;div style="height: 600px"&gt;
++  &lt;sd-preview-pdf
++    title="Hop_dong_tin_dung_VCB_2026.pdf"
++    startPage="2" initialZoom="page-fit" sidebar="thumbnails"&gt;&lt;/sd-preview-pdf&gt;
++&lt;/div&gt;
++
++&lt;!-- source: attribute (URL) hoặc property JS --&gt;
++// string | File | Blob | ArrayBuffer | Uint8Array
++// | { url, httpHeaders?, withCredentials? } | { data }
+ viewer.source = 'https://cdn.example.vn/hop-dong.pdf';
+-viewer.source = { url: '...', withCredentials: true };</pre>
++viewer.source = fileInput.files[0];
++viewer.addEventListener('sd-page-change', e =&gt; console.log(e.detail.page));</pre>
+               </div>
+             </div>
+ 
+@@ -160,15 +165,19 @@
+               <table class="ds-guide-table">
+                 <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                 <tbody>
+-                  <tr><td>source</td><td>PdfSource (property JS)</td><td>-</td><td>Nguồn PDF - không truyền qua attribute được, ghi vào property .source</td></tr>
+-                  <tr><td>src</td><td>string</td><td>-</td><td>Mirror thêm - một URL PDF (thuận tiện cho prototype)</td></tr>
+-                  <tr><td>sidebar</td><td>thumbnails (giá trị khác chưa đọc được)</td><td>thumbnails</td><td>Loại sidebar; mirror tạm xử lý giá trị khác như thumbnails</td></tr>
+-                  <tr><td>sidebarOpen</td><td>boolean</td><td>false</td><td>Mở sẵn sidebar (mặc định suy ra từ Portal)</td></tr>
+-                  <tr><td>initialZoom</td><td>page-fit | width | actual | số cụ thể</td><td>page-fit</td><td>Zoom ban đầu; zoom thật theo trang cần pdf.js</td></tr>
+-                  <tr><td>theme</td><td>dark | light</td><td>dark</td><td>Nền tối/sáng (light suy ra từ Portal)</td></tr>
+-                  <tr><td>showToolbar</td><td>boolean</td><td>false</td><td>Hiện hai hàng toolbar (trên + dưới)</td></tr>
+-                  <tr><td>downloadable</td><td>boolean</td><td>true</td><td>Bật nút tải xuống + event sd-download</td></tr>
+-                  <tr><td>title</td><td>string</td><td>-</td><td>Tên file hiển thị ở toolbar</td></tr>
++                  <tr><td>source</td><td>URL (attribute) · File · Blob · ArrayBuffer · Uint8Array · { url, httpHeaders?, withCredentials? } · { data } (property)</td><td>-</td><td>Nguồn PDF. Bí danh cũ: <code>src</code></td></tr>
++                  <tr><td>title</td><td>string</td><td>tên file</td><td>Tên hiển thị ở header</td></tr>
++                  <tr><td>startPage</td><td>number</td><td>1</td><td>Trang mở đầu</td></tr>
++                  <tr><td>initialZoom</td><td>page-fit · page-width · page-actual · số (1 = 100%)</td><td>page-fit</td><td>Bí danh cũ: width · actual · "150" / "150%"</td></tr>
++                  <tr><td>sidebar</td><td>thumbnails · outline · search · none</td><td>thumbnails</td><td>Tab thanh bên mở sẵn (none = không có thanh bên)</td></tr>
++                  <tr><td>sidebarOpen</td><td>boolean</td><td>true</td><td>Mở sẵn thanh bên</td></tr>
++                  <tr><td>scrollMode</td><td>page · continuous</td><td>page</td><td>continuous: thư viện chưa dựng — vẫn từng trang (console.warn)</td></tr>
++                  <tr><td>showToolbar</td><td>boolean</td><td>true</td><td>Toolbar nổi ở đáy</td></tr>
++                  <tr><td>downloadable</td><td>boolean</td><td>true</td><td>Nút tải xuống + nút "Tải file gốc" ở màn lỗi</td></tr>
++                  <tr><td>password</td><td>string (attribute / property)</td><td>-</td><td>Mật khẩu mở file</td></tr>
++                  <tr><td>httpHeaders</td><td>JSON (attribute) · object (property)</td><td>-</td><td>Header HTTP khi tải theo URL</td></tr>
++                  <tr><td>theme</td><td>dark · light</td><td>dark</td><td>Bộ màu</td></tr>
++                  <tr><td>autoId</td><td>string</td><td>-</td><td>data-autoId cho từng nút: components-preview-pdf-{id}-first / -next / -search …</td></tr>
+                 </tbody>
+               </table>
+             </div>
+@@ -178,22 +187,20 @@
+               <table class="ds-guide-table">
+                 <thead><tr><th>Kebab (mirror)</th><th>Angular</th><th>detail</th><th>Khi nào fire</th></tr></thead>
+                 <tbody>
+-                  <tr><td>sd-loaded</td><td>loaded</td><td>{ totalPages: null, meta }</td><td>Iframe load xong - totalPages luôn null vì mirror không có pdf.js</td></tr>
+-                  <tr><td>sd-page-change</td><td>pageChange</td><td>{ page }</td><td>Chỉ phát page 1 lúc load; đổi trang thật cần pdf.js</td></tr>
+-                  <tr><td>sd-zoom-change</td><td>zoomChange</td><td>{ zoom: scale 0.25-4 }</td><td>Chỉ phát giá trị initialZoom lúc load; zoom theo trang cần pdf.js</td></tr>
+-                  <tr><td>sd-download</td><td>download</td><td>{ filename }</td><td>Bấm nút tải xuống</td></tr>
+-                  <tr><td>sd-load-error</td><td>loadError</td><td>{ reason: invalid | password | network | unknown }</td><td>Mirror chỉ phát reason "unknown" khi thiếu source</td></tr>
+-                  <tr><td>sd-close</td><td>close</td><td>{}</td><td>Bấm Escape trong viewer - consumer tự đóng modal/drawer</td></tr>
++                  <tr><td>sd-loaded</td><td>loaded</td><td>{ totalPages, meta }</td><td>Mở tài liệu xong</td></tr>
++                  <tr><td>sd-page-change</td><td>pageChange</td><td>{ page }</td><td>Lúc mở + mỗi lần đổi trang</td></tr>
++                  <tr><td>sd-zoom-change</td><td>zoomChange</td><td>{ zoom }</td><td>Sau mỗi lần vẽ trang (tỉ lệ thật, 0.25–4)</td></tr>
++                  <tr><td>sd-search-change</td><td>searchChange</td><td>{ term, total, current }</td><td>Mỗi lần tìm / chuyển kết quả / xoá tìm</td></tr>
++                  <tr><td>sd-download</td><td>download</td><td>{ filename }</td><td>Bấm tải xuống</td></tr>
++                  <tr><td>sd-load-error</td><td>loadError</td><td>{ reason: invalid · password · network · unknown, message }</td><td>Không mở được tài liệu</td></tr>
++                  <tr><td>sd-close</td><td>close</td><td>{}</td><td>Chỉ khi gọi <code>requestClose()</code> — Esc không phát</td></tr>
+                 </tbody>
+               </table>
+             </div>
+ 
+             <div class="ds-guide-col ds-guide-col--full">
+-              <sd-inform type="warning" icon title="Phần cần pdf.js - thư viện thật, mirror không làm được">
+-                <ul class="mb-0" style="margin-top:4px;padding-left:18px;">
+-                  <li>Dải thumbnail từng trang, tìm chữ trong tài liệu, nhảy tới trang cụ thể, zoom/page-fit/width/actual theo từng trang, xoay, chế độ từng trang, in.</li>
+-                  <li>Mirror render các nút/vùng này disabled kèm data-sd-tooltip "cần pdf.js"; khi dev dựng thư viện thật thì bật lại và bỏ phần ghi chú.</li>
+-                </ul>
++              <sd-inform type="info" icon title="Phương thức (giống thư viện)">
++                <p class="mb-0" style="margin-top:4px;">goToPage(n) · nextPage() · prevPage() · firstPage() · lastPage() · zoomIn() · zoomOut() · setZoom(mode) · rotate('right'|'left') · toggleSidebar() · setSidebarMode(mode) · setScrollMode(mode) · search(term, { caseSensitive, wholeWord }) · searchNext() · searchPrev() · clearSearch() · openSearch() · closeSearch() · downloadFile() · toggleFullscreen() · retryLoad() · requestClose(). Trang khác cần pdf.js ở chỗ khác thì đặt <code>window.SD_PDFJS_BASE</code> trước khi nạp.</p>
+               </sd-inform>
+             </div>
+ 
+@@ -207,6 +214,7 @@
+ 
+ </div>
+ 
++<script src="../assets/sd-preview-pdf-demo.js"></script>
+ <script src="../../sd-components/sd-components.js"></script>
+ <script src="../../patterns/page-header.js"></script>
+ <script src="../../patterns/sidebar.js"></script>
+@@ -243,20 +251,27 @@
+     initPreviewTabs();
+   })();
+ 
+-  // Demos sd-preview-pdf
++  // Demos sd-preview-pdf — PDF mẫu 12 trang nhúng sẵn (../assets/sd-preview-pdf-demo.js)
+   (function () {
+-    // PDF 1 trang sinh tại chỗ, base64 ngắn - không phải file nhị phân trong repo.
+-    var demoPdf = 'data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA1OTUgODQyXSAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA0IDAgUiA+PiA+PiAvQ29udGVudHMgNSAwIFIgPj4KZW5kb2JqCjQgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhID4+CmVuZG9iago1IDAgb2JqCjw8IC9MZW5ndGggMTEyID4+CnN0cmVhbQpCVCAvRjEgMTggVGYgNzIgNzIwIFRkIChEZW1vIFBERiAtIE9NRVUpIFRqIEVUCkJUIC9GMSAxMiBUZiA3MiA2OTAgVGQgKFRyYW5nIDEvMTogbWF1IGNobyBzZC1wcmV2aWV3LXBkZikgVGogRVQKZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzMTEgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NzMKJSVFT0YK';
+-
+-    document.getElementById('pdf-demo-basic').source = demoPdf;
+-    document.getElementById('pdf-demo-open').source = demoPdf;
+-    document.getElementById('pdf-demo-closed').source = demoPdf;
+-    document.getElementById('pdf-demo-notoolbar').source = demoPdf;
+-    document.getElementById('pdf-demo-modal').source = demoPdf;
+-
+-    var modal = document.getElementById('modal-pdf-lightbox');
+-    document.getElementById('btn-pdf-lightbox').addEventListener('click', function () { modal.open(); });
+-    document.getElementById('btn-pdf-lightbox-close').addEventListener('click', function () { modal.close(); });
++    function byId(id) { return document.getElementById(id); }
++    byId('pdf-demo-basic').source = sdDemoPdf('contract');
++    var searchDemo = byId('pdf-demo-search');
++    searchDemo.addEventListener('sd-loaded', function () { searchDemo.openSearch(); searchDemo.search('lãi suất'); }, { once: true });
++    searchDemo.source = sdDemoPdf('contract');
++    /* Đang tải: một Blob đọc mãi không xong — viewer đứng ở trạng thái loading */
++    var pending = new Blob([sdDemoPdf('contract')], { type: 'application/pdf' });
++    pending.arrayBuffer = function () { return new Promise(function () {}); };
++    byId('pdf-demo-loading').source = pending;
++    var locked = byId('pdf-demo-locked');
++    locked.source = sdDemoPdf('locked');
++    byId('btn-pdf-unlock').addEventListener('click', function () { locked.password = '123456'; locked.retryLoad(); });
++    var modal = byId('modal-pdf-lightbox');
++    /* "Vừa trang" đo theo khung lúc vẽ — gán source SAU khi modal đã hiện (khung ẩn đo ra 0px) */
++    byId('btn-pdf-lightbox').addEventListener('click', function () {
++      modal.open();
++      setTimeout(function () { byId('pdf-demo-modal').source = sdDemoPdf('contract'); }, 50);
++    });
++    byId('btn-pdf-lightbox-close').addEventListener('click', function () { modal.close(); });
+   })();
+ 
+   // Event log
+@@ -283,11 +298,11 @@
+     document.addEventListener('sd-load-error', function (e) {
+       if (e.target.matches && e.target.matches('sd-preview-pdf')) logEvent('sd-load-error', e.detail);
+     });
++    document.addEventListener('sd-search-change', function (e) {
++      if (e.target.matches && e.target.matches('sd-preview-pdf')) logEvent('sd-search-change', e.detail);
++    });
+     document.addEventListener('sd-close', function (e) {
+-      if (!e.target.matches || !e.target.matches('sd-preview-pdf')) return;
+-      logEvent('sd-close', {});
+-      var modal = e.target.closest('sd-modal');
+-      if (modal) modal.close();
++      if (e.target.matches && e.target.matches('sd-preview-pdf')) logEvent('sd-close', {});
+     });
+   })();
+ </script>
+diff -ruN --text -x '*.DS_Store' -x vendor -x sd-preview-pdf-demo.js a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-13 04:54:35.391390074 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-13 04:54:35.411063971 +0000
+@@ -12865,565 +12865,1059 @@
+ 
+ 
+   /* ══════════════════════════════════════════════════════════
+-     sd-preview-pdf
+-
+-     Portal: /component/preview-pdf - viewer PDF; thư viện thật chạy pdf.js.
+-     Kit KHÔNG được kéo pdf.js về: mirror ĐẦY ĐỦ API nhưng render nội dung
+-     qua <iframe> của trình duyệt. Tính năng chỉ làm được bằng pdf.js thì
+-     render disabled kèm data-sd-tooltip giải thích (xem tài liệu + preview).
+-
+-     Attributes (đọc cả camelCase lẫn chữ thường):
+-       source         property JS - PdfSource (không truyền qua attribute được)
+-       src            convenience cho prototype: một URL PDF (mirror thêm)
+-       sidebar        thumbnails (mặc định; giá trị khác Portal chưa đọc được
+-                      nên mirror tạm xử lý như thumbnails)
+-       sidebarOpen    boolean (mặc định false - suy ra)
+-       initialZoom    page-fit (mặc định) | width | actual | số cụ thể
+-       theme          dark (mặc định) | light (light suy ra)
+-       show-toolbar   boolean
+-       downloadable   boolean
+-       title          string - tên file hiển thị
+-
+-     PdfSource = string | File | Blob | ArrayBuffer | Uint8Array |
+-                 { url, httpHeaders?, withCredentials? } | { data: ... }
+-
+-     Events (kebab, bubbles - ánh xạ Angular trong tài liệu):
+-       sd-close        <-> (close)
+-       sd-loaded       <-> (loaded) detail { totalPages: null, meta }
+-       sd-page-change  <-> (pageChange) detail { page }
+-       sd-zoom-change  <-> (zoomChange) detail { zoom }
+-       sd-download     <-> (download) detail { filename }
+-       sd-load-error   <-> (loadError) detail { reason }
++     sd-preview-pdf — ĐỒNG BỘ 2026-10-13 theo Core UI Catalog `#c-preview-pdf`
++     và mã thật của thư viện (`@sd-angular/core` 19.0.10,
++     `fesm2022/sd-angular-core-components-preview.mjs` — template, logic, chuỗi
++     tiếng Việt `core.component.preview-pdf.*`).
++
++     Builder chốt 2026-10-13: "Nhúng pdf.js vào kit". Kit chạy ĐÚNG pdf.js mà
++     thư viện dùng (pdfjs-dist 4.10.38), đóng gói lại thành script thường ở
++     `design-system/vendor/pdfjs/` (Chrome chặn ES module khi mở file://).
++     Worker chạy trên luồng chính (fake worker) để mở được từ file://.
++
++     Inputs (attribute, đọc cả camelCase lẫn chữ thường):
++       source        string URL (attribute) | property JS: File | Blob |
++                     ArrayBuffer | Uint8Array | { url, httpHeaders?, withCredentials? } | { data }
++       src           bí danh cũ của kit cho `source` (URL) — ngoại lệ 3 Rule 18
++       title         tên hiển thị ở header (mặc định = tên file)
++       startPage     số trang mở đầu (1)
++       initialZoom   page-fit (mặc định) | page-width | page-actual | số (1 = 100%)
++                     (bí danh cũ: width · actual · "150" / "150%")
++       sidebar       thumbnails (mặc định) | outline | search | none
++       sidebarOpen   true (mặc định)
++       scrollMode    page (mặc định) | continuous (thư viện chưa dựng — vẫn từng trang)
++       showToolbar   true (mặc định)
++       downloadable  true (mặc định)
++       password      mật khẩu file PDF
++       httpHeaders   JSON (attribute) hoặc object (property)
++       theme         dark (mặc định) | light
++       autoId        → data-autoId cho từng nút: components-preview-pdf-{id}-first …
++
++     Events (bubbles) ↔ outputs Angular:
++       sd-loaded        (loaded)       { totalPages, meta }
++       sd-page-change   (pageChange)   { page }
++       sd-zoom-change   (zoomChange)   { zoom }
++       sd-download      (download)     { filename }
++       sd-load-error    (loadError)    { reason: invalid|password|network|unknown, message }
++       sd-search-change (searchChange) { term, total, current }
++       sd-close         (close)        {} — CHỈ khi gọi requestClose(); Esc KHÔNG đóng
+      ══════════════════════════════════════════════════════════ */
+-  function sdPdfNameFromUrl(url) {
+-    if (!url || url.indexOf('data:') === 0) return '';
+-    var clean = String(url).split(/[?#]/)[0];
+-    var last = clean.substring(clean.lastIndexOf('/') + 1);
+-    if (!last) return '';
+-    try { return decodeURIComponent(last); } catch (e) { return last; }
++  var SD_PDF_TEXT = {   // VI_MESSAGES của @sd-angular/core/i18n, nguyên văn
++    pagesCount: '{count} trang',
++    tabThumbnails: 'Trang',
++    tabOutline: 'Mục lục',
++    tabSearch: 'Tìm',
++    firstPage: 'Trang đầu',
++    prevPage: 'Trang trước',
++    nextPage: 'Trang tiếp',
++    lastPage: 'Trang cuối',
++    zoomIn: 'Phóng to',
++    zoomOut: 'Thu nhỏ',
++    fitPage: 'Vừa trang',
++    fitWidth: 'Vừa rộng',
++    rotate: 'Xoay',
++    scrollPage: 'Từng trang',
++    scrollContinuous: 'Cuộn liên tục',
++    download: 'Tải xuống',
++    fullscreen: 'Toàn màn hình',
++    toggleSidebar: 'Hiện/ẩn thanh bên',
++    pageOf: 'trang {current} / {total}',
++    emptyTitle: 'Không có tài liệu',
++    emptySubtitle: 'Chưa có file PDF nào để hiển thị',
++    loading: 'Đang tải tài liệu...',
++    error: {
++      invalid: ['Không tải được tài liệu', 'File PDF có thể bị hỏng. Vui lòng kiểm tra lại file.'],
++      password: ['Tài liệu được bảo vệ', 'File PDF này yêu cầu mật khẩu để mở.'],
++      network: ['Không kết nối được', 'Không thể tải file từ máy chủ. Vui lòng thử lại sau.'],
++      unknown: ['Đã có lỗi xảy ra', 'Vui lòng thử lại hoặc tải file gốc về để xem.']
++    },
++    retry: 'Thử lại',
++    downloadRaw: 'Tải file gốc',
++    deferredOutline: 'Mục lục sẽ được bổ sung trong phiên bản kế tiếp.',
++    search: 'Tìm kiếm',
++    searchPlaceholder: 'Tìm trong tài liệu...',
++    searchCase: 'Phân biệt hoa thường',
++    searchWhole: 'Từ nguyên',
++    searchNoResults: 'Không tìm thấy',
++    searchPrev: 'Kết quả trước',
++    searchNext: 'Kết quả tiếp',
++    searchClose: 'Đóng tìm kiếm'
++  };
++  function sdPdfFmt(s, map) {
++    return String(s).replace(/\{(\w+)\}/g, function (m, k) { return map[k] != null ? String(map[k]) : m; });
+   }
+ 
+-  function sdPdfSourceNormalize(raw) {
+-    if (raw == null) return null;
+-    if (typeof raw === 'string') {
+-      return { url: raw, filename: sdPdfNameFromUrl(raw), data: null, file: null };
+-    }
+-    if (raw instanceof File || raw instanceof Blob) {
+-      return { url: '', filename: raw.name || 'document.pdf', data: null, file: raw };
+-    }
+-    if (raw instanceof ArrayBuffer) {
+-      return { url: '', filename: 'document.pdf', data: raw, file: null };
+-    }
+-    if (ArrayBuffer.isView(raw)) {
+-      return { url: '', filename: 'document.pdf', data: raw.buffer, file: null };
+-    }
+-    if (typeof raw === 'object') {
+-      if (raw.url != null) {
+-        return {
+-          url: String(raw.url),
+-          filename: raw.filename || sdPdfNameFromUrl(raw.url) || 'document.pdf',
+-          data: null,
+-          file: null,
+-          httpHeaders: raw.httpHeaders,
+-          withCredentials: raw.withCredentials
+-        };
+-      }
+-      if (raw.data != null) {
+-        return { url: '', filename: raw.filename || 'document.pdf', data: raw.data, file: null };
+-      }
++  /* Nạp pdf.js một lần cho cả trang. Thứ tự ưu tiên:
++     1. trang đã tự nạp `window.pdfjsLib` (+ `window.pdfjsWorker`) → dùng luôn;
++     2. `window.SD_PDFJS_BASE` (thư mục chứa pdf.min.js / pdf.worker.min.js);
++     3. `../vendor/pdfjs/` tính từ chỗ đặt sd-components.js.
++     Worker nạp bằng <script> → pdf.js chạy "fake worker" trên luồng chính —
++     cách duy nhất chạy được khi mở trang bằng file://. */
++  var SD_COMPONENTS_SRC = (document.currentScript && document.currentScript.src) || '';
++  var sdPdfjsPromise = null;
++  function sdPdfjsLoad() {
++    if (sdPdfjsPromise) return sdPdfjsPromise;
++    function loadScript(src) {
++      return new Promise(function (resolve, reject) {
++        var s = document.createElement('script');
++        s.src = src;
++        s.onload = function () { resolve(); };
++        s.onerror = function () { reject(new Error('Không nạp được ' + src)); };
++        document.head.appendChild(s);
++      });
+     }
+-    return null;
++    var base = window.SD_PDFJS_BASE ||
++      (SD_COMPONENTS_SRC ? new URL('../vendor/pdfjs/', SD_COMPONENTS_SRC).href : 'design-system/vendor/pdfjs/');
++    if (base.slice(-1) !== '/') base += '/';
++    sdPdfjsPromise = Promise.resolve()
++      .then(function () { return window.pdfjsLib ? null : loadScript(base + 'pdf.min.js'); })
++      .then(function () { return (window.pdfjsWorker && window.pdfjsWorker.WorkerMessageHandler) ? null : loadScript(base + 'pdf.worker.min.js'); })
++      .then(function () {
++        if (!window.pdfjsLib || !window.pdfjsLib.getDocument) throw new Error('pdf.js chưa sẵn sàng');
++        return window.pdfjsLib;
++      });
++    sdPdfjsPromise.catch(function () { sdPdfjsPromise = null; });
++    return sdPdfjsPromise;
++  }
++
++  function sdPdfIcon(name, extraCls) {
++    return '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color' +
++      (extraCls ? ' ' + extraCls : '') + '" aria-hidden="true">' + esc(name) + '</mat-icon>';
+   }
+ 
+   class SdPreviewPdf extends HTMLElement {
+     static get observedAttributes() {
+-      return ['source', 'src', 'sidebar', 'sidebaropen', 'sidebar-open', 'initialzoom',
+-              'initial-zoom', 'theme', 'show-toolbar', 'showtoolbar', 'downloadable', 'title',
+-              'autoid', 'autoId', 'startpage', 'startPage', 'password', 'scrollmode', 'scrollMode'];
++      return ['source', 'src', 'title', 'startpage', 'initialzoom', 'initial-zoom', 'sidebar',
++              'sidebaropen', 'sidebar-open', 'scrollmode', 'showtoolbar', 'show-toolbar',
++              'downloadable', 'password', 'httpheaders', 'theme', 'autoid'];
+     }
+ 
+     constructor() {
+       super();
+-      this._source = null;
++      this._srcProp = undefined;     // property `source` (ưu tiên hơn attribute)
++      this._headersProp = undefined;
++      this._passwordProp = undefined;
+       this._title = '';
+-      this._theme = 'dark';
+-      this._sidebar = 'thumbnails';
+-      this._sidebarOpen = false;
+-      this._sidebarTab = 'pages';
+-      this._zoomValue = 1;
+-      this._hasToolbar = false;
+-      this._hasDownload = true;
+-      this._loadedFired = false;
+-      this._errorFired = false;
+-      this._fullscreen = false;
+-      this._rendered = false;
+-      this._bound = false;
+-      this._docKeyBound = null;
+-      this._fsBound = null;
+-      this._pendingFocus = null;
++      this._stage = 'empty';         // empty | loading | error | ready
++      this._doc = null;
++      this._meta = null;
++      this._activePage = 1;
++      this._zoom = 1;
++      this._zoomMode = 'page-fit';
++      this._rotation = 0;
++      this._sidebarOpenInternal = true;
++      this._sidebarModeInternal = 'thumbnails';
++      this._scrollModeInternal = 'page';
++      this._loadProgress = { loaded: 0, total: 0 };
++      this._loadError = null;
++      this._isFullscreen = false;
++      this._filename = 'document.pdf';
++      this._thumbCache = {};
++      this._searchBarOpen = false;
++      this._searchCase = false;
++      this._searchWhole = false;
++      this._searchTerm = '';
++      this._searchResults = [];
++      this._searchActive = -1;
++      this._pageText = new Map();
++      this._searchToken = 0;
++      this._loadToken = 0;
++      this._renderToken = 0;
++      this._renderTask = null;
++      this._ownedUrls = [];
++      this._canvasDims = null;       // { w, h, sw, sh } của canvas trang lần vẽ gần nhất
++      this._thumbsRendering = new Set();
++      this._thumbDims = {};          // cỡ canvas thumbnail đã đặt (giữ qua các lần vẽ lại)
+     }
+ 
++    /* ── vòng đời ── */
+     connectedCallback() {
+-
++      this.classList.add('sd-preview-pdf-host');
++      if (!this.hasAttribute('tabindex')) this.setAttribute('tabindex', '0');
+       sdSyncAutoId(this, 'components-preview-pdf-');
+-      this._readAttributes();
+-      this._normalizeZoomAttr();
+-      this._render();
++      this._stripTitle();
++      this._syncInputs(true);
+       this._bind();
++      if (!this._connectedOnce) {
++        this._connectedOnce = true;
++        var self = this;
++        /* afterNextRender: focus host (preventScroll) như thư viện */
++        requestAnimationFrame(function () { try { self.focus({ preventScroll: true }); } catch (e) { /* ignore */ } });
++        queueMicrotask(function () { self._loadDocument(self._sourceValue()); });
++      }
++      this._render();
+     }
+     disconnectedCallback() {
+-      this._unbind();
++      if (this._fsHandler) { document.removeEventListener('fullscreenchange', this._fsHandler); this._fsHandler = null; this._bound = false; }
++      if (this._thumbObserver) { this._thumbObserver.disconnect(); this._thumbObserver = null; }
+     }
+-    attributeChangedCallback(name) {
+-      sdSyncAutoId(this, 'components-preview-pdf-');
+-      if (this._strippingTitle) return;
+-      if (!this._rendered) return;
+-      if (name === 'src' || name === 'source') {
+-        this._resetForNewSource();
+-        this._source = null;
++    attributeChangedCallback(name, oldV, newV) {
++      if (this._strippingTitle || !this._connectedOnce || oldV === newV) return;
++      var n = name.toLowerCase();
++      if (n === 'title') { this._stripTitle(); this._render(); return; }
++      if (n === 'autoid') sdSyncAutoId(this, 'components-preview-pdf-');
++      if (n === 'source' || n === 'src' || n === 'password' || n === 'httpheaders') {
++        var self = this;
++        queueMicrotask(function () { self._loadDocument(self._sourceValue()); });
++        return;
+       }
+-      this._readAttributes();
+-      this._normalizeZoomAttr();
++      this._syncInputs(false, n);
+       this._render();
+-      this._bind();
+     }
+ 
+-    get source() { return this._source; }
+-    set source(v) {
+-      this._revokeObjectUrl();
+-      this._source = sdPdfSourceNormalize(v);
+-      this._resetForNewSource();
+-      if (this._rendered) this._render();
+-    }
+-
+-    _readAttributes() {
+-      this._theme = this.getAttribute('theme') || 'dark';
+-      /* Mặc định THẬT: showToolbar, downloadable, sidebarOpen đều input(true). */
+-      this._hasToolbar = sdFlagDefaultTrue(this, ['showToolbar', 'show-toolbar', 'showtoolbar']);
+-      this._hasDownload = sdFlagDefaultTrue(this, ['downloadable']);
+-      this._sidebarOpen = sdFlagDefaultTrue(this, ['sidebarOpen', 'sidebar-open', 'sidebaropen']);
+-      /* startPage (1-based, mặc định 1): ghép vào fragment #page=N của viewer PDF
+-         trong trình duyệt — đây là cách duy nhất điều khiển được iframe, vì kit
+-         không kéo pdf.js. Chỉ áp dụng khi người dùng chưa tự đổi trang. */
+-      var sp = parseInt(this.getAttribute('startPage') || this.getAttribute('startpage') || '', 10);
+-      this._startPage = (!isNaN(sp) && sp > 0) ? sp : 1;
+-      /* scrollMode: vertical | horizontal | wrapped | page (mặc định THẬT là 'page').
+-         Viewer của trình duyệt không nhận tham số này, nên mirror ghi ra
+-         data-scroll-mode để CSS/kịch bản trang đọc được, và ghi nhận giá trị. */
+-      var sm = (this.getAttribute('scrollMode') || this.getAttribute('scrollmode') || 'page').toLowerCase();
+-      this._scrollMode = ['vertical', 'horizontal', 'wrapped', 'page'].indexOf(sm) >= 0 ? sm : 'page';
+-      /* password: file PDF có khoá. Viewer trình duyệt tự hỏi mật khẩu, không nhận
+-         sẵn từ ngoài — mirror giữ giá trị để trang đọc lại và hiện ghi chú. */
+-      this._password = this.getAttribute('password') || '';
+-      /* Catalog `#c-preview-pdf` minh hoạ HAI giá trị: mặc định `thumbnails`
+-         và `sidebar="search"` (mở thanh tìm, kết quả nằm ở tab "Tìm").
+-         Giá trị khác chưa có ví dụ nào nên quy hết về thumbnails. */
+-      var sb = (this.getAttribute('sidebar') || '').toLowerCase();
+-      this._sidebar = sb === 'search' ? 'search' : 'thumbnails';
+-      if (this._sidebar === 'search' && !this._sidebarTabTouched) this._sidebarTab = 'search';
+-      var src = this.getAttribute('src');
+-      if (src != null && this._source === null) {
+-        this._source = sdPdfSourceNormalize(src);
+-      } else if (this._source === null) {
+-        this._source = null;
++    /* ── inputs ── */
++    _attr() {
++      for (var i = 0; i < arguments.length; i++) {
++        var v = this.getAttribute(arguments[i]);
++        if (v != null) return v;
+       }
++      return null;
+     }
+-
+-    _normalizeZoomAttr() {
+-      var raw = this.getAttribute('initialZoom') ||
+-        this.getAttribute('initial-zoom') || this.getAttribute('initialzoom');
+-      if (raw != null) this._zoomValue = this._normalizeZoom(raw);
++    _flag(names, dflt) {
++      var v = this._attr.apply(this, names);
++      if (v == null) return dflt;
++      return String(v) !== 'false';
+     }
+-
+-    _normalizeZoom(raw) {
+-      if (raw == null || raw === '') return 1;
+-      var s = String(raw).trim();
+-      if (s === 'page-fit' || s === 'width' || s === 'actual') return 1;
+-      var n;
+-      if (s.indexOf('%') > -1) {
+-        n = parseFloat(s) / 100;
+-      } else {
+-        n = parseFloat(s);
+-        if (n > 5 && n <= 400) n = n / 100; // "150" -> 1.5
+-      }
+-      return isNaN(n) ? 1 : Math.max(0.25, Math.min(4, n));
++    get source() { return this._sourceValue(); }
++    set source(v) {
++      this._srcProp = v;
++      var self = this;
++      if (this._connectedOnce) queueMicrotask(function () { self._loadDocument(self._sourceValue()); });
+     }
+-
+-    _resetForNewSource() {
+-      this._loadedFired = false;
+-      this._errorFired = false;
++    get httpHeaders() {
++      if (this._headersProp !== undefined) return this._headersProp;
++      var raw = this._attr('httpHeaders', 'httpheaders');
++      if (!raw) return undefined;
++      try { return JSON.parse(raw); } catch (e) { return undefined; }
++    }
++    set httpHeaders(v) { this._headersProp = v; }
++    get password() { return this._passwordProp !== undefined ? this._passwordProp : (this._attr('password') || undefined); }
++    set password(v) { this._passwordProp = v; }
++    get downloadable() { return this._flag(['downloadable'], true); }
++    get showToolbar() { return this._flag(['showToolbar', 'showtoolbar', 'show-toolbar'], true); }
++    get theme() { return this._attr('theme') || 'dark'; }
++    get startPage() { var n = parseInt(this._attr('startPage', 'startpage') || '1', 10); return isNaN(n) ? 1 : n; }
++    get initialZoom() {
++      var raw = this._attr('initialZoom', 'initialzoom', 'initial-zoom');
++      if (raw == null || raw === '') return 'page-fit';
++      var s = String(raw).trim();
++      if (s === 'page-fit' || s === 'page-width' || s === 'page-actual') return s;
++      if (s === 'width') return 'page-width';      // bí danh cũ của kit
++      if (s === 'actual') return 'page-actual';
++      var n = parseFloat(s);
++      if (isNaN(n)) return 'page-fit';
++      if (s.indexOf('%') > -1 || n > 5) n = n / 100;
++      return n;
++    }
++    _sourceValue() {
++      if (this._srcProp !== undefined && this._srcProp !== null) return this._srcProp;
++      return this._attr('source', 'src') || null;
+     }
+-
+-    _readTitle() {
+-      this._title = this.hasAttribute('title') ? (this.getAttribute('title') || '') : (this._title || '');
++    _stripTitle() {
+       if (this.hasAttribute('title')) {
++        this._title = this.getAttribute('title') || '';
++        /* catalog không in `title` trên thẻ host (tooltip trình duyệt sẽ đè lên viewer) */
+         this._strippingTitle = true;
+         this.removeAttribute('title');
+         this._strippingTitle = false;
+       }
+-      return this._title;
+     }
++    get title() { return this._title; }
++    set title(v) { this._title = v == null ? '' : String(v); if (this._connectedOnce) this._render(); }
+ 
+-    _displayName() {
+-      if (this._title) return this._title;
+-      if (this._source && this._source.filename) return this._source.filename;
+-      return 'document.pdf';
+-    }
+-
+-    _resolveUrl() {
+-      var src = this._source;
+-      if (!src) return '';
+-      if (src.url) return src.url;
+-      if (src.file) {
+-        if (!src._objectUrl) src._objectUrl = URL.createObjectURL(src.file);
+-        return src._objectUrl;
+-      }
+-      if (src.data) {
+-        if (!src._objectUrl) {
+-          var bytes = src.data instanceof Uint8Array ? src.data : new Uint8Array(src.data);
+-          src._objectUrl = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+-        }
+-        return src._objectUrl;
++    _syncInputs(all, name) {
++      /* effect() của thư viện: mỗi input đổi thì ghi đè trạng thái nội bộ tương ứng */
++      if (all || name === 'sidebaropen' || name === 'sidebar-open') this._sidebarOpenInternal = this._flag(['sidebarOpen', 'sidebaropen', 'sidebar-open'], true);
++      if (all || name === 'sidebar') this._sidebarModeInternal = this._attr('sidebar') || 'thumbnails';
++      if (all || name === 'scrollmode') {
++        var m = this._attr('scrollMode', 'scrollmode') || 'page';
++        if (m === 'continuous') console.warn('[sd-preview-pdf] scrollMode="continuous" is deferred; falling back to single-page rendering.');
++        this._scrollModeInternal = m;
+       }
+-      return '';
++      if (all || name === 'initialzoom' || name === 'initial-zoom') this._zoomMode = this.initialZoom;
++      if (all || name === 'theme') this.setAttribute('data-theme', this.theme);
+     }
+ 
+-    _revokeObjectUrl() {
+-      if (this._source && this._source._objectUrl) {
+-        URL.revokeObjectURL(this._source._objectUrl);
+-        this._source._objectUrl = null;
+-      }
++    /* ── trạng thái suy ra ── */
++    get numPages() { return (this._meta && this._meta.numPages) || 0; }
++    get activePage() { return this._activePage; }
++    get isSidebarOpen() { return this._sidebarOpenInternal && this._sidebarModeInternal !== 'none'; }
++    _childAutoId(suffix) {
++      var raw = this._attr('autoId', 'autoid');
++      return raw ? 'components-preview-pdf-' + raw + '-' + suffix : '';
++    }
++    _aid(suffix) { var v = this._childAutoId(suffix); return v ? ' data-autoId="' + escAttr(v) + '"' : ''; }
++    _pageOf(cur) { return sdPdfFmt(SD_PDF_TEXT.pageOf, { current: cur, total: this.numPages }); }
++    _loadPercent() {
++      var p = this._loadProgress;
++      if (!p.total || p.total <= 0) return 0;
++      return Math.min(100, Math.round((p.loaded / p.total) * 100));
+     }
+ 
+-    /* ── Dựng DOM theo Core UI Catalog `#c-preview-pdf` ───────────────
+-       .sd-preview-pdf-shell > .sd-preview-pdf-header
+-                             [ + .sd-preview-pdf-searchbar ]
+-                             + .sd-preview-pdf-body
+-       .sd-preview-pdf-body  > aside.sd-preview-pdf-sidebar + .sd-preview-pdf-stage
+-       .sd-preview-pdf-stage > .sd-preview-pdf-page-wrap + .sd-preview-pdf-toolbar
+-       Nội dung trang do <iframe> của trình duyệt vẽ (kit KHÔNG kéo pdf.js về —
+-       Rule 2 của AGENTS.md), nên mọi nút chỉ làm được bằng pdf.js vẫn để
+-       `disabled` kèm tooltip giải thích, đúng như bản trước. */
+-
+-    _pdfIcon(name) {
+-      return '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">' + esc(name) + '</mat-icon>';
+-    }
+-
+-    _pdfIconBtn(action, icon, label, opts) {
++    /* ── HTML — y hệt template của thư viện ── */
++    _iconBtn(icon, label, autoSuffix, opts) {
+       opts = opts || {};
+-      return '<button type="button" class="sd-preview-pdf-iconbtn' +
+-        (opts.active ? ' sd-preview-pdf-iconbtn--active' : '') + '"' +
+-        (action ? ' data-sd-preview-action="' + esc(action) + '" data-sd-preview-focus="' + esc(action) + '"' : '') +
+-        ' aria-label="' + escAttr(label) + '" title="' + escAttr(label) + '"' +
+-        (opts.disabled ? ' disabled data-sd-tooltip="' + escAttr(label) + '"' : '') + '>' +
+-        this._pdfIcon(icon) +
+-        (opts.label ? '<span class="sd-preview-pdf-iconbtn__label">' + esc(opts.label) + '</span>' : '') +
+-        '</button>';
++      return '<button type="button" class="sd-preview-pdf-iconbtn' + (opts.active ? ' sd-preview-pdf-iconbtn--active' : '') + '"' +
++        (opts.disabled ? ' disabled' : '') +
++        ' aria-label="' + escAttr(label) + '" title="' + escAttr(label) + '"' + this._aid(autoSuffix) + '>' +
++        sdPdfIcon(icon) + '</button>';
+     }
+-
+-    _tbBtn(icon, label, opts) {
++    _tbBtn(icon, label, autoSuffix, opts) {
+       opts = opts || {};
+       return '<button type="button" class="sd-preview-pdf-toolbar__btn' +
+-        (opts.label ? ' sd-preview-pdf-toolbar__btn--with-label' : '') +
++        (opts.withLabel ? ' sd-preview-pdf-toolbar__btn--with-label' : '') +
+         (opts.active ? ' sd-preview-pdf-toolbar__btn--active' : '') + '"' +
+-        ' aria-label="' + escAttr(label) + '" title="' + escAttr(label) + '"' +
+-        (opts.disabled ? ' disabled data-sd-tooltip="' + escAttr(label) + '"' : '') + '>' +
+-        this._pdfIcon(icon) +
+-        (opts.label ? '<span>' + esc(opts.label) + '</span>' : '') +
+-        '</button>';
++        (opts.disabled ? ' disabled' : '') +
++        (opts.withLabel ? '' : ' aria-label="' + escAttr(label) + '" title="' + escAttr(label) + '"') +
++        this._aid(autoSuffix) + '>' +
++        sdPdfIcon(icon) + (opts.withLabel ? '<span>' + esc(label) + '</span>' : '') + '</button>';
+     }
+ 
+     _headerHtml() {
+-      var PDFJS = ' (cần pdf.js)';
++      var name = this._title || this._filename;
+       return '<div class="sd-preview-pdf-header">' +
+           '<div class="sd-preview-pdf-header__left">' +
+-            this._pdfIconBtn('menu', 'menu', 'Hiện/ẩn thanh bên', { active: this._sidebarOpen }) +
++            this._iconBtn('menu', SD_PDF_TEXT.toggleSidebar, 'sidebar-toggle', { active: this.isSidebarOpen }) +
+             '<span class="sd-preview-pdf-header__divider"></span>' +
+             '<div class="sd-preview-pdf-fileicon" aria-hidden="true">PDF</div>' +
+             '<div class="sd-preview-pdf-header__meta">' +
+-              '<div class="sd-preview-pdf-header__name" title="' + escAttr(this._displayName()) + '"> ' +
+-                esc(this._displayName()) + ' </div>' +
+-              /* Catalog hiện "12 trang" ở dòng phụ. Không có pdf.js thì kit
+-                 không đếm được số trang → để dấu gạch kèm lời giải thích. */
+-              '<div class="sd-preview-pdf-header__sub" data-sd-tooltip="Số trang' + PDFJS + '"> — trang </div>' +
++              '<div class="sd-preview-pdf-header__name" title="' + escAttr(name) + '"> ' + esc(name) + ' </div>' +
++              '<div class="sd-preview-pdf-header__sub"> ' + esc(sdPdfFmt(SD_PDF_TEXT.pagesCount, { count: this.numPages })) + ' </div>' +
+             '</div>' +
+           '</div>' +
+           '<div class="sd-preview-pdf-header__right">' +
+-            this._pdfIconBtn('', 'search', 'Tìm kiếm' + PDFJS, { disabled: true }) +
+-            (this._hasDownload ? this._pdfIconBtn('download', 'download', 'Tải xuống') : '') +
+-            this._pdfIconBtn('fullscreen', this._fullscreen ? 'fullscreen_exit' : 'fullscreen',
+-              this._fullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình') +
++            this._iconBtn('search', SD_PDF_TEXT.search, 'search', { active: this._searchBarOpen }) +
++            (this.downloadable ? this._iconBtn('download', SD_PDF_TEXT.download, 'download') : '') +
++            this._iconBtn(this._isFullscreen ? 'fullscreen_exit' : 'fullscreen', SD_PDF_TEXT.fullscreen, 'fullscreen') +
+           '</div>' +
+         '</div>';
+     }
+ 
+-    /* Thanh tìm kiếm — catalog mở nó khi `sidebar="search"`. Ô nhập để
+-       `disabled`: tìm chữ phải trích text layer của PDF, chỉ pdf.js làm được. */
+     _searchbarHtml() {
+-      if (this._sidebar !== 'search') return '';
+-      return '<div class="sd-preview-pdf-searchbar" data-sd-tooltip="Tìm chữ cần pdf.js">' +
+-          '<mat-icon role="img" class="mat-icon notranslate sd-preview-pdf-searchbar__icon material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">search</mat-icon>' +
+-          '<input type="text" class="sd-preview-pdf-searchbar__input" aria-label="Tìm trong tài liệu" disabled>' +
+-          '<span class="sd-preview-pdf-searchbar__counter">0/0</span>' +
++      if (!this._searchBarOpen) return '';
++      var total = this._searchResults.length;
++      var current = this._searchActive < 0 ? 0 : this._searchActive + 1;
++      return '<div class="sd-preview-pdf-searchbar" role="search">' +
++          sdPdfIcon('search', 'sd-preview-pdf-searchbar__icon') +
++          '<input type="text" class="sd-preview-pdf-searchbar__input" placeholder="' + escAttr(SD_PDF_TEXT.searchPlaceholder) + '"' +
++            this._aid('search-input') + ' value="' + escAttr(this._searchTerm) + '">' +
++          '<span class="sd-preview-pdf-searchbar__counter" aria-live="polite"> ' + current + ' / ' + total + ' </span>' +
++          this._iconBtn('keyboard_arrow_up', SD_PDF_TEXT.searchPrev, 'search-prev', { disabled: total === 0 }) +
++          this._iconBtn('keyboard_arrow_down', SD_PDF_TEXT.searchNext, 'search-next', { disabled: total === 0 }) +
+           '<span class="sd-preview-pdf-searchbar__divider"></span>' +
+-          this._tbBtn('keyboard_arrow_up', 'Kết quả trước (cần pdf.js)', { disabled: true }) +
+-          this._tbBtn('keyboard_arrow_down', 'Kết quả sau (cần pdf.js)', { disabled: true }) +
++          this._iconBtn('match_case', SD_PDF_TEXT.searchCase, 'search-case', { active: this._searchCase }) +
++          this._iconBtn('text_fields', SD_PDF_TEXT.searchWhole, 'search-whole', { active: this._searchWhole }) +
+           '<span class="sd-preview-pdf-searchbar__spacer"></span>' +
+-          this._tbBtn('close', 'Đóng tìm kiếm (cần pdf.js)', { disabled: true }) +
++          this._iconBtn('close', SD_PDF_TEXT.searchClose, 'search-close') +
+         '</div>';
+     }
+ 
++    _deferred(icon, text) {
++      return '<div class="sd-preview-pdf-sidebar__deferred">' + (icon ? sdPdfIcon(icon) + '<p>' + esc(text) + '</p>' : '') + '</div>';
++    }
++
+     _sidebarHtml() {
+-      if (!this._sidebarOpen) return '';
+-      var tab = this._sidebarTab;
+-      var tabs = [
+-        ['pages', 'view_carousel', 'Trang'],
+-        ['outline', 'list', 'Mục lục'],
+-        ['search', 'search', 'Tìm']
+-      ];
+-      var tabsHtml = '';
+-      for (var i = 0; i < tabs.length; i++) {
+-        tabsHtml += '<button type="button" class="sd-preview-pdf-sidebar__tab' +
+-          (tab === tabs[i][0] ? ' sd-preview-pdf-sidebar__tab--active' : '') + '"' +
+-          ' role="tab" data-sd-pdf-sidebar-tab="' + tabs[i][0] + '">' +
+-          this._pdfIcon(tabs[i][1]) + '<span>' + tabs[i][2] + '</span></button>';
+-      }
+-      var note = tab === 'outline'
+-        ? 'Mục lục của tài liệu chỉ đọc được bằng pdf.js.'
+-        : (tab === 'search'
+-          ? 'Tìm chữ trong tài liệu chỉ làm được bằng pdf.js.'
+-          : 'Dải thumbnail từng trang cần pdf.js. Mirror vẽ toàn bộ tài liệu qua iframe của trình duyệt.');
++      if (!(this._stage === 'ready' && this.isSidebarOpen)) return '';
++      var mode = this._sidebarModeInternal, self = this;
++      function tab(m, icon, label, auto) {
++        return '<button type="button" class="sd-preview-pdf-sidebar__tab' + (mode === m ? ' sd-preview-pdf-sidebar__tab--active' : '') + '" role="tab"' +
++          self._aid(auto) + '>' + sdPdfIcon(icon) + '<span>' + esc(label) + '</span></button>';
++      }
++      var content;
++      if (mode === 'thumbnails') {
++        content = '<ul class="sd-preview-pdf-thumb-list">';
++        for (var p = 1; p <= this.numPages; p++) {
++          var c = this._thumbDims[p];
++          content += '<li><button type="button" class="sd-preview-pdf-thumb' + (p === this._activePage ? ' sd-preview-pdf-thumb--active' : '') + '"' +
++              (p === this._activePage ? ' aria-current="page"' : '') +
++              ' aria-label="' + escAttr(this._pageOf(p)) + '"' + this._aid('thumb-' + (p - 1)) + '>' +
++            '<div class="sd-preview-pdf-thumb__page"><canvas class="sd-preview-pdf-thumb__canvas" data-page="' + p + '" aria-hidden="true"' +
++              (c ? ' width="' + c.w + '" height="' + c.h + '" style="width: ' + c.sw + 'px; height: ' + c.sh + 'px;"' : '') + '></canvas></div>' +
++            '<span class="sd-preview-pdf-thumb__label">' + p + '</span>' +
++          '</button></li>';
++        }
++        content += '</ul>';
++      } else if (mode === 'outline') {
++        content = this._deferred('list', SD_PDF_TEXT.deferredOutline);
++      } else if (mode === 'search') {
++        if (!this._searchTerm) content = this._deferred('search', SD_PDF_TEXT.searchPlaceholder);
++        else if (!this._searchResults.length) content = this._deferred('search_off', SD_PDF_TEXT.searchNoResults);
++        else {
++          content = '<ul class="sd-preview-pdf-search-list">' + this._searchResults.map(function (r, i) {
++            return '<li><button type="button" class="sd-preview-pdf-search-result' + (i === self._searchActive ? ' sd-preview-pdf-search-result--active' : '') + '"' +
++                self._aid('result-' + i) + '>' +
++              '<span class="sd-preview-pdf-search-result__snippet"> ' + esc(r.before) + '<mark>' + esc(r.term) + '</mark>' + esc(r.after) + ' </span>' +
++              '<span class="sd-preview-pdf-search-result__page">' + r.page + '</span>' +
++            '</button></li>';
++          }).join('') + '</ul>';
++        }
++      } else {
++        content = this._deferred();
++      }
+       return '<aside class="sd-preview-pdf-sidebar" role="complementary">' +
+-          '<div class="sd-preview-pdf-sidebar__tabs" role="tablist">' + tabsHtml + '</div>' +
+-          '<div class="sd-preview-pdf-sidebar__content">' +
+-            '<div class="sd-preview-pdf-sidebar__deferred">' +
+-              this._pdfIcon(tab === 'outline' ? 'list' : (tab === 'search' ? 'search' : 'view_carousel')) +
+-              '<p>' + esc(note) + '</p>' +
+-            '</div>' +
++          '<div class="sd-preview-pdf-sidebar__tabs" role="tablist">' +
++            tab('thumbnails', 'view_carousel', SD_PDF_TEXT.tabThumbnails, 'tab-thumbnails') +
++            tab('outline', 'list', SD_PDF_TEXT.tabOutline, 'tab-outline') +
++            tab('search', 'search', SD_PDF_TEXT.tabSearch, 'tab-search') +
+           '</div>' +
++          '<div class="sd-preview-pdf-sidebar__content">' + content + '</div>' +
+         '</aside>';
+     }
+ 
++    _stageInnerHtml() {
++      var st = this._stage;
++      if (st === 'empty') {
++        return '<div class="sd-preview-pdf-status">' +
++            '<div class="sd-preview-pdf-status__tile sd-preview-pdf-status__tile--muted">' + sdPdfIcon('picture_as_pdf') + '</div>' +
++            '<div class="sd-preview-pdf-status__title"> ' + esc(SD_PDF_TEXT.emptyTitle) + ' </div>' +
++            '<div class="sd-preview-pdf-status__hint"> ' + esc(SD_PDF_TEXT.emptySubtitle) + ' </div>' +
++          '</div>';
++      }
++      if (st === 'loading') {
++        var pct = this._loadPercent();
++        return '<div class="sd-preview-pdf-status">' +
++            '<div class="sd-preview-pdf-spinner" role="progressbar"></div>' +
++            '<div class="sd-preview-pdf-status__title"> ' + esc(SD_PDF_TEXT.loading) + ' ' +
++              (pct > 0 ? '<span class="sd-preview-pdf-progress-pct">&nbsp;' + pct + '%</span>' : '') + '</div>' +
++            '<div class="sd-preview-pdf-progress"><div class="sd-preview-pdf-progress__fill" style="width: ' + pct + '%;"></div></div>' +
++          '</div>';
++      }
++      if (st === 'error') {
++        var err = this._loadError || { reason: 'unknown' };
++        var t = SD_PDF_TEXT.error[err.reason] || SD_PDF_TEXT.error.unknown;
++        return '<div class="sd-preview-pdf-status">' +
++            '<div class="sd-preview-pdf-status__tile sd-preview-pdf-status__tile--danger">' + sdPdfIcon('error_outline') + '</div>' +
++            '<div class="sd-preview-pdf-status__title"> ' + esc(t[0]) + ' </div>' +
++            '<div class="sd-preview-pdf-status__hint"> ' + esc(t[1]) + ' </div>' +
++            '<div class="sd-preview-pdf-status__actions">' +
++              '<button type="button" class="sd-preview-pdf-btn-primary"' + this._aid('retry') + '>' + sdPdfIcon('refresh') + '<span>' + esc(SD_PDF_TEXT.retry) + '</span></button>' +
++              (this.downloadable ? '<button type="button" class="sd-preview-pdf-btn-secondary">' + sdPdfIcon('download') + '<span>' + esc(SD_PDF_TEXT.downloadRaw) + '</span></button>' : '') +
++            '</div>' +
++          '</div>';
++      }
++      var d = this._canvasDims;
++      return '<div class="sd-preview-pdf-page-wrap"><canvas class="sd-preview-pdf-page" role="img" aria-label="' + escAttr(this._pageOf(this._activePage)) + '"' +
++        (d ? ' width="' + d.w + '" height="' + d.h + '" style="width: ' + d.sw + 'px; height: ' + d.sh + 'px;"' : '') + '></canvas></div>';
++    }
++
+     _toolbarHtml() {
+-      var PDFJS = ' (cần pdf.js)';
+-      var zoomLabel = Math.round(this._zoomValue * 100) + '%';
++      if (!(this.showToolbar && this._stage === 'ready')) return '';
++      var canPrev = this._activePage > 1, canNext = this.numPages > 0 && this._activePage < this.numPages;
++      var sm = this._scrollModeInternal;
+       return '<div class="sd-preview-pdf-toolbar" role="toolbar">' +
+-          this._tbBtn('first_page', 'Trang đầu' + PDFJS, { disabled: true }) +
+-          this._tbBtn('chevron_left', 'Trang trước' + PDFJS, { disabled: true }) +
++          this._tbBtn('first_page', SD_PDF_TEXT.firstPage, 'first', { disabled: !canPrev }) +
++          this._tbBtn('chevron_left', SD_PDF_TEXT.prevPage, 'prev', { disabled: !canPrev }) +
+           '<span class="sd-preview-pdf-toolbar__page">' +
+-            '<input type="text" inputmode="numeric" class="sd-preview-pdf-toolbar__page-input"' +
+-              ' value="' + escAttr(String(this._startPage || 1)) + '" aria-label="Số trang' + PDFJS + '"' +
+-              ' disabled data-sd-tooltip="Nhảy trang' + PDFJS + '">' +
+-            '<span class="sd-preview-pdf-toolbar__page-total">/ —</span>' +
++            '<input type="text" inputmode="numeric" class="sd-preview-pdf-toolbar__page-input" value="' + this._activePage + '"' +
++              ' aria-label="' + escAttr(this._pageOf(this._activePage)) + '"' + this._aid('page-input') + '>' +
++            '<span class="sd-preview-pdf-toolbar__page-total">/ ' + this.numPages + '</span>' +
+           '</span>' +
+-          this._tbBtn('chevron_right', 'Trang tiếp' + PDFJS, { disabled: true }) +
+-          this._tbBtn('last_page', 'Trang cuối' + PDFJS, { disabled: true }) +
++          this._tbBtn('chevron_right', SD_PDF_TEXT.nextPage, 'next', { disabled: !canNext }) +
++          this._tbBtn('last_page', SD_PDF_TEXT.lastPage, 'last', { disabled: !canNext }) +
+           '<span class="sd-preview-pdf-toolbar__divider"></span>' +
+-          this._tbBtn('remove', 'Thu nhỏ' + PDFJS, { disabled: true }) +
+-          '<span class="sd-preview-pdf-toolbar__zoom" aria-live="polite">' + zoomLabel + '</span>' +
+-          this._tbBtn('add', 'Phóng to' + PDFJS, { disabled: true }) +
++          this._tbBtn('remove', SD_PDF_TEXT.zoomOut, 'zoom-out') +
++          '<span class="sd-preview-pdf-toolbar__zoom" aria-live="polite"' + this._aid('zoom-readout') + '>' + Math.round(this._zoom * 100) + '%</span>' +
++          this._tbBtn('add', SD_PDF_TEXT.zoomIn, 'zoom-in') +
+           '<span class="sd-preview-pdf-toolbar__divider"></span>' +
+-          this._tbBtn('fit_screen', 'Vừa trang' + PDFJS, { label: 'Vừa trang', disabled: true }) +
+-          this._tbBtn('swap_horiz', 'Vừa rộng' + PDFJS, { label: 'Vừa rộng', disabled: true }) +
++          this._tbBtn('fit_screen', SD_PDF_TEXT.fitPage, 'fit-page', { withLabel: true, active: this._zoomMode === 'page-fit' }) +
++          this._tbBtn('swap_horiz', SD_PDF_TEXT.fitWidth, 'fit-width', { withLabel: true, active: this._zoomMode === 'page-width' }) +
+           '<span class="sd-preview-pdf-toolbar__divider"></span>' +
+-          this._tbBtn('rotate_right', 'Xoay' + PDFJS, { disabled: true }) +
+-          this._tbBtn('description', 'Từng trang' + PDFJS,
+-            { label: 'Từng trang', disabled: true, active: this._scrollMode === 'page' }) +
++          this._tbBtn('rotate_right', SD_PDF_TEXT.rotate, 'rotate') +
++          this._tbBtn(sm === 'page' ? 'description' : 'view_day', sm === 'page' ? SD_PDF_TEXT.scrollPage : SD_PDF_TEXT.scrollContinuous,
++            'scroll-mode', { withLabel: true }) +
+         '</div>';
+     }
+ 
+-    _statusHtml(kind) {
+-      return '<div class="sd-preview-pdf-status">' +
+-          '<div class="sd-preview-pdf-status__tile sd-preview-pdf-status__tile--' +
+-            (kind === 'danger' ? 'danger' : 'muted') + '">' +
+-            this._pdfIcon(kind === 'danger' ? 'error_outline' : 'picture_as_pdf') +
++    _html() {
++      return '<div class="sd-preview-pdf-shell" role="region">' +
++          (this._stage === 'ready' ? this._headerHtml() + this._searchbarHtml() : '') +
++          '<div class="sd-preview-pdf-body">' +
++            this._sidebarHtml() +
++            '<div class="sd-preview-pdf-stage">' + this._stageInnerHtml() + this._toolbarHtml() + '</div>' +
+           '</div>' +
+-          '<div class="sd-preview-pdf-status__title"> Chưa có nguồn PDF </div>' +
+-          '<div class="sd-preview-pdf-status__hint"> Truyền `source` (URL, Blob hoặc File) để hiển thị tài liệu </div>' +
+         '</div>';
+     }
+ 
+-    _shellHtml(inner) {
+-      this.classList.add('sd-preview-pdf-host');
+-      if (!this.hasAttribute('tabindex')) this.setAttribute('tabindex', '0');
+-      this.setAttribute('data-theme', this._theme);
+-      this.setAttribute('data-scroll-mode', this._scrollMode);
+-      if (this._password) this.setAttribute('data-has-password', '1');
+-      else this.removeAttribute('data-has-password');
+-      return '<div class="sd-preview-pdf-shell" role="region">' + inner + '</div>';
+-    }
+-
++    /* Vẽ lại tại chỗ (so khớp cây — giữ <canvas>, ô đang gõ, vị trí cuộn) */
+     _render() {
+-      this._rendered = true;
+-      this._readTitle();
+-      var url = this._resolveUrl();
+-      if (!url) {
+-        this._fireLoadErrorOnce('unknown');
+-        this.innerHTML = this._shellHtml(
+-          this._headerHtml() +
+-          '<div class="sd-preview-pdf-body"><div class="sd-preview-pdf-stage">' +
+-            this._statusHtml('muted') +
+-          '</div></div>');
+-        return;
++      if (!this._connectedOnce) return;
++      this.setAttribute('data-theme', this.theme);
++      var html = this._html();
++      var shell = this.firstElementChild;
++      if (shell && shell.classList.contains('sd-preview-pdf-shell') && this.children.length === 1) {
++        var t = document.createElement('template');
++        t.innerHTML = html;
++        sdMatSyncAttrs(shell, t.content.firstElementChild);
++        sdMatMorph(shell, t.content.firstElementChild);
++      } else {
++        this.innerHTML = html;
+       }
+-      var frameUrl = url;
+-      /* Nút chuyển trang còn disabled (cần pdf.js) nên không có thao tác nào
+-         làm đổi trang — dùng thẳng startPage trong fragment của iframe. */
+-      if (this._startPage > 1 && frameUrl.indexOf('#') === -1) frameUrl += '#page=' + this._startPage;
+-
+-      this.innerHTML = this._shellHtml(
+-        this._headerHtml() +
+-        this._searchbarHtml() +
+-        '<div class="sd-preview-pdf-body">' +
+-          this._sidebarHtml() +
+-          '<div class="sd-preview-pdf-stage">' +
+-            '<div class="sd-preview-pdf-page-wrap sd-preview-pdf-page-wrap--frame">' +
+-              '<iframe class="sd-preview-pdf-page" src="' + escAttr(frameUrl) +
+-                '" title="' + escAttr(this._displayName()) + '"></iframe>' +
+-            '</div>' +
+-            (this._hasToolbar ? this._toolbarHtml() : '') +
+-          '</div>' +
+-        '</div>');
++      var canvas = this.querySelector('canvas.sd-preview-pdf-page');
++      if (canvas && this._doc && canvas !== this._paintedCanvas) this._renderActivePage();
++      this._syncThumbs();
++      this._applyHighlights();
++    }
+ 
+-      var self = this;
+-      var frame = this.querySelector('iframe.sd-preview-pdf-page');
+-      if (frame) {
+-        frame.addEventListener('load', function () {
+-          if (self._loadedFired) return;
+-          self._loadedFired = true;
+-          self.dispatchEvent(new CustomEvent('sd-loaded', {
+-            detail: { totalPages: null, meta: { filename: self._displayName() } },
+-            bubbles: true
+-          }));
+-          // Không có pdf.js nên mirror chỉ phát trạng thái khởi tạo một lần.
+-          self.dispatchEvent(new CustomEvent('sd-page-change', { detail: { page: 1 }, bubbles: true }));
+-          self.dispatchEvent(new CustomEvent('sd-zoom-change', { detail: { zoom: self._zoomValue }, bubbles: true }));
++    /* ── API công khai (tên y hệt thư viện) ── */
++    goToPage(page) {
++      var n = this.numPages;
++      if (n <= 0) return;
++      var target = Math.max(1, Math.min(page, n));
++      if (target === this._activePage) return;
++      this._activePage = target;
++      this._emit('sd-page-change', { page: target });
++      this._render();
++      this._renderActivePage();
++    }
++    nextPage() { this.goToPage(this._activePage + 1); }
++    prevPage() { this.goToPage(this._activePage - 1); }
++    firstPage() { this.goToPage(1); }
++    lastPage() { this.goToPage(this.numPages); }
++    zoomIn() { this._zoomMode = this._zoom + 0.1; this._setZoom(this._zoom + 0.1); }
++    zoomOut() { this._zoomMode = this._zoom - 0.1; this._setZoom(this._zoom - 0.1); }
++    setZoom(mode) {
++      this._zoomMode = mode;
++      if (typeof mode === 'number') this._setZoom(mode);
++      else { this._render(); this._renderActivePage(); }
++    }
++    rotate(direction) {
++      var delta = direction === 'left' ? -90 : 90;
++      this._rotation = ((this._rotation + delta) % 360 + 360) % 360;
++      this._renderActivePage();
++    }
++    toggleSidebar() { this._sidebarOpenInternal = !this._sidebarOpenInternal; this._render(); }
++    setSidebarMode(mode) {
++      this._sidebarModeInternal = mode;
++      if (mode !== 'none' && !this._sidebarOpenInternal) this._sidebarOpenInternal = true;
++      if (mode === 'search') this.openSearch();
++      this._render();
++    }
++    setScrollMode(mode) {
++      if (mode === 'continuous') console.warn('[sd-preview-pdf] setScrollMode("continuous") is deferred; staying in single-page mode.');
++      this._scrollModeInternal = mode;
++      this._render();
++    }
++    downloadFile() {
++      if (!this.downloadable) return;
++      var src = this._sourceValue(), href = null;
++      if (typeof src === 'string') href = src;
++      else if (src instanceof Blob) { href = URL.createObjectURL(src); this._ownedUrls.push(href); }
++      else if (src && typeof src === 'object' && typeof src.url === 'string') href = src.url;
++      else if (src instanceof ArrayBuffer || src instanceof Uint8Array || (src && (src.data instanceof ArrayBuffer || src.data instanceof Uint8Array))) {
++        href = URL.createObjectURL(new Blob([src.data || src], { type: 'application/pdf' }));
++        this._ownedUrls.push(href);
++      }
++      if (!href) return;
++      var a = document.createElement('a');
++      a.href = href;
++      a.download = this._filename;
++      document.body.appendChild(a);
++      a.click();
++      a.remove();
++      this._emit('sd-download', { filename: this._filename });
++    }
++    toggleFullscreen() {
++      if (!document.fullscreenElement) { var p = this.requestFullscreen && this.requestFullscreen(); if (p && p.catch) p.catch(function () {}); }
++      else if (document.exitFullscreen) { var q = document.exitFullscreen(); if (q && q.catch) q.catch(function () {}); }
++    }
++    requestClose() { this._emit('sd-close', {}); }
++    retryLoad() { this._loadDocument(this._sourceValue()); }
++    printFile() { console.warn('[sd-preview-pdf] printFile() is deferred to a follow-up commit.'); }
++
++    search(term, options) {
++      var self = this, token = ++this._searchToken;
++      var clean = String(term == null ? '' : term).trim();
++      if (options && options.caseSensitive !== undefined) this._searchCase = !!options.caseSensitive;
++      if (options && options.wholeWord !== undefined) this._searchWhole = !!options.wholeWord;
++      this._searchTerm = clean;
++      var doc = this._doc;
++      var re = clean && doc ? this._searchRegex(clean, this._searchCase, this._searchWhole) : null;
++      if (!re) {
++        this._searchResults = [];
++        this._searchActive = -1;
++        this._emitSearchChange();
++        this._render();
++        return Promise.resolve(0);
++      }
++      var results = [];
++      var p = 1;
++      function step() {
++        if (token !== self._searchToken) return 0;
++        if (p > doc.numPages) {
++          self._searchResults = results;
++          self._searchActive = results.length ? 0 : -1;
++          if (results.length) self.goToPage(results[0].page);
++          self._emitSearchChange();
++          self._render();
++          return results.length;
++        }
++        var pageNum = p++;
++        return self._getPageText(doc, pageNum).then(function (text) {
++          if (token !== self._searchToken) return 0;
++          re.lastIndex = 0;
++          var m;
++          while ((m = re.exec(text)) !== null) {
++            var start = m.index, end = start + m[0].length;
++            results.push({ page: pageNum, before: text.slice(Math.max(0, start - 30), start), term: m[0], after: text.slice(end, end + 30) });
++            if (m[0].length === 0) re.lastIndex++;
++          }
++          return step();
+         });
+       }
+-      this._restoreFocus();
++      return Promise.resolve().then(step);
+     }
+-
+-    _fireLoadErrorOnce(reason) {
+-      if (this._errorFired) return;
+-      this._errorFired = true;
+-      this.dispatchEvent(new CustomEvent('sd-load-error', {
+-        detail: { reason: reason },
+-        bubbles: true
+-      }));
+-    }
+-
+-    _restoreFocus() {
+-      var focus = this._pendingFocus;
+-      this._pendingFocus = null;
+-      if (!focus) return;
+-      var el = this.querySelector('[data-sd-preview-focus="' + focus + '"]');
+-      if (!el) return;
+-      var btn = el.matches('button') ? el : (el.querySelector('button') || el);
++    searchNext() {
++      var r = this._searchResults;
++      if (!r.length) return;
++      this._searchActive = (this._searchActive + 1) % r.length;
++      this.goToPage(r[this._searchActive].page);
++      this._emitSearchChange();
++      this._render();
++    }
++    searchPrev() {
++      var r = this._searchResults;
++      if (!r.length) return;
++      this._searchActive = this._searchActive <= 0 ? r.length - 1 : this._searchActive - 1;
++      this.goToPage(r[this._searchActive].page);
++      this._emitSearchChange();
++      this._render();
++    }
++    clearSearch() {
++      this._searchToken++;
++      this._searchTerm = '';
++      this._searchResults = [];
++      this._searchActive = -1;
++      this._emitSearchChange();
++      this._render();
++    }
++    openSearch() {
++      this._searchBarOpen = true;
++      this._render();
+       var self = this;
+-      requestAnimationFrame(function () {
+-        if (btn.isConnected && btn.focus) btn.focus();
++      queueMicrotask(function () {
++        var inp = self.querySelector('.sd-preview-pdf-searchbar__input');
++        if (inp) { inp.focus(); inp.select(); }
+       });
+     }
++    closeSearch() { this._searchBarOpen = false; this.clearSearch(); }
++    toggleSearchCaseSensitive() { this._searchCase = !this._searchCase; this._render(); if (this._searchTerm) this.search(this._searchTerm); }
++    toggleSearchWholeWord() { this._searchWhole = !this._searchWhole; this._render(); if (this._searchTerm) this.search(this._searchTerm); }
++
++    /* ── sự kiện ── */
++    _emit(name, detail) { this.dispatchEvent(new CustomEvent(name, { detail: detail, bubbles: true })); }
++    _emitSearchChange() {
++      this._emit('sd-search-change', { term: this._searchTerm, total: this._searchResults.length, current: this._searchActive + 1 });
++    }
+ 
+     _bind() {
++      if (this._bound) return;
++      this._bound = true;
+       var self = this;
+-      if (!this._bound) {
+-        this._bound = true;
+-        this.addEventListener('click', function (e) {
+-          var tabEl = e.target.closest ? e.target.closest('[data-sd-pdf-sidebar-tab]') : null;
+-          if (tabEl) {
+-            /* catalog có BA tab: Trang · Mục lục · Tìm */
+-            var tv = tabEl.getAttribute('data-sd-pdf-sidebar-tab');
+-            self._sidebarTab = (tv === 'outline' || tv === 'search') ? tv : 'pages';
+-            self._sidebarTabTouched = true;
+-            self._render();
+-            return;
+-          }
+-          var actionEl = e.target.closest ? e.target.closest('[data-sd-preview-action]') : null;
+-          if (!actionEl) return;
+-          var btn = actionEl.closest ? actionEl.closest('sd-button') : null;
+-          if (btn && (btn.hasAttribute('disabled') || btn.getAttribute('disabled') === 'true')) return;
+-          self._pendingFocus = actionEl.getAttribute('data-sd-preview-focus') ||
+-            actionEl.getAttribute('data-sd-preview-action');
+-          self._onAction(actionEl.getAttribute('data-sd-preview-action'));
+-        });
++      this._fsHandler = function () {
++        var on = document.fullscreenElement === self;
++        if (on === self._isFullscreen) return;
++        self._isFullscreen = on;
++        self.classList.toggle('sd-preview-pdf-host--fullscreen', on);
++        self._render();
++        if (self._doc) self._renderActivePage();
++      };
++      document.addEventListener('fullscreenchange', this._fsHandler);
++      if (this._listenersBound) return;
++      this._listenersBound = true;
++      this.addEventListener('keydown', function (e) { self._onKeyDown(e); });
++      this.addEventListener('click', function (e) { self._onClick(e); });
++      this.addEventListener('input', function (e) {
++        if (e.target.classList && e.target.classList.contains('sd-preview-pdf-searchbar__input')) self.search(e.target.value);
++      });
++      this.addEventListener('focusout', function (e) {
++        var t = e.target;
++        if (t.classList && t.classList.contains('sd-preview-pdf-toolbar__page-input')) t.value = String(self._activePage);
++      });
++      this.addEventListener('wheel', function (e) {
++        if (!(e.ctrlKey || e.metaKey) || !e.target.closest || !e.target.closest('.sd-preview-pdf-stage')) return;
++        e.preventDefault();
++        var factor = e.deltaY < 0 ? 1.1 : 0.9;
++        self._zoomMode = self._zoom * factor;
++        self._setZoom(self._zoom * factor);
++      }, { passive: false });
++    }
++
++    _onClick(e) {
++      var btn = e.target.closest ? e.target.closest('button') : null;
++      if (!btn || !this.contains(btn) || btn.disabled) return;
++      var icon = btn.querySelector('mat-icon');
++      var key = icon ? icon.textContent.trim() : '';
++      var list;
++      if (btn.classList.contains('sd-preview-pdf-sidebar__tab')) {
++        list = Array.prototype.slice.call(this.querySelectorAll('.sd-preview-pdf-sidebar__tab'));
++        this.setSidebarMode(['thumbnails', 'outline', 'search'][list.indexOf(btn)] || 'thumbnails');
++        return;
+       }
+-      if (!this._docKeyBound) {
+-        this._docKeyBound = function (e) {
+-          if (!self.isConnected) return;
+-          if (!self.contains(document.activeElement)) return;
+-          if (e.key === 'Escape') {
+-            if (self._fullscreen && document.exitFullscreen) {
+-              document.exitFullscreen();
+-            } else {
+-              self.dispatchEvent(new CustomEvent('sd-close', { bubbles: true }));
+-            }
+-          }
+-        };
+-        // Listener document PHẢI gỡ trong disconnectedCallback.
+-        document.addEventListener('keydown', this._docKeyBound);
++      if (btn.classList.contains('sd-preview-pdf-thumb')) {
++        list = Array.prototype.slice.call(this.querySelectorAll('.sd-preview-pdf-thumb'));
++        this.goToPage(list.indexOf(btn) + 1);
++        return;
+       }
+-      if (!this._fsBound) {
+-        this._fsBound = function () {
+-          var active = document.fullscreenElement === self;
+-          if (active !== self._fullscreen) {
+-            self._fullscreen = active;
+-            /* catalog: `sd-preview-pdf.sd-preview-pdf-host--fullscreen` */
+-            self.classList.toggle('sd-preview-pdf-host--fullscreen', active);
+-            if (self._rendered) self._render();
+-          }
+-        };
+-        document.addEventListener('fullscreenchange', this._fsBound);
++      if (btn.classList.contains('sd-preview-pdf-search-result')) {
++        list = Array.prototype.slice.call(this.querySelectorAll('.sd-preview-pdf-search-result'));
++        var r = this._searchResults[list.indexOf(btn)];
++        if (r) this.goToPage(r.page);
++        return;
+       }
+-    }
+-
+-    _unbind() {
+-      if (this._docKeyBound) {
+-        document.removeEventListener('keydown', this._docKeyBound);
+-        this._docKeyBound = null;
++      if (btn.classList.contains('sd-preview-pdf-btn-primary')) { this.retryLoad(); return; }
++      if (btn.classList.contains('sd-preview-pdf-btn-secondary')) { this.downloadFile(); return; }
++      if (btn.closest('.sd-preview-pdf-header__left')) { this.toggleSidebar(); return; }
++      if (btn.closest('.sd-preview-pdf-header__right')) {
++        if (key === 'search') { if (this._searchBarOpen) this.closeSearch(); else this.openSearch(); }
++        else if (key === 'download') this.downloadFile();
++        else this.toggleFullscreen();
++        return;
+       }
+-      if (this._fsBound) {
+-        document.removeEventListener('fullscreenchange', this._fsBound);
+-        this._fsBound = null;
++      switch (key) {
++        case 'keyboard_arrow_up': this.searchPrev(); break;
++        case 'keyboard_arrow_down': this.searchNext(); break;
++        case 'match_case': this.toggleSearchCaseSensitive(); break;
++        case 'text_fields': this.toggleSearchWholeWord(); break;
++        case 'close': this.closeSearch(); break;
++        case 'first_page': this.firstPage(); break;
++        case 'chevron_left': this.prevPage(); break;
++        case 'chevron_right': this.nextPage(); break;
++        case 'last_page': this.lastPage(); break;
++        case 'remove': this.zoomOut(); break;
++        case 'add': this.zoomIn(); break;
++        case 'fit_screen': this.setZoom('page-fit'); break;
++        case 'swap_horiz': this.setZoom('page-width'); break;
++        case 'rotate_right': this.rotate('right'); break;
++        case 'description':
++        case 'view_day': this.setScrollMode(this._scrollModeInternal === 'page' ? 'continuous' : 'page'); break;
+       }
+     }
+ 
+-    _onAction(action) {
+-      switch (action) {
+-        case 'menu':
+-          this._sidebarOpen = !this._sidebarOpen;
+-          this._render();
++    /* Phím tắt — gắn trên HOST như thư viện (không gắn lên document) */
++    _onKeyDown(event) {
++      var target = event.target;
++      var searchInput = this.querySelector('.sd-preview-pdf-searchbar__input');
++      var isSearchInput = !!target && target === searchInput;
++      var isOtherEditable = !!target && !isSearchInput &&
++        (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
++      var key = event.key;
++      if ((event.ctrlKey || event.metaKey) && (key === 'f' || key === 'F')) { event.preventDefault(); this.openSearch(); return; }
++      if (isSearchInput) {
++        if (key === 'Escape') { event.preventDefault(); this.closeSearch(); this.focus(); return; }
++        if (key === 'Enter' || key === 'F3') { event.preventDefault(); if (event.shiftKey) this.searchPrev(); else this.searchNext(); }
++        return;
++      }
++      if (isOtherEditable) {
++        if (target.classList.contains('sd-preview-pdf-toolbar__page-input') && key === 'Enter') {
++          var v = Number(target.value);
++          if (isFinite(v)) this.goToPage(v);
++          target.value = String(this._activePage);
++          return;
++        }
++        if (key === 'Escape' && this._searchBarOpen) { event.preventDefault(); this.closeSearch(); }
++        return;
++      }
++      if (key === 'F3') { event.preventDefault(); if (event.shiftKey) this.searchPrev(); else this.searchNext(); return; }
++      switch (key) {
++        case 'ArrowLeft': case 'PageUp': event.preventDefault(); this.prevPage(); break;
++        case 'ArrowRight': case 'PageDown': event.preventDefault(); this.nextPage(); break;
++        case 'Home': event.preventDefault(); this.firstPage(); break;
++        case 'End': event.preventDefault(); this.lastPage(); break;
++        case '+': case '=': event.preventDefault(); this.zoomIn(); break;
++        case '-': event.preventDefault(); this.zoomOut(); break;
++        case '0': event.preventDefault(); this.setZoom('page-fit'); break;
++        case 'r': event.preventDefault(); this.rotate('right'); break;
++        case 'R': event.preventDefault(); this.rotate('left'); break;
++        case 'f': event.preventDefault(); this.toggleFullscreen(); break;
++        case 'Escape':
++          /* Esc đóng thanh tìm kiếm; KHÔNG bao giờ phát `close` (thư viện để trang tự lo) */
++          if (this._searchBarOpen) { event.preventDefault(); this.closeSearch(); }
+           break;
+-        case 'download': this._download(); break;
+-        case 'fullscreen': this._toggleFullscreen(); break;
+       }
+     }
+ 
+-    _download() {
+-      var url = this._resolveUrl();
+-      if (!url) return;
+-      var filename = this._displayName();
+-      var a = document.createElement('a');
+-      a.href = url;
+-      a.download = filename;
+-      a.rel = 'noopener';
+-      document.body.appendChild(a);
+-      a.click();
+-      a.remove();
+-      this.dispatchEvent(new CustomEvent('sd-download', {
+-        detail: { filename: filename },
+-        bubbles: true
+-      }));
++    /* ── nạp tài liệu ── */
++    _loadDocument(src) {
++      var self = this, token = ++this._loadToken;
++      this._cancelRender();
++      var old = this._doc;
++      this._doc = null;
++      if (old) { try { old.destroy(); } catch (e) { /* ignore */ } }
++      this._ownedUrls.forEach(function (u) { URL.revokeObjectURL(u); });
++      this._ownedUrls = [];
++      this._thumbCache = {};
++      this._thumbDims = {};
++      this._hlSig = '';
++      this._pageText.clear();
++      this._thumbsRendering.clear();
++      this._searchResults = [];
++      this._searchActive = -1;
++      this._loadError = null;
++      this._loadProgress = { loaded: 0, total: 0 };
++      this._canvasDims = null;
++      this._paintedCanvas = null;
++      if (!src) {
++        this._stage = 'empty';
++        this._meta = null;
++        this._activePage = 1;
++        this._render();
++        return Promise.resolve();
++      }
++      this._stage = 'loading';
++      this._render();
++      return this._normalizeSource(src).then(function (spec) {
++        if (self.password) spec.password = self.password;
++        return sdPdfjsLoad().then(function (lib) {
++          if (token !== self._loadToken) return null;
++          var task = lib.getDocument(spec);
++          task.onProgress = function (p) {
++            if (token !== self._loadToken) return;
++            self._loadProgress = { loaded: p.loaded || 0, total: p.total || 0 };
++            self._render();
++          };
++          return task.promise;
++        });
++      }).then(function (doc) {
++        if (!doc) return;
++        if (token !== self._loadToken) { try { doc.destroy(); } catch (e) { /* ignore */ } return; }
++        return doc.getMetadata().then(function (m) {
++          var info = (m && m.info) || {};
++          return { title: info.Title, author: info.Author, subject: info.Subject, numPages: doc.numPages };
++        }, function () { return { numPages: doc.numPages }; }).then(function (meta) {
++          if (token !== self._loadToken) return;
++          self._doc = doc;
++          self._meta = meta;
++          self._activePage = Math.max(1, Math.min(self.startPage, doc.numPages));
++          self._stage = 'ready';
++          self._zoom = 1;
++          self._rotation = 0;
++          self._zoomMode = self.initialZoom;
++          self._render();
++          self._emit('sd-loaded', { totalPages: doc.numPages, meta: meta });
++          self._emit('sd-page-change', { page: self._activePage });
++          return self._renderActivePage();
++        });
++      }).catch(function (err) {
++        if (token !== self._loadToken) return;
++        self._emitError(self._classifyError(err), err && err.message);
++      });
+     }
+ 
+-    _toggleFullscreen() {
+-      if (!this._fullscreen) {
+-        if (this.requestFullscreen) {
+-          var p = this.requestFullscreen();
+-          if (p && p.catch) p.catch(function () {});
++    _normalizeSource(src) {
++      var self = this;
++      function guess(url) { var path = String(url).split('?')[0]; return path.substring(path.lastIndexOf('/') + 1) || 'document.pdf'; }
++      return Promise.resolve().then(function () {
++        var headers = self.httpHeaders;
++        if (typeof src === 'string') {
++          self._filename = guess(src);
++          var spec = { url: src };
++          if (headers) spec.httpHeaders = headers;
++          return spec;
++        }
++        if (typeof File !== 'undefined' && src instanceof File) {
++          self._filename = src.name;
++          return src.arrayBuffer().then(function (b) { return { data: new Uint8Array(b) }; });
++        }
++        if (src instanceof Blob) {
++          self._filename = 'document.pdf';
++          return src.arrayBuffer().then(function (b) { return { data: new Uint8Array(b) }; });
++        }
++        /* pdf.js chuyển (detach) bộ đệm cho worker — chép ra bản riêng để `retryLoad()` và
++           `downloadFile()` vẫn đọc được nguồn gốc */
++        if (src instanceof ArrayBuffer) { self._filename = 'document.pdf'; return { data: new Uint8Array(src.slice(0)) }; }
++        if (src instanceof Uint8Array) { self._filename = 'document.pdf'; return { data: src.slice() }; }
++        if (src && typeof src === 'object') {
++          if (typeof src.url === 'string') {
++            self._filename = guess(src.url);
++            var s2 = { url: src.url };
++            var h = src.httpHeaders || headers;
++            if (h) s2.httpHeaders = h;
++            if (src.withCredentials) s2.withCredentials = true;
++            return s2;
++          }
++          if (src.data instanceof ArrayBuffer || src.data instanceof Uint8Array) {
++            self._filename = 'document.pdf';
++            return { data: src.data instanceof ArrayBuffer ? new Uint8Array(src.data.slice(0)) : src.data.slice() };
++          }
+         }
+-      } else if (document.exitFullscreen) {
+-        document.exitFullscreen();
++        throw new Error('Unsupported PDF source');
++      });
++    }
++
++    _classifyError(err) {
++      if (!err) return 'unknown';
++      var name = err.name;
++      if (name === 'PasswordException') return 'password';
++      if (name === 'InvalidPDFException') return 'invalid';
++      if (name === 'MissingPDFException' || name === 'UnexpectedResponseException') return 'network';
++      if (err instanceof Error && /network|fetch|cors/i.test(err.message)) return 'network';
++      return 'unknown';
++    }
++    _emitError(reason, message) {
++      this._loadError = { reason: reason, message: message };
++      this._stage = 'error';
++      this._render();
++      this._emit('sd-load-error', { reason: reason, message: message });
++    }
++
++    /* ── vẽ trang ── */
++    _cancelRender() {
++      if (this._renderTask) { try { this._renderTask.cancel(); } catch (e) { /* ignore */ } this._renderTask = null; }
++    }
++    _setZoom(v) {
++      this._zoom = Math.min(4, Math.max(0.25, v));
++      this._render();
++      this._renderActivePage();
++    }
++    _resolveScale(base) {
++      var mode = this._zoomMode;
++      if (typeof mode === 'number') return Math.min(4, Math.max(0.25, mode));
++      if (mode === 'page-actual') return 1;
++      var stage = this.querySelector('.sd-preview-pdf-stage');
++      if (!stage) return 1;
++      var rect = stage.getBoundingClientRect();
++      var availW = Math.max(80, rect.width - 48);
++      var availH = Math.max(80, rect.height - 120);
++      if (mode === 'page-width') return availW / base.width;
++      return Math.min(availW / base.width, availH / base.height);
++    }
++    _renderActivePage() {
++      var self = this, doc = this._doc;
++      if (!doc) return Promise.resolve();
++      var token = ++this._renderToken, pageNum = this._activePage;
++      return doc.getPage(pageNum).then(function (page) {
++        if (token !== self._renderToken) return;
++        var canvas = self.querySelector('canvas.sd-preview-pdf-page');
++        if (!canvas) return;
++        var rotation = self._rotation;
++        var scale = self._resolveScale(page.getViewport({ scale: 1, rotation: rotation }));
++        self._zoom = scale;
++        var vp = page.getViewport({ scale: scale, rotation: rotation });
++        var ctx = canvas.getContext('2d');
++        if (!ctx) return;
++        var d = { w: Math.floor(vp.width), h: Math.floor(vp.height), sw: vp.width, sh: vp.height };
++        canvas.width = d.w;
++        canvas.height = d.h;
++        canvas.style.width = d.sw + 'px';
++        canvas.style.height = d.sh + 'px';
++        self._canvasDims = d;
++        self._paintedCanvas = canvas;
++        self._cancelRender();
++        var task = page.render({ canvasContext: ctx, viewport: vp });
++        self._renderTask = task;
++        return task.promise.then(function () {
++          if (self._renderTask === task) self._renderTask = null;
++          page.cleanup();
++          self._render();                       // ô % zoom
++          self._emit('sd-zoom-change', { zoom: scale });
++        }, function () {
++          if (self._renderTask === task) self._renderTask = null;
++        });
++      }, function () { /* trang lỗi — bỏ qua như thư viện */ });
++    }
++
++    /* ── thumbnail: vẽ lười bằng IntersectionObserver, cache dataURL ── */
++    _syncThumbs() {
++      var self = this;
++      var canvases = Array.prototype.slice.call(this.querySelectorAll('canvas.sd-preview-pdf-thumb__canvas'));
++      if (this._thumbObserver) this._thumbObserver.disconnect();
++      this._thumbObserver = null;
++      var todo = canvases.filter(function (c) { return !c._sdPainted; });
++      if (!todo.length || !this._doc) return;
++      if (typeof IntersectionObserver !== 'function') { todo.forEach(function (c) { self._renderThumb(+c.getAttribute('data-page'), c); }); return; }
++      this._thumbObserver = new IntersectionObserver(function (entries) {
++        entries.forEach(function (en) {
++          if (!en.isIntersecting) return;
++          self._thumbObserver && self._thumbObserver.unobserve(en.target);
++          self._renderThumb(+en.target.getAttribute('data-page'), en.target);
++        });
++      }, { rootMargin: '120px 0px 120px 0px', threshold: 0.01 });
++      todo.forEach(function (c) { self._thumbObserver.observe(c); });
++    }
++    _renderThumb(pageNum, canvas) {
++      var self = this, doc = this._doc;
++      if (!doc || !pageNum) return;
++      var cached = this._thumbCache[pageNum];
++      if (cached) {
++        var img = new Image();
++        img.onload = function () {
++          canvas.width = img.naturalWidth;
++          canvas.height = img.naturalHeight;
++          canvas.getContext('2d').drawImage(img, 0, 0);
++          canvas._sdPainted = true;
++        };
++        img.src = cached;
++        return;
++      }
++      if (this._thumbsRendering.has(pageNum)) return;
++      this._thumbsRendering.add(pageNum);
++      doc.getPage(pageNum).then(function (page) {
++        var base = page.getViewport({ scale: 1 });
++        var vp = page.getViewport({ scale: 140 / Math.max(1, base.width) });
++        canvas.width = Math.floor(vp.width);
++        canvas.height = Math.floor(vp.height);
++        canvas.style.width = vp.width + 'px';
++        canvas.style.height = vp.height + 'px';
++        self._thumbDims[pageNum] = { w: canvas.width, h: canvas.height, sw: vp.width, sh: vp.height };
++        return page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise.then(function () {
++          canvas._sdPainted = true;
++          try {
++            self._thumbCache[pageNum] = canvas.toDataURL('image/png');
++          } catch (e) { /* canvas bẩn — bỏ cache */ }
++          page.cleanup();
++        });
++      }).catch(function () { /* để thumb trống như thư viện */ }).then(function () {
++        self._thumbsRendering.delete(pageNum);
++      });
++    }
++
++    /* ── tìm chữ ── */
++    _searchRegex(term, caseSensitive, wholeWord) {
++      if (!term) return null;
++      var escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
++      try { return new RegExp(wholeWord ? '\\b' + escaped + '\\b' : escaped, (caseSensitive ? 'g' : 'gi') + 'u'); }
++      catch (e) { return null; }
++    }
++    _getPageText(doc, pageNum) {
++      var self = this;
++      if (this._pageText.has(pageNum)) return Promise.resolve(this._pageText.get(pageNum));
++      return doc.getPage(pageNum).then(function (page) {
++        return page.getTextContent().then(function (tc) {
++          var items = (tc && Array.isArray(tc.items)) ? tc.items : [];
++          var text = items.map(function (it) { return typeof it.str === 'string' ? it.str : ''; }).join(' ').normalize('NFC');
++          self._pageText.set(pageNum, text);
++          return text;
++        }, function () { return ''; });
++      }, function () { return ''; });
++    }
++    /* Thư viện thả `div.sd-pdf-search-overlay > mark` vào `.sd-preview-pdf-page-wrap` bằng
++       document.createElement — CSS của component (emulated) không áp vào, nên trên app thật
++       các thẻ <mark> hiện kiểu mặc định ngay dưới trang (catalog ghi rõ). Kit làm y vậy. */
++    _applyHighlights() {
++      var wrap = this.querySelector('.sd-preview-pdf-page-wrap');
++      if (!wrap) return;
++      var prior = wrap.querySelector('.sd-pdf-search-overlay');
++      if (prior) prior.remove();
++      var term = this._searchTerm, results = this._searchResults, active = this._searchActive, page = this._activePage;
++      if (!term || !results.length) return;
++      var hits = [];
++      results.forEach(function (r, i) { if (r.page === page) hits.push({ r: r, i: i }); });
++      if (!hits.length) return;
++      var overlay = document.createElement('div');
++      overlay.className = 'sd-pdf-search-overlay';
++      hits.forEach(function (h) {
++        var m = document.createElement('mark');
++        m.className = h.i === active ? 'sd-pdf-search-hi sd-pdf-search-hi--active' : 'sd-pdf-search-hi';
++        m.textContent = h.r.term;
++        overlay.appendChild(m);
++      });
++      wrap.appendChild(overlay);
++      /* cuộn tới kết quả đang chọn — chỉ khi từ khoá / kết quả / trang đổi (effect của thư viện) */
++      var sig = term + '|' + active + '|' + page;
++      if (sig !== this._hlSig) {
++        this._hlSig = sig;
++        var am = active >= 0 && results[active] && results[active].page === page ? overlay.querySelector('.sd-pdf-search-hi--active') : null;
++        if (am) { try { am.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) { /* ignore */ } }
+       }
+     }
+   }

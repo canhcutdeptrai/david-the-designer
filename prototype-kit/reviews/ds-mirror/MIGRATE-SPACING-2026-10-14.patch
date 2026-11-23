@@ -1,0 +1,400 @@
+# MIGRATE-SPACING 2026-10-14 — migrate-prototype.mjs v2: gỡ lớp 'chết' (kit cũ không có, nay sd-core có nghĩa px), sửa va chạm !important giữa tiện ích sd-core với inline style / CSS trang, hideInlineError cho ô sd-* trong <td>, nâng tiếp trang đã chạy v1; legacy-reset.css thêm luật d-flex + display:none
+# Builder báo: 'khi áp vào các prototype cũ còn đang bị lỗi spacing' — 'các prototype khác chứ không phải prototype trong folder hiện tại'; form: 'Theo Core'
+# 6 file — xem danh sách 'diff' bên dưới
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/MIGRATE-SPACING-2026-10-14.patch (sau MIGRATE-PROTOTYPE-2026-10-14.patch)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-14 14:42:24.240480000 +0000
++++ b/CHANGELOG.md	2026-10-14 15:21:32.888944425 +0000
+@@ -8,6 +8,26 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Fixed — `migrate-prototype.mjs` v2: còn lệch khoảng cách trên các prototype cũ khác (Builder 2026-10-14: *„khi áp vào các prototype cũ còn đang bị lỗi spacing“* — *„các prototype khác chứ không phải prototype trong folder hiện tại“*)
++
++- **Đo thay vì đoán**: dựng từng trang cũ bằng kit cũ và bằng kit mới (sau khi nâng), so `getComputedStyle` (margin / padding / gap) của
++  **mọi thẻ do trang viết** — 29 trang cẩm nang + 67 trang preview cũ + một trang mẫu cố tình viết kiểu AI hay viết (lớp Tailwind, CSS trang đè lớp
++  tiện ích, inline style). Bản v1 chỉ khớp ở bộ cẩm nang; trang mẫu còn **60 chỗ lệch** → v2: **0**. Bản v1 đã chạy rồi thì chạy lại là đủ (tự nâng tiếp).
++- **Ba nguồn lệch v1 chưa xử lý**, đều do tiện ích sd-core khác tiện ích kit cũ:
++  1. **Lớp "chết" sống lại** — kit cũ chỉ có ~225 lớp tiện ích; `p-3`, `my-4`, `ml-2`, `mb-5`, `px-6`, `py-3`, `overflow-hidden`… trước KHÔNG có tác dụng,
++     nay sd-core (~4.600 lớp) cho nghĩa px. → gỡ khỏi `class="…"` (giữ lớp trang tự định nghĩa hoặc JS dùng làm móc), in danh sách đã gỡ.
++     Đúng cách đợt dọn prototype 2026-10-13 đã làm cho kit ("giữ hình").
++  2. **!important** — tiện ích kit cũ không `!important` nên inline style và CSS của trang đè được; sd-core thì có. → inline cùng thuộc tính: thêm
++     `!important` vào khai báo inline · luật `.lớp{…}` của trang phủ hết thuộc tính: bỏ lớp tiện ích · phủ một phần lớp m/p: tách theo cạnh
++     (`p-16` + `padding-left:0` → `pt-16 pr-16 pb-16`) · trang tự định nghĩa lớp trùng tên (`.p-3{padding:12px}`): thêm `!important` vào luật đó
++     (trừ lớp kit cũ vốn đã !important như `text-primary`) · `legacy-reset.css`: khối `d-flex` ẩn bằng `style.display='none'` lại ẩn được.
++  3. **Ô nhập trong bảng tự dựng** — ô sd-* trong `<td>` (và ô tìm "Tìm…" không nhãn) chừa 20px vạch lỗi làm dòng bảng cao vọt → `hideInlineError`
++     (đúng quy tắc kit cho ô bảng / hàng công cụ).
++- **Form giữ 20px dưới mỗi ô như Core** (Builder chọn *„Theo Core“*) — form trang cũ thưa hơn bản cũ ~20px mỗi hàng ô, đúng như trang kit.
++- Dấu `kit-migrated v2`; trang mang dấu v1 được nâng tiếp các bước mới, KHÔNG đổi thang khoảng cách lần hai; bản gốc giữ ở `_pre-migrate/`, bản v1
++  ở `_pre-migrate/v1/`. Đường dẫn CSS kit nhận cả `core/styles/` không có tiền tố `design-system/`.
++- Bản vá: `reviews/ds-mirror/MIGRATE-SPACING-2026-10-14.patch`.
++
+ ### Added — nâng prototype dựng bằng kit cũ lên kit hiện tại (Builder 2026-10-14: *„các prototypes khác khi áp kit này vào vẫn bị lỗi“*)
+ 
+ - **Nguyên nhân** (đo trên 29 trang cẩm nang phân quyền bản 2026-10-12 + design-system hiện tại): kit đã đổi nền theo Core UI nhưng trang cũ vẫn
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-14 14:42:24.241690614 +0000
++++ b/_memory/known-gaps.md	2026-10-14 15:21:39.704586211 +0000
+@@ -21,7 +21,7 @@
+ | 2026-10-11 | Ô nhập — viền khi hover / focus / lỗi | Catalog ghim màu viền ô nhập ở **mọi trạng thái** bằng `!important` (`.mat-mdc-notch-piece.mdc-notched-outline__leading{border-color:var(--sd-black200)!important}`), nên hover không đổi màu, focus chỉ **dày lên 2px** chứ không chuyển nâu, và **ô lỗi vẫn giữ viền xám** — chỉ `hideInlineError` mới cho viền đỏ. Kit đã làm theo. **Builder nên xem lại:** bản cũ của kit (hover xám đậm, focus nâu + quầng, lỗi viền đỏ) dễ thấy hơn nhiều khi điền form dài | Đã mirror đúng catalog theo yêu cầu "mọi thứ giống catalog". Từ 2026-10-13 mọi `sd-*` dùng DOM Material: luật nằm ở các khối `catalog #c-…` (`.mat-mdc-notch-piece… {border-color:var(--sd-black200)!important}`) trong `sd-tokens.css` — muốn trả lại thì sửa ở đó. Ba rule `.sd-form-field:hover` / `:focus-within` / `.sd-error` nay chỉ còn áp cho markup viết tay |
+ | 2026-10-11 | **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]** `sd-stepper` — nhãn bước đang làm | Catalog **có** rule tô nhãn bước đang làm màu brand + 600, nhưng rule `.mat-step-label-active` đứng trước lại nhiều class hơn nên luôn thắng → nhãn bước đang làm KHÔNG khác các bước khác. Kit chép lại đúng tương quan điểm đó. **Builder nên xem lại:** bước đang làm giờ chỉ phân biệt bằng vòng tròn (số, nền đặc), nhãn thì giống hệt bước khác | Đây là hành vi THẬT của catalog (nhiều khả năng là lỗi thứ tự rule của thư viện). Muốn trả lại: nâng điểm rule `sd-stepper .sd-stepper__label--selected` |
+ | 2026-10-14 | Kit có, `.d.ts` 19.0.10 không có (phát hiện khi sinh `html-to-angular-api.md`) | `sd-select showSelectAll` / `hideReadError` · `sd-input-number clearable` · `sd-radio helperText` · `sd-date-range inlineError` · `autoId` trên `sd-label` / `sd-view` / `sd-history` / `sd-import-excel` / `sd-form-builder` / `sd-document-builder` / `sd-header-footer-builder` · `sd-table addable` / `filterRequired` / cột number `option.precision`. Ngược lại `.d.ts` CÓ mà kit đã gỡ theo bảng API catalog: `sd-tab-group disableRipple` / `autoId`; `sd-side-drawer` 19.0.10 chỉ có `[sdFooter]` (không `sdFooterLeft/Right`) | Rule 18 đo theo **bảng API catalog**, còn `.d.ts` là mã thật — hai nguồn lệch nhau. Chờ Builder chọn nguồn khi rà Rule 18. Bảng dịch đã ghi "Kit-only — bỏ khi dịch" |
+-| 2026-10-14 | **Trang dựng bằng kit cũ** — sau `migrate-prototype.mjs` | Công cụ chỉ đổi cách viết, KHÔNG đổi component: phần còn lệch so với bản 2026-10-12 là kích thước theo Core (ô nhập + khoảng 20px dưới mỗi ô, textarea cao hơn, header có nút quay lại, mất `avatar` số thứ tự của sd-section, bảng không còn cột `#` tự đánh số, bộ lọc `filter-bar` không còn nút Tìm kiếm của kit cũ). Chưa tự sửa (chỉ báo `!`): sd-button-item / sd-scorecard (đã gỡ, phải dựng lại), `slot="footer"` (đổi sang `sdFooter` thì mất căn phải sẵn — phải thêm lớp), `color="black"`, thuộc tính đã gỡ của sd-input / sd-checkbox / sd-date…, lớp site-tab*. `legacy-reset.css` không có catalog tương ứng — lớp tương thích (Rule 18 ngoại lệ 3), chỉ trang đã nâng nạp | Mỗi chỗ cần người quyết cách thay; tự đổi thì sai hình hoặc mất chức năng |
++| 2026-10-14 | **Trang dựng bằng kit cũ** — sau `migrate-prototype.mjs` (v2) | Khoảng cách của thẻ do trang viết khớp bản cũ (đo computed style trên 96 trang + trang mẫu; chỗ còn lệch là của component theo Core: đệm trên ô có nhãn trong bộ lọc, `sd-table` lề 16px trong trang read cũ, khung `div.sd-form-field` viết tay). Chưa bắt được: lớp ghép trong chuỗi JS không gần chữ `class`/`cls`, JS đặt `el.style.X` lúc chạy lên phần tử mang tiện ích !important (trừ `d-flex` + display none), luật CSS trang có selector ghép đè tiện ích (chỉ báo `!`). Công cụ chỉ đổi cách viết, KHÔNG đổi component: phần còn lệch so với bản 2026-10-12 là kích thước theo Core (ô nhập + khoảng 20px dưới mỗi ô, textarea cao hơn, header có nút quay lại, mất `avatar` số thứ tự của sd-section, bảng không còn cột `#` tự đánh số, bộ lọc `filter-bar` không còn nút Tìm kiếm của kit cũ). Chưa tự sửa (chỉ báo `!`): sd-button-item / sd-scorecard (đã gỡ, phải dựng lại), `slot="footer"` (đổi sang `sdFooter` thì mất căn phải sẵn — phải thêm lớp), `color="black"`, thuộc tính đã gỡ của sd-input / sd-checkbox / sd-date…, lớp site-tab*. `legacy-reset.css` không có catalog tương ứng — lớp tương thích (Rule 18 ngoại lệ 3), chỉ trang đã nâng nạp | Mỗi chỗ cần người quyết cách thay; tự đổi thì sai hình hoặc mất chức năng |
+ | 2026-10-14 | **Đối chiếu tổng kit ↔ catalog** — `reviews/ds-mirror/DOI-CHIEU-TONG-2026-10-14.md` | Khớp hẳn: button, badge, avatar, radio, anchor, history, org-chart, preview-image, inform, tooltip, tab-group, kpi-card, filter-scorecard. **Lệch cấu trúc thật:** ~~`sd-checkbox` / `sd-switch`~~ (**ĐÃ SỬA 2026-10-14** — DOM Material, 13/13 + 13/13 khớp), ~~`sd-tree` (ô chọn / nút lệnh / spinner)~~ (**ĐÃ SỬA 2026-10-14**), ~~khối popup ẩn trong thẻ của select / autocomplete / date / date-range / datetime / chip-calendar~~ (**ĐÃ SỬA 2026-10-14** — ra overlay), ~~`sd-upload-file` thiếu `<preview>`~~ (**ĐÃ SỬA**), ~~`sd-chip` viewed~~ (ghép nhầm mẫu — trang preview thiếu mẫu "Đang nhập thêm", đã thêm), ~~`sd-query-builder`~~ (**ĐÃ SỬA** mũi tên select + mẫu menu "+" mở; dòng dưới ô là bản dựng giản lược của catalog — xem dòng `data-ff`). Lệch nhỏ: `sd-label` cao 22 thay 20px, dòng lỗi form-generic, lớp `<table>` của sd-table. Chưa so được: modal / drawer / confirm (overlay), stepper, splitter, chart, import-excel | **Đã sửa 4 nhóm 2026-10-14** (checkbox/switch · popup overlay · tree/upload/chip/qb · lệch nhỏ): khớp hẳn 146 → 232 / 360 mẫu ghép được. Phần còn lại đã phân loại ở mục "Cập nhật sau vòng sửa" cuối báo cáo |
+ | 2026-10-14 | **Popup nổi** (`sd-date` / `sd-date-range` / `sd-datetime` / `sd-chip-calendar` / `sd-autocomplete`, + `sd-select` khi đóng) — sau khi ra overlay | Thẻ host nay trùng catalog (chỉ có ô; `position` static). Còn khác: (1) ~~ruột lịch là bộ `.form-field-datepicker-*` tự dựng~~ **ĐÃ SỬA 2026-10-14** — nay `mat-datepicker-content > mat-calendar` (`table.mat-calendar-table`) / `sd-datetime-picker` / `mat-mdc-menu-panel` như catalog, so pane 4/4 mục trùng 100% số nút (185 · 185 · 212 · 186); (2) pane là `cdk-overlay-pane sd-float-pane sd-<tên>-pane` (catalog: `mat-datepicker-popup` / `mat-mdc-autocomplete-panel`…); (3) `sd-select` / `sd-autocomplete` còn lớp trạng thái `sd-open` trên host khi mở (catalog không có); (4) mẫu "đang mở" của trang preview nay nổi theo màn hình (trước nằm trong khung demo) | (1) xong. (2) pane nay mang lớp của catalog (`mat-datepicker-popup` · `sd-datetime-overlay-panel`) kèm lớp kit `sd-float-pane sd-<tên>-pane` (JS / CSS tìm theo); (3) còn — lớp trạng thái kit, không có hình |
+ | 2026-10-14 | **Lịch `mat-calendar`** (`sd-date` / `sd-date-range` / `sd-datetime` / `sd-chip-calendar`) — sau khi dựng lại | Còn khác catalog: (1) nút kỳ `[OCT 2026 ▾]` không mở bảng năm / tháng (catalog tĩnh cũng chỉ có `mat-month-view`); (2) nút huỷ của `sd-datetime` là "Bỏ qua" (catalog "Hủy" — Rule 16); (3) ô giờ của `sd-datetime` mở ra với giờ hiện tại (bản chụp catalog: `00`) — dữ liệu, không phải DOM; (4) không có ripple / focus-indicator động, không điều hướng bàn phím trong lưới ngày (Material có ← → ↑ ↓ / PageUp). `shell.js` (markup `.form-field-datepicker-wrapper` viết tay) và luật `.form-field-datepicker*` của `components.css` **giữ nguyên** — không phải `sd-*` | (1)(4) catalog không có căn cứ; (2) Rule 16; (3) không đổi |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-14 14:42:24.242022958 +0000
++++ b/_memory/lessons.md	2026-10-14 15:21:32.900236751 +0000
+@@ -22,6 +22,10 @@
+ - Reset tương thích chỉ đặt lên **thẻ trang tự viết** (`data-legacy-reset`) và dùng `:where()` để độ ưu tiên đúng bằng `*{}` cũ — `*` thật sẽ
+   phá đệm / lề bên trong `sd-*` đã theo Core.
+ - Phần không chắc (đổi `slot="footer"` → `sdFooter` mất căn phải, `color="black"` không có màu tương đương) thì **báo**, đừng đổi.
++- **Đo computed style của từng thẻ trang viết, cũ vs mới** (gắn `data-pid` theo thứ tự thẻ cho cả hai bản → so margin/padding/gap). Một bộ
++  prototype khớp chưa nói gì về prototype khác: v1 khớp cẩm nang nhưng trang AI viết kiểu khác vẫn lệch 60 chỗ. Luôn thêm một trang mẫu cố tình
++  dùng các thói quen khác (lớp Tailwind không có trong kit, CSS trang đè tiện ích, inline style) vào bộ thử.
++- Đổi thư viện tiện ích thì so cả **tập lớp** (lớp trước vô tác dụng nay có nghĩa) lẫn **độ ưu tiên** (`!important`), không chỉ giá trị.
+ 
+ ## Bẫy khi đổi component sang DOM Material (sd-tab-group 2026-10-14)
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/generate.md b/ai-instructions/generate.md
+--- a/ai-instructions/generate.md	2026-10-14 14:42:24.243059462 +0000
++++ b/ai-instructions/generate.md	2026-10-14 15:21:32.901184098 +0000
+@@ -134,7 +134,10 @@
+    Công cụ tự đổi phần chắc chắn (khoảng cách, reset cũ qua `legacy-reset.css`, badge trạng thái, `slot` → `sdHeaderRight`,
+    nhãn sd-button, `href` của sd-button, số lẻ cột số) và **in dòng `!`** cho phần cần người quyết (thẻ / thuộc tính đã gỡ,
+    header viết tay, `type="tag"`…). Đưa danh sách `!` cho Builder, sửa theo gợi ý trên từng dòng rồi mới build tiếp.
+-   Trang đã có dấu `kit-migrated` thì công cụ bỏ qua — chạy lại không sao. Trang MỚI dựng **không** nạp `legacy-reset.css`.
++   Công cụ còn gỡ lớp "chết" (lớp kit cũ không có, nay sd-core có nghĩa px — in danh sách), sửa va chạm `!important` giữa tiện ích sd-core
++   với inline style / CSS của trang, và bật `hideInlineError` cho ô sd-* trong `<td>`. Form giữ 20px dưới mỗi ô như Core.
++   Trang đã có dấu `kit-migrated v2` thì công cụ bỏ qua — chạy lại không sao; trang mang dấu v1 (bản đầu) được nâng tiếp các bước mới.
++   Trang MỚI dựng **không** nạp `legacy-reset.css`.
+ 
+ 2. **Tóm tắt cho Builder:**
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/tools/migrate-prototype.mjs b/ai-instructions/tools/migrate-prototype.mjs
+--- a/ai-instructions/tools/migrate-prototype.mjs	2026-10-14 14:42:24.243305248 +0000
++++ b/ai-instructions/tools/migrate-prototype.mjs	2026-10-14 15:18:39.479028344 +0000
+@@ -24,7 +24,15 @@
+  *      `sdHeaderLeft` như catalog, GIỮ `slot` (sd-side-drawer vẫn nhận). `slot="footer"` của sd-side-drawer vẫn chạy — chỉ báo.
+  *   8. `<sd-button …>Chữ</sd-button>` chưa có `title` (sd-button 19.0.10 không có ng-content — chữ trong thẻ không hiện)
+  *      → `title="Chữ"`. Chỉ đổi khi bên trong là chữ thuần (không thẻ, không ${…}).
+- *   9. Đánh dấu `<!-- kit-migrated … -->` để lần sau không chạy lại.
++ *   9. Lớp "chết": lớp trang ghi mà kit cũ KHÔNG có (vô tác dụng — `p-3`, `my-4`, `ml-2`, `mb-5`, `px-6`…) nhưng sd-core nay có
++ *      nghĩa px → gỡ khỏi class="…" để giữ hình (trừ lớp trang tự định nghĩa hoặc JS dùng làm móc). Báo danh sách đã gỡ.
++ *  10. !important: lớp tiện ích kit cũ không !important, sd-core thì có → (a) inline style cùng thuộc tính: thêm !important vào
++ *      khai báo inline; (b) luật `.lớp{…}` của trang phủ hết thuộc tính của lớp tiện ích trên cùng thẻ: bỏ lớp tiện ích (phủ một
++ *      phần lớp m/p: tách theo cạnh, vd `p-16` + `padding-left:0` → `pt-16 pr-16 pb-16`); (c) trang tự định nghĩa lớp trùng tên
++ *      lớp sd-core (`.p-3{padding:12px}`): thêm !important vào luật đó. JS ẩn khối `d-flex` bằng style.display='none' → legacy-reset.css lo.
++ *  11. Ô sd-* trong `<td>` của bảng tự dựng và ô tìm kiếm không nhãn (placeholder "Tìm…") → `hideInlineError` (quy tắc kit cho
++ *      hàng công cụ / ô bảng). Form vẫn giữ 20px dưới mỗi ô như Core (Builder 2026-10-14: "Theo Core").
++ *  12. Đánh dấu `<!-- kit-migrated … -->` để lần sau không chạy lại.
+  *
+  * Việc BÁO, không tự sửa (cần người quyết): header viết tay (Rule 10 — layout.css đã có lưới an toàn), `sd-badge type="tag"`
+  * (nghĩa đổi 2026-10-10: tag = khung viền, viên thuốc là round), cột số khai trong object lồng, thẻ / thuộc tính / lớp đã gỡ khỏi kit
+@@ -43,6 +51,7 @@
+ 
+ const KIT_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
+ const MARK = 'kit-migrated';
++const VERSION = 2;            // v1 = bản 2026-10-14 sáng (chưa gỡ lớp chết / !important / hideInlineError)
+ const TODAY = new Date().toISOString().slice(0, 10);
+ 
+ /* 1. 20 lớp khoảng cách của kit cũ (utilities.css cũ: var(--space-N), --space-1 = 4px…) → lớp px của sd-core */
+@@ -52,6 +61,7 @@
+   'mr-2': 'mr-8', 'p-4': 'p-16', 'p-5': 'p-20', 'p-6': 'p-24', 'px-4': 'px-16', 'py-2': 'py-8',
+   'gap-1': 'gap-4', 'gap-2': 'gap-8', 'gap-3': 'gap-12', 'gap-6': 'gap-24'
+ };
++const SP_OUT = new Set(Object.values(SP));   // lớp bước 1 sinh ra — nâng lại trang v1 thì coi như lớp kit cũ
+ /* Nhận ra trang kit CŨ. Không dựa vào lớp khoảng cách (kit cũ đã có sẵn cả `mb-16` / `gap-8` px trong sd-tokens.css cũ).
+    Dấu chắc nhất: template cũ nạp Roboto từ Google Fonts; từ 2026-10-13 font đi theo `vendor/sd-fonts` (tokens.css) nên trang mới không có
+    link đó. Thêm hai API chỉ kit cũ có: `sd-badge type="status"`, `slot="header-right|left"`. */
+@@ -67,13 +77,29 @@
+   /(classList\.(?:add|remove|toggle|contains|replace)\()([^)]*)(\))/g,
+   /(setAttribute\(\s*['"]class['"]\s*,\s*)([^)]*)(\))/g
+ ];
+-function remapSpacing(s, st) {
+-  for (const rx of CLASS_CTX) {
+-    s = s.replace(rx, (m, a, body, z) => a + body.replace(/(?<![\w$-])[a-z][\w-]*(?![\w-])/g, t => {
+-      if (SP[t]) { st.spacing[t] = (st.spacing[t] || 0) + 1; return SP[t]; }
+-      return t;
+-    }) + z);
++const KEEP = '\u2063';   // đánh dấu lớp do công cụ vừa sinh — bước gỡ lớp chết bỏ qua, xoá dấu ở cuối
++function mapToken(t, st, pc, drop) {
++  if (pc.single[t]) return t;    // trang tự định nghĩa `.t{…}` → giữ tên (fixPageUtilDefs lo độ ưu tiên)
++  if (UPGRADE) return (drop && NEW_UTIL[t] && !OLD_KNOWN.has(t) && !SP_OUT.has(t) && !pc.tokens.has(t) && !pc.hooks.has(t)) ? (st.noop[t] = (st.noop[t] || 0) + 1, '') : t;
++  if (SP[t]) {
++    st.spacing[t] = (st.spacing[t] || 0) + 1;
++    if (pc.tokens.has(t) && !st.spNote?.[t]) { (st.spNote ||= {})[t] = 1; st.notes.push('CSS của trang có luật ghép nhắc tới lớp .' + t + ' (nay đổi thành ' + SP[t] + ') — sửa selector đó theo tên mới'); }
++    return SP[t];
+   }
++  if (drop && NEW_UTIL[t] && !OLD_KNOWN.has(t) && !pc.tokens.has(t) && !pc.hooks.has(t)) { st.noop[t] = (st.noop[t] || 0) + 1; return ''; }
++  return t;
++}
++const mapBody = (body, st, pc, drop) => {
++  const out = body.replace(/(?<![\w$.\u2063-])[a-zA-Z][\w-]*(?![\w(-])/g, t => mapToken(t, st, pc, drop));
++  if (out !== body && !out.trim()) return "";
++  return out === body ? body : out.replace(/ {2,}/g, ' ').replace(/^ (?=\S)|(?<=\S) $/g, '');
++};
++function remapSpacing(s, st, pc) {
++  /* gỡ lớp chết CHỈ trong class="…" (tĩnh hoặc chuỗi HTML trong JS) — classList / className chỉ đổi thang (gỡ ở đó dễ sinh chuỗi rỗng) */
++  CLASS_CTX.forEach((rx, i) => { s = s.replace(rx, (m, a, body, z) => a + mapBody(body, st, pc, i < 2) + z); });
++  /* chuỗi JS chỉ gồm tên lớp, nằm gần chữ class/cls (vd `cls = cond ? 'mb-3' : 'mb-2'`) */
++  s = s.replace(/(<script\b[^>]*>)([\s\S]*?)(<\/script>)/gi, (m, a, js, z) => a + js.replace(/(class|cls|Class)([^;\n]{0,80}?)(['"])([a-z][\w-]*(?: +[a-z][\w-]*)*)\3/g,
++    (mm, kw, mid, q, lit) => lit.split(' ').some(t => SP[t]) ? kw + mid + q + mapBody(lit, st, pc, false) + q : mm) + z);
+   return s;
+ }
+ 
+@@ -86,8 +112,8 @@
+ }
+ function linkLegacyCss(s, st) {
+   if (/legacy-reset\.css/.test(s)) return s;
+-  const m = s.match(/<link[^>]+href=["']([^"']*design-system\/core\/styles\/)sd-tokens\.css["'][^>]*>/i) ||
+-            s.match(/<link[^>]+href=["']([^"']*design-system\/core\/styles\/)[\w-]+\.css["'][^>]*>(?![\s\S]*design-system\/core\/styles\/)/i);
++  const m = s.match(/<link[^>]+href=["']([^"']*core\/styles\/)sd-tokens\.css["'][^>]*>/i) ||
++            s.match(/<link[^>]+href=["']([^"']*core\/styles\/)[\w-]+\.css["'][^>]*>(?![\s\S]*core\/styles\/)/i);
+   if (!m) { st.notes.push('không tìm thấy <link> CSS của kit — tự thêm legacy-reset.css'); return s; }
+   st.css = true;
+   return s.replace(m[0], m[0] + '\n  <link rel="stylesheet" href="' + m[1] + 'legacy-reset.css">   <!-- ' + MARK + ': reset của kit cũ -->');
+@@ -167,6 +193,167 @@
+   });
+ }
+ 
++/* ── Lớp tiện ích: kit cũ ↔ kit mới ─────────────────────────────────────────────────────────────────────
++   Kit cũ chỉ có ~225 lớp tiện ích (đo trên CSS kit 2026-10-12); lớp nào trang ghi mà kit cũ KHÔNG có thì trước
++   đây vô tác dụng (`p-3`, `my-4`, `ml-2`, `mb-5`… — AI quen tay Tailwind). Nay utilities.css của sd-core có ~4.600
++   lớp, nên các lớp "chết" đó bỗng có nghĩa px → lệch. Ngoài ra lớp tiện ích kit cũ KHÔNG !important (inline style
++   và CSS của trang đè được), sd-core thì !important (đè lại trang). OLD_SOFT = lớp kit cũ có mà không !important. */
++const OLD_SOFT = new Set(`
++  T10M T10R T12M T12R T14M T14R T16M T16R T18M T20M T24M align-items-center border-b col-span-1 col-span-12 col-span-2
++  col-span-3 col-span-4 col-span-6 col-span-8 col-span-9 cursor-pointer d-flex d-none flex flex-1 flex-col flex-column
++  flex-shrink-0 flex-wrap font-medium font-semibold gap-1 gap-12 gap-16 gap-2 gap-3 gap-4 gap-6 gap-8 grid-cols-1
++  grid-cols-12 grid-cols-2 grid-cols-3 grid-cols-4 grid-cols-6 hidden inline-flex items-center justify-between
++  justify-content-between justify-content-center justify-content-start material-icons material-icons-outlined
++  material-symbols-outlined mb-0 mb-1 mb-2 mb-3 mb-4 mb-6 mi-2xl mi-3xl mi-lg mi-md mi-sm mi-xl mi-xs ml-4 ml-8 ml-auto
++  mr-2 mr-8 msi-lg msi-md msi-sm msi-xl msi-xs mt-0 mt-1 mt-2 mt-3 mt-4 mt-6 p-0 p-16 p-4 p-5 p-6 pt-0 px-16 px-4 py-2
++  py-8 relative rounded-lg sd-input-action-icon sr-only text-mono text-muted text-right text-sm text-tabular text-xs
++  truncate w-full
++`.trim().split(/\s+/));
++const OLD_KNOWN = new Set([...OLD_SOFT, ...`
++  align-middle bg-black bg-black100 bg-black200 bg-black300 bg-black400 bg-black500 bg-dark bg-error bg-error-dark
++  bg-error-light bg-info bg-info-dark bg-info-light bg-light bg-primary bg-primary-dark bg-primary-light bg-secondary
++  bg-secondary-dark bg-secondary-light bg-success bg-success-dark bg-success-light bg-warning bg-warning-dark
++  bg-warning-light bg-white border-black border-black100 border-black200 border-black300 border-black400 border-black500
++  border-bottom border-dark border-error border-error-dark border-error-light border-info border-info-dark
++  border-info-light border-light border-primary border-primary-dark border-primary-light border-secondary
++  border-secondary-dark border-secondary-light border-success border-success-dark border-success-light border-top
++  border-warning border-warning-dark border-warning-light border-white justify-content-end m-0 mb-16 mb-8 p-8 px-0 px-3
++  py-12 text-black text-black100 text-black200 text-black300 text-black400 text-black500 text-center text-dark text-error
++  text-error-dark text-error-light text-info text-info-dark text-info-light text-light text-primary text-primary-dark
++  text-primary-light text-secondary text-secondary-dark text-secondary-light text-success text-success-dark
++  text-success-light text-warning text-warning-dark text-warning-light text-white align-items-start border-0 col-1 col-10
++  col-11 col-12 col-2 col-3 col-4 col-5 col-6 col-7 col-8 col-9 mb-12 mr-16 mr-4 mt-16 mx-0 px-8 rounded-8 row
++  sd-image-image-error text-wrap visible
++`.trim().split(/\s+/)]);
++
++/* utilities.css hiện tại: lớp → { thuộc tính: !important? } (chỉ luật một lớp, ngoài @media) */
++function loadNewUtil() {
++  const map = {};
++  try {
++    let css = fs.readFileSync(path.join(KIT_ROOT, 'design-system/core/styles/utilities.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
++    css = css.replace(/@media[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g, '');
++    for (const m of css.matchAll(/([^{}@]+)\{([^{}]*)\}/g)) {
++      for (const sel of m[1].split(',')) {
++        const t = (sel.trim().match(/^\.(-?[A-Za-z_][\w-]*)$/) || [])[1]; if (!t) continue;
++        const p = map[t] || (map[t] = {});
++        for (const d of m[2].split(';')) { const i = d.indexOf(':'); if (i < 0) continue;
++          const k = d.slice(0, i).trim().toLowerCase(); if (k) p[k] = p[k] || /!important/.test(d); }
++      }
++    }
++  } catch (e) {}
++  return map;
++}
++const NEW_UTIL = loadNewUtil();
++
++const LONG = { margin: ['margin-top', 'margin-right', 'margin-bottom', 'margin-left'], padding: ['padding-top', 'padding-right', 'padding-bottom', 'padding-left'],
++  gap: ['row-gap', 'column-gap'], 'grid-gap': ['row-gap', 'column-gap'], flex: ['flex-grow', 'flex-shrink', 'flex-basis'], 'flex-flow': ['flex-direction', 'flex-wrap'],
++  overflow: ['overflow-x', 'overflow-y'], inset: ['top', 'right', 'bottom', 'left'], 'border-radius': ['border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius'],
++  font: ['font-size', 'font-weight', 'line-height', 'font-family', 'font-style'] };
++const expand = p => LONG[p] || [p];
++const overlaps = (a, b) => expand(a).some(x => expand(b).includes(x));
++/* thuộc tính !important của lớp mới mà kit cũ là "mềm" → nơi trang từng thắng nay thua */
++let UPGRADE = false;   // đang nâng lại trang đã chạy bản v1
++function hardened(tok) {
++  const p = NEW_UTIL[tok]; if (!p || !(OLD_SOFT.has(tok) || (UPGRADE && SP_OUT.has(tok)))) return [];
++  return Object.keys(p).filter(k => p[k]);
++}
++
++/* CSS của chính trang (<style> + file .css cạnh trang, trừ CSS kit): lớp có định nghĩa + luật một-lớp `.x{…}` */
++function pageCss(s, file) {
++  let css = [...s.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)].map(m => m[1]).join('\n');
++  for (const m of s.matchAll(/<link[^>]+href=["']([^"']+\.css)["']/gi)) {
++    if (/core\/styles\/|^https?:/.test(m[1])) continue;
++    try { css += '\n' + fs.readFileSync(path.resolve(path.dirname(file), m[1]), 'utf8'); } catch (e) {}
++  }
++  css = css.replace(/\/\*[\s\S]*?\*\//g, '');
++  const tokens = new Set(css.match(/\.(-?[A-Za-z_][\w-]*)/g)?.map(x => x.slice(1)) || []);
++  const flat = css.replace(/@media[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g, '');
++  const single = {};
++  for (const m of flat.matchAll(/([^{}@]+)\{([^{}]*)\}/g)) {
++    for (const sel of m[1].split(',')) {
++      const t = (sel.trim().match(/^\.(-?[A-Za-z_][\w-]*)$/) || [])[1]; if (!t) continue;
++      const p = single[t] || (single[t] = []);
++      for (const d of m[2].split(';')) { const i = d.indexOf(':'); if (i > 0 && !/!important/.test(d)) p.push(d.slice(0, i).trim().toLowerCase()); }
++    }
++  }
++  /* lớp JS dùng làm móc (querySelector('.x'), closest, classList.contains/toggle…, getElementsByClassName) — không gỡ */
++  const hooks = new Set();
++  for (const js of s.match(/<script\b[^>]*>[\s\S]*?<\/script>/gi) || []) {
++    for (const m of js.matchAll(/['"`][^'"`\n]*?\.(-?[A-Za-z_][\w-]*)/g)) hooks.add(m[1]);
++    for (const m of js.matchAll(/(?:classList\.\w+|getElementsByClassName|hasClass|toggleClass)\(([^)]*)\)/g)) for (const t of m[1].match(/[A-Za-z_][\w-]*/g) || []) hooks.add(t);
++  }
++  return { tokens, single, hooks };
++}
++
++/* 9. Va chạm !important trên từng thẻ: (a) inline style cùng thuộc tính với lớp tiện ích → thêm !important vào khai báo
++   inline (inline từng thắng); (b) luật `.lớp-của-trang{…}` phủ HẾT thuộc tính của lớp tiện ích trên cùng thẻ → bỏ lớp
++   tiện ích (trước đây nó vô hiệu); phủ một phần thì báo. */
++function fixCollisions(s, st, pc) {
++  return s.replace(/<([a-z][\w-]*)(\s[^<>]*?)(\/?)>/gi, (m, tag, attrs, sl) => {
++    const cm = attrs.match(/(\sclass\s*=\s*)(\\?["'])(.*?)\2/i); if (!cm || /['"]\s*\+|\$\{/.test(cm[3])) return m;
++    const toks = cm[3].split(/\s+/).filter(Boolean);
++    const hard = toks.map(t => [t, hardened(t)]).filter(([, p]) => p.length); if (!hard.length) return m;
++    let out = attrs, drop = new Set(), split = new Map();
++    const sm = attrs.match(/(\sstyle\s*=\s*)(\\?["'])(.*?)\2/i);
++    if (sm && !/['"]\s*\+|\$\{/.test(sm[3])) {
++      let changed = false;
++      const decl = sm[3].split(';').map(d => {
++        const i = d.indexOf(':'); if (i < 0 || /!important/.test(d)) return d;
++        const k = d.slice(0, i).trim().toLowerCase();
++        if (hard.some(([, ps]) => ps.some(p => overlaps(p, k)))) { changed = true; st.inline++; return d.replace(/\s*$/, ' !important'); }
++        return d;
++      }).join(';');
++      if (changed) out = out.replace(sm[0], sm[1] + sm[2] + decl + sm[2]);
++    }
++    const prAll = [...new Set(toks.filter(c => pc.single[c] && !NEW_UTIL[c]).flatMap(c => pc.single[c]))];
++    for (const [u, ps] of hard) {
++      const covered = p => prAll.some(k => k === p || expand(k).includes(p)) || expand(p).every(x => prAll.some(k => expand(k).includes(x)));
++      const hit = ps.filter(p => prAll.some(k => overlaps(p, k)));
++      if (!hit.length) continue;
++      if (ps.every(covered)) { drop.add(u); st.collide++; continue; }
++      /* phủ một phần lớp m/p (vd `p-16` + `.x{padding-left:0}`) → tách theo cạnh, bỏ cạnh trang đã khai: pt-16 pr-16 pb-16 */
++      const mp = u.match(/^(m|p)([xytrbl]?)-(\d+|auto)$/);
++      if (mp) {
++        const SIDES = { '': 'trbl', x: 'rl', y: 'tb', t: 't', r: 'r', b: 'b', l: 'l' }, NAME = { t: 'top', r: 'right', b: 'bottom', l: 'left' };
++        const prop = mp[1] === 'm' ? 'margin' : 'padding';
++        const keep = [...SIDES[mp[2]]].filter(c => !covered(prop + '-' + NAME[c])).map(c => mp[1] + c + '-' + mp[3]);
++        if (keep.every(t => NEW_UTIL[t])) { split.set(u, keep.map(t => KEEP + t).join(' ')); st.collide++; continue; }
++      }
++      st.notes.push('<' + tag + ' class="' + cm[3].slice(0, 50) + '">: lớp ' + u + ' nay !important, đè một phần CSS của trang (' + hit.join(', ') + ') — kiểm tra hình');
++    }
++    if (drop.size || split.size) {
++      const nc = cm[3].split(/(\s+)/).filter(x => !drop.has(x)).map(x => split.get(x) || x).join('').replace(/\s{2,}/g, ' ').trim();
++      out = out.replace(cm[0], cm[1] + cm[2] + nc + cm[2]);
++    }
++    return '<' + tag + out + sl + '>';
++  });
++}
++
++/* 10. Trang tự định nghĩa lớp trùng tên lớp tiện ích sd-core (`.p-3{padding:12px}`): nay utilities !important thắng
++   → thêm !important vào khai báo của trang (trang từng thắng vì đứng sau). Chỉ luật một-lớp trong <style> của trang. */
++function fixPageUtilDefs(s, st) {
++  return s.replace(/(<style[^>]*>)([\s\S]*?)(<\/style>)/gi, (m, a, css, z) => a + css.replace(/(^|[}\s])(\.(-?[A-Za-z_][\w-]*))(\s*\{)([^{}]*)\}/g, (mm, pre, sel, t, ob, body) => {
++    const p = NEW_UTIL[t]; if (!p || !Object.values(p).some(Boolean)) return mm;
++    if (OLD_KNOWN.has(t) && !OLD_SOFT.has(t)) return mm;   // kit cũ đã !important (vd text-primary) → trang vốn thua, giữ nguyên
++    st.pagedef++;
++    return pre + sel + ob + body.split(';').map(d => (d.includes(':') && !/!important/.test(d)) ? d.replace(/\s*$/, ' !important') : d).join(';') + '}';
++  }) + z);
++}
++
++/* 11. Ô nhập sd-* trong ô bảng tự viết (<td>) và ô tìm kiếm không nhãn → `hideInlineError` (quy tắc kit: hàng công cụ /
++   ô bảng không chừa 20px vạch lỗi; kit tự bật cho thead, filter-bar… nhưng không cho bảng do trang tự dựng). */
++const FIELD = 'sd-(?:input|select|date|datetime|date-range|autocomplete|input-number|textarea|chip|chip-calendar)';
++function addHie(tagText, st) {
++  if (/\shideinlineerror\b/i.test(tagText)) return tagText;
++  st.hie++; return tagText.replace(new RegExp('^<(' + FIELD + ')\\b'), '<$1 hideInlineError');
++}
++function fixInlineError(s, st) {
++  s = s.replace(/<td\b[^>]*>(?:(?!<\/?td\b)[\s\S])*?<\/td>/gi, cell =>
++    cell.replace(new RegExp('<' + FIELD + '\\b[^<>]*>', 'g'), t => addHie(t, st)));
++  s = s.replace(/<sd-input\b[^<>]*>/g, t => (!/\slabel=/i.test(t) && /\splaceholder=\\?["']\s*Tìm/i.test(t)) ? addHie(t, st) : t);
++  return s;
++}
++
+ /* Thẻ / thuộc tính / lớp kit cũ có mà kit hiện tại (= catalog 19.0.10) không có. Chỉ BÁO — cách thay tuỳ ngữ cảnh. */
+ const GONE = [
+   [/<sd-button-item\b/, 'sd-button-item / sd-button-item-divider (menu của sd-button, đã gỡ 2026-10-13)', 'dựng menu bằng sd-button + danh sách tự viết, hoặc cột command/menu của sd-table'],
+@@ -207,6 +394,8 @@
+     const n = (s.match(new RegExp(rx.source, rx.flags.includes('g') ? rx.flags : rx.flags + 'g')) || []).length;
+     if (n) st.notes.push('còn ' + n + '× ' + what + ' → ' + how);
+   }
++  if (/\bd-none\b/.test(s) && /\.style\.display\s*=\s*['"](?!none)/.test(s))
++    st.notes.push('JS hiện khối bằng style.display = "…" — nếu khối đó mang lớp d-none thì nay KHÔNG hiện (d-none của sd-core !important) → đổi sang classList.remove("d-none")');
+   const foot = (s.match(/\sslot=\\?["']footer\\?["']/g) || []).length;
+   if (foot) st.notes.push(foot + '× slot="footer" — sd-side-drawer vẫn nhận; theo catalog nên đổi sang <div sdFooter class="d-flex align-items-center justify-content-end gap-8"> (sdFooter không tự căn phải; sd-modal chỉ nhận sdFooter)');
+ }
+@@ -214,12 +403,20 @@
+ let total = { files: 0, skipped: 0 };
+ for (const f of files) {
+   const src = fs.readFileSync(f, 'utf8');
+-  const st = { spacing: {}, reset: 0, badge: 0, href: 0, precision: 0, slot: 0, label: 0, css: false, notes: [] };
+-  if (src.includes(MARK)) { console.log('· ' + f + ' — đã migrate trước đó, bỏ qua'); total.skipped++; continue; }
++  const st = { spacing: {}, noop: {}, inline: 0, collide: 0, pagedef: 0, hie: 0, reset: 0, badge: 0, href: 0, precision: 0, slot: 0, label: 0, css: false, notes: [] };
++  const mk = src.match(/<!-- kit-migrated (?:v(\d+) )?/);
++  const ver = mk ? +(mk[1] || 1) : 0;
++  if (ver >= VERSION) { console.log('· ' + f + ' — đã nâng (v' + ver + '), bỏ qua'); total.skipped++; continue; }
++  UPGRADE = ver > 0;   // trang đã chạy bản v1: chạy các bước mới, KHÔNG đổi thang khoảng cách lần nữa (mt-1→mt-4→mt-16)
+   const sign = OLD_SIGNS.find(([rx]) => rx.test(src));
+-  if (!sign && !FORCE) { console.log('· ' + f + ' — không thấy dấu hiệu kit cũ (link Google Fonts Roboto, type="status", slot="header-right") → coi là trang mới, bỏ qua (thêm --force nếu chắc là trang cũ)'); total.skipped++; continue; }
++  if (!UPGRADE && !sign && !FORCE) { console.log('· ' + f + ' — không thấy dấu hiệu kit cũ (link Google Fonts Roboto, type="status", slot="header-right") → coi là trang mới, bỏ qua (thêm --force nếu chắc là trang cũ)'); total.skipped++; continue; }
+   let s = src;
+-  s = remapSpacing(s, st);
++  const pc = pageCss(src, f);
++  s = fixCollisions(s, st, pc);
++  s = fixPageUtilDefs(s, st);
++  s = remapSpacing(s, st, pc);
++  s = fixInlineError(s, st);
++  s = s.split(KEEP).join('');
+   s = fixStatusBadge(s, st);
+   s = fixButtonHref(s, st);
+   s = fixNumberPrecision(s, st);
+@@ -228,15 +425,22 @@
+   s = markReset(s, st);
+   s = linkLegacyCss(s, st);
+   report(s, st);
+-  s = s.replace(/(<head[^>]*>)/i, '$1\n  <!-- ' + MARK + ' ' + TODAY + ' (ai-instructions/tools/migrate-prototype.mjs) -->');
++  const stamp = '<!-- ' + MARK + ' v' + VERSION + ' ' + TODAY + ' (ai-instructions/tools/migrate-prototype.mjs) -->';
++  s = UPGRADE ? s.replace(/<!-- kit-migrated (?!:)[^>]*-->/, stamp) : s.replace(/(<head[^>]*>)/i, '$1\n  ' + stamp);
+   const nSp = Object.values(st.spacing).reduce((a, b) => a + b, 0);
+-  console.log('✓ ' + f + ' — khoảng cách ' + nSp + ' · reset ' + st.reset + ' thẻ · badge status ' + st.badge + ' · sd-button href ' + st.href + ' · cột số ' + st.precision +
++  const nNo = Object.values(st.noop).reduce((a, b) => a + b, 0);
++  console.log((UPGRADE ? '↑ ' : '✓ ') + f + (UPGRADE ? ' (nâng tiếp từ v1)' : '') + ' — khoảng cách ' + nSp + ' · lớp chết gỡ ' + nNo + ' · inline !important ' + st.inline + ' · lớp đè CSS trang gỡ ' + st.collide +
++    ' · luật trang trùng tên lớp ' + st.pagedef + ' · hideInlineError ' + st.hie + ' · reset ' + st.reset + ' thẻ · badge status ' + st.badge + ' · sd-button href ' + st.href + ' · cột số ' + st.precision +
+     ' · slot→sdHeader* ' + st.slot + ' · nhãn sd-button ' + st.label +
+     (st.css ? ' · nạp legacy-reset.css' : ''));
++  if (nNo) console.log('    · lớp kit cũ KHÔNG có (vô tác dụng) nay sd-core có nghĩa px → đã gỡ để giữ hình: ' + Object.entries(st.noop).map(([k, v]) => k + (v > 1 ? '×' + v : '')).join(' ') +
++    ' — muốn có khoảng thì thêm lại theo px (vd p-12)');
+   for (const n of st.notes) console.log('    ! ' + n);
+   if (!DRY && s !== src) {
+-    const bak = path.join(path.dirname(f), '_pre-migrate'); fs.mkdirSync(bak, { recursive: true });
+-    fs.writeFileSync(path.join(bak, path.basename(f)), src);
++    /* bản gốc (trước mọi lần nâng) giữ nguyên ở _pre-migrate/; bản đã chạy v1 chép sang _pre-migrate/v1/ */
++    const bak = path.join(path.dirname(f), '_pre-migrate', UPGRADE ? 'v1' : ''); fs.mkdirSync(bak, { recursive: true });
++    const dst = path.join(bak, path.basename(f));
++    if (!fs.existsSync(dst)) fs.writeFileSync(dst, src);
+     fs.writeFileSync(f, s);
+   }
+   total.files++;
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/legacy-reset.css b/design-system/core/styles/legacy-reset.css
+--- a/design-system/core/styles/legacy-reset.css	2026-10-14 14:42:24.243413066 +0000
++++ b/design-system/core/styles/legacy-reset.css	2026-10-14 15:10:41.455268843 +0000
+@@ -51,3 +51,9 @@
+   box-shadow: none;
+   cursor: auto;
+ }
++
++/* Lớp tiện ích kit cũ KHÔNG !important; sd-core thì có. Trang cũ ẩn khối `d-flex` bằng JS `el.style.display = 'none'`
++   → nay `.d-flex{display:flex !important}` thắng inline, khối không ẩn được. Trả lại đúng hành vi cũ cho riêng trường hợp đó. */
++.d-flex:is([style*="display: none"], [style*="display:none"]) {
++  display: none !important;
++}

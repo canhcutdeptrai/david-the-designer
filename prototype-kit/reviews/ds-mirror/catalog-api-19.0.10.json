@@ -1,0 +1,1093 @@
+{
+"c-anchor": {
+"tags": [
+"sd-anchor"
+],
+"api": [
+"sidebarWidth = 200px",
+"color = primary",
+"[ellipsis]",
+"[overScroll]",
+"[hideNav]",
+"autoId",
+"sd-anchor-item: title, icon, key"
+]
+},
+"c-autoid-inspector": {
+"tags": [
+"sd-autoid-inspector"
+],
+"api": [
+"[enabled]",
+"[config]",
+"SD_AUTOID_INSPECTOR_CONFIGURATION",
+"config.requireSelectors",
+"config.host"
+]
+},
+"c-avatar": {
+"tags": [
+"sd-avatar"
+],
+"api": [
+"src (bắt buộc)",
+"[size] = 32"
+]
+},
+"c-badge": {
+"tags": [
+"sd-badge"
+],
+"api": [
+"type: icon|round|tag",
+"color",
+"primary|secondary|info|success|warning|error",
+"title",
+"description",
+"icon",
+"fontSet",
+"size: sm|md|lg",
+"tooltip",
+"(click)"
+]
+},
+"c-base": {
+"tags": [
+"SdBaseSecureComponent"
+],
+"api": [
+"extends SdBaseSecureComponent",
+"SD_CORE_CONFIGURATION.licenseKey",
+"SdLicenseService.enforceLicense()"
+]
+},
+"c-button": {
+"tags": [
+"sd-button"
+],
+"api": [
+"type: fill|light|outline|link",
+"color",
+"size: sm|md|lg",
+"title",
+"prefixIcon",
+"suffixIcon",
+"fontSet",
+"tooltip",
+"width",
+"[disabled]",
+"[loading]",
+"block",
+"htmlType",
+"autoId",
+"(click)"
+]
+},
+"c-chart": {
+"tags": [
+"sd-bar-chart · sd-line-chart · sd-pie-chart · sd-doughnut-chart"
+],
+"api": [
+"[data]",
+"[options]",
+"[plugins]"
+]
+},
+"c-ckeditor-styles": {
+"tags": [
+"sd-ckeditor-styles"
+],
+"api": [
+"&lt;sd-ckeditor-styles /&gt;"
+]
+},
+"c-code-editor": {
+"tags": [
+"sd-code-editor"
+],
+"api": [
+"[(model)]",
+"language",
+"viewed",
+"maxHeight"
+]
+},
+"c-document-builder": {
+"tags": [
+"sd-document-builder · sd-header-footer-builder"
+],
+"api": [
+"[option]",
+"disabled",
+"(contentChange)",
+"setContent()",
+"getContent()",
+"setOrientation()",
+"heading.all()",
+"heading.scroll()",
+"getVariablePluginAPI()",
+"getCommentPluginAPI()",
+"exportWord()",
+"[(model)] (header-footer)"
+]
+},
+"c-editor": {
+"tags": [
+"sd-editor"
+],
+"api": [
+"[(model)]",
+"label",
+"helperText",
+"required",
+"placeholder",
+"[maxlength]",
+"height",
+"maxHeight",
+"readonly",
+"disabled",
+"hideInlineError",
+"inlineError",
+"[validator]",
+"[form]",
+"key",
+"[option]",
+"autoId",
+"(sdChange)",
+"(sdBlur)",
+"(sdFocus)"
+]
+},
+"c-form-builder": {
+"tags": [
+"sd-form-builder"
+],
+"api": [
+"[formGeneric]",
+"(formGenericChange)"
+]
+},
+"c-form-generic": {
+"tags": [
+"sd-form-render"
+],
+"api": [
+"[configuration]",
+"[entity]",
+"[viewed]",
+"[setVariables]",
+"[form]"
+]
+},
+"c-history": {
+"tags": [
+"sd-history"
+],
+"api": [
+"[items]: SdHistoryItemType[]",
+"title",
+"status { title, color, icon }",
+"date",
+"actor",
+"source",
+"description"
+]
+},
+"c-import-excel": {
+"tags": [
+"sd-import-excel"
+],
+"api": [
+"[option]",
+"option.columns",
+"option.accept",
+"option.validateItem",
+"option.validateItems",
+"option.transform",
+"option.limit",
+"option.sheets",
+"(sdClosed)",
+"open()",
+"close()",
+"setValidation()"
+]
+},
+"c-inform": {
+"tags": [
+"sd-inform"
+],
+"api": [
+"color",
+"title",
+"description",
+"icon",
+"hideIcon",
+"fontSet",
+"closable",
+"actionLabel",
+"[lineClamp]",
+"autoId",
+"primary | secondary | info | success | warning | error",
+"(sdClosed)",
+"(sdAction)",
+"[sdInformAction]"
+]
+},
+"c-mini-editor": {
+"tags": [
+"sd-mini-editor"
+],
+"api": [
+"[option]",
+"[(ngModel)]",
+"[disabled]",
+"(contentChange)",
+"(blur)",
+"(focus)",
+"option.placeholder",
+"option.maxHeight",
+"option.enableMention",
+"option.mentionConfig",
+"option.outputFormat",
+"insertMention()",
+"getMentions()"
+]
+},
+"c-modal": {
+"tags": [
+"sd-modal"
+],
+"api": [
+"title",
+"width",
+"color",
+"height",
+"view",
+"modalClass",
+"lazyLoadContent",
+"hideClose",
+"disableBackdropClose",
+"autoId",
+"(sdClosed)",
+"open()",
+"close()",
+"[sdHeaderLeft]",
+"[sdHeaderRight]",
+"[sdFooterLeft]",
+"[sdFooterRight]"
+]
+},
+"c-modal-resizable": {
+"tags": [
+"sd-modal-resizable"
+],
+"api": [
+"width",
+"editable",
+"(editingChanged)",
+"open()",
+"close()",
+"minimize()",
+"maximize()",
+"toggleMaximum()",
+"startLoading()",
+"stopLoading()",
+"isOpened",
+"isMinimum",
+"isMaximum",
+"[sdTitle]",
+"[sdBody]",
+"[sdFooter]"
+]
+},
+"c-operator": {
+"tags": [
+"sd-operator"
+],
+"api": [
+"[(model)]",
+"[operators]",
+"[disabled]",
+"autoId",
+"open()"
+]
+},
+"c-org-chart": {
+"tags": [
+"sd-org-chart"
+],
+"api": [
+"[items]",
+"[option]",
+"[collapsible]",
+"[itemTemplate]",
+"sdOrgChartItemDef",
+"autoId",
+"option.onToggle",
+"item: id · title · description · image · color · expanded · children"
+]
+},
+"c-preview-image": {
+"tags": [
+"sd-preview-image"
+],
+"api": [
+"[items]",
+"thumbnailPosition",
+"[startIndex]",
+"[showToolbar]",
+"[downloadable]",
+"[zoomable]",
+"[loop]",
+"theme",
+"title",
+"autoId",
+"(close)",
+"(activeIndexChange)",
+"(download)",
+"(imageError)"
+]
+},
+"c-preview-pdf": {
+"tags": [
+"sd-preview-pdf"
+],
+"api": [
+"[source]",
+"title",
+"[startPage]",
+"initialZoom",
+"sidebar",
+"[sidebarOpen]",
+"scrollMode",
+"[showToolbar]",
+"[downloadable]",
+"password",
+"[httpHeaders]",
+"theme",
+"autoId",
+"(close)",
+"(loaded)",
+"(pageChange)",
+"(zoomChange)",
+"(download)",
+"(loadError)",
+"(searchChange)"
+]
+},
+"c-query-bar": {
+"tags": [
+"sd-query-bar"
+],
+"api": [
+"[fields]",
+"[(filters)]",
+"[(logic)]",
+"[(search)]",
+"mode",
+"density",
+"showSearch",
+"showLogicToggle",
+"showClearAll",
+"showSavedFilters",
+"savedFiltersKey",
+"showOperatorOnChip",
+"[option]",
+"autoId",
+"(apply)",
+"(queryChange)"
+]
+},
+"c-query-builder": {
+"tags": [
+"sd-query-builder"
+],
+"api": [
+"[option]",
+"[fields]",
+"mode",
+"comparisonMode",
+"[disabled]",
+"autoId",
+"[(value)]",
+"[(filters)]",
+"[(rootLogic)]"
+]
+},
+"c-quick-action": {
+"tags": [
+"sd-quick-action"
+],
+"api": [
+"opened",
+"[sdMessage]",
+"[sdAction]"
+]
+},
+"c-section": {
+"tags": [
+"sd-section"
+],
+"api": [
+"title",
+"subTitle",
+"icon",
+"iconColor",
+"[(collapsed)]",
+"[collapsible]",
+"[hideHeader]",
+"[noPaddingBody]",
+"[sdHeaderLeft]",
+"[sdHeaderRight]",
+"sd-section-item: label, labelWidth"
+]
+},
+"c-side-drawer": {
+"tags": [
+"sd-side-drawer"
+],
+"api": [
+"title",
+"width",
+"hideClose",
+"disableBackdropClose",
+"drawerClass",
+"autoId",
+"(sdClosed)",
+"open()",
+"close()",
+"startLoading()",
+"stopLoading()",
+"isOpened",
+"isLoading",
+"[sdHeaderLeft]",
+"[sdHeaderRight]",
+"[sdFooter]"
+]
+},
+"c-splitter": {
+"tags": [
+"sd-splitter"
+],
+"api": [
+"orientation",
+"disabled",
+"storageKey",
+"snapThreshold",
+"keyboardStep",
+"[option]",
+"(resizeEnd)",
+"(collapsedChange)",
+"(layoutChange)",
+"sd-splitter-panel: panelId · size · unit · minSize · maxSize · collapsible · [(collapsed)] · resizable",
+"collapse() · expand() · toggle() · resizePanel() · getLayout() · setLayout() · resetLayout()"
+]
+},
+"c-stepper": {
+"tags": [
+"sd-stepper"
+],
+"api": [
+"[(selectedIndex)]",
+"[linear]",
+"orientation",
+"labelPosition",
+"headerPosition",
+"color",
+"animationDuration",
+"(selectionChange)",
+"next() · previous() · reset()",
+"sd-step: label · icon · optional · [editable] · [stepControl] · state · errorMessage"
+]
+},
+"c-tab": {
+"tags": [
+"sd-tab-group"
+],
+"api": [
+"[(selectedIndex)]",
+"variant",
+"color",
+"alignTabs",
+"[stretchTabs]",
+"headerPosition",
+"animationDuration",
+"[dynamicHeight]",
+"(tabClosed)",
+"sd-tab: label · icon · badge · disabled · closable · (close)"
+]
+},
+"c-tab-router": {
+"tags": [
+"sd-tab-router-outlet"
+],
+"api": [
+"[disabled]",
+"@SdTabComponent({ name, icon, color, tooltip })",
+"SdTabRouterService: close() · currentTab · events",
+"SD_TAB",
+"state: { replaceTab }"
+]
+},
+"c-table": {
+"tags": [
+"sd-table"
+],
+"api": [
+"[option]",
+"[autoId]",
+"columns",
+"selector",
+"commands",
+"filter.externalFilters",
+"paginate",
+"export",
+"tree",
+"reload()"
+]
+},
+"c-tree": {
+"tags": [
+"sd-tree"
+],
+"api": [
+"[option]",
+"[items]",
+"[tree]",
+"[commands]",
+"[selector]",
+"[selectable]",
+"[selectedItems]",
+"[itemTemplate] / sdTreeItemDef",
+"(selectedItemsChange)",
+"(selectChange)",
+"(expandChange)",
+"(collapseChange)",
+"reload() · filter()"
+]
+},
+"c-upload-file": {
+"tags": [
+"sd-upload-file"
+],
+"api": [
+"label",
+"description",
+"helperText",
+"type",
+"[extensions]",
+"[maxSize]",
+"[max]",
+"[maxOfImage]",
+"[previewWidth]",
+"[previewHeight]",
+"align",
+"[form]",
+"name",
+"required",
+"disabled",
+"[(model)]",
+"key",
+"[args]",
+"[upload]",
+"[details]",
+"[download]",
+"[scaleToPixel]",
+"(filesChanged)",
+"(loaded)",
+"upload()",
+"preview()"
+]
+},
+"c-view": {
+"tags": [
+"sd-view"
+],
+"api": [
+"label",
+"display (bắt buộc)",
+"value",
+"hyperlink",
+"selectedItems",
+"labelTemplate",
+"valueTemplate",
+"#sdLabel",
+"#sdValue"
+]
+},
+"c-autocomplete": {
+"tags": [
+"sd-autocomplete"
+],
+"api": [
+"label",
+"[items]",
+"valueField",
+"displayField",
+"disabledField",
+"[(model)]",
+"[limit]",
+"[required]",
+"[disabled]",
+"[viewed]",
+"[clearable]",
+"[addable]",
+"[hideInlineError]",
+"placeholder",
+"helperText",
+"size",
+"[form]",
+"(sdChange)",
+"(sdSelection)",
+"(sdAdd)",
+"sdItemDef",
+"sdViewDef"
+]
+},
+"c-checkbox": {
+"tags": [
+"sd-checkbox"
+],
+"api": [
+"label",
+"color",
+"[(model)]",
+"[form]",
+"[disabled]",
+"[viewed]",
+"inlineError",
+"autoId",
+"(sdChange)"
+]
+},
+"c-chip": {
+"tags": [
+"sd-chip"
+],
+"api": [
+"label",
+"placeholder",
+"size",
+"[required]",
+"[min]",
+"[max]",
+"[removable]",
+"[addable]",
+"[disabled]",
+"[viewed]",
+"hideInlineError",
+"appearance",
+"[form]",
+"[(model)]",
+"(sdChange)"
+]
+},
+"c-chip-calendar": {
+"tags": [
+"sd-chip-calendar"
+],
+"api": [
+"label",
+"placeholder",
+"size",
+"[required]",
+"[min]",
+"[max]",
+"[removable]",
+"[disabled]",
+"[viewed]",
+"hideInlineError",
+"appearance",
+"[form]",
+"[(model)]",
+"(sdChange)"
+]
+},
+"c-date": {
+"tags": [
+"sd-date"
+],
+"api": [
+"label",
+"placeholder",
+"size",
+"[required]",
+"[disabled]",
+"[viewed]",
+"[min]",
+"[max]",
+"hideInlineError",
+"helperText",
+"appearance",
+"floatLabel",
+"inlineError",
+"[form]",
+"[(model)]",
+"(sdChange)",
+"(sdFocus)"
+]
+},
+"c-date-range": {
+"tags": [
+"sd-date-range"
+],
+"api": [
+"label",
+"size",
+"[required]",
+"[disabled]",
+"[viewed]",
+"[min]",
+"[max]",
+"hideInlineError",
+"helperText",
+"appearance",
+"floatLabel",
+"[form]",
+"[(model)]",
+"(sdChange)"
+]
+},
+"c-datetime": {
+"tags": [
+"sd-datetime"
+],
+"api": [
+"label",
+"placeholder",
+"size",
+"[showSeconds]",
+"[required]",
+"[disabled]",
+"[viewed]",
+"[min]",
+"[max]",
+"hideInlineError",
+"inlineError",
+"appearance",
+"[form]",
+"[(model)]",
+"(sdChange)",
+"(sdFocus)"
+]
+},
+"c-inline-text": {
+"tags": [
+"sd-inline-text"
+],
+"api": [
+"[(value)]",
+"[control]",
+"placeholder",
+"chrome",
+"state",
+"[clearable]",
+"[disabled]",
+"[minSize]",
+"[autofocus]",
+"autoId",
+"(cleared)",
+"(keyupEnter)",
+"(keydownEscape)",
+"(sdFocus)",
+"(sdBlur)"
+]
+},
+"c-input": {
+"tags": [
+"sd-input"
+],
+"api": [
+"label",
+"placeholder",
+"[(model)]",
+"[required]",
+"[disabled]",
+"[readonly]",
+"[viewed]",
+"[maxlength]",
+"[minlength]",
+"pattern",
+"patternErrorMessage",
+"helperText",
+"[hideInlineError]",
+"size",
+"type",
+"appearance",
+"[form]",
+"name",
+"(sdChange)",
+"(sdBlur)",
+"(keyupEnter)",
+"(cleared)",
+"sdSuffixDef",
+"sdViewDef"
+]
+},
+"c-input-color": {
+"tags": [
+"sd-input-color"
+],
+"api": [
+"label",
+"[(model)]",
+"placeholder",
+"[required]",
+"[disabled]",
+"[readonly]",
+"[viewed]",
+"helperText",
+"size",
+"appearance",
+"[form]",
+"name",
+"(sdChange)"
+]
+},
+"c-input-number": {
+"tags": [
+"sd-input-number"
+],
+"api": [
+"label",
+"[(model)]",
+"[min]",
+"[max]",
+"[precision]",
+"type",
+"format",
+"[required]",
+"[disabled]",
+"[readonly]",
+"[viewed]",
+"[hideInlineError]",
+"placeholder",
+"helperText",
+"size",
+"[form]",
+"(sdChange)",
+"(cleared)",
+"sdSuffixDef"
+]
+},
+"c-label": {
+"tags": [
+"sd-label"
+],
+"api": [
+"label",
+"required",
+"description",
+"helperText"
+]
+},
+"c-radio": {
+"tags": [
+"sd-radio"
+],
+"api": [
+"label",
+"[items]",
+"valueField",
+"displayField",
+"display",
+"color",
+"[required]",
+"[disabled]",
+"[viewed]",
+"hyperlink",
+"[(model)]",
+"(sdChange)",
+"(sdSelection)"
+]
+},
+"c-select": {
+"tags": [
+"sd-select"
+],
+"api": [
+"label",
+"[items]",
+"valueField",
+"displayField",
+"disabledField",
+"[(model)]",
+"[multiple]",
+"[limit]",
+"[required]",
+"[disabled]",
+"[viewed]",
+"[clearable]",
+"minWidthPanel",
+"[hideInlineError]",
+"placeholder",
+"helperText",
+"size",
+"[form]",
+"(sdChange)",
+"(sdSelection)",
+"sdItemDef",
+"sdSelectedDef",
+"sdViewDef",
+"sdSelectFooterAction"
+]
+},
+"c-switch": {
+"tags": [
+"sd-switch"
+],
+"api": [
+"label",
+"color",
+"[required]",
+"[disabled]",
+"[viewed]",
+"hideInlineError",
+"[form]",
+"[(model)]",
+"(sdChange)"
+]
+},
+"c-textarea": {
+"tags": [
+"sd-textarea"
+],
+"api": [
+"label",
+"[(model)]",
+"[rows]",
+"[autoHeight]",
+"[maxlength]",
+"pattern",
+"[required]",
+"[disabled]",
+"[viewed]",
+"[hideInlineError]",
+"placeholder",
+"helperText",
+"size",
+"[form]",
+"(sdChange)",
+"sdLabelDef",
+"sdSuffixDef"
+]
+},
+"c-device": {
+"tags": [
+"*sdDesktop · *sdMobile"
+],
+"api": [
+"*sdDesktop",
+"*sdMobile"
+]
+},
+"c-hover-copy": {
+"tags": [
+"[sdHoverCopy]"
+],
+"api": [
+"[sdHoverCopy] (bắt buộc)",
+"[sdHoverCopyDisabled]"
+]
+},
+"c-href": {
+"tags": [
+"a[sdHref]"
+],
+"api": [
+"[sdHref]",
+"(click) → Router.navigate / window.open"
+]
+},
+"c-scroll": {
+"tags": [
+"[sdScroll]"
+],
+"api": [
+"sdScroll",
+"scrollTop()"
+]
+},
+"c-form-template-defs": {
+"tags": [
+"sdItemDef · sdLabelDef · sdSuffixDef · sdViewDef"
+],
+"api": [
+"sdItemDef: { item }",
+"sdLabelDef",
+"sdSuffixDef",
+"sdViewDef: { value, selectedItem, selectedItems }"
+]
+},
+"c-tooltip": {
+"tags": [
+"[sdTooltip]"
+],
+"api": [
+"[sdTooltip]",
+"sdTooltipPosition: 'top' | 'bottom' | 'left' | 'right'",
+"[sdTooltipDelay] = 100",
+"sdTooltipColor = '#616161'"
+]
+},
+"c-confirm": {
+"tags": [
+"SdConfirmService"
+],
+"api": [
+"confirm(message, opt?)",
+"withInput(message, opt?)",
+"withRadio(message, opt)",
+"withDate(message, opt?)",
+"opt: title · yesTitle · noTitle · yesButtonColor · noButtonColor · width · disableBackdropClose"
+]
+},
+"c-loading": {
+"tags": [
+"SdLoadingService"
+],
+"api": [
+"start(selector = 'body')",
+"stop(selector = 'body')",
+"isLoading(selector = 'body')"
+]
+},
+"c-notify": {
+"tags": [
+"SdNotifyService"
+],
+"api": [
+"success(msg, opt?)",
+"info(msg, opt?)",
+"warning(msg | msg[], opt?)",
+"error(msg | msg[], opt?)",
+"opt: title · duration · actionLabel · onAction · html",
+"remove(id)",
+"clearAll()",
+"clearByType(type)"
+]
+},
+"c-filter-scorecard": {
+"tags": [
+"bpm-filter-scorecard"
+],
+"api": [
+"key: 'soon' | 'overdue' | 'done'",
+"label",
+"[value]",
+"[active]",
+"(filterToggle)"
+]
+},
+"c-kpi-card": {
+"tags": [
+"bpm-kpi-card"
+],
+"api": [
+"key",
+"icon",
+"label",
+"[value]"
+]
+}
+}

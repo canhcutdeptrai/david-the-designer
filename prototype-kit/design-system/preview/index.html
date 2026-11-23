@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design System Hub — OMEU</title>
+
+
+  <link rel="stylesheet" href="../core/styles/tokens.css">
+  <link rel="stylesheet" href="../core/styles/layout.css">
+  <link rel="stylesheet" href="../core/styles/components.css">
+  <link rel="stylesheet" href="../core/styles/utilities.css">
+  <link rel="stylesheet" href="../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <!-- Giữ HTML thuần (2026-10-14): trang hub không nạp pattern-loader. Markup chép đúng DOM mà
+         data-pattern="page-header" variant="browse" sinh ra (header của sd-page, @sd-angular/core 19.0.10). -->
+    <div class="page-header">
+      <div class="c-page-header bg-white">
+        <div class="p-16 d-flex align-items-center w-full justify-content-between page-header-content">
+          <div class="d-flex">
+            <div class="d-flex flex-column">
+              <div class="T20M page-title">Design System Hub</div>
+              <div class="T14R text-secondary mt-4 page-subtitle">Prototype Design System — Patterns &amp; Components preview</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-zone">
+
+      <!-- Patterns -->
+      <p class="fs-12 font-weight-medium mb-12">Patterns</p>
+      <p class="fs-12 text-black400 mb-12">Composite patterns dùng qua <code>data-pattern</code>. PD kiểm soát cấu trúc HTML, BA chỉ cung cấp nội dung qua slot/attributes.</p>
+
+      <div class="flex gap-4 flex-wrap mb-24">
+
+        <a href="patterns/page-header.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">web_asset</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">Page Header</p>
+                <p class="fs-12 text-black400 mb-0">4 variants (BREAD)</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Browse, Read, Read-Approval, Edit/Add</p>
+          </div>
+        </a>
+
+        <a href="patterns/table.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">table_chart</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">Table</p>
+                <p class="fs-12 text-black400 mb-0">2 sub-patterns</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Filter Bar + Data Table (pagination, bulk-bar)</p>
+          </div>
+        </a>
+
+        <a href="patterns/add-page.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">add_box</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">Add Page</p>
+                <p class="fs-12 text-black400 mb-0">Form layout</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Form cards, 4-col grid, sub-groups, file upload</p>
+          </div>
+        </a>
+
+        <a href="patterns/read-page.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">description</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">Read Page</p>
+                <p class="fs-12 text-black400 mb-0">Detail layout</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Info cards row, detail sections, read-only table</p>
+          </div>
+        </a>
+
+        <a href="patterns/edit-page.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">edit_note</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">Edit Page</p>
+                <p class="fs-12 text-black400 mb-0">Form layout (pre-filled)</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Same as Add but with pre-filled values</p>
+          </div>
+        </a>
+
+        <a href="patterns/browse-page.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">view_list</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">Browse Page</p>
+                <p class="fs-12 text-black400 mb-0">List layout</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Filter bar + Data table (pagination, bulk-bar)</p>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- sd-* Components -->
+      <p class="fs-12 font-weight-medium mb-12">sd-* Components</p>
+      <p class="fs-12 text-black400 mb-12">Bridge components cho <code>@sd-angular/core</code> — dung cung tag names va attributes nhu Angular.</p>
+
+      <div class="flex gap-4 flex-wrap mb-24">
+
+        <a href="components/button.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">smart_button</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-button</p>
+                <p class="fs-12 text-black400 mb-0">6 colors &times; 4 types</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">fill, light, outline, link + sizes, icons, states</p>
+          </div>
+        </a>
+
+        <a href="components/checkbox.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">check_box</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-checkbox</p>
+                <p class="fs-12 text-black400 mb-0">Mirror SdCheckbox</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">color (6), size (sm/md/lg), viewed (true/inline), inlineError, disabled</p>
+          </div>
+        </a>
+
+        <a href="components/radio.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">radio_button_checked</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-radio</p>
+                <p class="fs-12 text-black400 mb-0">6 states</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Selected, disabled, error, radio group</p>
+          </div>
+        </a>
+
+        <a href="components/badge.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">label</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-badge</p>
+                <p class="fs-12 text-black400 mb-0">tag, round, icon</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Status labels, notification counts, icon badges</p>
+          </div>
+        </a>
+
+        <a href="components/tooltip.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">info_outline</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">Shared Tooltip</p>
+                <p class="fs-12 text-black400 mb-0">data-sd-tooltip + input tooltip</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Mọi phần tử, sd-button, sd-badge - vị trí, hành vi, khung overflow</p>
+          </div>
+        </a>
+
+        <a href="components/modal.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">web_asset</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-modal</p>
+                <p class="fs-12 text-black400 mb-0">Dialog / bottom-sheet</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">7 slots, hideClose, disableBackdropClose, lazyLoadContent</p>
+          </div>
+        </a>
+
+        <a href="components/preview-image.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">image</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-preview-image</p>
+                <p class="fs-12 text-black400 mb-0">Inline image viewer</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Zoom, xoay, fullscreen, download, thumbnail</p>
+          </div>
+        </a>
+
+        <a href="components/preview-pdf.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">picture_as_pdf</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-preview-pdf</p>
+                <p class="fs-12 text-black400 mb-0">PDF viewer (thật dùng pdf.js)</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Thumbnail sidebar, tìm chữ, zoom, download, fullscreen</p>
+          </div>
+        </a>
+
+        <a href="components/table.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">table_chart</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-table</p>
+                <p class="fs-12 font-weight-bold text-primary mb-0">★ Mới: Sort cột + Row command menu</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Sorting, row command menu (icon more), pagination, selection, column types — xem demo mới nhất ngay khi mở trang</p>
+          </div>
+        </a>
+
+        <a href="components/query-bar.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">filter_alt</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-query-bar</p>
+                <p class="fs-12 text-black400 mb-0">Unified filter chip row</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">7 field types, popover/inline, saved filters, 2-way filters</p>
+          </div>
+        </a>
+
+        <a href="components/data-state.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">hourglass_empty</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-data-state</p>
+                <p class="fs-12 text-black400 mb-0">Loading / Empty / Error</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Trạng thái vùng nội dung, nút Thử lại</p>
+          </div>
+        </a>
+
+        <a href="components/section.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">view_agenda</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-section</p>
+                <p class="fs-12 text-black400 mb-0">Info sections</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Collapsable sections with key-value items</p>
+          </div>
+        </a>
+
+        <a href="components/tab-group.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">tab</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-tab-group</p>
+                <p class="fs-12 text-black400 mb-0">3 variants</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Line, pills, segmented - icon, badge, closable</p>
+          </div>
+        </a>
+
+        <a href="components/stepper.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">linear_scale</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-stepper</p>
+                <p class="fs-12 text-black400 mb-0">Wizard nhiều bước</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Horizontal/vertical, linear, optional, icon, goTo()</p>
+          </div>
+        </a>
+
+        <a href="components/anchor.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">toc</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-anchor</p>
+                <p class="fs-12 text-black400 mb-0">Điều hướng trong trang dài</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Scroll tracking, click navigation, sidebarWidth</p>
+          </div>
+        </a>
+
+        <a href="components/splitter.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">splitscreen</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-splitter</p>
+                <p class="fs-12 text-black400 mb-0">Panel co dãn</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Horizontal/vertical, px + flex, nested, collapsible, storageKey</p>
+          </div>
+        </a>
+
+        <a href="components/upload-file.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">upload_file</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-upload-file</p>
+                <p class="fs-12 text-black400 mb-0">File upload</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Max size, max count, states</p>
+          </div>
+        </a>
+
+        <a href="components/service.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">notifications_active</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-* Service</p>
+                <p class="fs-12 text-black400 mb-0">Notify / Confirm / Loading</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">window.SdNotifyService, SdConfirmService, SdLoadingService</p>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- Form Components -->
+      <p class="fs-12 font-weight-medium mb-12">Form Components</p>
+      <p class="fs-12 text-black400 mb-12">sd-* form inputs — floating label, states, sizes.</p>
+
+      <div class="flex gap-4 flex-wrap mb-24">
+
+        <a href="components/input.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">text_fields</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-input</p>
+                <p class="fs-12 text-black400 mb-0">Text input</p>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <a href="components/input-number.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">pin</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-input-number</p>
+                <p class="fs-12 text-black400 mb-0">Numeric input</p>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <a href="components/select.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">arrow_drop_down_circle</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-select</p>
+                <p class="fs-12 text-black400 mb-0">Dropdown</p>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <a href="components/validation.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">error</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">Validation & hideInlineError</p>
+                <p class="fs-12 text-black400 mb-0">sd-input / sd-select</p>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <a href="components/textarea.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">notes</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-textarea</p>
+                <p class="fs-12 text-black400 mb-0">Multi-line</p>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <a href="components/date.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">calendar_today</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-date</p>
+                <p class="fs-12 text-black400 mb-0">Date picker</p>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <a href="components/datetime.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">schedule</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-datetime</p>
+                <p class="fs-12 text-black400 mb-0">Date-time picker</p>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <a href="components/switch.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">toggle_on</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-switch</p>
+                <p class="fs-12 text-black400 mb-0">Toggle boolean</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">6 colors, disabled, required, viewed</p>
+          </div>
+        </a>
+
+        <a href="components/chip.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">label</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-chip</p>
+                <p class="fs-12 text-black400 mb-0">Chip input</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Enter/Comma để thêm chip, min/max, 2 sizes</p>
+          </div>
+        </a>
+
+        <a href="components/chip-calendar.html" class="card" style="text-decoration:none;color:inherit;width:280px;">
+          <div class="card-body">
+            <div class="flex align-items-center gap-12 mb-12">
+              <span class="material-icons-outlined" style="font-size:32px;color:var(--color-primary-500);">event_note</span>
+              <div>
+                <p class="text-md font-weight-medium mb-0">sd-chip-calendar</p>
+                <p class="fs-12 text-black400 mb-0">Chọn danh sách ngày từ lịch</p>
+              </div>
+            </div>
+            <p class="fs-12 text-black400 mb-0">Chip từng ngày, min/max, 2 sizes</p>
+          </div>
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../core/js/shell.js"></script>
+<script src="../patterns/sidebar.js"></script>
+<script src="shared-nav.js"></script>
+
+</body>
+</html>

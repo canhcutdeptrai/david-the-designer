@@ -1,0 +1,1830 @@
+{
+ "sd-button": {
+  "cls": "SdButton",
+  "observed": [
+   "type",
+   "color",
+   "size",
+   "disabled",
+   "loading",
+   "title",
+   "prefixicon",
+   "prefixIcon",
+   "suffixicon",
+   "suffixIcon",
+   "width",
+   "tooltip",
+   "block",
+   "htmltype",
+   "htmlType",
+   "fontset",
+   "fontSet",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "disabled",
+   "loading",
+   "type",
+   "color",
+   "size",
+   "block",
+   "width",
+   "tooltip",
+   "fontSet",
+   "autoId",
+   "prefixIcon",
+   "suffixIcon",
+   "htmlType",
+   "title"
+  ],
+  "events": []
+ },
+ "sd-checkbox": {
+  "cls": "SdCheckbox",
+  "observed": [
+   "label",
+   "color",
+   "disabled",
+   "viewed",
+   "inlineerror",
+   "autoid",
+   "name",
+   "checked",
+   "value"
+  ],
+  "read": [
+   "checked",
+   "label",
+   "disabled",
+   "viewed",
+   "inlineError",
+   "inlineerror",
+   "autoId",
+   "autoid",
+   "name",
+   "value"
+  ],
+  "events": [
+   "sd-change"
+  ]
+ },
+ "sd-radio": {
+  "cls": "SdRadio",
+  "observed": [
+   "label",
+   "helpertext",
+   "helperText",
+   "checked",
+   "disabled",
+   "error",
+   "name",
+   "value",
+   "items",
+   "valuefield",
+   "valueField",
+   "displayfield",
+   "displayField",
+   "display",
+   "placeholder",
+   "required",
+   "inlineerror",
+   "inlineError",
+   "color",
+   "viewed",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "items",
+   "valueField",
+   "displayField",
+   "display",
+   "inlineError",
+   "autoId",
+   "viewed",
+   "required",
+   "value",
+   "label",
+   "disabled",
+   "name",
+   "placeholder",
+   "helperText",
+   "checked",
+   "error",
+   "for"
+  ],
+  "events": [
+   "sd-change"
+  ]
+ },
+ "sd-switch": {
+  "cls": "SdSwitch",
+  "observed": [
+   "label",
+   "color",
+   "checked",
+   "disabled",
+   "viewed",
+   "required",
+   "hideinlineerror",
+   "hideInlineError",
+   "name",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "viewed",
+   "name",
+   "autoId",
+   "label",
+   "checked",
+   "disabled",
+   "required",
+   "aria-checked",
+   "data-sd-src",
+   "value"
+  ],
+  "events": [
+   "sd-change"
+  ]
+ },
+ "sd-chip": {
+  "cls": "SdChip",
+  "observed": [
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "min",
+   "max",
+   "removable",
+   "addable",
+   "disabled",
+   "viewed",
+   "hideinlineerror",
+   "autoid",
+   "name",
+   "value"
+  ],
+  "read": [
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "disabled",
+   "viewed",
+   "hideInlineError",
+   "hideinlineerror",
+   "min",
+   "max",
+   "removable",
+   "addable",
+   "autoId",
+   "name",
+   "value"
+  ],
+  "events": [
+   "sd-change"
+  ]
+ },
+ "sd-chip-calendar": {
+  "cls": "SdChipCalendar",
+  "observed": [
+   "value",
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "min",
+   "max",
+   "removable",
+   "disabled",
+   "viewed",
+   "hideinlineerror",
+   "autoid",
+   "name"
+  ],
+  "read": [
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "disabled",
+   "viewed",
+   "hideInlineError",
+   "hideinlineerror",
+   "min",
+   "max",
+   "removable",
+   "autoId",
+   "name",
+   "value"
+  ],
+  "events": [
+   "sd-change"
+  ]
+ },
+ "sd-badge": {
+  "cls": "SdBadge",
+  "observed": [
+   "type",
+   "color",
+   "size",
+   "title",
+   "description",
+   "icon",
+   "tooltip",
+   "fontset",
+   "fontSet",
+   "primary",
+   "secondary",
+   "success",
+   "info",
+   "warning",
+   "error"
+  ],
+  "read": [
+   "data-sd-cfg",
+   "color",
+   "data-sd-clickable",
+   "data-catalog-section",
+   "type",
+   "size",
+   "description",
+   "icon",
+   "tooltip",
+   "fontSet",
+   "fontset",
+   "title",
+   "maxlength"
+  ],
+  "events": []
+ },
+ "sd-input": {
+  "cls": "SdInput",
+  "observed": [
+   "label",
+   "placeholder",
+   "helpertext",
+   "size",
+   "required",
+   "disabled",
+   "viewed",
+   "value",
+   "minlength",
+   "maxlength",
+   "pattern",
+   "patternerrormessage",
+   "hideinlineerror",
+   "autoid",
+   "name",
+   "type",
+   "readonly",
+   "suffix",
+   "suffixicon",
+   "inlineerror",
+   "inlineError"
+  ],
+  "read": [
+   "label",
+   "placeholder",
+   "helperText",
+   "helpertext",
+   "size",
+   "required",
+   "disabled",
+   "viewed",
+   "type",
+   "readonly",
+   "inlineError",
+   "inlineerror",
+   "suffix",
+   "suffixIcon",
+   "suffixicon",
+   "hideInlineError",
+   "hideinlineerror",
+   "minlength",
+   "maxlength",
+   "pattern",
+   "patternErrorMessage",
+   "patternerrormessage",
+   "autoId",
+   "autoid",
+   "name",
+   "value"
+  ],
+  "events": [
+   "sd-change",
+   "sd-keyup-enter",
+   "sd-focus",
+   "sd-blur",
+   "sd-cleared"
+  ]
+ },
+ "sd-select": {
+  "cls": "SdSelect",
+  "observed": [
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "disabled",
+   "viewed",
+   "value",
+   "items",
+   "valuefield",
+   "valueField",
+   "displayfield",
+   "displayField",
+   "disabledfield",
+   "disabledField",
+   "multiple",
+   "hideinlineerror",
+   "hideInlineError",
+   "hidereaderror",
+   "hideReadError",
+   "inlineerror",
+   "inlineError",
+   "helpertext",
+   "helperText",
+   "name",
+   "autoid",
+   "autoId",
+   "limit",
+   "minwidthpanel",
+   "minWidthPanel",
+   "clearable",
+   "showselectall",
+   "showSelectAll",
+   "cachechecksum",
+   "cacheChecksum"
+  ],
+  "read": [
+   "hideInlineError",
+   "hideReadError",
+   "clearable",
+   "showSelectAll",
+   "viewed",
+   "items",
+   "limit",
+   "valueField",
+   "valuefield",
+   "displayField",
+   "displayfield",
+   "value",
+   "required",
+   "multiple",
+   "label",
+   "placeholder",
+   "size",
+   "disabled",
+   "name"
+  ],
+  "events": [
+   "sd-change"
+  ]
+ },
+ "sd-textarea": {
+  "cls": "SdTextarea",
+  "observed": [
+   "label",
+   "placeholder",
+   "size",
+   "rows",
+   "required",
+   "disabled",
+   "viewed",
+   "value",
+   "autoheight",
+   "autoHeight",
+   "autoid",
+   "autoId",
+   "helpertext",
+   "helperText",
+   "hideinlineerror",
+   "hideInlineError",
+   "inlineerror",
+   "inlineError",
+   "maxlength",
+   "name",
+   "pattern"
+  ],
+  "read": [
+   "helperText",
+   "hideInlineError",
+   "inlineError",
+   "autoHeight",
+   "autoId",
+   "name",
+   "maxlength",
+   "pattern",
+   "required",
+   "label",
+   "viewed",
+   "placeholder",
+   "size",
+   "rows",
+   "disabled",
+   "value"
+  ],
+  "events": [
+   "sd-change"
+  ]
+ },
+ "sd-date": {
+  "cls": "SdDate",
+  "observed": [
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "disabled",
+   "viewed",
+   "value",
+   "helpertext",
+   "hideinlineerror",
+   "min",
+   "max",
+   "autoid",
+   "name",
+   "inlineerror",
+   "inlineError",
+   "mindate",
+   "minDate",
+   "maxdate",
+   "maxDate"
+  ],
+  "read": [
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "disabled",
+   "viewed",
+   "helperText",
+   "hideInlineError",
+   "hideinlineerror",
+   "autoId",
+   "name",
+   "minDate",
+   "mindate",
+   "min",
+   "maxDate",
+   "maxdate",
+   "max",
+   "value",
+   "inlineError",
+   "inlineerror"
+  ],
+  "events": [
+   "sd-change",
+   "sd-focus"
+  ]
+ },
+ "sd-datetime": {
+  "cls": "SdDatetime",
+  "observed": [
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "disabled",
+   "viewed",
+   "value",
+   "hideinlineerror",
+   "showseconds",
+   "min",
+   "max",
+   "autoid",
+   "name",
+   "inlineerror",
+   "inlineError",
+   "mindate",
+   "minDate",
+   "maxdate",
+   "maxDate"
+  ],
+  "read": [
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "disabled",
+   "viewed",
+   "showSeconds",
+   "showseconds",
+   "hideInlineError",
+   "hideinlineerror",
+   "autoId",
+   "name",
+   "min",
+   "minDate",
+   "max",
+   "maxDate",
+   "value",
+   "inlineError",
+   "inlineerror",
+   "data-unit",
+   "data-step"
+  ],
+  "events": [
+   "sd-change",
+   "sd-focus"
+  ]
+ },
+ "sd-input-number": {
+  "cls": "SdInputNumber",
+  "observed": [
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "disabled",
+   "readonly",
+   "viewed",
+   "value",
+   "precision",
+   "format",
+   "type",
+   "min",
+   "max",
+   "helpertext",
+   "hideinlineerror",
+   "clearable",
+   "autoid",
+   "name",
+   "inlineerror",
+   "inlineError",
+   "bluronenter",
+   "blurOnEnter",
+   "suffix",
+   "suffixicon",
+   "focusforceblur",
+   "focusForceBlur"
+  ],
+  "read": [
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "disabled",
+   "readonly",
+   "readOnly",
+   "viewed",
+   "helperText",
+   "hideInlineError",
+   "hideinlineerror",
+   "autoId",
+   "name",
+   "suffix",
+   "suffixIcon",
+   "suffixicon",
+   "type",
+   "precision",
+   "format",
+   "min",
+   "max",
+   "value",
+   "blurOnEnter",
+   "bluronenter",
+   "inlineError",
+   "inlineerror",
+   "focusForceBlur",
+   "focusforceblur"
+  ],
+  "events": [
+   "sd-change",
+   "sd-blur",
+   "sd-keyup-enter",
+   "sd-focus",
+   "sd-focus-force-blur",
+   "sd-cleared"
+  ]
+ },
+ "sd-section": {
+  "cls": "SdSection",
+  "observed": [
+   "title",
+   "subtitle",
+   "collapsed"
+  ],
+  "read": [
+   "title",
+   "subtitle",
+   "collapsed",
+   "collapsible",
+   "collapsable",
+   "hideHeader",
+   "hideheader",
+   "subTitle",
+   "icon",
+   "iconColor",
+   "iconcolor",
+   "noPaddingBody",
+   "nopaddingbody",
+   "sdheaderright",
+   "sdheaderleft"
+  ],
+  "events": [
+   "sd-collapsed-change"
+  ]
+ },
+ "sd-section-item": {
+  "cls": "SdSectionItem",
+  "observed": [
+   "label",
+   "labelwidth"
+  ],
+  "read": [
+   "label",
+   "labelWidth",
+   "labelwidth"
+  ],
+  "events": []
+ },
+ "sd-tab": {
+  "cls": "SdTab",
+  "observed": [
+   "label",
+   "icon",
+   "badge",
+   "disabled",
+   "closable"
+  ],
+  "read": [],
+  "events": []
+ },
+ "sd-tab-group": {
+  "cls": "SdTabGroup",
+  "observed": [
+   "variant",
+   "selectedindex",
+   "selectedIndex",
+   "stretchtabs",
+   "stretchTabs",
+   "animationduration",
+   "animationDuration",
+   "aligntabs",
+   "alignTabs",
+   "color",
+   "dynamicheight",
+   "dynamicHeight",
+   "headerposition",
+   "headerPosition"
+  ],
+  "read": [
+   "selectedIndex",
+   "selectedindex",
+   "variant",
+   "animationDuration",
+   "animationduration",
+   "alignTabs",
+   "color",
+   "headerPosition",
+   "dynamicHeight",
+   "label",
+   "icon",
+   "badge",
+   "disabled",
+   "closable",
+   "style"
+  ],
+  "events": [
+   "sd-tab-change",
+   "sd-tab-close"
+  ]
+ },
+ "sd-step": {
+  "cls": "SdStep",
+  "observed": [
+   "label",
+   "icon",
+   "optional",
+   "editable",
+   "state",
+   "errormessage",
+   "invalid",
+   "completed"
+  ],
+  "read": [
+   "label",
+   "icon",
+   "editable",
+   "state",
+   "errorMessage",
+   "errormessage",
+   "completed"
+  ],
+  "events": []
+ },
+ "sd-stepper": {
+  "cls": "SdStepper",
+  "observed": [
+   "selectedindex",
+   "linear",
+   "orientation",
+   "labelposition",
+   "headerposition",
+   "animationduration",
+   "disableripple",
+   "color",
+   "autoid"
+  ],
+  "read": [
+   "selectedindex",
+   "orientation",
+   "invalid",
+   "animationDuration",
+   "animationduration",
+   "data-index",
+   "selectedIndex",
+   "color",
+   "autoId",
+   "autoid",
+   "labelPosition",
+   "labelposition",
+   "headerPosition",
+   "headerposition"
+  ],
+  "events": [
+   "sd-selection-change",
+   "sd-step-change",
+   "sd-select-change"
+  ]
+ },
+ "sd-anchor-item": {
+  "cls": "SdAnchorItem",
+  "observed": [
+   "title",
+   "icon",
+   "key"
+  ],
+  "read": [
+   "title"
+  ],
+  "events": []
+ },
+ "sd-anchor": {
+  "cls": "SdAnchor",
+  "observed": [
+   "sidebarwidth",
+   "sidebarWidth",
+   "ellipsis",
+   "overscroll",
+   "overScroll",
+   "hidenav",
+   "hideNav",
+   "color",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "sidebarWidth",
+   "color",
+   "ellipsis",
+   "overScroll",
+   "hideNav",
+   "autoId",
+   "key",
+   "icon"
+  ],
+  "events": []
+ },
+ "sd-splitter-panel": {
+  "cls": "SdSplitterPanel",
+  "observed": [
+   "panelid",
+   "size",
+   "unit",
+   "minsize",
+   "maxsize",
+   "collapsible",
+   "collapsed",
+   "resizable"
+  ],
+  "read": [],
+  "events": []
+ },
+ "sd-splitter": {
+  "cls": "SdSplitter",
+  "observed": [
+   "orientation",
+   "snapthreshold",
+   "storagekey",
+   "disabled",
+   "keyboardstep",
+   "keyboardStep",
+   "option"
+  ],
+  "read": [
+   "orientation",
+   "snapThreshold",
+   "storageKey",
+   "disabled",
+   "collapsible",
+   "collapsed",
+   "keyboardStep",
+   "key"
+  ],
+  "events": [
+   "sd-resize-end",
+   "sd-collapsed-change",
+   "sd-layout-change"
+  ]
+ },
+ "sd-upload-file": {
+  "cls": "SdUploadFile",
+  "observed": [
+   "label",
+   "description",
+   "helpertext",
+   "type",
+   "extensions",
+   "maxsize",
+   "max",
+   "maxofimage",
+   "previewwidth",
+   "previewheight",
+   "align",
+   "required",
+   "disabled",
+   "name",
+   "key",
+   "scaletopixel",
+   "args"
+  ],
+  "read": [
+   "label",
+   "description",
+   "helperText",
+   "type",
+   "previewWidth",
+   "previewHeight",
+   "align",
+   "required",
+   "disabled",
+   "extensions",
+   "args",
+   "data-image-index",
+   "data-doc-index",
+   "data-i",
+   "data-step"
+  ],
+  "events": [
+   "loaded",
+   "filesChanged",
+   "sd-change"
+  ]
+ },
+ "sd-table": {
+  "cls": "SdTable",
+  "observed": [
+   "columns",
+   "data",
+   "tree",
+   "selectable",
+   "paginated",
+   "pagesize",
+   "total",
+   "pagesizes",
+   "config-visible",
+   "reload-visible",
+   "export-visible",
+   "hide-inline-filter",
+   "no-index",
+   "addable",
+   "add-label",
+   "autoid",
+   "autoId",
+   "option"
+  ],
+  "read": [
+   "columns",
+   "pageSize",
+   "pagesize",
+   "data",
+   "data-sd-pagesize",
+   "aria-labelledby",
+   "data-value",
+   "tree",
+   "selectable",
+   "paginated",
+   "total",
+   "pageSizes",
+   "pagesizes",
+   "config-visible",
+   "reload-visible",
+   "export-visible",
+   "hide-inline-filter",
+   "addable",
+   "add-label",
+   "data-sort-field",
+   "data-sel-all",
+   "data-row-key",
+   "data-sel-action",
+   "aria-disabled",
+   "data-sd-page",
+   "data-filter-field",
+   "data-filter-range",
+   "data-tree-key",
+   "data-cmd-key",
+   "data-cmd-row",
+   "data-menu-row",
+   "data-menu-col",
+   "data-menu-item",
+   "data-menu-target",
+   "option",
+   "filterRequired",
+   "filterrequired"
+  ],
+  "events": [
+   "sd-table-add-row",
+   "sd-table-command",
+   "sd-table-menu-click"
+  ]
+ },
+ "sd-avatar": {
+  "cls": "SdAvatar",
+  "observed": [
+   "src",
+   "size",
+   "name"
+  ],
+  "read": [
+   "src",
+   "name",
+   "size"
+  ],
+  "events": []
+ },
+ "sd-side-drawer": {
+  "cls": "SdSideDrawer",
+  "observed": [
+   "title",
+   "width",
+   "hideclose",
+   "disablebackdropclose",
+   "autoid",
+   "autoId",
+   "drawerclass",
+   "drawerClass"
+  ],
+  "read": [
+   "title",
+   "width",
+   "hideClose",
+   "hideclose",
+   "disableBackdropClose",
+   "disablebackdropclose",
+   "slot"
+  ],
+  "events": [
+   "sd-closed"
+  ]
+ },
+ "sd-modal": {
+  "cls": "SdModal",
+  "observed": [
+   "title",
+   "width",
+   "height",
+   "view",
+   "color",
+   "hideclose",
+   "disablebackdropclose",
+   "modalclass",
+   "lazyloadcontent",
+   "autoid"
+  ],
+  "read": [
+   "title",
+   "sdheaderleft",
+   "sdheaderright",
+   "sdheader",
+   "sdfooterleft",
+   "sdfooterright",
+   "sdfooter"
+  ],
+  "events": [
+   "sd-closed"
+  ]
+ },
+ "sd-inform": {
+  "cls": "SdInform",
+  "observed": [
+   "type",
+   "color",
+   "title",
+   "description",
+   "icon",
+   "hideicon",
+   "hideIcon",
+   "fontset",
+   "fontSet",
+   "closable",
+   "dismissible",
+   "actionlabel",
+   "actionLabel",
+   "cta",
+   "lineclamp",
+   "lineClamp",
+   "autoid",
+   "autoId",
+   "primary",
+   "secondary",
+   "info",
+   "success",
+   "warning",
+   "error"
+  ],
+  "read": [
+   "color",
+   "type",
+   "hideIcon",
+   "icon",
+   "lineClamp",
+   "title",
+   "description",
+   "closable",
+   "dismissible",
+   "actionLabel",
+   "cta",
+   "autoId",
+   "fontSet"
+  ],
+  "events": [
+   "sd-closed",
+   "sd-inform-dismiss",
+   "sd-action"
+  ]
+ },
+ "sd-data-state": {
+  "cls": "SdDataState",
+  "observed": [
+   "state",
+   "title",
+   "message",
+   "retryable",
+   "retrylabel",
+   "retryLabel",
+   "actionlabel",
+   "actionLabel",
+   "compact",
+   "fullpage",
+   "fullPage",
+   "icon",
+   "fontset",
+   "fontSet"
+  ],
+  "read": [
+   "state",
+   "title",
+   "message",
+   "compact",
+   "fullPage",
+   "retryable",
+   "retryLabel",
+   "actionLabel",
+   "icon",
+   "fontSet"
+  ],
+  "events": [
+   "sd-retry",
+   "sd-action"
+  ]
+ },
+ "sd-query-bar": {
+  "cls": "SdQueryBar",
+  "observed": [
+   "fields",
+   "filters",
+   "logic",
+   "search",
+   "mode",
+   "density",
+   "showsearch",
+   "show-search",
+   "showlogictoggle",
+   "show-logic-toggle",
+   "showoperatoronchip",
+   "show-operator-on-chip",
+   "showclearall",
+   "show-clear-all",
+   "showsavedfilters",
+   "show-saved-filters",
+   "savedfilterskey",
+   "saved-filters-key",
+   "autoid",
+   "autoId",
+   "option"
+  ],
+  "read": [
+   "logic",
+   "search",
+   "fields",
+   "filters",
+   "mode",
+   "density",
+   "data-qb-mode",
+   "data-qb-field",
+   "data-qb-role",
+   "data-qb-id",
+   "data-qb-value",
+   "value",
+   "data-qb-option",
+   "data-qb-side",
+   "saved-filters-key",
+   "savedFiltersKey"
+  ],
+  "events": [
+   "sd-query-change",
+   "sd-logic-change",
+   "sd-apply",
+   "sd-search-change",
+   "sd-filters-change"
+  ]
+ },
+ "sd-preview-image": {
+  "cls": "SdPreviewImage",
+  "observed": [
+   "items",
+   "src",
+   "title",
+   "thumbnailposition",
+   "thumbnail-position",
+   "startindex",
+   "showtoolbar",
+   "show-toolbar",
+   "downloadable",
+   "zoomable",
+   "loop",
+   "theme",
+   "autoid"
+  ],
+  "read": [
+   "tabindex",
+   "theme",
+   "thumbnailPosition",
+   "startIndex",
+   "items",
+   "src",
+   "title",
+   "autoId",
+   "data-i"
+  ],
+  "events": []
+ },
+ "sd-preview-pdf": {
+  "cls": "SdPreviewPdf",
+  "observed": [
+   "source",
+   "src",
+   "title",
+   "startpage",
+   "initialzoom",
+   "initial-zoom",
+   "sidebar",
+   "sidebaropen",
+   "sidebar-open",
+   "scrollmode",
+   "showtoolbar",
+   "show-toolbar",
+   "downloadable",
+   "password",
+   "httpheaders",
+   "theme",
+   "autoid"
+  ],
+  "read": [
+   "tabindex",
+   "httpHeaders",
+   "password",
+   "theme",
+   "startPage",
+   "initialZoom",
+   "source",
+   "title",
+   "sidebar",
+   "scrollMode",
+   "autoId",
+   "data-page"
+  ],
+  "events": []
+ },
+ "sd-label": {
+  "cls": "SdLabel",
+  "observed": [
+   "label",
+   "required",
+   "description",
+   "helpertext",
+   "helperText",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "label",
+   "helpertext",
+   "description",
+   "required"
+  ],
+  "events": []
+ },
+ "sd-view": {
+  "cls": "SdView",
+  "observed": [
+   "label",
+   "display",
+   "value",
+   "hyperlink",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "label",
+   "display",
+   "value",
+   "hyperlink",
+   "data-min",
+   "data-force"
+  ],
+  "events": []
+ },
+ "sd-inline-text": {
+  "cls": "SdInlineText",
+  "observed": [
+   "value",
+   "placeholder",
+   "chrome",
+   "state",
+   "clearable",
+   "disabled",
+   "minsize",
+   "minSize",
+   "autofocus",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "value",
+   "placeholder",
+   "minsize",
+   "minSize",
+   "data-min",
+   "chrome",
+   "disabled",
+   "clearable",
+   "autofocus",
+   "state"
+  ],
+  "events": [
+   "sd-focus",
+   "sd-blur",
+   "sd-change",
+   "sd-keyup-enter",
+   "sd-keydown-escape",
+   "sd-cleared"
+  ]
+ },
+ "sd-autocomplete": {
+  "cls": "SdAutocomplete",
+  "observed": [
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "disabled",
+   "viewed",
+   "value",
+   "model",
+   "items",
+   "valuefield",
+   "valueField",
+   "displayfield",
+   "displayField",
+   "disabledfield",
+   "disabledField",
+   "clearable",
+   "limit",
+   "helpertext",
+   "helperText",
+   "hideinlineerror",
+   "hideInlineError",
+   "inlineerror",
+   "inlineError",
+   "name",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "clearable",
+   "hideInlineError",
+   "limit",
+   "viewed",
+   "value",
+   "items",
+   "required",
+   "label",
+   "disabled",
+   "size",
+   "name",
+   "placeholder"
+  ],
+  "events": [
+   "sd-change",
+   "sd-selection"
+  ]
+ },
+ "sd-date-range": {
+  "cls": "SdDateRange",
+  "observed": [
+   "label",
+   "size",
+   "required",
+   "disabled",
+   "viewed",
+   "from",
+   "to",
+   "min",
+   "max",
+   "helpertext",
+   "helperText",
+   "hideinlineerror",
+   "hideInlineError",
+   "inlineerror",
+   "inlineError",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "label",
+   "size",
+   "required",
+   "disabled",
+   "viewed",
+   "hideInlineError",
+   "from",
+   "to",
+   "inlineError",
+   "helperText"
+  ],
+  "events": [
+   "sd-change"
+  ]
+ },
+ "sd-quick-action": {
+  "cls": "SdQuickAction",
+  "observed": [
+   "opened"
+  ],
+  "read": [
+   "opened"
+  ],
+  "events": []
+ },
+ "sd-tree": {
+  "cls": "SdTree",
+  "observed": [
+   "items"
+  ],
+  "read": [
+   "items",
+   "data-id",
+   "data-cmd",
+   "data-action",
+   "aria-expanded"
+  ],
+  "events": [
+   "sd-expand-change",
+   "sd-select-change",
+   "sd-selected-items-change"
+  ]
+ },
+ "sd-history": {
+  "cls": "SdHistory",
+  "observed": [
+   "items",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "items"
+  ],
+  "events": []
+ },
+ "sd-input-color": {
+  "cls": "SdInputColor",
+  "observed": [
+   "label",
+   "placeholder",
+   "size",
+   "required",
+   "disabled",
+   "readonly",
+   "viewed",
+   "value",
+   "model",
+   "helpertext",
+   "helperText",
+   "name",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "value",
+   "disabled",
+   "viewed",
+   "helperText",
+   "helpertext",
+   "required",
+   "placeholder"
+  ],
+  "events": [
+   "sd-change"
+  ]
+ },
+ "bpm-kpi-card": {
+  "cls": "BpmKpiCard",
+  "observed": [
+   "key",
+   "icon",
+   "label",
+   "value"
+  ],
+  "read": [
+   "key",
+   "icon",
+   "value",
+   "label"
+  ],
+  "events": []
+ },
+ "bpm-filter-scorecard": {
+  "cls": "BpmFilterScorecard",
+  "observed": [
+   "key",
+   "label",
+   "value",
+   "active"
+  ],
+  "read": [
+   "active",
+   "key",
+   "value",
+   "label"
+  ],
+  "events": [
+   "sd-filter-toggle"
+  ]
+ },
+ "sd-org-chart": {
+  "cls": "SdOrgChart",
+  "observed": [
+   "items",
+   "collapsible",
+   "autoid"
+  ],
+  "read": [
+   "collapsible",
+   "items",
+   "autoId",
+   "autoid"
+  ],
+  "events": [
+   "sd-toggle"
+  ]
+ },
+ "sd-operator": {
+  "cls": "SdOperator",
+  "observed": [
+   "model",
+   "value",
+   "operators",
+   "disabled",
+   "autoid"
+  ],
+  "read": [
+   "model",
+   "value",
+   "disabled",
+   "operators",
+   "autoId",
+   "autoid",
+   "data-value"
+  ],
+  "events": [
+   "sd-change"
+  ]
+ },
+ "sd-modal-resizable": {
+  "cls": "SdModalResizable",
+  "observed": [
+   "width",
+   "editable"
+  ],
+  "read": [
+   "width",
+   "editable",
+   "data-act"
+  ],
+  "events": [
+   "sd-open",
+   "sd-close",
+   "sd-editing-changed"
+  ]
+ },
+ "sd-import-excel": {
+  "cls": "SdImportExcel",
+  "observed": [
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "data-view",
+   "disabled",
+   "aria-disabled",
+   "data-page",
+   "data-ie-menu",
+   "sdHoverCopyDisabled",
+   "sdhovercopydisabled",
+   "sdHref",
+   "sdhref",
+   "sdHoverCopy",
+   "sdhovercopy",
+   "sdTooltip",
+   "data-sd-tooltip",
+   "data-sd-tooltip-template",
+   "data-sd-tooltip-kind",
+   "data-id",
+   "data-type",
+   "value",
+   "autoId",
+   "autoid",
+   "color",
+   "data-autoid",
+   "label",
+   "title",
+   "loading",
+   "required",
+   "aria-invalid"
+  ],
+  "events": []
+ },
+ "sd-autoid-inspector": {
+  "cls": "SdAutoidInspector",
+  "observed": [
+   "enabled",
+   "config"
+  ],
+  "read": [
+   "enabled",
+   "config",
+   "data-sd-autoid-prev-style",
+   "style",
+   "data-count",
+   "data-hay",
+   "data-seg",
+   "data-copy",
+   "data-export",
+   "src"
+  ],
+  "events": []
+ },
+ "sd-ckeditor-styles": {
+  "cls": "SdCkeditorStyles",
+  "observed": [],
+  "read": [],
+  "events": []
+ },
+ "sd-code-editor": {
+  "cls": "SdCodeEditor",
+  "observed": [
+   "model",
+   "language",
+   "viewed",
+   "maxheight",
+   "maxHeight"
+  ],
+  "read": [
+   "language",
+   "viewed",
+   "maxHeight",
+   "maxheight",
+   "model"
+  ],
+  "events": [
+   "sd-change"
+  ]
+ },
+ "sd-mini-editor": {
+  "cls": "SdMiniEditor",
+  "observed": [
+   "disabled",
+   "placeholder",
+   "maxheight"
+  ],
+  "read": [
+   "value",
+   "disabled",
+   "mention",
+   "data-user-id",
+   "style",
+   "loading",
+   "id"
+  ],
+  "events": [
+   "sd-focus",
+   "sd-blur",
+   "sd-ready",
+   "sd-change"
+  ]
+ },
+ "sd-editor": {
+  "cls": "SdEditor",
+  "observed": [
+   "label",
+   "helpertext",
+   "helperText",
+   "required",
+   "placeholder",
+   "maxlength",
+   "height",
+   "maxheight",
+   "maxHeight",
+   "readonly",
+   "disabled",
+   "hideinlineerror",
+   "hideInlineError",
+   "inlineerror",
+   "inlineError",
+   "key",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "value",
+   "readonly",
+   "disabled",
+   "required",
+   "hideinlineerror",
+   "maxlength",
+   "inlineerror",
+   "key",
+   "placeholder",
+   "label",
+   "helpertext",
+   "height",
+   "maxheight",
+   "style",
+   "autoid",
+   "resizedWidth",
+   "src"
+  ],
+  "events": [
+   "sd-focus",
+   "sd-blur",
+   "sd-ready",
+   "sd-change"
+  ]
+ },
+ "sd-form-render": {
+  "cls": "SdFormRender",
+  "observed": [
+   "viewed"
+  ],
+  "read": [
+   "viewed",
+   "label",
+   "items"
+  ],
+  "events": [
+   "sd-form-change",
+   "sd-form-add-row"
+  ]
+ },
+ "sd-query-builder": {
+  "cls": "SdQueryBuilder",
+  "observed": [
+   "mode",
+   "disabled",
+   "comparisonmode",
+   "comparisonMode",
+   "fields",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "mode",
+   "disabled",
+   "comparisonMode",
+   "comparisonmode",
+   "fields",
+   "data-path",
+   "data-logic",
+   "data-add"
+  ],
+  "events": [
+   "sd-change",
+   "sd-logic-change"
+  ]
+ },
+ "sd-document-builder": {
+  "cls": "SdDocumentBuilder",
+  "observed": [
+   "disabled",
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "disabled"
+  ],
+  "events": [
+   "sd-orientation-change",
+   "sd-ready",
+   "sd-change"
+  ]
+ },
+ "sd-header-footer-builder": {
+  "cls": "SdHeaderFooterBuilder",
+  "observed": [
+   "autoid",
+   "autoId"
+  ],
+  "read": [],
+  "events": [
+   "sd-change",
+   "sd-ready"
+  ]
+ },
+ "sd-form-builder": {
+  "cls": "SdFormBuilder",
+  "observed": [
+   "autoid",
+   "autoId"
+  ],
+  "read": [
+   "data-fb-path",
+   "data-fb-kind",
+   "value",
+   "data-fb-var",
+   "data-fb-field",
+   "data-fb-m",
+   "data-fb-idx",
+   "data-fb-v",
+   "data-fb-expr",
+   "data-fb-c",
+   "data-fb-x",
+   "data-fb-ref",
+   "data-fb-pi",
+   "data-fb-p",
+   "data-fb-val",
+   "data-fb-t",
+   "data-fb-act",
+   "data-mode",
+   "data-fb-type",
+   "data-fb-template-pick",
+   "data-fb-values-key",
+   "data-fb-columns-key"
+  ],
+  "events": [
+   "sd-form-generic-change"
+  ]
+ },
+ "sd-bar-chart": {
+  "cls": "SdBarChart",
+  "observed": [
+   "data",
+   "options"
+  ],
+  "read": [],
+  "events": []
+ },
+ "sd-line-chart": {
+  "cls": "SdLineChart",
+  "observed": [
+   "data",
+   "options"
+  ],
+  "read": [],
+  "events": []
+ },
+ "sd-pie-chart": {
+  "cls": "SdPieChart",
+  "observed": [
+   "data",
+   "options"
+  ],
+  "read": [],
+  "events": []
+ },
+ "sd-doughnut-chart": {
+  "cls": "SdDoughnutChart",
+  "observed": [
+   "data",
+   "options"
+  ],
+  "read": [],
+  "events": []
+ }
+}

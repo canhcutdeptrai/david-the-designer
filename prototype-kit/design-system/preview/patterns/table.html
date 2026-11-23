@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table Pattern — Enterprise Portal</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+  <style>
+    /* Section label in Preview tab — appears BELOW each <hr class="my-0">, introduces the component that follows */
+    .ds-preview-label {
+      font-size: 13px;
+      color: var(--sd-black700, #3d3d3d);
+      margin: 2px 0 10px;
+      line-height: 1.5;
+    }
+    .ds-preview-label strong { color: var(--sd-black900, #111); font-weight: 600; }
+    .ds-preview-label code  { font-size: 12px; background: var(--sd-black100, #f0f0f0); padding: 1px 4px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="Table — Pattern Preview"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+      <!-- ══════════════════════════════════════════════════
+           FILTER BAR
+           ══════════════════════════════════════════════════ -->
+      <p class="ds-preview-label"><strong>filter-bar</strong> — Thanh lọc dữ liệu. BA cung cấp filter fields (slot), pattern cung cấp cấu trúc bao ngoài.</p>
+
+      <div data-pattern="filter-bar" data-id="demo-filter">
+        <sd-input placeholder="Mã hồ sơ"></sd-input>
+        <sd-select placeholder="Ngân hàng"
+          items='[{"id":"vcb","name":"Vietcombank"},{"id":"bidv","name":"BIDV"},{"id":"tcb","name":"Techcombank"}]'
+        ></sd-select>
+        <sd-select placeholder="Trạng thái"
+          items='[{"id":"draft","name":"Nháp"},{"id":"pending","name":"Chờ duyệt"},{"id":"approved","name":"Đã duyệt"}]'
+        ></sd-select>
+        <sd-select placeholder="Kỳ kế hoạch"
+          items='[{"id":"q3","name":"Q3/2026"},{"id":"q4","name":"Q4/2026"}]'
+        ></sd-select>
+      </div>
+
+      <hr class="my-0">
+
+      <!-- ══════════════════════════════════════════════════
+           SD-TABLE — Full (selectable + paginated + toolbar)
+           ══════════════════════════════════════════════════ -->
+      <p class="ds-preview-label"><strong>sd-table</strong> — Selectable + paginated + toolbar + <strong>sort cột</strong> (Mã/Tên/Số lượng, click header) + <strong>row command menu</strong> (cột cuối, icon <code>more_horiz</code>) — đồng bộ với demo <code>components/table.html</code>. Chọn ≥1 dòng → snackbar thao tác nổi ở giữa đáy màn hình.</p>
+
+      <sd-table id="demo-table-sel"
+        selectable
+        paginated
+        pagesize="10"
+        pagesizes="10,20,50"
+        total="42"
+        config-visible
+        reload-visible
+        export-visible
+        columns='[
+          {"field":"code","title":"Mã","type":"text","sortable":true},
+          {"field":"name","title":"Tên","type":"text","sortable":true},
+          {"field":"qty","title":"Số lượng","type":"number","align":"right","sortable":true,"option":{"precision":0}},
+          {"field":"status","title":"Trạng thái","type":"status","option":{"items":[{"id":"active","name":"Hoạt động"},{"id":"pending","name":"Chờ duyệt"},{"id":"deactivated","name":"Ngừng HĐ"},{"id":"draft","name":"Nháp"}]}},
+          {"field":"_menu","title":"","type":"menu","option":{"icon":"more_horiz","width":"48px","items":[
+            {"id":"view","icon":"visibility","label":"Xem chi tiết"},
+            {"id":"approve","icon":"task_alt","label":"Phê duyệt","color":"success"},
+            {"id":"reject","icon":"cancel","label":"Từ chối","color":"error"}
+          ]}}
+        ]'
+        data='[
+          {"code":"DM-001","name":"Item demo 1","qty":1250,"status":"active"},
+          {"code":"DM-002","name":"Item demo 2","qty":830,"status":"pending"},
+          {"code":"DM-003","name":"Item demo 3","qty":0,"status":"deactivated"},
+          {"code":"DM-004","name":"Item demo 4","qty":450,"status":"draft"}
+        ]'
+      ></sd-table>
+      <p class="ds-preview-label">Sự kiện <code>sd-table-menu-click</code> gần nhất: <span id="demo-table-sel-menu-log" class="text-black500">chưa có</span></p>
+
+      <p class="ds-preview-label"><strong>Thao tác hàng loạt</strong> — chọn ≥1 dòng ở bảng trên: snackbar <code>selector-action</code> của chính sd-table nổi giữa đáy màn hình ("N dữ liệu được chọn" + nút <code>option.selector.actions</code> + ❌ bỏ chọn) — 2 nút đầu hiện thẳng, từ nút thứ 3 vào "Thêm"; nhóm thao tác (<code>variant: 'group'</code>) là nút mở menu con.</p>
+
+      <hr class="my-0">
+
+      <!-- ══════════════════════════════════════════════════
+           SD-TABLE — Tìm nhanh + Dòng tổng (22.2.14, 2026-10-30)
+           ══════════════════════════════════════════════════ -->
+      <p class="ds-preview-label"><strong>sd-table — Tìm nhanh + Dòng tổng</strong> (Core UI 22.2.14) — khai thuần HTML: <code>option='{"filter":{"quickSearch":{…}},"aggregate":{"scope":"filtered"}}'</code> + <code>"aggregate"</code> trên cột. Dropdown áp ngay, từ khoá áp khi Enter; dòng tổng dính đáy bảng (Đếm mã · Tổng số lượng · Ngày mới nhất). Tổng 7 dòng ≤ 10 dòng/trang → chân bảng chỉ hiện "Đang hiển thị: 1-7/7".</p>
+
+      <sd-table id="demo-table-qs"
+        hide-inline-filter
+        paginated pagesize="10" pagesizes="10,20"
+        option='{"filter":{"quickSearch":{"containFields":["code","name"],"placeholder":"Tìm theo mã hoặc tên…","filters":[
+          {"field":"bank","title":"Ngân hàng","type":"values","option":{"items":[{"id":"vcb","name":"Vietcombank"},{"id":"bidv","name":"BIDV"},{"id":"tcb","name":"Techcombank"}],"valueField":"id","displayField":"name"}},
+          {"field":"status","title":"Trạng thái","type":"values","option":{"items":[{"id":"pending","name":"Chờ duyệt"},{"id":"approved","name":"Đã duyệt"},{"id":"draft","name":"Nháp"}],"valueField":"id","displayField":"name","selection":"MULTIPLE"}}
+        ]}},"aggregate":{"scope":"filtered"}}'
+        columns='[
+          {"field":"code","title":"Mã hồ sơ","type":"text","sortable":true,"aggregate":"COUNT"},
+          {"field":"name","title":"Kế hoạch","type":"text"},
+          {"field":"bank","title":"Ngân hàng","type":"values","option":{"items":[{"id":"vcb","name":"Vietcombank"},{"id":"bidv","name":"BIDV"},{"id":"tcb","name":"Techcombank"}]}},
+          {"field":"qty","title":"Số lượng","type":"number","align":"right","sortable":true,"option":{"precision":0},"aggregate":"SUM"},
+          {"field":"date","title":"Ngày giải ngân","type":"date","sortable":true,"aggregate":"MAX"},
+          {"field":"status","title":"Trạng thái","type":"status","option":{"items":[{"id":"pending","name":"Chờ duyệt"},{"id":"approved","name":"Đã duyệt"},{"id":"draft","name":"Nháp"}]}}
+        ]'
+        data='[
+          {"code":"FD-0128","name":"Funding Q4/2026 – Dự án Cổ Loa","bank":"vcb","qty":1250,"date":"2026-10-15","status":"pending"},
+          {"code":"FD-0127","name":"Giải ngân hạn mức HM-0457","bank":"bidv","qty":3800,"date":"2026-10-12","status":"approved"},
+          {"code":"FD-0125","name":"Tái cấp vốn khoản vay KV-031","bank":"tcb","qty":12500,"date":"2026-10-30","status":"approved"},
+          {"code":"FD-0121","name":"Funding tháng 11/2026","bank":"vcb","qty":760,"date":"2026-11-05","status":"draft"},
+          {"code":"FD-0119","name":"Bổ sung vốn lưu động – CN Đà Nẵng","bank":"vcb","qty":2100,"date":"2026-11-12","status":"approved"},
+          {"code":"FD-0117","name":"Giải ngân hạn mức HM-0412","bank":"bidv","qty":940,"date":"2026-10-20","status":"pending"},
+          {"code":"FD-0114","name":"Funding Q1/2027","bank":"tcb","qty":5600,"date":"2027-01-10","status":"pending"}
+        ]'
+      ></sd-table>
+
+      <hr class="my-0">
+
+      <!-- ══════════════════════════════════════════════════
+           SD-TABLE — Nhóm dòng + tổng con (22.2.14, 2026-10-30)
+           ══════════════════════════════════════════════════ -->
+      <p class="ds-preview-label"><strong>sd-table — Nhóm dòng + tổng con</strong> (Core UI 22.2.14) — <code>option.group = { fields, collapsible }</code> + <code>option.aggregate.group</code>; nhãn nhóm qua hàm <code>group.template</code> (kit, thay <code>sdGroupDef</code>). Chọn cả nhóm ở ô đầu dòng nhóm; thao tác hàng loạt có <strong>nhóm hành động</strong> (nút "Chuyển trạng thái" mở menu con); Export → menu Excel / CSV.</p>
+
+      <sd-table id="demo-table-group" selectable hide-inline-filter export-visible
+        columns='[
+          {"field":"code","title":"Mã hồ sơ","type":"text","aggregate":"COUNT"},
+          {"field":"name","title":"Kế hoạch","type":"text"},
+          {"field":"qty","title":"Số lượng","type":"number","align":"right","option":{"precision":0},"aggregate":"SUM"},
+          {"field":"date","title":"Ngày giải ngân","type":"date","aggregate":"MAX"}
+        ]'
+        data='[
+          {"id":1,"bank":"vcb","code":"FD-0128","name":"Funding Q4/2026 – Dự án Cổ Loa","qty":1250,"date":"2026-10-15"},
+          {"id":2,"bank":"bidv","code":"FD-0127","name":"Giải ngân hạn mức HM-0457","qty":3800,"date":"2026-10-12"},
+          {"id":3,"bank":"vcb","code":"FD-0121","name":"Funding tháng 11/2026","qty":760,"date":"2026-11-05"},
+          {"id":4,"bank":"bidv","code":"FD-0117","name":"Giải ngân hạn mức HM-0412","qty":940,"date":"2026-10-20"},
+          {"id":5,"bank":"vcb","code":"FD-0119","name":"Bổ sung vốn lưu động – CN Đà Nẵng","qty":2100,"date":"2026-11-12"}
+        ]'
+      ></sd-table>
+
+      <hr class="my-0">
+
+      <!-- ══════════════════════════════════════════════════
+           SD-TABLE — Bảng cây: tìm nhanh + dòng tổng (22.2.14, 2026-10-30)
+           ══════════════════════════════════════════════════ -->
+      <p class="ds-preview-label"><strong>sd-table cây — Tìm nhanh + Dòng tổng</strong> (Core UI 22.2.14) — khai thuần HTML: <code>option='{"filter":{"quickSearch":{"containFields":["name"]}},"aggregate":{"tree":{"items":"leaves","subtotal":true}}}'</code>. Tìm "móng" → giữ nhánh có node khớp và tự mở; dòng tổng con sau mỗi nhánh đang mở, tổng chung tính trên các node lá.</p>
+
+      <sd-table hide-inline-filter
+        tree='{"childrenKey":"children","defaultExpanded":1,"indentSize":24}'
+        option='{"filter":{"quickSearch":{"containFields":["name"],"placeholder":"Tìm hạng mục…"}},"aggregate":{"tree":{"items":"leaves","subtotal":true}}}'
+        columns='[
+          {"field":"stt","title":"STT","type":"string","width":"120px"},
+          {"field":"name","title":"Hạng mục","type":"string","aggregate":"COUNT"},
+          {"field":"totalCost","title":"Thành tiền (đ)","type":"number","align":"right","option":{"precision":0},"aggregate":"SUM"}
+        ]'
+        data='[
+          {"stt":"1","name":"Khảo sát & Thiết kế","children":[
+            {"stt":"1.1","name":"Khảo sát địa hình","totalCost":100000000},
+            {"stt":"1.2","name":"Thiết kế kiến trúc","totalCost":125000000}]},
+          {"stt":"2","name":"Phần thô","children":[
+            {"stt":"2.1","name":"Móng & kết cấu","children":[
+              {"stt":"2.1.1","name":"Cọc bê tông cốt thép","totalCost":176000000},
+              {"stt":"2.1.2","name":"Đài móng","totalCost":124000000}]},
+            {"stt":"2.2","name":"Kết cấu thép","totalCost":270000000}]}
+        ]'
+      ></sd-table>
+
+
+      <hr class="my-0">
+
+      <!-- ══════════════════════════════════════════════════
+           SD-TABLE — Tree mode (hạng mục chi phí)
+           ══════════════════════════════════════════════════ -->
+      <p class="ds-preview-label"><strong>sd-table tree</strong> — Dữ liệu phân cấp. Attribute <code>tree</code> kích hoạt expand/collapse. Pagination tính trên root rows. Inline filter tự tắt.</p>
+
+      <sd-table
+        paginated
+        pageSize="10"
+        total="6"
+        config-visible
+        tree='{"childrenKey":"children","maxDepth":4,"defaultExpanded":1,"indentSize":24}'
+        columns='[
+          {"field":"stt","title":"STT","type":"string"},
+          {"field":"name","title":"Tên hạng mục","type":"string"},
+          {"field":"unit","title":"Đơn vị","type":"string"},
+          {"field":"quantity","title":"SL","type":"number","align":"right","option":{"precision":0}},
+          {"field":"unitPrice","title":"Đơn giá (đ)","type":"number","align":"right","option":{"precision":0}},
+          {"field":"totalCost","title":"Thành tiền (đ)","type":"number","align":"right","option":{"precision":0}}
+        ]'
+        data='[
+          {"stt":"1","name":"Khảo sát & Thiết kế","totalCost":225000000,"children":[
+            {"stt":"1.1","name":"Khảo sát địa hình","unit":"m²","quantity":50,"unitPrice":2000000,"totalCost":100000000,"children":[
+              {"stt":"1.1.1","name":"Đo đạc địa hình","unit":"m²","quantity":30,"unitPrice":1500000,"totalCost":45000000},
+              {"stt":"1.1.2","name":"Lập bản đồ số","unit":"m²","quantity":20,"unitPrice":2750000,"totalCost":55000000}
+            ]},
+            {"stt":"1.2","name":"Thiết kế kiến trúc","unit":"Bộ","quantity":1,"unitPrice":125000000,"totalCost":125000000}
+          ]},
+          {"stt":"2","name":"Phần thô","totalCost":600000000,"children":[
+            {"stt":"2.1","name":"Móng & kết cấu","unit":"m³","quantity":80,"unitPrice":3750000,"totalCost":300000000,"children":[
+              {"stt":"2.1.1","name":"Cọc bê tông cốt thép","unit":"m","quantity":80,"unitPrice":2200000,"totalCost":176000000},
+              {"stt":"2.1.2","name":"Đài móng","unit":"m³","quantity":40,"unitPrice":3100000,"totalCost":124000000}
+            ]},
+            {"stt":"2.2","name":"Kết cấu thép","unit":"Tấn","quantity":15,"unitPrice":18000000,"totalCost":270000000},
+            {"stt":"2.3","name":"Bê tông sàn","unit":"m²","quantity":100,"unitPrice":300000,"totalCost":30000000}
+          ]},
+          {"stt":"3","name":"Nhân công & Máy móc","totalCost":275000000,"children":[
+            {"stt":"3.1","name":"Nhân công","unit":"m²","quantity":2,"unitPrice":100000000,"totalCost":100000000,"children":[
+              {"stt":"3.1.1","name":"Nhân công xây thô","totalCost":60000000,"children":[
+                {"stt":"3.1.1.1","name":"Thợ nề cấp 3","unit":"công","quantity":30,"unitPrice":700000,"totalCost":21000000},
+                {"stt":"3.1.1.2","name":"Thợ nề cấp 4","unit":"công","quantity":25,"unitPrice":900000,"totalCost":22500000},
+                {"stt":"3.1.1.3","name":"Phụ hồ","unit":"công","quantity":30,"unitPrice":550000,"totalCost":16500000}
+              ]},
+              {"stt":"3.1.2","name":"Nhân công hoàn thiện","unit":"công","quantity":50,"unitPrice":800000,"totalCost":40000000}
+            ]},
+            {"stt":"3.2","name":"Máy móc & thiết bị","unit":"Cái","quantity":3,"unitPrice":175000000,"totalCost":175000000}
+          ]},
+          {"stt":"4","name":"Hoàn thiện","totalCost":450000000,"children":[
+            {"stt":"4.1","name":"Ốp lát & sơn","unit":"m²","quantity":200,"unitPrice":1000000,"totalCost":200000000,"children":[
+              {"stt":"4.1.1","name":"Ốp tường","unit":"m²","quantity":120,"unitPrice":700000,"totalCost":84000000},
+              {"stt":"4.1.2","name":"Lát nền","unit":"m²","quantity":80,"unitPrice":950000,"totalCost":76000000}
+            ]},
+            {"stt":"4.2","name":"Trần & vách ngăn","unit":"m²","quantity":180,"unitPrice":1389000,"totalCost":250000000,"children":[
+              {"stt":"4.2.1","name":"Trần thạch cao","unit":"m²","quantity":100,"unitPrice":1500000,"totalCost":150000000},
+              {"stt":"4.2.2","name":"Vách kính cường lực","unit":"m²","quantity":80,"unitPrice":1250000,"totalCost":100000000}
+            ]}
+          ]},
+          {"stt":"5","name":"MEP & Kỹ thuật","totalCost":450000000,"children":[
+            {"stt":"5.1","name":"Hệ thống điện","unit":"Gói","quantity":1,"unitPrice":180000000,"totalCost":180000000},
+            {"stt":"5.2","name":"Hệ thống cấp thoát nước","unit":"Gói","quantity":1,"unitPrice":120000000,"totalCost":120000000},
+            {"stt":"5.3","name":"Điều hòa không khí","unit":"Bộ","quantity":10,"unitPrice":15000000,"totalCost":150000000}
+          ]},
+          {"stt":"6","name":"Hạ tầng ngoài nhà","totalCost":275000000,"children":[
+            {"stt":"6.1","name":"Đường nội bộ","unit":"m","quantity":200,"unitPrice":500000,"totalCost":100000000,"children":[
+              {"stt":"6.1.1","name":"Nền & móng đường","unit":"m","quantity":200,"unitPrice":300000,"totalCost":60000000},
+              {"stt":"6.1.2","name":"Mặt đường bê tông","unit":"m","quantity":200,"unitPrice":200000,"totalCost":40000000}
+            ]},
+            {"stt":"6.2","name":"Cổng & hàng rào","unit":"m","quantity":150,"unitPrice":1167000,"totalCost":175000000}
+          ]}
+        ]'
+      ></sd-table>
+
+      <hr class="my-0">
+
+      <!-- ══════════════════════════════════════════════════
+           SD-TABLE — Addable + type:"raw" (inline-editable rows)
+           ══════════════════════════════════════════════════ -->
+      <p class="ds-preview-label">
+        <strong>sd-table addable + type:"raw"</strong> — Bảng có thể thêm dòng động.
+        Attribute <code>addable</code> thêm footer dạng dashed với nút "+ Thêm dòng" (text tùy chỉnh qua <code>add-label</code>).
+        Columns kiểu <code>type:"raw"</code> render HTML tùy ý vào cell — dùng để nhúng <code>sd-select</code>, <code>sd-input</code>, <code>sd-button</code> trực tiếp vào hàng.
+        Cần override <code>overflow: visible</code> trên <code>.c-container</code> và <code>.c-table</code> để dropdown không bị clip.
+      </p>
+
+      <style>
+        /* Host sd-table cũng `overflow:auto` (sd-tokens.css, từ 2026-10-12) → mở cả host để lịch sd-date ở dòng cuối không bị cắt;
+           mở rồi thì bo lại 2 góc trên của hàng tiêu đề cho khớp khung bảng trong section (8px − viền 1px). */
+        #demo-addable-table,
+        #demo-addable-table .c-container,
+        #demo-addable-table .c-table { overflow: visible; }
+        #demo-addable-table thead th:first-child { border-top-left-radius: 7px; }
+        #demo-addable-table thead th:last-child { border-top-right-radius: 7px; }
+      </style>
+
+
+      <sd-table id="demo-addable-table"
+        hide-inline-filter
+        addable add-label="Thêm điều kiện"
+        columns='[
+          {"field":"_param","title":"Thông số","type":"raw"},
+          {"field":"_op","title":"Điều kiện","type":"raw"},
+          {"field":"_val","title":"Giá trị","type":"raw"},
+          {"field":"_del","title":"","type":"raw"}
+        ]'
+        data='[]'
+      ></sd-table>
+
+      <hr class="my-0">
+
+      <!-- ══════════════════════════════════════════════════
+           SD-TABLE — Minimal (không selectable, không pagination)
+           ══════════════════════════════════════════════════ -->
+      <p class="ds-preview-label"><strong>sd-table</strong> — Không selectable, không pagination, không inline filter. Bảng đơn giản.</p>
+
+      <sd-table
+        hide-inline-filter
+        columns='[
+          {"field":"name","title":"Tên cấu hình","type":"text"},
+          {"field":"value","title":"Giá trị","type":"text","align":"right"},
+          {"field":"desc","title":"Mô tả","type":"text"}
+        ]'
+        data='[
+          {"name":"Max upload size","value":"10 MB","desc":"Dung lượng tối đa cho file upload"},
+          {"name":"Session timeout","value":"30 phút","desc":"Thời gian hết hạn phiên đăng nhập"},
+          {"name":"API rate limit","value":"100 req/s","desc":"Giới hạn request mỗi giây"}
+        ]'
+      ></sd-table>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+      <sd-section title="sd-table — Hướng dẫn BA / PO">
+        <div class="ds-guide">
+
+          <div class="ds-guide-do-dont">
+            <div class="ds-guide-do">
+              <div class="ds-guide-box-header">
+                <span class="material-icons-outlined mi-16">check_circle</span>
+                Dùng khi
+              </div>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li>Pattern table đầy đủ kết hợp filter-bar + sd-table + pagination trong Browse page</li>
+                <li>Khi cần inline column filter trực tiếp trong header table</li>
+                <li>Thêm <code>selectable</code> khi BA cần chọn nhiều dòng để thực hiện bulk action (khai nút qua <code>option.selector.actions</code>)</li>
+                <li>Thêm cột <code>sortable</code> khi BA cần sắp xếp theo cột (click header đổi asc/desc, chỉ 1 cột active tại một thời điểm)</li>
+                <li>Thêm cột <code>type: "menu"</code> khi mỗi dòng cần nhiều hành động (Xem/Duyệt/Từ chối…) gộp vào 1 icon "…" cuối hàng thay vì nhiều nút riêng lẻ</li>
+                <li>Thêm <strong>Tìm nhanh</strong> khi BA cần ô tìm từ khoá + vài dropdown lọc gọn ngay trên đầu bảng (thay cho filter-bar khi bộ lọc ít); thêm <strong>Dòng tổng</strong> khi cần tổng / đếm / trung bình / ngày lớn nhất ở cuối bảng</li>
+              </ul>
+            </div>
+            <div class="ds-guide-dont">
+              <div class="ds-guide-box-header">
+                <span class="material-icons-outlined mi-16">cancel</span>
+                Không dùng khi
+              </div>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li>Table đơn giản trong section của Read/Add page (dùng sd-table component trực tiếp)</li>
+                <li>Table không cần filter</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+            <div class="ds-guide-prd">
+              <p>"Bảng Danh sách kho hàng: filter ngoài (tìm kiếm, trạng thái), inline filter trong cột (số lượng min/max), phân trang 20 hàng, có thể chọn nhiều hàng để export."</p>
+              <p>"Bảng có <strong>bulk action</strong>: chọn nhiều dòng → hiện thanh thao tác của bảng với nút Phê duyệt / Từ chối."</p>
+              <p>"Cột Mã/Tên/Số lượng cho phép <strong>sắp xếp</strong> khi bấm vào tên cột. Mỗi dòng có nút "…" ở cuối để Xem chi tiết / Phê duyệt / Từ chối riêng cho dòng đó."</p>
+              <p>"Bảng có <strong>tìm nhanh</strong> theo Mã / Tên (Enter để tìm) và 2 dropdown Ngân hàng, Trạng thái (chọn nhiều). Cuối bảng có <strong>dòng tổng</strong>: đếm số hồ sơ, tổng số tiền, ngày giải ngân muộn nhất — tính trên mọi dòng sau khi lọc."</p>
+            </div>
+          </div>
+
+        </div>
+      </sd-section>
+
+      <sd-section title="sd-table tree — Hướng dẫn BA / PO">
+        <div class="ds-guide">
+
+          <div class="ds-guide-do-dont">
+            <div class="ds-guide-do">
+              <div class="ds-guide-box-header">
+                <span class="material-icons-outlined mi-16">check_circle</span>
+                Dùng khi (tree mode)
+              </div>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li>Dữ liệu có cấu trúc phân cấp: hạng mục chi phí, BOM, danh mục sản phẩm, cơ cấu tổ chức</li>
+                <li>Cần nhóm/tổng hợp theo cây — parent row hiển thị tổng hoặc tóm tắt của con</li>
+                <li>Cần giữ data density cao — không muốn mở thêm trang/tab để xem con</li>
+                <li>Cây có tối đa 4 cấp — vẫn đọc được trong bảng</li>
+              </ul>
+            </div>
+            <div class="ds-guide-dont">
+              <div class="ds-guide-box-header">
+                <span class="material-icons-outlined mi-16">cancel</span>
+                Không dùng khi (tree mode)
+              </div>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li>Cây sâu hơn 4 cấp — dùng master-detail hoặc drill-down page</li>
+                <li>Dữ liệu phẳng hoàn toàn — dùng flat table, không khai báo tree</li>
+                <li>Cần filter trực tiếp trên bảng — tree mode tắt inline filter</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Cấu trúc dữ liệu mẫu (hạng mục chi phí 4 cấp)</p>
+            <div class="ds-guide-prd">
+              <p>Cấp 1 (root): Nhóm hạng mục lớn (Khảo sát &amp; Thiết kế, Phần thô, MEP…)</p>
+              <p>Cấp 2: Hạng mục con (1.1 Khảo sát địa hình, 1.2 Thiết kế kiến trúc…)</p>
+              <p>Cấp 3: Chi tiết (1.1.1 Đo đạc địa hình, 1.1.2 Lập bản đồ số…)</p>
+              <p>Cấp 4: Đơn vị nhỏ nhất, có đơn giá + số lượng (3.1.1.1 Thợ nề cấp 3, 3.1.1.2 Thợ nề cấp 4…)</p>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+            <div class="ds-guide-prd">
+              <p>"Bảng hạng mục chi phí dạng cây, tối đa 4 cấp. Mặc định mở cấp 1 (root), user có thể expand/collapse từng hàng. Phân trang 10 hàng/trang tính trên root rows. Cột STT chứa số phân cấp (1, 1.1, 1.1.1…) từ data."</p>
+            </div>
+          </div>
+
+        </div>
+      </sd-section>
+
+      <sd-section title="sd-table addable — Hướng dẫn BA / PO">
+        <div class="ds-guide">
+
+          <div class="ds-guide-do-dont">
+            <div class="ds-guide-do">
+              <div class="ds-guide-box-header">
+                <span class="material-icons-outlined mi-16">check_circle</span>
+                Dùng khi
+              </div>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li>Cần bảng nhỏ inline trong form — user tự thêm/xóa dòng, mỗi dòng là một bộ điều kiện/cấu hình</li>
+                <li>Số lượng dòng không cố định, user nhập trực tiếp vào cell (select, input)</li>
+                <li>Ví dụ: bảng điều kiện áp dụng biểu mẫu, bảng phân bổ chi phí, bảng mapping trường dữ liệu</li>
+              </ul>
+            </div>
+            <div class="ds-guide-dont">
+              <div class="ds-guide-box-header">
+                <span class="material-icons-outlined mi-16">cancel</span>
+                Không dùng khi
+              </div>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li>Bảng browse danh sách — dùng sd-table thường + filter-bar</li>
+                <li>Chỉ hiển thị dữ liệu, không cần edit inline — dùng sd-table type:"text"/"status" thông thường</li>
+                <li>Cần phân trang hoặc sort — addable table không phù hợp với nhiều dòng</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+            <div class="ds-guide-prd">
+              <p>"Bảng điều kiện áp dụng: user thêm từng điều kiện bằng nút [+ Thêm điều kiện]. Mỗi dòng có 3 field: Thông số (dropdown), Điều kiện (dropdown phụ thuộc thông số), Giá trị (input/dropdown tùy loại). Xóa dòng bằng icon ✕ ở cuối hàng."</p>
+            </div>
+          </div>
+
+        </div>
+      </sd-section>
+
+      <sd-section title="Thao tác hàng loạt — Hướng dẫn BA / PO">
+        <div class="ds-guide">
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Dùng khi</p>
+            <ul class="ds-guide-list mb-0 pl-0">
+              <li>Bảng có <code>selectable</code> và user cần làm cùng một việc cho nhiều dòng (phê duyệt, từ chối, export, xóa…).</li>
+              <li>Thanh thao tác là của chính sd-table (<code>selector-action</code>): <strong>snackbar nổi giữa đáy màn hình</strong>, tự hiện khi có dòng được chọn ("N dữ liệu được chọn"), tự có nút ❌ bỏ chọn. Không dựng thanh riêng — pattern <code>snackbar-batch</code> cũ của kit đã gỡ 2026-10-12.</li>
+              <li>2 thao tác đầu hiện thành nút; từ thao tác thứ 3 gom vào nút "Thêm"; vài thao tác cùng loại gom thành một nút có menu con.</li>
+            </ul>
+            <div class="ds-guide-prd">
+              <p>"Khi user chọn ≥1 dòng, hiện snackbar thao tác ở đáy màn hình với nút [Phê duyệt] và [Từ chối]; [Xuất danh sách] để trong nút Thêm."</p>
+            </div>
+          </div>
+        </div>
+      </sd-section>
+      <sd-section title="Tìm nhanh + Dòng tổng — Hướng dẫn BA / PO">
+        <div class="ds-guide">
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Dùng khi</p>
+            <ul class="ds-guide-list mb-0 pl-0">
+              <li><strong>Tìm nhanh</strong> — một ô từ khoá (tìm trong vài cột chỉ định, bấm Enter) + tối đa vài dropdown lọc ngay trên đầu bảng. Hợp với bảng ít tiêu chí lọc; bảng nhiều tiêu chí vẫn dùng filter-bar (Bộ lọc ngoài).</li>
+              <li>Dropdown có thể <strong>bắt buộc</strong>: chưa chọn thì không tìm được và bảng báo "Vui lòng chọn bộ lọc để bắt đầu" — dùng khi dữ liệu quá lớn nếu không giới hạn (vd phải chọn đơn vị / kỳ trước).</li>
+              <li><strong>Dòng tổng</strong> — cuối bảng, theo từng cột: Tổng · Trung bình · Đếm · Nhỏ nhất · Lớn nhất. Ghi rõ trong PRD tính trên <em>trang đang xem</em> hay <em>mọi dòng sau khi lọc</em>.</li>
+              <li><strong>Nhóm dòng</strong> — gom dòng theo một (hoặc vài) cột, mỗi nhóm có dòng tiêu đề (chọn cả nhóm, thu / mở) và có thể có <strong>tổng con</strong> cuối nhóm. Ghi rõ nhóm theo cột nào, tiêu đề nhóm hiện gì (vd "Vietcombank · 3 hồ sơ"), có thu gọn được không.</li>
+              <li><strong>Bảng cây</strong> cũng có tìm nhanh (giữ nhánh có kết quả) và dòng tổng: tổng trên node lá / node gốc / mọi node, có thể thêm tổng con dưới mỗi nhánh đang mở.</li>
+              <li><strong>Export</strong> — nút Export ở chân bảng mở menu Excel / CSV (hoặc chỉ một loại); xuất mọi dòng sau lọc, không chỉ trang đang xem.</li>
+              <li><strong>Nhóm thao tác hàng loạt</strong> — vài thao tác cùng loại gom dưới một nút (vd "Chuyển trạng thái" → Chờ duyệt / Đã duyệt).</li>
+            </ul>
+            <div class="ds-guide-prd">
+              <p>"Bảng hồ sơ nhóm theo Ngân hàng, tiêu đề nhóm ghi tên ngân hàng + số hồ sơ, thu gọn được; cuối mỗi nhóm có tổng số lượng. Export ra Excel hoặc CSV."</p>
+              <p>"Bảng hạng mục chi phí dạng cây có ô tìm hạng mục; dưới mỗi nhánh đang mở có dòng tổng thành tiền, cuối bảng tổng các hạng mục lá."</p>
+            </div>
+          </div>
+        </div>
+      </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+      <sd-section title="sd-table — Hướng dẫn Dev">
+        <div class="ds-guide">
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Cú pháp đầy đủ (selectable)</p>
+            <div class="ds-guide-code-wrap">
+              <div class="ds-guide-code-bar">
+                <span class="ds-guide-code-lang">HTML</span>
+                <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+              </div>
+              <pre class="ds-guide-code">&lt;sd-table id="main-table"
+  selectable
+  paginated pageSize="20" pageSizes="10,20,50" total="156"
+  reload-visible export-visible
+  columns='[{"field":"code","title":"Mã","type":"link","option":{"href":"chi-tiet.html"},"sortable":true},
+            {"field":"name","title":"Tên","type":"string","sortable":true},
+            {"field":"status","title":"Trạng thái","type":"status","option":{"items":[...]}},
+            {"field":"_menu","title":"","type":"menu","option":{"icon":"more_horiz","items":[
+              {"id":"view","icon":"visibility","label":"Xem chi tiết"},
+              {"id":"approve","icon":"task_alt","label":"Phê duyệt","color":"success"}
+            ]}}]'
+  data='[...]'
+&gt;&lt;/sd-table&gt;</pre>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Attributes</p>
+            <table class="ds-guide-table">
+              <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+              <tbody>
+                <tr><td>columns</td><td>JSON array</td><td>-</td><td>Định nghĩa cột (field, title, type, align, option)</td></tr>
+                <tr><td>data</td><td>JSON array of objects</td><td>-</td><td>Dữ liệu bảng</td></tr>
+                <tr><td>selectable</td><td>boolean</td><td>—</td><td>Thêm checkbox column để chọn hàng</td></tr>
+                <tr><td><s>no-index</s></td><td>boolean</td><td>—</td><td>Không còn tác dụng — cột # đã gỡ 2026-10-12 theo catalog</td></tr>
+                <tr><td>paginated</td><td>boolean</td><td>—</td><td>Hiện footer phân trang. 22.2.14: tổng ≤ <code>pageSize</code> → ẩn phân trang, chỉ hiện "Đang hiển thị: 1-N/N"</td></tr>
+                <tr><td>pageSize</td><td>number</td><td>10</td><td>Số hàng mỗi trang</td></tr>
+                <tr><td>pageSizes</td><td>comma-separated</td><td>5,10,25</td><td>Tùy chọn page size</td></tr>
+                <tr><td>total</td><td>number</td><td>data.length</td><td>Tổng số record (server-side)</td></tr>
+                <tr><td>hide-inline-filter</td><td>boolean</td><td>—</td><td>Ẩn filter inputs dưới header. Dùng khi đã có filter-bar ngoài</td></tr>
+                <tr><td>reload-visible</td><td>boolean</td><td>—</td><td>Hiện nút reload</td></tr>
+                <tr><td>export-visible</td><td>boolean</td><td>—</td><td>Hiện nút export</td></tr>
+                <tr><td>config-visible</td><td>boolean</td><td>—</td><td>Hiện nút settings cột</td></tr>
+                <tr><td>option</td><td>JSON (hoặc property <code>el.option</code>)</td><td>—</td><td><code>SdTableOption</code>: <code>selector</code>, <code>commands</code>, <code>filter.quickSearch</code>, <code>aggregate</code>… — hàm (<code>click</code>, <code>transform</code>) chỉ truyền được qua property</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Sort cột &amp; row command menu — chi tiết đầy đủ ở <code>components/table.html</code></p>
+            <div class="ds-guide-prd">
+              <p>Cột khai <code>"sortable": true</code> — click header (hoặc Enter / Space khi focus) cycle <code>unfold_more → arrow_upward → arrow_downward → unfold_more</code>; chỉ 1 cột active tại một thời điểm; sắp xếp thật trên <code>data</code> (số so numeric, ngày so theo Date, còn lại so chuỗi). 22.2.14: cột canh phải cũng có mũi tên.</p>
+              <p>Cột <code>"type": "menu"</code> — icon nút trigger tùy chỉnh qua <code>option.icon</code> (mặc định <code>more_vert</code>); mỗi <code>option.items[]</code> có <code>id</code>/<code>icon</code>/<code>label</code>/<code>color</code> (tái dùng <code>.text-*</code>); bấm item bắn <code>CustomEvent('sd-table-menu-click', {detail:{field,itemId,itemIndex,label,row,rowIndex}})</code> để trang tự wire hành vi (xem demo phía trên, và tài liệu đầy đủ ở <code>design-system/components/sd-data.md</code>).</p>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Selection — thao tác hàng loạt</p>
+            <div class="ds-guide-code-wrap">
+              <div class="ds-guide-code-bar">
+                <span class="ds-guide-code-lang">JS</span>
+              </div>
+              <pre class="ds-guide-code">// Không lắng nghe checkbox nữa — khai option.selector.actions;
+// mỗi action nhận click(rows) với các dòng đang chọn.
+// 2 action đầu = nút; từ action thứ 3 vào nút "Thêm"; message thay chữ " dữ liệu được chọn " (chuỗi hoặc hàm (rows) => chuỗi).
+el.option = { selector: { visible: true, message: function (rows) { return 'hồ sơ được chọn'; }, actions: [
+  { title: 'Phê duyệt', icon: 'check_circle', color: 'primary', click: function (rows) { /* … */ } },
+  { title: 'Từ chối', icon: 'cancel', color: 'error', click: function (rows) { /* … */ } },
+  { title: 'Xuất danh sách', icon: 'download', click: function (rows) { /* → trong nút "Thêm" */ } }
+] } };</pre>
+            </div>
+          </div>
+
+        </div>
+      </sd-section>
+
+      <sd-section title="sd-table tree — Hướng dẫn Dev">
+        <div class="ds-guide">
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Cú pháp tree</p>
+            <div class="ds-guide-code-wrap">
+              <div class="ds-guide-code-bar">
+                <span class="ds-guide-code-lang">HTML</span>
+                <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+              </div>
+              <pre class="ds-guide-code">&lt;sd-table
+  paginated pageSize="10" total="6"
+  tree='{"childrenKey":"children","maxDepth":4,"defaultExpanded":1,"indentSize":24}'
+  columns='[
+    {"field":"stt",      "title":"STT",           "type":"string"},
+    {"field":"name",     "title":"Tên hạng mục",  "type":"string"},
+    {"field":"unit",     "title":"Đơn vị",        "type":"string"},
+    {"field":"quantity", "title":"SL",            "type":"number","align":"right","option":{"precision":0}},
+    {"field":"unitPrice","title":"Đơn giá (đ)",   "type":"number","align":"right","option":{"precision":0}},
+    {"field":"totalCost","title":"Thành tiền (đ)","type":"number","align":"right","option":{"precision":0}}
+  ]'
+  data='[
+    {"stt":"1","name":"Khảo sát &amp; Thiết kế","totalCost":225000000,"children":[
+      {"stt":"1.1","name":"Khảo sát địa hình","unit":"m²","quantity":50,
+       "unitPrice":2000000,"totalCost":100000000,"children":[
+        {"stt":"1.1.1","name":"Đo đạc địa hình","unit":"m²","quantity":30,"unitPrice":1500000,"totalCost":45000000},
+        {"stt":"1.1.2","name":"Lập bản đồ số",  "unit":"m²","quantity":20,"unitPrice":2750000,"totalCost":55000000}
+      ]},
+      {"stt":"1.2","name":"Thiết kế kiến trúc","unit":"Bộ","quantity":1,
+       "unitPrice":125000000,"totalCost":125000000}
+    ]},
+    {"stt":"3","name":"Nhân công &amp; Máy móc","totalCost":275000000,"children":[
+      {"stt":"3.1","name":"Nhân công","unit":"m²","quantity":2,
+       "unitPrice":100000000,"totalCost":100000000,"children":[
+        {"stt":"3.1.1","name":"Nhân công xây thô","totalCost":60000000,"children":[
+          {"stt":"3.1.1.1","name":"Thợ nề cấp 3","unit":"công","quantity":30,"unitPrice":700000,"totalCost":21000000},
+          {"stt":"3.1.1.2","name":"Thợ nề cấp 4","unit":"công","quantity":25,"unitPrice":900000,"totalCost":22500000},
+          {"stt":"3.1.1.3","name":"Phụ hồ",       "unit":"công","quantity":30,"unitPrice":550000,"totalCost":16500000}
+        ]},
+        {"stt":"3.1.2","name":"Nhân công hoàn thiện","unit":"công","quantity":50,"unitPrice":800000,"totalCost":40000000}
+      ]},
+      {"stt":"3.2","name":"Máy móc &amp; thiết bị","unit":"Cái","quantity":3,
+       "unitPrice":175000000,"totalCost":175000000}
+    ]}
+  ]'
+&gt;&lt;/sd-table&gt;
+
+&lt;!-- Ghi chú cấu trúc cấp:
+  Cấp 1 (root) — nhóm lớn, không có unit/quantity/unitPrice
+  Cấp 2 — hạng mục con, có hoặc không có unit
+  Cấp 3 — chi tiết, thường có đơn giá + số lượng
+  Cấp 4 — đơn vị nhỏ nhất, luôn có unit + quantity + unitPrice
+--&gt;</pre>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">tree attribute — options</p>
+            <table class="ds-guide-table">
+              <thead><tr><th>Key</th><th>Kiểu</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+              <tbody>
+                <tr><td>childrenKey</td><td>string</td><td>"children"</td><td>Tên field trong data chứa mảng con</td></tr>
+                <tr><td>maxDepth</td><td>number</td><td>10</td><td>Giới hạn độ sâu render — đặt bằng số cấp thực tế</td></tr>
+                <tr><td>defaultExpanded</td><td>false | true | number</td><td>false</td><td>false = thu gọn hết; true = mở hết; N = mở N cấp đầu (1 = hiện cấp 2, 2 = hiện cấp 3…)</td></tr>
+                <tr><td>indentSize</td><td>number (px)</td><td>20</td><td>Indent thêm mỗi cấp, áp vào cột đầu tiên</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Lưu ý kỹ thuật</p>
+            <ul class="ds-guide-list mb-0 pl-0">
+              <li><strong>Pagination tính trên root rows.</strong> Truyền <code>total</code> = số root rows (level 0). Khi <code>data</code> attribute thay đổi, expanded state tự reset.</li>
+              <li><strong>Inline filter tắt tự động</strong> khi dùng tree. Nếu cần filter, xử lý ở tầng controller rồi set lại <code>data</code>.</li>
+              <li><strong>Không có cột #</strong> (đã gỡ theo catalog). Số phân cấp (1, 1.1, 1.1.1…) nằm trong field data (thường là <code>stt</code>).</li>
+              <li><strong>Root rows</strong> (level 0): background <code>--sd-black50</code>. Parent có con: in đậm. Leaf nodes: style bình thường.</li>
+              <li>Indent áp vào <strong>cột đầu tiên</strong> trong <code>columns</code> — đặt cột STT hoặc tên lên đầu.</li>
+            </ul>
+          </div>
+
+        </div>
+      </sd-section>
+
+      <sd-section title="sd-table addable + type:raw — Hướng dẫn Dev">
+        <div class="ds-guide">
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Cú pháp HTML</p>
+            <div class="ds-guide-code-wrap">
+              <div class="ds-guide-code-bar">
+                <span class="ds-guide-code-lang">HTML</span>
+                <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+              </div>
+              <pre class="ds-guide-code">&lt;!-- Mở overflow (cả host) để lịch sd-date ở dòng cuối không bị cắt; bo lại góc trên hàng tiêu đề --&gt;
+&lt;style&gt;
+  #condition-table,
+  #condition-table .c-container,
+  #condition-table .c-table { overflow: visible; }
+  #condition-table thead th:first-child { border-top-left-radius: 7px; }
+  #condition-table thead th:last-child { border-top-right-radius: 7px; }
+&lt;/style&gt;
+
+&lt;sd-table id="condition-table"
+  hide-inline-filter
+  addable add-label="Thêm điều kiện"
+  columns='[
+    {"field":"_param","title":"Thông số","type":"raw"},
+    {"field":"_op",   "title":"Điều kiện","type":"raw"},
+    {"field":"_val",  "title":"Giá trị","type":"raw"},
+    {"field":"_del",  "title":"","type":"raw"}
+  ]'
+  data='[]'
+&gt;&lt;/sd-table&gt;</pre>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Attributes mới</p>
+            <table class="ds-guide-table">
+              <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mô tả</th></tr></thead>
+              <tbody>
+                <tr><td>addable</td><td>boolean</td><td>Thêm footer dạng dashed với nút "+ Thêm dòng". Click nút dispatch <code>sd-table-add-row</code> CustomEvent (bubbles: true)</td></tr>
+                <tr><td>add-label</td><td>string</td><td>Text hiển thị trên nút thêm dòng. Mặc định: "Thêm dòng"</td></tr>
+                <tr><td>type: "raw"</td><td>(column type)</td><td>Render giá trị cell dưới dạng raw HTML — dùng để nhúng sd-components động vào cell</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">JS — Data-driven re-render pattern</p>
+            <div class="ds-guide-code-wrap">
+              <div class="ds-guide-code-bar">
+                <span class="ds-guide-code-lang">JS</span>
+              </div>
+              <pre class="ds-guide-code">// 1. State array — mỗi object đại diện 1 dòng
+var conditionRows = [];
+
+// 2. Build HTML string cho từng cell (dùng sd-components)
+function buildParamHtml(idx, selectedVal) {
+  var items = JSON.stringify([
+    { id: 'loai_hinh', name: 'Loại hình' },
+    { id: 'trang_thai', name: 'Trạng thái' }
+    // ...
+  ]);
+  return '&lt;sd-select size="sm" placeholder="Chọn thông số" ' +
+    'items=\'' + items + '\' ' +
+    (selectedVal ? 'value="' + selectedVal + '"' : '') +
+    ' data-cond-param="' + idx + '"&gt;&lt;/sd-select&gt;';
+}
+
+function buildDelHtml(idx) {
+  return '&lt;sd-button type="link" color="secondary" size="sm" ' +
+    'prefixIcon="close" aria-label="Xóa" ' +
+    'data-cond-del="' + idx + '"&gt;&lt;/sd-button&gt;';
+}
+
+// 3. Re-render toàn bộ table bằng cách set attribute data
+function renderConditionTable() {
+  var tableData = conditionRows.map(function(r, i) {
+    return {
+      _param: buildParamHtml(i, r.param),
+      _op:    buildOpHtml(i, r.type, r.op),
+      _val:   buildValHtml(i, r.param, r.op),
+      _del:   buildDelHtml(i)
+    };
+  });
+  document.getElementById('condition-table')
+    .setAttribute('data', JSON.stringify(tableData));
+}
+
+// 4. Wire events
+document.addEventListener('DOMContentLoaded', function () {
+  var table = document.getElementById('condition-table');
+
+  // Thêm dòng mới
+  table.addEventListener('sd-table-add-row', function () {
+    conditionRows.push({ param: '', op: '', type: 'text' });
+    renderConditionTable();
+  });
+
+  // Lắng nghe thay đổi trong cell (sd-select, sd-input đều fire sd-change)
+  table.addEventListener('sd-change', function (e) {
+    var paramIdx = e.target.getAttribute('data-cond-param');
+    if (paramIdx !== null) {
+      var i = parseInt(paramIdx, 10);
+      conditionRows[i].param = e.target.value;
+      conditionRows[i].op    = '';          // reset op khi đổi param
+      renderConditionTable();
+      return;
+    }
+    var opIdx = e.target.getAttribute('data-cond-op');
+    if (opIdx !== null) {
+      conditionRows[parseInt(opIdx, 10)].op = e.target.value;
+      renderConditionTable();
+    }
+  });
+
+  // Xóa dòng
+  table.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-cond-del]');
+    if (!btn) return;
+    conditionRows.splice(parseInt(btn.getAttribute('data-cond-del'), 10), 1);
+    renderConditionTable();
+  });
+});</pre>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Lưu ý kỹ thuật</p>
+            <ul class="ds-guide-list mb-0 pl-0">
+              <li><strong>overflow: visible</strong> — PHẢI override <code>.c-container</code> và <code>.c-table</code> trên element cụ thể (scoped selector). Không override global để tránh ảnh hưởng sd-table khác trên trang.</li>
+              <li><strong>Re-render toàn bộ</strong> — mỗi lần state thay đổi, set lại <code>data</code> attribute. sd-table sẽ re-render innerHTML. Đây là cách duy nhất vì sd-table là display-only web component.</li>
+              <li><strong>Event delegation</strong> — lắng nghe trên <code>sd-table</code> element, không phải từng cell. Dùng <code>data-*</code> attribute trên sd-components bên trong cell để identify row/column.</li>
+              <li><strong>sd-change event</strong> — tất cả sd-form components (sd-select, sd-input) đều fire <code>sd-change</code> (bubbles: true) khi giá trị thay đổi.</li>
+              <li><strong>title: ""</strong> — dùng <code>title: ""</code> (empty string) cho cột delete để ẩn header. sd-table xử lý đúng (<code>title != null ? title : field</code>).</li>
+            </ul>
+          </div>
+
+        </div>
+      </sd-section>
+
+      <sd-section title="Thao tác hàng loạt — Hướng dẫn Dev">
+        <div class="ds-guide">
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">JS — option.selector</p>
+            <div class="ds-guide-code-wrap">
+              <div class="ds-guide-code-bar">
+                <span class="ds-guide-code-lang">JS</span>
+              </div>
+              <pre class="ds-guide-code">document.getElementById('main-table').option = {
+  selector: {
+    visible: true,
+    actions: [
+      { title: 'Phê duyệt', icon: 'check_circle', color: 'primary', click: function (rows) { /* rows = object dòng đã chọn */ } },
+      { title: 'Từ chối', icon: 'cancel', color: 'error', click: function (rows) { /* … */ } }
+    ]
+  }
+};</pre>
+            </div>
+          </div>
+        </div>
+      </sd-section>
+      <sd-section title="Tìm nhanh + Dòng tổng — Hướng dẫn Dev (22.2.14)">
+        <div class="ds-guide">
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Cú pháp (thuần HTML — xem bảng "Tìm nhanh + Dòng tổng" ở tab Preview)</p>
+            <div class="ds-guide-code-wrap">
+              <div class="ds-guide-code-bar">
+                <span class="ds-guide-code-lang">HTML</span>
+                <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+              </div>
+              <pre class="ds-guide-code">&lt;sd-table hide-inline-filter paginated pagesize="10"
+  option='{"filter":{"quickSearch":{
+      "containFields":["code","name"],
+      "equalFields":["taxCode"],
+      "placeholder":"Tìm theo mã hoặc tên…",
+      "filters":[
+        {"field":"bank","title":"Ngân hàng","type":"values","required":true,
+         "option":{"items":[…],"valueField":"id","displayField":"name"}},
+        {"field":"status","title":"Trạng thái","type":"values","default":["pending"],
+         "option":{"items":[…],"valueField":"id","displayField":"name","selection":"MULTIPLE"}}
+      ]}},
+    "aggregate":{"scope":"filtered"}}'
+  columns='[
+    {"field":"code","title":"Mã","type":"text","aggregate":"COUNT"},
+    {"field":"qty","title":"Số lượng","type":"number","align":"right","aggregate":"SUM"},
+    {"field":"date","title":"Ngày","type":"date","aggregate":"MAX"}
+  ]'
+  data='[…]'&gt;&lt;/sd-table&gt;</pre>
+            </div>
+          </div>
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Hành vi</p>
+            <ul class="ds-guide-list mb-0 pl-0">
+              <li><code>containFields</code>: từ khoá CHỨA (không phân biệt hoa thường) ở một trong các field · <code>equalFields</code>: từ khoá BẰNG ĐÚNG — hai danh sách gộp OR; không khai field nào thì từ khoá bị bỏ qua. <code>placeholder</code> mặc định "Tìm kiếm…". <code>aggregate.scope</code>: <code>page</code> (mặc định, các dòng đang hiện) hoặc <code>filtered</code> (mọi dòng sau lọc).</li>
+              <li>Dropdown áp ngay (một giá trị = bằng, chọn nhiều = thuộc tập), AND giữa các dropdown và với lọc cột / Bộ lọc ngoài; từ khoá áp khi Enter, ✕ xoá và áp luôn; mỗi lần đổi về trang 1.</li>
+              <li><code>required</code> chưa chọn → ô từ khoá khoá + gợi ý, bảng rỗng "Vui lòng chọn bộ lọc để bắt đầu". Chế độ server (<code>items</code> là hàm) nhận <code>filter.quickSearch = { term, filters }</code> và không được gọi khi thiếu dropdown bắt buộc.</li>
+              <li><code>aggregate</code>: <code>SUM</code> / <code>AVERAGE</code> (cột number), <code>MIN</code> / <code>MAX</code> (number, date, datetime), <code>COUNT</code> (mọi cột), hoặc hàm <code>(items, ctx) =&gt; giá trị</code> qua property. Không tính được → <code>---</code>.</li>
+              <li>Angular: cùng tên khoá trong <code>SdTableOption</code> của <code>@sdcorejs/angular</code> 22.2.14 — dự án còn ở 19.0.10 thì không có (<code>ai-instructions/html-to-angular.md</code> §0).</li>
+              <li><strong>Bảng cây</strong>: <code>aggregate.tree = { items: 'leaves' | 'roots' | 'all', subtotal: true }</code>; tìm nhanh giữ nhánh có node khớp, tự mở node có con cháu khớp.</li>
+              <li><strong>Nhóm</strong>: <code>group = { fields, collapsible, defaultCollapsed, template(ctx) }</code> + <code>aggregate.group: true</code>. <code>template</code> là của kit (thay <code>&lt;ng-template sdGroupDef&gt;</code>), nhận <code>{ key, values, items, isExpanded }</code>, trả HTML; không khai thì nhãn là JSON giá trị nhóm (như thư viện).</li>
+              <li><strong>Export</strong>: <code>export = { visible: 'ALL' | 'EXCEL' | 'CSV', fileName, columns, mapping, items }</code> hoặc <code>{ type: 'custom', onExport(filter) }</code>; xuất thật file (exceljs / CSV UTF-8). Cột <code>export: { disabled: true }</code> bị bỏ; <code>transform(value, row, { isExport: true })</code>.</li>
+              <li><strong>Nhóm hành động</strong>: <code>selector.actions[] = { variant: 'group', title, icon, children: [ { title, icon, click(rows) } ] }</code>.</li>
+            </ul>
+          </div>
+        </div>
+      </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/filter-bar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  /* ── Addable table demo ── */
+  (function () {
+    var DEMO_PARAMS = [
+      { id: 'loai_hinh',   name: 'Loại hình BĐS',    type: 'multi',  opts: [{ id: 'can_ho', name: 'Căn hộ' }, { id: 'biet_thu', name: 'Biệt thự' }, { id: 'shophouse', name: 'Shophouse' }] },
+      { id: 'du_an',       name: 'Dự án',             type: 'multi',  opts: [{ id: 'ms1', name: 'Masterise Homes' }, { id: 'ms2', name: 'Grand Marina' }, { id: 'ms3', name: 'The Global City' }] },
+      { id: 'gia_ban',     name: 'Giá bán (VNĐ)',     type: 'number', placeholder: 'Nhập giá...' },
+      { id: 'dien_tich',   name: 'Diện tích (m²)',    type: 'number', placeholder: 'Nhập DT...' },
+      { id: 'tang',        name: 'Tầng',              type: 'number', placeholder: 'Nhập tầng...' }
+    ];
+    var NUMBER_OPS = [
+      { id: 'eq',  name: '= Bằng' }, { id: 'neq', name: '≠ Khác' },
+      { id: 'gt',  name: '> Lớn hơn' }, { id: 'gte', name: '≥ Lớn hơn hoặc bằng' },
+      { id: 'lt',  name: '< Nhỏ hơn' }, { id: 'lte', name: '≤ Nhỏ hơn hoặc bằng' }
+    ];
+    var MULTI_OPS = [
+      { id: 'in',  name: 'Thuộc' }, { id: 'nin', name: 'Không thuộc' }
+    ];
+
+    var demoRows = [];
+
+    function esc(s) { return String(s || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;'); }
+
+    function usedParams() { return demoRows.map(function(r) { return r.param; }); }
+
+    function buildDemoParamHtml(idx, selectedVal) {
+      var used = usedParams();
+      var items = DEMO_PARAMS.map(function(p) {
+        return { id: p.id, name: p.name, disabled: (p.id !== selectedVal && used.indexOf(p.id) !== -1) };
+      });
+      return '<sd-select size="sm" placeholder="Chọn thông số" items=\'' +
+        esc(JSON.stringify(items)) + '\'' +
+        (selectedVal ? ' value="' + selectedVal + '"' : '') +
+        ' data-demo-param="' + idx + '"></sd-select>';
+    }
+
+    function buildDemoOpHtml(idx, paramType, selectedOp) {
+      if (!paramType) return '<sd-select size="sm" placeholder="—" disabled></sd-select>';
+      var ops = (paramType === 'number') ? NUMBER_OPS : MULTI_OPS;
+      return '<sd-select size="sm" placeholder="Chọn điều kiện" items=\'' +
+        esc(JSON.stringify(ops)) + '\'' +
+        (selectedOp ? ' value="' + selectedOp + '"' : '') +
+        ' data-demo-op="' + idx + '"></sd-select>';
+    }
+
+    function buildDemoValHtml(idx, paramDef, op) {
+      if (!paramDef || !op) return '<sd-input size="sm" placeholder="—" disabled></sd-input>';
+      if (paramDef.type === 'multi') {
+        return '<sd-select size="sm" placeholder="Chọn giá trị" items=\'' +
+          esc(JSON.stringify(paramDef.opts)) + '\'></sd-select>';
+      }
+      return '<sd-input size="sm" type="number" placeholder="' + esc(paramDef.placeholder || '') + '"></sd-input>';
+    }
+
+    function buildDemoDelHtml(idx) {
+      return '<sd-button type="link" color="secondary" size="sm" prefixIcon="close" aria-label="Xóa" data-demo-del="' + idx + '"></sd-button>';
+    }
+
+    function renderDemoTable() {
+      var tableData = demoRows.map(function(r, i) {
+        var paramDef = DEMO_PARAMS.find(function(p) { return p.id === r.param; }) || null;
+        return {
+          _param: buildDemoParamHtml(i, r.param),
+          _op:    buildDemoOpHtml(i, paramDef ? paramDef.type : null, r.op),
+          _val:   buildDemoValHtml(i, paramDef, r.op),
+          _del:   buildDemoDelHtml(i)
+        };
+      });
+      document.getElementById('demo-addable-table').setAttribute('data', JSON.stringify(tableData));
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var table = document.getElementById('demo-addable-table');
+      if (!table) return;
+
+      table.addEventListener('sd-table-add-row', function () {
+        demoRows.push({ param: '', op: '' });
+        renderDemoTable();
+      });
+
+      table.addEventListener('sd-change', function (e) {
+        var pi = e.target.getAttribute('data-demo-param');
+        if (pi !== null) {
+          var i = parseInt(pi, 10);
+          var newParam = e.target.value;
+          if (newParam === demoRows[i].param) return; // re-render init — skip
+          demoRows[i].param = newParam;
+          demoRows[i].op    = '';
+          renderDemoTable(); return;
+        }
+        var oi = e.target.getAttribute('data-demo-op');
+        if (oi !== null) {
+          var i2 = parseInt(oi, 10);
+          var newOp = e.target.value;
+          if (newOp === demoRows[i2].op) return; // re-render init — skip
+          demoRows[i2].op = newOp;
+          renderDemoTable();
+        }
+      });
+
+      table.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-demo-del]');
+        if (!btn) return;
+        demoRows.splice(parseInt(btn.getAttribute('data-demo-del'), 10), 1);
+        renderDemoTable();
+      });
+
+      renderDemoTable();
+    });
+  })();
+
+  /* ── Thao tác hàng loạt — snackbar selector-action CỦA CHÍNH sd-table (nổi giữa đáy màn hình; action thứ 3 trở đi vào "Thêm").
+     Pattern snackbar-batch riêng của kit đã gỡ 2026-10-12. ── */
+  (function () {
+    var t = document.getElementById('demo-table-sel');
+    if (!t) return;
+    t.option = { selector: { visible: true, actions: [
+      { title: 'Phê duyệt', icon: 'check_circle', color: 'primary', click: function (rows) { console.log('Phê duyệt', rows); } },
+      { title: 'Từ chối', icon: 'cancel', color: 'error', click: function (rows) { console.log('Từ chối', rows); } },
+      { title: 'Xuất danh sách', icon: 'download', click: function (rows) { console.log('Xuất danh sách', rows); } }
+    ] } };
+  })();
+
+  /* ── Nhóm dòng + nhóm hành động (22.2.14) ── */
+  (function () {
+    var t = document.getElementById('demo-table-group');
+    if (!t) return;
+    var BANK = { vcb: 'Vietcombank', bidv: 'BIDV' };
+    t.option = {
+      group: { fields: ['bank'], collapsible: true,
+        template: function (ctx) { return '<span class="T14M">' + (BANK[ctx.values.bank] || ctx.values.bank) + '</span><span class="T14R text-black400 ml-8">' + ctx.items.length + ' hồ sơ</span>'; } },
+      aggregate: { group: true },
+      export: { visible: 'ALL', fileName: 'Ho-so-theo-ngan-hang' },
+      selector: { visible: true, actions: [
+        { title: 'Phê duyệt', icon: 'check_circle', color: 'primary', click: function (rows) { console.log('Phê duyệt', rows); } },
+        { variant: 'group', title: 'Chuyển trạng thái', icon: 'swap_horiz', children: [
+          { title: 'Chờ duyệt', icon: 'schedule', click: function (rows) { console.log('→ Chờ duyệt', rows); } },
+          { title: 'Đã duyệt', icon: 'task_alt', click: function (rows) { console.log('→ Đã duyệt', rows); } }
+        ] }
+      ] }
+    };
+  })();
+  /* ── Row command menu demo (đồng bộ với components/table.html) ──
+     "Phê duyệt" -> status active, "Từ chối" -> status deactivated; "Xem chi tiết" chỉ log. */
+  document.getElementById('demo-table-sel').addEventListener('sd-table-menu-click', function (e) {
+    var log = document.getElementById('demo-table-sel-menu-log');
+    if (log) log.textContent = JSON.stringify(e.detail);
+    var table = document.getElementById('demo-table-sel');
+    var data = JSON.parse(table.getAttribute('data') || '[]');
+    var row = data[e.detail.rowIndex];
+    if (!row) return;
+    if (e.detail.itemId === 'approve') row.status = 'active';
+    if (e.detail.itemId === 'reject') row.status = 'deactivated';
+    if (e.detail.itemId === 'approve' || e.detail.itemId === 'reject') {
+      table.setAttribute('data', JSON.stringify(data));
+    }
+  });
+
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      // Show first panel on load
+      showPanel(0);
+    }
+
+    // patterns:loaded already fired before this inline script runs,
+    // so call directly — DOM is ready at this point.
+    initPreviewTabs();
+  })();
+</script>
+
+</body>
+</html>

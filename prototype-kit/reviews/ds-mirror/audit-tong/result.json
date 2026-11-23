@@ -1,0 +1,962 @@
+[
+ {
+  "sid": "c-anchor",
+  "page": "anchor.html",
+  "tags": [
+   "sd-anchor"
+  ],
+  "total": 2,
+  "unpaired": 0,
+  "ok": 2,
+  "style": 0,
+  "struct": 0,
+  "notes": [
+   "[sd-anchor «thông tin chung mã hồ sơ fund-»] hình khớp · thuộc tính nút #3 sd-anchor-item: catalog [] / kit ['key']",
+   "[sd-anchor «thông tin chung mã hồ sơ fund-»] hình khớp · thuộc tính nút #3 sd-anchor-item: catalog [] / kit ['icon', 'key']"
+  ]
+ },
+ {
+  "sid": "c-autoid-inspector",
+  "page": "autoid-inspector.html",
+  "tags": [
+   "sd-autoid-inspector"
+  ],
+  "total": 4,
+  "unpaired": 4,
+  "ok": 0,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-avatar",
+  "page": "avatar.html",
+  "tags": [
+   "sd-avatar"
+  ],
+  "total": 15,
+  "unpaired": 0,
+  "ok": 15,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-badge",
+  "page": "badge.html",
+  "tags": [
+   "sd-badge"
+  ],
+  "total": 32,
+  "unpaired": 4,
+  "ok": 28,
+  "style": 0,
+  "struct": 0,
+  "notes": [
+   "[sd-badge «account_balance hạn mức khả dụ»] hình khớp · thuộc tính nút #1 div: catalog ['data-tip'] / kit []"
+  ]
+ },
+ {
+  "sid": "c-button",
+  "page": "button.html",
+  "tags": [
+   "sd-button"
+  ],
+  "total": 40,
+  "unpaired": 0,
+  "ok": 40,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-chart",
+  "page": "chart.html",
+  "tags": [
+   "sd-bar-chart"
+  ],
+  "total": 2,
+  "unpaired": 2,
+  "ok": 0,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-code-editor",
+  "page": "code-editor.html",
+  "tags": [
+   "sd-code-editor"
+  ],
+  "total": 3,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 2,
+  "struct": 1,
+  "notes": [
+   "[sd-code-editor «json (editing) content_copy co»] lệch 13 giá trị (height(box), height) vd: sd-code-editor. height: 339.5px → 475.5px; sd-code-editor. height(box): 339.5 → 475.5; div.sd-code-wrapper.is-editable height: 307.5px → 475.5px · thuộc tính nút #10 mat-icon: catalog [] / kit ['data-mat-icon-type=font']",
+   "[sd-code-editor «typescript (read only) content»] lệch 11 giá trị (height(box), height) vd: sd-code-editor. height: 339.5px → 286.5px; sd-code-editor. height(box): 339.5 → 286.5; div.sd-code-wrapper height: 307.5px → 286.5px · thuộc tính nút #10 mat-icon: catalog [] / kit ['data-mat-icon-type=font']",
+   "[sd-code-editor «html (read only) check copied »] LỆCH CẤU TRÚC — nút #10: catalog <mat-icon .mat-icon.mat-icon-no-color.mat-ligature-font.material-icons> (sâu 4) ↔ kit <mat-icon .mat-icon.mat-icon-no-color.mat-ligature-font.material-icons> (sâu 4) (catalog 80 nút, kit 81)"
+  ]
+ },
+ {
+  "sid": "c-document-builder",
+  "page": "document-builder.html",
+  "tags": [
+   "sd-document-builder"
+  ],
+  "total": 1,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 0,
+  "struct": 1,
+  "notes": [
+   "[sd-document-builder «paragraph cộng hoà xã hội chủ »] LỆCH CẤU TRÚC — nút #20: catalog <div .ck.ck-dropdown.ck-font-family-dropdown> (sâu 9) ↔ kit <div .ck.ck-dropdown__panel.ck-dropdown__panel_se.ck-reset> (sâu 10) (catalog 148 nút, kit 180)"
+  ]
+ },
+ {
+  "sid": "c-editor",
+  "page": "editor.html",
+  "tags": [
+   "sd-editor"
+  ],
+  "total": 5,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 0,
+  "struct": 5,
+  "notes": [
+   "[sd-editor «nội dung tờ trình info_outline»] LỆCH CẤU TRÚC — nút #5: catalog <mat-icon .mat-icon.mat-icon-no-color.mat-ligature-font.material-icons> (sâu 4) ↔ kit <mat-icon .mat-icon.mat-icon-no-color.mat-ligature-font.mat-mdc-tooltip-trigger> (sâu 4) (catalog 70 nút, kit 76)",
+   "[sd-editor «ghi chú 0/500»] LỆCH CẤU TRÚC — nút #31: catalog <div .ck.ck-color-ui-dropdown.ck-dropdown> (sâu 9) ↔ kit <div .ck.ck-dropdown__panel.ck-dropdown__panel_se.ck-reset> (sâu 10) (catalog 68 nút, kit 71)",
+   "[sd-editor «ý kiến thẩm định * đề nghị bổ »] LỆCH CẤU TRÚC — nút #32: catalog <div .ck.ck-color-ui-dropdown.ck-dropdown> (sâu 9) ↔ kit <div .ck.ck-dropdown__panel.ck-dropdown__panel_se.ck-reset> (sâu 10) (catalog 65 nút, kit 67)",
+   "[sd-editor «error»] LỆCH CẤU TRÚC — nút #27: catalog <div .ck.ck-color-ui-dropdown.ck-dropdown> (sâu 9) ↔ kit <div .ck.ck-dropdown__panel.ck-dropdown__panel_se.ck-reset> (sâu 10) (catalog 58 nút, kit 61)",
+   "[sd-editor «kết luận phê duyệt hồ sơ hđ-20»] LỆCH CẤU TRÚC — nút #31: catalog <div .ck.ck-color-ui-dropdown.ck-disabled.ck-dropdown> (sâu 9) ↔ kit <div .ck.ck-dropdown__panel.ck-dropdown__panel_se.ck-reset> (sâu 10) (catalog 66 nút, kit 71)"
+  ]
+ },
+ {
+  "sid": "c-form-builder",
+  "page": "form-builder.html",
+  "tags": [
+   "sd-form-builder"
+  ],
+  "total": 1,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 0,
+  "struct": 1,
+  "notes": [
+   "[sd-form-builder «components search ⌘k basic tex»] LỆCH CẤU TRÚC — nút #124: catalog <div .fb-actions> (sâu 8) ↔ kit <span .conditional.fb-status-chip> (sâu 8) (catalog 400 nút, kit 400)"
+  ]
+ },
+ {
+  "sid": "c-form-generic",
+  "page": "form-generic.html",
+  "tags": [
+   "sd-input"
+  ],
+  "total": 4,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 0,
+  "struct": 4,
+  "notes": [
+   "[sd-input «số hợp đồng tín dụng»] LỆCH CẤU TRÚC — nút #18: catalog — ↔ kit <div .mat-mdc-form-field-hint-wrapper> (sâu 5) (catalog 18 nút, kit 20)",
+   "[sd-input «mã hồ sơ phê duyệt vui lòng nh»] LỆCH CẤU TRÚC — nút #19: catalog <mat-error .mat-mdc-form-field-bare-error.mat-mdc-form-field-error> (sâu 6) ↔ kit <mat-error .mat-mdc-form-field-bottom-align.mat-mdc-form-field-error> (sâu 6) (catalog 20 nút, kit 20)",
+   "[sd-input «loại tài sản»] LỆCH CẤU TRÚC — nút #20: catalog — ↔ kit <div .mat-mdc-form-field-hint-wrapper> (sâu 5) (catalog 20 nút, kit 22)",
+   "[sd-input «số hợp đồng tín dụng hđtd-2026»] LỆCH CẤU TRÚC — nút #0: catalog <sd-input .sd-viewed> (sâu 0) ↔ kit <sd-input .sd-has-label.sd-viewed> (sâu 0) (catalog 4 nút, kit 4)"
+  ]
+ },
+ {
+  "sid": "c-history",
+  "page": "history.html",
+  "tags": [
+   "sd-history"
+  ],
+  "total": 2,
+  "unpaired": 0,
+  "ok": 2,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-import-excel",
+  "page": "import-excel.html",
+  "tags": [
+   "sd-button"
+  ],
+  "total": 16,
+  "unpaired": 16,
+  "ok": 0,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-inform",
+  "page": "inform.html",
+  "tags": [
+   "sd-inform"
+  ],
+  "total": 13,
+  "unpaired": 0,
+  "ok": 12,
+  "style": 0,
+  "struct": 1,
+  "notes": [
+   "[sd-inform «warning vùng hành động tuỳ biế»] LỆCH CẤU TRÚC — nút #7: catalog <div .ui-demo__row> (sâu 4) ↔ kit <div .align-items-center.flex.flex-wrap.gap-12> (sâu 4) (catalog 24 nút, kit 24)"
+  ]
+ },
+ {
+  "sid": "c-mini-editor",
+  "page": "mini-editor.html",
+  "tags": [
+   "sd-mini-editor"
+  ],
+  "total": 5,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 0,
+  "struct": 5,
+  "notes": [
+   "[sd-mini-editor «đã rà soát phương án vay vốn l»] LỆCH CẤU TRÚC — nút #26: catalog <span .ck.ck-toolbar__separator> (sâu 8) ↔ kit <div .ck.ck-dropdown__panel.ck-dropdown__panel_se.ck-reset> (sâu 9) (catalog 45 nút, kit 49)",
+   "[sd-mini-editor «»] LỆCH CẤU TRÚC — nút #26: catalog <span .ck.ck-toolbar__separator> (sâu 8) ↔ kit <div .ck.ck-dropdown__panel.ck-dropdown__panel_se.ck-reset> (sâu 9) (catalog 41 nút, kit 43)",
+   "[sd-mini-editor «trần thị ngọc nhờ chị kiểm tra»] LỆCH CẤU TRÚC — nút #26: catalog <span .ck.ck-toolbar__separator> (sâu 8) ↔ kit <div .ck.ck-dropdown__panel.ck-dropdown__panel_se.ck-reset> (sâu 9) (catalog 41 nút, kit 43)",
+   "[sd-mini-editor «lịch trả nợ dự kiến theo từng »] LỆCH CẤU TRÚC — nút #26: catalog <span .ck.ck-toolbar__separator> (sâu 8) ↔ kit <div .ck.ck-dropdown__panel.ck-dropdown__panel_se.ck-reset> (sâu 9) (catalog 46 nút, kit 53)",
+   "[sd-mini-editor «hồ sơ đã khoá sau khi phê duyệ»] LỆCH CẤU TRÚC — nút #26: catalog <span .ck.ck-toolbar__separator> (sâu 8) ↔ kit <div .ck.ck-dropdown__panel.ck-dropdown__panel_se.ck-reset> (sâu 9) (catalog 40 nút, kit 42)"
+  ]
+ },
+ {
+  "sid": "c-modal",
+  "page": "modal.html",
+  "tags": [
+   "sd-button"
+  ],
+  "total": 23,
+  "unpaired": 14,
+  "ok": 0,
+  "style": 0,
+  "struct": 9,
+  "notes": [
+   "[sd-button «cơ bản»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-fill.c-sm.mat-mdc-button-base> (sâu 1) ↔ kit <button .c-button.c-fill.c-sm.mat-mdc-button-base> (sâu 1) (catalog 8 nút, kit 8)",
+   "[sd-button «primary»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-light.c-sm.mat-mdc-button-base> (sâu 1) ↔ kit <button .c-button.c-light.c-sm.mat-mdc-button-base> (sâu 1) (catalog 8 nút, kit 8)",
+   "[sd-button «secondary»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-light.c-sm.mat-mdc-button-base> (sâu 1) ↔ kit <button .c-button.c-light.c-sm.mat-mdc-button-base> (sâu 1) (catalog 8 nút, kit 8)",
+   "[sd-button «info»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-light.c-sm.mat-info> (sâu 1) ↔ kit <button .c-button.c-light.c-sm.mat-info> (sâu 1) (catalog 8 nút, kit 8)",
+   "[sd-button «success»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-light.c-sm.mat-mdc-button-base> (sâu 1) ↔ kit <button .c-button.c-light.c-sm.mat-mdc-button-base> (sâu 1) (catalog 8 nút, kit 8)",
+   "[sd-button «warning»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-light.c-sm.mat-mdc-button-base> (sâu 1) ↔ kit <button .c-button.c-light.c-sm.mat-mdc-button-base> (sâu 1) (catalog 8 nút, kit 8)",
+   "[sd-button «error»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-light.c-sm.mat-error> (sâu 1) ↔ kit <button .c-button.c-light.c-sm.mat-error> (sâu 1) (catalog 8 nút, kit 8)",
+   "[sd-button «bottom sheet»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-fill.c-sm.mat-mdc-button-base> (sâu 1) ↔ kit <button .c-button.c-fill.c-sm.mat-mdc-button-base> (sâu 1) (catalog 8 nút, kit 8)",
+   "[sd-button «khoá lối thoát»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-outline.c-sm.mat-mdc-button-base> (sâu 1) ↔ kit <button .c-button.c-outline.c-sm.mat-mdc-button-base> (sâu 1) (catalog 8 nút, kit 8)"
+  ]
+ },
+ {
+  "sid": "c-modal-resizable",
+  "page": "modal-resizable.html",
+  "tags": [
+   "sd-button"
+  ],
+  "total": 14,
+  "unpaired": 13,
+  "ok": 0,
+  "style": 0,
+  "struct": 1,
+  "notes": [
+   "[sd-button «mở hồ sơ»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-fill.c-sm.mat-mdc-button-base> (sâu 1) ↔ kit <button .c-button.c-fill.c-sm.mat-mdc-button-base> (sâu 1) (catalog 8 nút, kit 8)"
+  ]
+ },
+ {
+  "sid": "c-operator",
+  "page": "operator.html",
+  "tags": [
+   "sd-operator"
+  ],
+  "total": 8,
+  "unpaired": 0,
+  "ok": 8,
+  "style": 0,
+  "struct": 0,
+  "notes": [
+   "[sd-operator «»] hình khớp · thuộc tính nút #1 button: catalog ['aria-expanded=true'] / kit ['aria-expanded=false']",
+   "[sd-operator «»] hình khớp · thuộc tính nút #1 button: catalog ['aria-expanded=true'] / kit ['aria-expanded=false']"
+  ]
+ },
+ {
+  "sid": "c-org-chart",
+  "page": "org-chart.html",
+  "tags": [
+   "sd-org-chart"
+  ],
+  "total": 3,
+  "unpaired": 0,
+  "ok": 3,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-preview-image",
+  "page": "preview-image.html",
+  "tags": [
+   "sd-preview-image"
+  ],
+  "total": 4,
+  "unpaired": 0,
+  "ok": 4,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-preview-pdf",
+  "page": "preview-pdf.html",
+  "tags": [
+   "sd-preview-pdf"
+  ],
+  "total": 4,
+  "unpaired": 1,
+  "ok": 0,
+  "style": 1,
+  "struct": 2,
+  "notes": [
+   "[sd-preview-pdf «menu pdf hop_dong_tin_dung_vcb»] LỆCH CẤU TRÚC — nút #65: catalog <div .sd-preview-pdf-page> (sâu 5) ↔ kit <canvas .sd-preview-pdf-page> (sâu 5) (catalog 118 nút, kit 100)",
+   "[sd-preview-pdf «đang tải tài liệu... 42%»] LỆCH CẤU TRÚC — nút #7: catalog <span .sd-preview-pdf-progress-pct> (sâu 6) ↔ kit <div .sd-preview-pdf-progress> (sâu 5) (catalog 10 nút, kit 9)",
+   "[sd-preview-pdf «error_outline tài liệu được bả»] lệch 2 giá trị (margin-right, margin-left) vd: div.sd-preview-pdf-status margin-right: 90.9062px → 5.40625px; div.sd-preview-pdf-status margin-left: 90.9062px → 5.40625px"
+  ]
+ },
+ {
+  "sid": "c-query-bar",
+  "page": "query-bar.html",
+  "tags": [
+   "sd-query-bar"
+  ],
+  "total": 6,
+  "unpaired": 0,
+  "ok": 6,
+  "style": 0,
+  "struct": 0,
+  "notes": [
+   "[sd-query-bar «search text_fields mã hồ sơ : »] hình khớp · thuộc tính nút #3 div: catalog [] / kit ['data-qb-role']",
+   "[sd-query-bar «list trạng thái : đã giải ngân»] hình khớp · thuộc tính nút #5 div: catalog [] / kit ['aria-label=Chỉnh bộ lọc Trạng thái', 'data-qb-field', 'data-qb-role']",
+   "[sd-query-bar «text_fields mã hồ sơ : hs-2026»] hình khớp · thuộc tính nút #5 div: catalog [] / kit ['aria-label=Chỉnh bộ lọc Mã hồ sơ', 'data-qb-field', 'data-qb-role']",
+   "[sd-query-bar «text_fields mã hồ sơ : close t»] hình khớp · thuộc tính nút #5 span: catalog [] / kit ['data-qb-field']",
+   "[sd-query-bar «account_balance ngân hàng viet»] hình khớp · thuộc tính nút #5 div: catalog [] / kit ['aria-label=Chỉnh bộ lọc Ngân hàng', 'data-qb-field', 'data-qb-role']",
+   "[sd-query-bar «list trạng thái : chờ duyệt ar»] hình khớp · thuộc tính nút #5 div: catalog [] / kit ['aria-label=Chỉnh bộ lọc Trạng thái', 'data-qb-field', 'data-qb-role']"
+  ]
+ },
+ {
+  "sid": "c-query-builder",
+  "page": "query-builder.html",
+  "tags": [
+   "sd-query-builder"
+  ],
+  "total": 7,
+  "unpaired": 0,
+  "ok": 3,
+  "style": 0,
+  "struct": 4,
+  "notes": [
+   "[sd-query-builder «and or + account_balance ngân »] LỆCH CẤU TRÚC — nút #36: catalog <div .qb-divider> (sâu 6) ↔ kit <div .mat-mdc-form-field-hint-wrapper> (sâu 10) (catalog 335 nút, kit 361)",
+   "[sd-query-builder «and or + + điều kiện + nhóm ta»] LỆCH CẤU TRÚC — nút #39: catalog <div .qb-divider> (sâu 6) ↔ kit <div .mat-mdc-form-field-hint-wrapper> (sâu 10) (catalog 169 nút, kit 181)",
+   "[sd-query-builder «and or + chưa có điều kiện»] hình khớp · thuộc tính nút #2 div: catalog [] / kit ['data-path']",
+   "[sd-query-builder «and or + chọn trường keyboard_»] LỆCH CẤU TRÚC — nút #31: catalog <button .qb-btn.qb-btn-remove-rule> (sâu 6) ↔ kit <div .mat-mdc-form-field-hint-wrapper> (sâu 10) (catalog 32 nút, kit 34)",
+   "[sd-query-builder «and or + list trạng thái hồ sơ»] LỆCH CẤU TRÚC — nút #36: catalog <div .qb-divider> (sâu 6) ↔ kit <div .mat-mdc-form-field-hint-wrapper> (sâu 10) (catalog 65 nút, kit 69)"
+  ]
+ },
+ {
+  "sid": "c-quick-action",
+  "page": "quick-action.html",
+  "tags": [
+   "sd-quick-action"
+  ],
+  "total": 2,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 2,
+  "struct": 0,
+  "notes": [
+   "[sd-quick-action «đã chọn 3 hồ sơ đề xuất bỏ chọ»] lệch 4 giá trị (display, position, margin-right, margin-left) vd: sd-quick-action. display: inline → contents; div.c-quick-action.d-flex.align-items-center position: absolute → fixed; div.c-quick-action.d-flex.align-items-center margin-right: 352.875px → 349.875px · thuộc tính nút #1 div: catalog ['data-qa'] / kit []",
+   "[sd-quick-action «đang đồng bộ 12 giao dịch dòng»] lệch 4 giá trị (display, position, margin-right, margin-left) vd: sd-quick-action. display: inline → contents; div.c-quick-action.d-flex.align-items-center position: absolute → fixed; div.c-quick-action.d-flex.align-items-center margin-right: 371.438px → 368.438px · thuộc tính nút #1 div: catalog ['data-qa'] / kit []"
+  ]
+ },
+ {
+  "sid": "c-section",
+  "page": "section.html",
+  "tags": [
+   "sd-section"
+  ],
+  "total": 5,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 0,
+  "struct": 5,
+  "notes": [
+   "[sd-section «kế hoạch funding q4/2026 cập n»] LỆCH CẤU TRÚC — nút #1: catalog <div .bg-white.c-shadow-section.rounded-8> (sâu 1) ↔ kit <div .bg-white.c-section-wrap.c-shadow-section.rounded-8> (sâu 1) (catalog 11 nút, kit 11)",
+   "[sd-section «event_note lịch trả nợ gốc hợp»] LỆCH CẤU TRÚC — nút #1: catalog <div .bg-white.c-shadow-section.rounded-8> (sâu 1) ↔ kit <div .bg-white.c-section-wrap.c-shadow-section.rounded-8> (sâu 1) (catalog 37 nút, kit 37)",
+   "[sd-section «attach_file hồ sơ đính kèm 4 t»] LỆCH CẤU TRÚC — nút #1: catalog <div .bg-white.rounded-8> (sâu 1) ↔ kit <div .bg-white.c-section-wrap.rounded-8> (sâu 1) (catalog 32 nút, kit 32)",
+   "[sd-section «account_balance hạn mức tín dụ»] LỆCH CẤU TRÚC — nút #1: catalog <div .bg-white.c-shadow-section.rounded-8> (sâu 1) ↔ kit <div .bg-white.c-section-wrap.c-shadow-section.rounded-8> (sâu 1) (catalog 34 nút, kit 34)",
+   "[sd-section «khối nội dung không có header:»] LỆCH CẤU TRÚC — nút #1: catalog <div .bg-white.c-shadow-section.rounded-8> (sâu 1) ↔ kit <div .bg-white.c-section-wrap.c-shadow-section.rounded-8> (sâu 1) (catalog 5 nút, kit 5)"
+  ]
+ },
+ {
+  "sid": "c-side-drawer",
+  "page": "side-drawer.html",
+  "tags": [
+   "sd-button"
+  ],
+  "total": 8,
+  "unpaired": 5,
+  "ok": 0,
+  "style": 0,
+  "struct": 3,
+  "notes": [
+   "[sd-button «hẹp (480px)»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-fill.c-sm.mat-mdc-button-base> (sâu 1) ↔ kit <button .c-button.c-fill.c-sm.mat-mdc-button-base> (sâu 1) (catalog 8 nút, kit 8)",
+   "[sd-button «rộng (800px) + đang tải»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-fill.c-sm.mat-mdc-button-base> (sâu 1) ↔ kit <button .c-button.c-fill.c-sm.mat-mdc-button-base> (sâu 1) (catalog 8 nút, kit 8)",
+   "[sd-button «lịch sử phê duyệt»] LỆCH CẤU TRÚC — nút #1: catalog <button .c-button.c-outline.c-sm.mat-mdc-button-base> (sâu 1) ↔ kit <button .c-button.c-outline.c-sm.mat-mdc-button-base> (sâu 1) (catalog 8 nút, kit 8)"
+  ]
+ },
+ {
+  "sid": "c-splitter",
+  "page": "splitter.html",
+  "tags": [
+   "sd-splitter"
+  ],
+  "total": 4,
+  "unpaired": 4,
+  "ok": 0,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-stepper",
+  "page": "stepper.html",
+  "tags": [
+   "sd-stepper"
+  ],
+  "total": 4,
+  "unpaired": 4,
+  "ok": 0,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-tab",
+  "page": "tab-group.html",
+  "tags": [
+   "sd-tab-group"
+  ],
+  "total": 5,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 5,
+  "struct": 0,
+  "notes": [
+   "[sd-tab-group «info thông tin chung dòng tiền»] lệch 22 giá trị (height, height(box)) vd: sd-tab-group. height: 136px → 212px; sd-tab-group. height(box): 136 → 212; mat-tab-group.mat-mdc-tab-group.sd-tab-group.mat-primary height: 136px → 212px",
+   "[sd-tab-group «description kh-2026-0012 close»] lệch 18 giá trị (height, height(box)) vd: sd-tab-group. height: 136px → 156px; sd-tab-group. height(box): 136 → 156; mat-tab-group.mat-mdc-tab-group.sd-tab-group.mat-primary height: 136px → 156px",
+   "[sd-tab-group «tất cả 24 chờ duyệt 5 đã duyệt»] lệch 22 giá trị (height, height(box)) vd: sd-tab-group.sd-tab-group--pills height: 136px → 128px; sd-tab-group.sd-tab-group--pills height(box): 136 → 128; mat-tab-group.mat-mdc-tab-group.sd-tab-group.mat-primary height: 136px → 128px",
+   "[sd-tab-group «ngày tuần tháng quý dòng tiền »] lệch 22 giá trị (height, height(box)) vd: sd-tab-group.sd-tab-group--segmented height: 134px → 126px; sd-tab-group.sd-tab-group--segmented height(box): 134 → 126; mat-tab-group.mat-mdc-tab-group.sd-tab-group.mat-primary height: 134px → 126px",
+   "[sd-tab-group «savings hạn mức khoản vay 8 tà»] lệch 18 giá trị (height, height(box)) vd: sd-tab-group. height: 136px → 156px; sd-tab-group. height(box): 136 → 156; mat-tab-group.mat-mdc-tab-group.sd-tab-group.mat-primary height: 136px → 156px"
+  ]
+ },
+ {
+  "sid": "c-tab-router",
+  "page": null,
+  "tags": [
+   "sd-tab-router-outlet"
+  ],
+  "status": "kit chưa có trang mẫu"
+ },
+ {
+  "sid": "c-table",
+  "page": "table.html",
+  "tags": [
+   "sd-table"
+  ],
+  "total": 3,
+  "unpaired": 1,
+  "ok": 0,
+  "style": 0,
+  "struct": 2,
+  "notes": [
+   "[sd-table «mã hồ sơ kế hoạch funding ngân»] LỆCH CẤU TRÚC — nút #5: catalog <tr .c-first-header.mat-mdc-header-row.mdc-data-table__header-row> (sâu 5) ↔ kit <tr .c-first-header> (sâu 5) (catalog 400 nút, kit 400)",
+   "[sd-table «mã hồ sơ kế hoạch funding ngân»] LỆCH CẤU TRÚC — nút #16: catalog <tr .c-first-header.mat-mdc-header-row.mdc-data-table__header-row> (sâu 5) ↔ kit <tr .c-first-header> (sâu 5) (catalog 279 nút, kit 342)"
+  ]
+ },
+ {
+  "sid": "c-tree",
+  "page": "tree.html",
+  "tags": [
+   "sd-tree"
+  ],
+  "total": 4,
+  "unpaired": 0,
+  "ok": 1,
+  "style": 2,
+  "struct": 1,
+  "notes": [
+   "[sd-tree «expand_more folder_open phòng »] lệch 23 giá trị (font-family, font-size, line-height, border-top-left-radius) vd: input.mdc-checkbox__native-control font-family: arial → roboto; input.mdc-checkbox__native-control font-size: 13.3333px → 14px; input.mdc-checkbox__native-control line-height: normal → 0px · thuộc tính nút #70 sd-quick-action: catalog [] / kit ['opened']",
+   "[sd-tree «expand_more folder_open phòng »] LỆCH CẤU TRÚC — nút #30: catalog <div .sd-tree__content> (sâu 4) ↔ kit <mat-icon .mat-icon.mat-ligature-font.mat-primary.material-icons> (sâu 4) (catalog 38 nút, kit 50)",
+   "[sd-tree «folder hợp đồng tín dụng chevr»] lệch 12 giá trị (height(box), width(box)) vd: div.mdc-circular-progress__spinner-layer height(box): 17.5 → 21.7; div.mdc-circular-progress__spinner-layer width(box): 17.4 → 21.7; div.mdc-circular-progress__circle-clipper.mdc-circular-progress__circle-left height(box): 16.7 → 14.7"
+  ]
+ },
+ {
+  "sid": "c-upload-file",
+  "page": "upload-file.html",
+  "tags": [
+   "sd-upload-file"
+  ],
+  "total": 5,
+  "unpaired": 0,
+  "ok": 3,
+  "style": 0,
+  "struct": 2,
+  "notes": [
+   "[sd-upload-file «hồ sơ đính kèm * định dạng: pd»] hình khớp · thuộc tính nút #2 sd-label: catalog [] / kit ['description', 'label', 'required']",
+   "[sd-upload-file «biên bản họp hđqt * định dạng:»] hình khớp · thuộc tính nút #2 sd-label: catalog [] / kit ['description', 'label', 'required']",
+   "[sd-upload-file «hồ sơ khoản vay * định dạng: p»] hình khớp · thuộc tính nút #2 sd-label: catalog [] / kit ['description', 'label', 'required']",
+   "[sd-upload-file «ảnh chứng từ giải ngân info_ou»] LỆCH CẤU TRÚC — nút #6: catalog <mat-icon .mat-icon.mat-icon-no-color.mat-ligature-font.material-icons> (sâu 5) ↔ kit <mat-icon .mat-icon.mat-icon-no-color.mat-ligature-font.mat-mdc-tooltip-trigger> (sâu 5) (catalog 65 nút, kit 53)",
+   "[sd-upload-file «hồ sơ tài sản đảm bảo +2 hop_d»] LỆCH CẤU TRÚC — nút #10: catalog <img .c-img.uf-i-building> (sâu 6) ↔ kit <img .c-img> (sâu 6) (catalog 34 nút, kit 34)"
+  ]
+ },
+ {
+  "sid": "c-view",
+  "page": "view.html",
+  "tags": [
+   "sd-view"
+  ],
+  "total": 14,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 14,
+  "struct": 0,
+  "notes": [
+   "[sd-view «mã hồ sơ fund-2026-q4-018»] lệch 2 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316; div.T14M width(box): 248.5 → 316",
+   "[sd-view «ngân hàng cho vay vietcombank »] lệch 2 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316; div.T14M width(box): 248.5 → 316",
+   "[sd-view «số tiền vay 150.000.000.000 ₫»] lệch 2 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316; div.T14M width(box): 248.5 → 316",
+   "[sd-view «lãi suất 7,2%/năm»] lệch 2 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316; div.T14M width(box): 248.5 → 316",
+   "[sd-view «ngày giải ngân dự kiến 15/10/2»] lệch 2 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316; div.T14M width(box): 248.5 → 316",
+   "[sd-view «người phụ trách nguyễn văn an»] lệch 2 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316; div.T14M width(box): 248.5 → 316",
+   "[sd-view «hợp đồng tín dụng hđtd-2026-09»] lệch 1 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316",
+   "[sd-view «kế hoạch funding fund-2026-q4-»] lệch 1 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316",
+   "[sd-view «biểu lãi suất tham chiếu sbv.g»] lệch 1 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316 · thuộc tính nút #2 a: catalog [] / kit ['rel', 'target']",
+   "[sd-view «ngày tất toán --»] lệch 2 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316; div.T14M width(box): 248.5 → 316",
+   "[sd-view «ghi chú phê duyệt --»] lệch 2 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316; div.T14M width(box): 248.5 → 316",
+   "[sd-view «không có nhãn (label rỗng thì »] lệch 3 giá trị (height, height(box), width(box)) vd: div.T14M height: 40px → 20px; div.T14M height(box): 40 → 20; div.T14M width(box): 248.5 → 316",
+   "[sd-view «ngân hàng tham gia vietcombank»] lệch 2 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316; div.d-flex.align-items-center.gap-4 width(box): 248.5 → 316",
+   "[sd-view «kết quả phê duyệt đã duyệt · 0»] lệch 2 giá trị (width(box)) vd: div.T14R.text-black400 width(box): 248.5 → 316; div.d-flex.align-items-center.gap-4 width(box): 248.5 → 316"
+  ]
+ },
+ {
+  "sid": "c-autocomplete",
+  "page": "autocomplete.html",
+  "tags": [
+   "sd-autocomplete"
+  ],
+  "total": 7,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 6,
+  "struct": 1,
+  "notes": [
+   "[sd-autocomplete «ngân hàng cho vay search»] lệch 11 giá trị (width(box)) vd: div.d-flex.align-items-center width(box): 280 → 316; mat-form-field.mat-mdc-form-field.sd-md.mat-mdc-form-field-type-mat-input width(box): 280 → 316; div.mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined width(box): 280 → 316",
+   "[sd-autocomplete «ngân hàng cho vay close»] lệch 11 giá trị (width(box)) vd: div.d-flex.align-items-center width(box): 280 → 316; mat-form-field.mat-mdc-form-field.sd-md.mat-mdc-form-field-type-mat-input width(box): 280 → 316; div.mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined width(box): 280 → 316",
+   "[sd-autocomplete «ngân hàng cho vay search»] LỆCH CẤU TRÚC — nút #0: catalog <sd-autocomplete .sd-has-label> (sâu 0) ↔ kit <sd-autocomplete .sd-has-label.sd-open> (sâu 0) (catalog 20 nút, kit 20)",
+   "[sd-autocomplete «ngân hàng nhận search vui lòng»] lệch 11 giá trị (width(box)) vd: div.d-flex.align-items-center width(box): 280 → 316; mat-form-field.mat-mdc-form-field.sd-md.mat-mdc-form-field-type-mat-input width(box): 280 → 316; div.mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined width(box): 280 → 316",
+   "[sd-autocomplete «ngân hàng nhận search»] lệch 11 giá trị (width(box)) vd: div.d-flex.align-items-center width(box): 280 → 316; mat-form-field.mat-mdc-form-field.sd-md.mat-mdc-form-field-type-mat-input width(box): 280 → 316; div.mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined width(box): 280 → 316",
+   "[sd-autocomplete «ngân hàng cho vay ngân hàng tm»] lệch 5 giá trị (width(box), height, height(box)) vd: sd-autocomplete.sd-has-label.sd-viewed height: 60px → 62px; sd-autocomplete.sd-has-label.sd-viewed height(box): 60 → 62; sd-view. width(box): 280 → 316",
+   "[sd-autocomplete «ngân hàng cho vay ngân hàng tm»] lệch 4 giá trị (width(box)) vd: span.sd-inline-view width(box): 280 → 316; sd-view. width(box): 268 → 304; div.T14R.text-black400 width(box): 268 → 304"
+  ]
+ },
+ {
+  "sid": "c-checkbox",
+  "page": "checkbox.html",
+  "tags": [
+   "sd-checkbox"
+  ],
+  "total": 13,
+  "unpaired": 0,
+  "ok": 12,
+  "style": 1,
+  "struct": 0,
+  "notes": [
+   "[sd-checkbox «tôi xác nhận thông tin hồ sơ p»] lệch 1 giá trị (display) vd: sd-checkbox.sd-c-primary display: block → inline-block · thứ tự lớp khác"
+  ]
+ },
+ {
+  "sid": "c-chip",
+  "page": "chip.html",
+  "tags": [
+   "sd-chip"
+  ],
+  "total": 6,
+  "unpaired": 0,
+  "ok": 6,
+  "style": 0,
+  "struct": 0,
+  "notes": [
+   "[sd-chip «email nhận thông báo nguyen.va»] hình khớp · thuộc tính nút #21 mat-icon: catalog [] / kit ['aria-label=Xóa']",
+   "[sd-chip «số hợp đồng tín dụng hđtd-2026»] hình khớp · thứ tự lớp khác; thuộc tính nút #21 mat-icon: catalog [] / kit ['aria-label=Xóa']",
+   "[sd-chip «email nhận thông báo vui lòng »] hình khớp · thứ tự lớp khác",
+   "[sd-chip «mã ngân hàng đối tác vcb cance»] hình khớp · thứ tự lớp khác; thuộc tính nút #21 mat-icon: catalog [] / kit ['aria-label=Xóa']",
+   "[sd-chip «số hợp đồng tín dụng hđtd-2026»] hình khớp · thuộc tính nút #1 sd-view: catalog [] / kit ['display', 'label']"
+  ]
+ },
+ {
+  "sid": "c-chip-calendar",
+  "page": "chip-calendar.html",
+  "tags": [
+   "sd-chip-calendar"
+  ],
+  "total": 3,
+  "unpaired": 0,
+  "ok": 3,
+  "style": 0,
+  "struct": 0,
+  "notes": [
+   "[sd-chip-calendar «ngày trả nợ gốc 05/10/2026 can»] hình khớp · thuộc tính nút #21 mat-icon: catalog [] / kit ['aria-label=Xóa']",
+   "[sd-chip-calendar «ngày trả nợ gốc 05/10/2026 can»] hình khớp · thuộc tính nút #21 mat-icon: catalog [] / kit ['aria-label=Xóa']",
+   "[sd-chip-calendar «ngày trả lãi vui lòng nhập thô»] hình khớp · thứ tự lớp khác"
+  ]
+ },
+ {
+  "sid": "c-date",
+  "page": "date.html",
+  "tags": [
+   "sd-date"
+  ],
+  "total": 10,
+  "unpaired": 0,
+  "ok": 9,
+  "style": 0,
+  "struct": 1,
+  "notes": [
+   "[sd-date «ngày giải ngân today»] hình khớp · thuộc tính nút #17 mat-icon: catalog [] / kit ['aria-label=Mở lịch', 'role=button']",
+   "[sd-date «ngày giải ngân today»] hình khớp · thuộc tính nút #19 mat-icon: catalog [] / kit ['aria-label=Mở lịch', 'role=button']",
+   "[sd-date «ngày đáo hạn today»] hình khớp · thuộc tính nút #18 mat-icon: catalog [] / kit ['aria-label=Mở lịch', 'role=button']",
+   "[sd-date «ngày ký hợp đồng today»] hình khớp · thuộc tính nút #17 mat-icon: catalog [] / kit ['aria-disabled=true', 'aria-label=Mở lịch', 'role=button']",
+   "[sd-date «ngày đáo hạn today vui lòng nh»] hình khớp · thứ tự lớp khác; thuộc tính nút #18 mat-icon: catalog [] / kit ['aria-label=Mở lịch', 'role=button']",
+   "[sd-date «ngày giải ngân error today»] hình khớp · thứ tự lớp khác; thuộc tính nút #20 mat-icon: catalog [] / kit ['aria-label=Mở lịch', 'role=button']",
+   "[sd-date «từ ngày today»] hình khớp · thuộc tính nút #19 mat-icon: catalog [] / kit ['aria-label=Mở lịch', 'role=button']",
+   "[sd-date «ngày giải ngân today»] LỆCH CẤU TRÚC — nút #1: catalog <div .align-items-center.c-focused.d-flex> (sâu 1) ↔ kit <div .align-items-center.d-flex> (sâu 1) (catalog 23 nút, kit 23)",
+   "[sd-date «ngày giải ngân 15/10/2026»] hình khớp · thứ tự lớp khác; thuộc tính nút #1 sd-view: catalog [] / kit ['display', 'label']",
+   "[sd-date «ngày đáo hạn -»] hình khớp · thứ tự lớp khác; thuộc tính nút #1 sd-view: catalog [] / kit ['display', 'label']"
+  ]
+ },
+ {
+  "sid": "c-date-range",
+  "page": "date-range.html",
+  "tags": [
+   "sd-date-range"
+  ],
+  "total": 8,
+  "unpaired": 0,
+  "ok": 2,
+  "style": 5,
+  "struct": 1,
+  "notes": [
+   "[sd-date-range «kỳ báo cáo dòng tiền – today»] lệch 14 giá trị (width(box)) vd: div. width(box): 280 → 316; mat-form-field.mat-mdc-form-field.sd-md.mat-mdc-form-field-type-mat-date-range-input width(box): 280 → 316; div.mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined width(box): 280 → 316 · thuộc tính nút #24 mat-icon: catalog [] / kit ['aria-label=Mở lịch', 'role=button']",
+   "[sd-date-range «kỳ báo cáo dòng tiền – cancel »] lệch 14 giá trị (width(box)) vd: div. width(box): 280 → 316; mat-form-field.mat-mdc-form-field.sd-md.mat-mdc-form-field-type-mat-date-range-input width(box): 280 → 316; div.mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined width(box): 280 → 316 · thuộc tính nút #24 mat-icon: catalog [] / kit ['aria-label=Xoá', 'role=button']",
+   "[sd-date-range «thời hạn hạn mức – today»] lệch 14 giá trị (width(box)) vd: div. width(box): 280 → 316; mat-form-field.mat-mdc-form-field.sd-md.mat-mdc-form-field-type-mat-date-range-input width(box): 280 → 316; div.mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined width(box): 280 → 316 · thuộc tính nút #25 mat-icon: catalog [] / kit ['aria-label=Mở lịch', 'role=button']",
+   "[sd-date-range «kỳ kế hoạch funding – cancel t»] lệch 14 giá trị (width(box)) vd: div. width(box): 280 → 316; mat-form-field.mat-mdc-form-field.sd-md.mat-mdc-form-field-type-mat-date-range-input width(box): 280 → 316; div.mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined width(box): 280 → 316 · thuộc tính nút #24 mat-icon: catalog [] / kit ['aria-disabled=true', 'aria-label=Xoá', 'role=button']",
+   "[sd-date-range «thời hạn hạn mức – today vui l»] hình khớp · thứ tự lớp khác; thuộc tính nút #25 mat-icon: catalog [] / kit ['aria-label=Mở lịch', 'role=button']",
+   "[sd-date-range «kỳ báo cáo – cancel today»] hình khớp · thuộc tính nút #24 mat-icon: catalog [] / kit ['aria-label=Xoá', 'role=button']",
+   "[sd-date-range «kỳ báo cáo dòng tiền – cancel »] LỆCH CẤU TRÚC — nút #2: catalog <mat-form-field .mat-focused.mat-form-field-appearance-outline.mat-mdc-form-field.mat-mdc-form-field-has-icon-suffix> (sâu 2) ↔ kit <mat-form-field .mat-form-field-appearance-outline.mat-mdc-form-field.mat-mdc-form-field-has-icon-suffix.mat-mdc-form-field-type-mat-date-range-input> (sâu 2) (catalog 30 nút, kit 30)",
+   "[sd-date-range «kỳ báo cáo dòng tiền 05/10/202»] lệch 3 giá trị (width(box)) vd: sd-view. width(box): 169.5 → 316; div.T14R.text-black400 width(box): 169.5 → 316; div.T14M width(box): 169.5 → 316 · thứ tự lớp khác"
+  ]
+ },
+ {
+  "sid": "c-datetime",
+  "page": "datetime.html",
+  "tags": [
+   "sd-datetime"
+  ],
+  "total": 6,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 5,
+  "struct": 1,
+  "notes": [
+   "[sd-datetime «thời điểm chốt số liệu»] lệch 1 giá trị (display) vd: svg. display: inline → block · thuộc tính nút #16 span: catalog [] / kit ['aria-label=Mở lịch', 'role=button']",
+   "[sd-datetime «thời điểm chốt số liệu»] lệch 1 giá trị (display) vd: svg. display: inline → block · thuộc tính nút #18 span: catalog [] / kit ['aria-label=Mở lịch', 'role=button']",
+   "[sd-datetime «thời điểm trình duyệt»] lệch 1 giá trị (display) vd: svg. display: inline → block · thuộc tính nút #16 span: catalog [] / kit ['aria-disabled=true', 'aria-label=Mở lịch', 'role=button']",
+   "[sd-datetime «hạn phê duyệt vui lòng nhập th»] lệch 1 giá trị (display) vd: svg. display: inline → block · thứ tự lớp khác; thuộc tính nút #17 span: catalog [] / kit ['aria-label=Mở lịch', 'role=button']",
+   "[sd-datetime «thời điểm chốt số liệu»] LỆCH CẤU TRÚC — nút #1: catalog <div .align-items-center.c-focused.d-flex> (sâu 1) ↔ kit <div .align-items-center.d-flex> (sâu 1) (catalog 23 nút, kit 23)",
+   "[sd-datetime «thời điểm chốt số liệu 15/10/2»] lệch 3 giá trị (width(box)) vd: sd-view. width(box): 137.6 → 1076; div.T14R.text-black400 width(box): 137.6 → 1076; div.T14M width(box): 137.6 → 1076 · thứ tự lớp khác; thuộc tính nút #1 sd-view: catalog [] / kit ['display', 'label']"
+  ]
+ },
+ {
+  "sid": "c-inline-text",
+  "page": "inline-text.html",
+  "tags": [
+   "sd-inline-text"
+  ],
+  "total": 9,
+  "unpaired": 1,
+  "ok": 1,
+  "style": 6,
+  "struct": 1,
+  "notes": [
+   "[sd-inline-text «»] lệch 1 giá trị (display) vd: sd-inline-text.sd-inline-text.sd-inline-text--standalone display: inline-flex → flex",
+   "[sd-inline-text «close»] lệch 1 giá trị (display) vd: sd-inline-text.sd-inline-text.sd-inline-text--standalone display: inline-flex → flex",
+   "[sd-inline-text «close»] lệch 11 giá trị (display, width(box), height(box), background-color) vd: sd-inline-text.sd-inline-text.sd-inline-text--standalone display: inline-flex → flex; sd-inline-text.sd-inline-text.sd-inline-text--standalone background-color: rgba(0, 0, 0, 0.06) → rgba(0, 0, 0, 0.04); sd-inline-text.sd-inline-text.sd-inline-text--standalone box-shadow: rgb(174, 113, 41) 0px 0px 0px 1px inset → rgb(248, 44, 19) 0px 0px 0px 1px inset",
+   "[sd-inline-text «close»] LỆCH CẤU TRÚC — nút #0: catalog <sd-inline-text .sd-inline-text.sd-inline-text--standalone> (sâu 0) ↔ kit <sd-inline-text .sd-inline-text.sd-inline-text--seamless> (sâu 0) (catalog 4 nút, kit 4)",
+   "[sd-inline-text «close»] lệch 4 giá trị (border-top-color, border-bottom-color, color, width(box)) vd: input.sd-inline-text__input border-top-color: rgb(174, 113, 41) → rgb(248, 44, 19); input.sd-inline-text__input border-bottom-color: rgb(174, 113, 41) → rgb(248, 44, 19); input.sd-inline-text__input color: rgb(174, 113, 41) → rgb(248, 44, 19)",
+   "[sd-inline-text «»] lệch 1 giá trị (display) vd: sd-inline-text.sd-inline-text.sd-inline-text--standalone display: inline-flex → flex",
+   "[sd-inline-text «»] lệch 1 giá trị (display) vd: sd-inline-text.sd-inline-text.sd-inline-text--standalone display: inline-flex → flex"
+  ]
+ },
+ {
+  "sid": "c-input",
+  "page": "input.html",
+  "tags": [
+   "sd-input"
+  ],
+  "total": 15,
+  "unpaired": 0,
+  "ok": 12,
+  "style": 0,
+  "struct": 3,
+  "notes": [
+   "[sd-input «số hợp đồng tín dụng 0/50»] LỆCH CẤU TRÚC — nút #1: catalog <div .align-items-center.c-focused.d-flex.sd-input-container> (sâu 1) ↔ kit <div .align-items-center.d-flex.sd-input-container> (sâu 1) (catalog 20 nút, kit 20)",
+   "[sd-input «số hợp đồng tín dụng 18/50»] LỆCH CẤU TRÚC — nút #1: catalog <div .align-items-center.c-focused.d-flex.sd-input-container> (sâu 1) ↔ kit <div .align-items-center.d-flex.sd-input-container> (sâu 1) (catalog 23 nút, kit 23)",
+   "[sd-input «tên kế hoạch funding vui lòng »] hình khớp · thứ tự lớp khác",
+   "[sd-input «mã hồ sơ phê duyệt số ký tự tố»] LỆCH CẤU TRÚC — nút #1: catalog <div .align-items-center.c-focused.d-flex.sd-input-container> (sâu 1) ↔ kit <div .align-items-center.d-flex.sd-input-container> (sâu 1) (catalog 23 nút, kit 23)",
+   "[sd-input «số tài khoản nhận error»] hình khớp · thứ tự lớp khác",
+   "[sd-input «người lập hồ sơ nguyễn thị thu»] hình khớp · thuộc tính nút #1 sd-view: catalog [] / kit ['display', 'label']",
+   "[sd-input «ghi chú nội bộ --»] hình khớp · thuộc tính nút #1 sd-view: catalog [] / kit ['display', 'label']",
+   "[sd-input «close»] hình khớp · thuộc tính nút #2 input: catalog ['value'] / kit []"
+  ]
+ },
+ {
+  "sid": "c-input-color",
+  "page": "input-color.html",
+  "tags": [
+   "sd-input-color"
+  ],
+  "total": 7,
+  "unpaired": 2,
+  "ok": 0,
+  "style": 5,
+  "struct": 0,
+  "notes": [
+   "[sd-input-color «màu nhãn trạng thái»] lệch 13 giá trị (width(box)) vd: sd-input.sd-has-label width(box): 280 → 316; div.d-flex.align-items-center.sd-input-container width(box): 280 → 316; div.sd-input-field-wrap width(box): 280 → 316 · thuộc tính nút #1 sd-input: catalog [] / kit ['clearable', 'label', 'placeholder']",
+   "[sd-input-color «màu nhãn trạng thái»] lệch 13 giá trị (width(box)) vd: sd-input.sd-has-label width(box): 280 → 316; div.d-flex.align-items-center.sd-input-container width(box): 280 → 316; div.sd-input-field-wrap width(box): 280 → 316 · thuộc tính nút #1 sd-input: catalog [] / kit ['clearable', 'label', 'placeholder', 'value']",
+   "[sd-input-color «màu biểu đồ dòng tiền mã màu h»] lệch 13 giá trị (width(box)) vd: sd-input.sd-has-label width(box): 280 → 316; div.d-flex.align-items-center.sd-input-container width(box): 280 → 316; div.sd-input-field-wrap width(box): 280 → 316 · thuộc tính nút #1 sd-input: catalog [] / kit ['clearable', 'inlineerror', 'label', 'placeholder', 'value']",
+   "[sd-input-color «màu hạn mức»] lệch 13 giá trị (width(box)) vd: sd-input.sd-has-label width(box): 280 → 316; div.d-flex.align-items-center.sd-input-container width(box): 280 → 316; div.sd-input-field-wrap width(box): 280 → 316 · thuộc tính nút #1 sd-input: catalog [] / kit ['clearable', 'disabled=', 'label', 'placeholder', 'value']",
+   "[sd-input-color «màu hạn mức #1565c0»] lệch 6 giá trị (width(box), height, height(box)) vd: sd-input-color. height: 40px → 67.5px; sd-input-color. height(box): 40 → 67.5; sd-input.sd-has-label.sd-viewed width(box): 280 → 316 · thuộc tính nút #1 sd-input: catalog [] / kit ['clearable', 'label', 'placeholder', 'value', 'viewed']"
+  ]
+ },
+ {
+  "sid": "c-input-number",
+  "page": "input-number.html",
+  "tags": [
+   "sd-input-number"
+  ],
+  "total": 13,
+  "unpaired": 0,
+  "ok": 11,
+  "style": 0,
+  "struct": 2,
+  "notes": [
+   "[sd-input-number «hạn mức tín dụng»] hình khớp · thuộc tính nút #14 input: catalog [] / kit ['inputmode']",
+   "[sd-input-number «hạn mức tín dụng»] hình khớp · thuộc tính nút #14 input: catalog [] / kit ['inputmode']",
+   "[sd-input-number «lãi suất (%/năm)»] hình khớp · thuộc tính nút #14 input: catalog [] / kit ['inputmode']",
+   "[sd-input-number «số tiền giải ngân vnd»] LỆCH CẤU TRÚC — nút #1: catalog <div .align-items-center.c-focused.d-flex> (sâu 1) ↔ kit <div .align-items-center.d-flex> (sâu 1) (catalog 22 nút, kit 22)",
+   "[sd-input-number «số tiền giải ngân vnd»] LỆCH CẤU TRÚC — nút #1: catalog <div .align-items-center.c-focused.d-flex> (sâu 1) ↔ kit <div .align-items-center.d-flex> (sâu 1) (catalog 20 nút, kit 20)",
+   "[sd-input-number «số tiền đề xuất vui lòng nhập »] hình khớp · thứ tự lớp khác; thuộc tính nút #15 input: catalog [] / kit ['inputmode']",
+   "[sd-input-number «tỷ lệ tài trợ (%) giá trị khôn»] hình khớp · thứ tự lớp khác; thuộc tính nút #14 input: catalog [] / kit ['inputmode']",
+   "[sd-input-number «kỳ hạn vay (tháng) giá trị khô»] hình khớp · thứ tự lớp khác; thuộc tính nút #14 input: catalog [] / kit ['inputmode']",
+   "[sd-input-number «dư nợ hiện tại»] hình khớp · thuộc tính nút #14 input: catalog [] / kit ['inputmode']",
+   "[sd-input-number «phí trả nợ trước hạn (%)»] hình khớp · thuộc tính nút #14 input: catalog [] / kit ['inputmode']",
+   "[sd-input-number «số tiền đề xuất error»] hình khớp · thứ tự lớp khác; thuộc tính nút #15 input: catalog [] / kit ['inputmode']",
+   "[sd-input-number «hạn mức được duyệt 250.000.000»] hình khớp · thuộc tính nút #1 sd-view: catalog [] / kit ['display', 'label']",
+   "[sd-input-number «close»] hình khớp · thuộc tính nút #2 input: catalog ['value'] / kit []"
+  ]
+ },
+ {
+  "sid": "c-label",
+  "page": "label.html",
+  "tags": [
+   "sd-label"
+  ],
+  "total": 7,
+  "unpaired": 1,
+  "ok": 0,
+  "style": 6,
+  "struct": 0,
+  "notes": [
+   "[sd-label «tên kế hoạch funding»] lệch 4 giá trị (display, height, height(box), width(box)) vd: sd-label. display: inline → block; sd-label. height: auto → 22px; sd-label. height(box): 20 → 22",
+   "[sd-label «ngân hàng cho vay *»] lệch 3 giá trị (display, height, width(box)) vd: sd-label. display: inline → block; sd-label. height: auto → 22px; div.mb-0.d-flex width(box): 220 → 316",
+   "[sd-label «số tiền đề xuất (vnđ) *»] lệch 3 giá trị (display, height, width(box)) vd: sd-label. display: inline → block; sd-label. height: auto → 22px; div.mb-0.d-flex width(box): 220 → 316",
+   "[sd-label «hạn mức đề xuất * không vượt q»] lệch 4 giá trị (width(box), display, height) vd: sd-label. display: inline → block; sd-label. height: auto → 38px; div.mb-0.d-flex width(box): 299.9 → 316",
+   "[sd-label «ngày giải ngân dự kiến định dạ»] lệch 5 giá trị (width(box), display, height, height(box)) vd: sd-label. display: inline → block; sd-label. height: auto → 38px; sd-label. height(box): 36 → 38",
+   "[sd-label «kỳ hạn vay info_outline áp dụn»] lệch 4 giá trị (width(box), display, height) vd: sd-label. display: inline → block; sd-label. height: auto → 36px; div.mb-0.d-flex width(box): 220 → 316 · thuộc tính nút #4 mat-icon: catalog ['data-tip'] / kit []"
+  ]
+ },
+ {
+  "sid": "c-radio",
+  "page": "radio.html",
+  "tags": [
+   "sd-radio"
+  ],
+  "total": 8,
+  "unpaired": 0,
+  "ok": 8,
+  "style": 0,
+  "struct": 0,
+  "notes": [
+   "[sd-radio «kỳ trả lãi * cuối kỳ hằng thán»] hình khớp · thuộc tính nút #2 sd-label: catalog [] / kit ['label', 'required']",
+   "[sd-radio «loại hạn mức hạn mức ngắn hạn »] hình khớp · thuộc tính nút #2 sd-label: catalog [] / kit ['label']",
+   "[sd-radio «kỳ trả lãi cuối kỳ hằng tháng »] hình khớp · thuộc tính nút #2 sd-label: catalog [] / kit ['label']",
+   "[sd-radio «ngân hàng giải ngân * vietcomb»] hình khớp · thuộc tính nút #2 sd-label: catalog [] / kit ['label', 'required']"
+  ]
+ },
+ {
+  "sid": "c-select",
+  "page": "select.html",
+  "tags": [
+   "sd-select"
+  ],
+  "total": 8,
+  "unpaired": 0,
+  "ok": 0,
+  "style": 1,
+  "struct": 7,
+  "notes": [
+   "[sd-select «ngân hàng cho vay ngân hàng ch»] LỆCH CẤU TRÚC — nút #19: catalog <div .mat-mdc-form-field-icon-suffix> (sâu 5) ↔ kit <div .mat-mdc-select-arrow> (sâu 9) (catalog 24 nút, kit 25)",
+   "[sd-select «ngân hàng cho vay bidv close»] LỆCH CẤU TRÚC — nút #20: catalog <div .mat-mdc-form-field-icon-suffix> (sâu 5) ↔ kit <div .mat-mdc-select-arrow> (sâu 9) (catalog 26 nút, kit 27)",
+   "[sd-select «loại tiền tệ loại tiền tệ keyb»] LỆCH CẤU TRÚC — nút #20: catalog <div .mat-mdc-form-field-icon-suffix> (sâu 5) ↔ kit <div .mat-mdc-select-arrow> (sâu 9) (catalog 25 nút, kit 26)",
+   "[sd-select «loại tiền tệ vnd – đồng việt n»] LỆCH CẤU TRÚC — nút #20: catalog <div .mat-mdc-form-field-icon-suffix> (sâu 5) ↔ kit <div .mat-mdc-select-arrow> (sâu 9) (catalog 25 nút, kit 26)",
+   "[sd-select «kỳ trả lãi hàng quý keyboard_a»] LỆCH CẤU TRÚC — nút #0: catalog <sd-select .sd-has-label> (sâu 0) ↔ kit <sd-select .sd-has-label.sd-open> (sâu 0) (catalog 26 nút, kit 27)",
+   "[sd-select «loại tài sản bảo đảm bất động »] LỆCH CẤU TRÚC — nút #0: catalog <sd-select .sd-has-label> (sâu 0) ↔ kit <sd-select .sd-has-label.sd-open> (sâu 0) (catalog 27 nút, kit 28)",
+   "[sd-select «chi nhánh ngân hàng chi nhánh »] LỆCH CẤU TRÚC — nút #0: catalog <sd-select .sd-has-label> (sâu 0) ↔ kit <sd-select .sd-has-label.sd-open> (sâu 0) (catalog 24 nút, kit 25)",
+   "[sd-select «trạng thái hồ sơ chờ phê duyệt»] lệch 3 giá trị (width(box)) vd: sd-view. width(box): 280 → 1076; div.T14R.text-black400 width(box): 280 → 1076; div.T14M width(box): 280 → 1076 · thuộc tính nút #1 sd-view: catalog [] / kit ['display', 'label']"
+  ]
+ },
+ {
+  "sid": "c-switch",
+  "page": "switch.html",
+  "tags": [
+   "sd-switch"
+  ],
+  "total": 13,
+  "unpaired": 0,
+  "ok": 13,
+  "style": 0,
+  "struct": 0,
+  "notes": [
+   "[sd-switch «tự động gia hạn khoản vay»] hình khớp · thuộc tính nút #16 sd-label: catalog [] / kit ['label']",
+   "[sd-switch «gửi thông báo khi đến hạn trả »] hình khớp · thuộc tính nút #16 sd-label: catalog [] / kit ['label']",
+   "[sd-switch «áp dụng cho toàn bộ kế hoạch f»] hình khớp · thuộc tính nút #16 sd-label: catalog [] / kit ['label', 'required']",
+   "[sd-switch «tự động gia hạn khoản vay»] hình khớp · thuộc tính nút #16 sd-label: catalog [] / kit ['label']",
+   "[sd-switch «gửi thông báo khi đến hạn trả »] hình khớp · thuộc tính nút #16 sd-label: catalog [] / kit ['label']",
+   "[sd-switch «primary»] hình khớp · thuộc tính nút #16 sd-label: catalog [] / kit ['label']",
+   "[sd-switch «secondary»] hình khớp · thuộc tính nút #16 sd-label: catalog [] / kit ['label']",
+   "[sd-switch «info»] hình khớp · thuộc tính nút #16 sd-label: catalog [] / kit ['label']",
+   "[sd-switch «success»] hình khớp · thuộc tính nút #16 sd-label: catalog [] / kit ['label']",
+   "[sd-switch «warning»] hình khớp · thuộc tính nút #16 sd-label: catalog [] / kit ['label']",
+   "[sd-switch «error»] hình khớp · thuộc tính nút #16 sd-label: catalog [] / kit ['label']"
+  ]
+ },
+ {
+  "sid": "c-textarea",
+  "page": "textarea.html",
+  "tags": [
+   "sd-textarea"
+  ],
+  "total": 7,
+  "unpaired": 5,
+  "ok": 2,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-tooltip",
+  "page": "tooltip.html",
+  "tags": [
+   "sd-button"
+  ],
+  "total": 12,
+  "unpaired": 0,
+  "ok": 9,
+  "style": 3,
+  "struct": 0,
+  "notes": [
+   "[sd-button «hiện ngay (0ms)»] lệch 1 giá trị (display) vd: sd-button. display: inline-block → block",
+   "[sd-button «trễ 500ms»] lệch 1 giá trị (display) vd: sd-button. display: inline-block → block",
+   "[sd-button «trễ 1500ms»] lệch 1 giá trị (display) vd: sd-button. display: inline-block → block"
+  ]
+ },
+ {
+  "sid": "c-confirm",
+  "page": "service.html",
+  "tags": [
+   "sd-button"
+  ],
+  "total": 6,
+  "unpaired": 6,
+  "ok": 0,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-loading",
+  "page": "service.html",
+  "tags": [
+   "sd-button"
+  ],
+  "total": 2,
+  "unpaired": 0,
+  "ok": 2,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-notify",
+  "page": "service.html",
+  "tags": [
+   "sd-button"
+  ],
+  "total": 4,
+  "unpaired": 0,
+  "ok": 4,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ },
+ {
+  "sid": "c-filter-scorecard",
+  "page": "work-center.html",
+  "tags": [
+   "bpm-filter-scorecard"
+  ],
+  "total": 7,
+  "unpaired": 0,
+  "ok": 7,
+  "style": 0,
+  "struct": 0,
+  "notes": [
+   "[bpm-filter-scorecard «filter_alt gần đến hạn 7»] hình khớp · thuộc tính nút #1 button: catalog [] / kit ['data-key']",
+   "[bpm-filter-scorecard «filter_alt gần đến hạn 7»] hình khớp · thuộc tính nút #1 button: catalog ['data-force-hover'] / kit ['data-key']",
+   "[bpm-filter-scorecard «filter_alt quá hạn 3»] hình khớp · thuộc tính nút #1 button: catalog [] / kit ['data-key']",
+   "[bpm-filter-scorecard «filter_alt quá hạn 3»] hình khớp · thuộc tính nút #1 button: catalog ['data-force-hover'] / kit ['data-key']"
+  ]
+ },
+ {
+  "sid": "c-kpi-card",
+  "page": "work-center.html",
+  "tags": [
+   "bpm-kpi-card"
+  ],
+  "total": 4,
+  "unpaired": 0,
+  "ok": 4,
+  "style": 0,
+  "struct": 0,
+  "notes": []
+ }
+]

@@ -1,0 +1,55 @@
+--- /tmp/sd-service.bak5	2026-10-12 10:24:46.055527969 +0000
++++ prototype-kit-CATALOG-1012m/design-system/components/sd-service.md	2026-10-12 10:26:28.107476148 +0000
+@@ -113,23 +113,38 @@
+ 
+ ## SdLoadingService
+ 
+-Overlay loading gắn vào bất kỳ phần tử DOM nào. `target` nhận CSS selector, mặc định `body` (phủ toàn màn hình). Bảng thử nghiệm Portal còn cho chọn `#preview-box`, nghĩa là selector bất kỳ.
++Phủ lớp trắng mờ (opacity 0.6) kèm spinner vòng tròn màu primary lên một phần tử
++(chọn bằng CSS selector) hoặc cả `body`. Mỗi phần tử chỉ có một lớp phủ; `stop()`
++gỡ nó ra. Mirror `SdLoadingService` của Core UI Catalog `#c-loading`
++(rà soát 2026-10-12).
+ 
+ | Phương thức | Tham số | Trả về | Mô tả |
+ |-------------|---------|--------|-------|
+-| `start(options)` | `options` | `SdLoadingService` | Hiện overlay; có `duration` thì tự dừng sau khoảng đó |
+-| `stop()` | - | `SdLoadingService` | Dừng overlay ngay, trả vị trí target về như cũ |
+-
+-**Tuỳ chọn:**
+-
+-| Tuỳ chọn | Giá trị | Mặc định | Mô tả |
+-|----------|--------|----------|-------|
+-| `duration` | number (ms) | - | Tự gọi `stop()` sau khoảng thời gian |
+-| `target` | CSS selector | `body` | `body` = phủ toàn màn hình; selector khác = phủ đúng phần tử đó |
+-
+-Chữ ký chính xác của `start()` không đọc trực tiếp được từ Portal (mã mẫu gọi `start()` không tham số); suy ra từ bảng thuộc tính `duration` + `target` thành `start(options)`.
++| `start(selector = 'body')` | CSS selector | — | Phủ lớp loading lên phần tử. Phần tử đã đang loading thì không làm gì |
++| `stop(selector = 'body')` | CSS selector | — | Gỡ lớp phủ khỏi **đúng phần tử đó** |
++| `isLoading(selector = 'body')` | CSS selector | `boolean` | Phần tử có đang loading không |
++
++**Điểm dễ sai:**
++
++- **`start` và `stop` phải cùng selector.** `stop()` không tham số chỉ gỡ lớp phủ
++  của `body` — gọi `start('#khung')` rồi `stop()` thì lớp phủ trên `#khung` **còn
++  nguyên**. Bản trước của kit chỉ có một lớp phủ toàn cục nên `stop()` gỡ được hết;
++  thư viện thật thì không.
++- **Phần tử đích phải có `position: relative`.** Service KHÔNG tự đặt: lớp phủ là
++  `position: absolute; 100% × 100%`, nên nó bám vào tổ tiên gần nhất có position.
++  Dùng lớp tiện ích `relative`.
++- **Spinner cũng mờ** theo opacity 0.6 của lớp phủ — đúng hành vi thật, không phải lỗi.
++- **`start()` phủ `body`** bằng `absolute` 100% × 100%, không phải `fixed` — trang dài
++  cuộn xuống thì lớp phủ cuộn theo.
+ 
+ ```js
+-SdLoadingService.start({ target: 'body', duration: 2000 });
+-try { await fetchSomething(); } finally { SdLoadingService.stop(); }
++SdLoadingService.start('#funding-plan-card');      // <div id="funding-plan-card" class="relative">
++try { await fetchSomething(); } finally { SdLoadingService.stop('#funding-plan-card'); }
++
++SdLoadingService.start();                    // phủ body
++const busy = SdLoadingService.isLoading();   // true
++SdLoadingService.stop();
+ ```
++
++> Dạng cũ `start({ target, duration })` vẫn chạy (bí danh tương thích ngược) nhưng
++> **không dùng cho trang mới**.

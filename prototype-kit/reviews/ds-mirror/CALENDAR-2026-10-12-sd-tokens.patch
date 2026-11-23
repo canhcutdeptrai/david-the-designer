@@ -1,0 +1,96 @@
+--- /tmp/sd-tokens.bak3	2026-10-12 09:48:31.756802714 +0000
++++ prototype-kit-CATALOG-1012m/design-system/core/styles/sd-tokens.css	2026-10-12 09:54:10.567942295 +0000
+@@ -1736,6 +1736,28 @@
+    không phải của thư viện" — SAI: nó có luật CSS thật trong chính tệp CSS của
+    component, và nhãn biến thể của catalog cũng ghi "ngày đã chọn tô
+    --sd-primary-light". Đã sửa lại ghi chú đó (rà soát 2026-10-12). */
++/* `sd-date` và `sd-date-range` mở lịch trong `mat-datepicker-content`, mà catalog
++   GHIM cỡ lịch: `.mat-datepicker-content .mat-calendar{width:296px;height:354px}`
++   (date.css, date-range.css). Tháng chỉ có 5 hàng thì phần dưới để trống — đúng
++   hành vi thật. `sd-chip-calendar` (mat-menu) và `sd-datetime` KHÔNG có luật này. */
++sd-date .sd-date-popup,
++sd-date-range .sd-range-popup {
++  height: 354px;
++}
++/* Cũng chỉ trong `mat-datepicker-content`: catalog tô nút ‹ › màu nhạt
++   `.mat-datepicker-content .mat-calendar-previous-button:not(.mat-mdc-button-disabled)
++   { color: rgba(0,0,0,.54) }`. Lịch trong `mat-menu` của chip-calendar KHÔNG có
++   luật này nên nút ra màu chữ đậm — đúng như đo được trên catalog. */
++sd-date .sd-date-popup .form-field-datepicker-nav,
++sd-date-range .sd-range-popup .form-field-datepicker-nav {
++  color: rgba(0, 0, 0, .54);
++}
++/* Khung lịch của chip-calendar là `mat-menu` (280px, `.mat-mdc-menu-content
++   { padding: 8px 0 }`), không phải `mat-datepicker-content` 296px như sd-date. */
++sd-chip-calendar .sd-cc-popup {
++  --sd-cal-w: 280px;
++  padding: 8px 0;
++}
+ sd-chip-calendar .sd-cc-days .form-field-datepicker-day.selected {
+   border-radius: 50%;
+   background: var(--sd-primary-light);
+@@ -7106,21 +7128,39 @@
+    KHOẢNG. Màu nền dải giữa lấy nguyên văn catalog:
+      `.mat-calendar-body-in-range::before{background:color-mix(in srgb, #ae7129 20%, transparent)}`
+    → #ae7129 chính là `--sd-primary`. */
+-sd-date-range .form-field-datepicker-day.sd-range-in {
++/* Rà soát 2026-10-12 — đo `#c-date-range`: dải KHÔNG nằm trên ô ngày mà trên
++   `button.mat-calendar-body-cell::before` — phủ CẢ Ô (rộng 100%, cao 90%,
++   cách trên 5%); ô đầu dải `left:5%; width:95%` bo trái 999px, ô cuối ngược lại.
++   Hai đầu là hình TRÒN nâu đặc (`.mat-calendar-body-selected`) đè lên dải.
++   Bản trước của kit tô thẳng nền ô và BẸT góc hai đầu — catalog không bẹt.
++
++   Ô ngày của kit rộng 90% ô lưới (lề 5% mỗi bên), nên dải phải tràn ra
++   (100% + 2px viền) / 18 = đúng 5% bề ngang ô ở mỗi phía. `z-index:-1` đưa
++   dải xuống dưới nền tròn của ô đầu/cuối — lưới ngày là stacking context
++   (`container-type`), nên dải vẫn nằm TRÊN nền trắng của khung. */
++sd-date-range .form-field-datepicker-day.sd-range-in::before,
++sd-date-range .form-field-datepicker-day.sd-range-start::before,
++sd-date-range .form-field-datepicker-day.sd-range-end::before {
++  content: '';
++  position: absolute;
++  top: -1px;
++  bottom: -1px;
++  left: calc(-1px - (100% + 2px) / 18);
++  right: calc(-1px - (100% + 2px) / 18);
++  z-index: -1;
+   background: color-mix(in srgb, var(--sd-primary) 20%, transparent);
+-  border-radius: 0;
+ }
+-sd-date-range .form-field-datepicker-day.sd-range-start {
+-  border-top-right-radius: 0;
+-  border-bottom-right-radius: 0;
+-}
+-sd-date-range .form-field-datepicker-day.sd-range-end {
+-  border-top-left-radius: 0;
+-  border-bottom-left-radius: 0;
+-}
+-/* Chỉ chọn MỘT đầu (đang chờ bấm đầu kia) thì vẫn bo tròn đủ bốn góc. */
+-sd-date-range .form-field-datepicker-day.sd-range-start.sd-range-end {
+-  border-radius: var(--radius-sm);
++sd-date-range .form-field-datepicker-day.sd-range-start::before {
++  left: -1px;
++  border-radius: 999px 0 0 999px;
++}
++sd-date-range .form-field-datepicker-day.sd-range-end::before {
++  right: -1px;
++  border-radius: 0 999px 999px 0;
++}
++/* Chỉ chọn MỘT đầu (đang chờ bấm đầu kia): không có dải. */
++sd-date-range .form-field-datepicker-day.sd-range-start.sd-range-end::before {
++  content: none;
+ }
+ sd-date-range .form-field-datepicker-day:disabled {
+   color: var(--text-disabled);
+@@ -8714,7 +8754,10 @@
+ sd-datetime .picker-calendar{padding:4px 8px 0}
+ /* Thay cho `.picker-calendar .mat-calendar*` của catalog — xem điểm 2 ở trên. */
+ sd-datetime .picker-calendar .form-field-datepicker-header{padding:4px 4px 0}
+-sd-datetime .picker-calendar .form-field-datepicker-weekdays,
++/* Hàng thứ không cần đệm dưới nữa: ô thứ đã có `padding-bottom:8px` và đường kẻ
++   `.form-field-datepicker-divider` riêng — đúng cấu trúc thead của catalog
++   (rà soát 2026-10-12). */
++sd-datetime .picker-calendar .form-field-datepicker-weekdays{padding:0 8px}
+ sd-datetime .picker-calendar .form-field-datepicker-days{padding:0 8px 8px}
+ sd-datetime .picker-divider{height:1px;background:var(--sd-black200);margin:0 16px}
+ sd-datetime .picker-time{padding:8px 0}

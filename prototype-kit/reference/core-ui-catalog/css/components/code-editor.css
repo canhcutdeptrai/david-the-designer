@@ -1,0 +1,43 @@
+/* Code editor — #c-code-editor */
+/* sd-code-editor (styles component, ViewEncapsulation.None) */
+#c-code-editor .sd-code-wrapper{background-color:#1e1e1e;border-radius:8px;overflow:hidden;box-shadow:0 4px 12px #00000026;margin:16px 0;font-family:Fira Code,Consolas,Monaco,monospace}
+#c-code-editor .sd-code-wrapper .sd-code-header{display:flex;align-items:center;justify-content:space-between;background-color:#2d2d2d;padding:8px 16px;border-bottom:1px solid #404040}
+#c-code-editor .sd-code-wrapper .sd-code-header .mac-dots{display:flex;gap:6px}
+#c-code-editor .sd-code-wrapper .sd-code-header .mac-dots .dot{width:12px;height:12px;border-radius:50%}
+#c-code-editor .sd-code-wrapper .sd-code-header .mac-dots .dot.red{background-color:#ff5f56}
+#c-code-editor .sd-code-wrapper .sd-code-header .mac-dots .dot.yellow{background-color:#ffbd2e}
+#c-code-editor .sd-code-wrapper .sd-code-header .mac-dots .dot.green{background-color:#27c93f}
+#c-code-editor .sd-code-wrapper .sd-code-header .lang-badge{color:#858585;font-size:12px;font-weight:600;letter-spacing:.5px}
+#c-code-editor .sd-code-wrapper .sd-code-header .copy-btn{display:flex;align-items:center;gap:4px;background:none;border:none;color:#ccc;cursor:pointer;font-size:13px;padding:4px 8px;border-radius:4px;transition:all .2s ease}
+#c-code-editor .sd-code-wrapper .sd-code-header .copy-btn mat-icon{font-size:16px;width:16px;height:16px}
+#c-code-editor .sd-code-wrapper .sd-code-header .copy-btn:hover{background-color:#404040;color:#fff}
+#c-code-editor .sd-code-wrapper .sd-code-header .copy-btn .text-success{color:#27c93f!important}
+#c-code-editor .sd-code-wrapper .sd-code-content{overflow-y:auto;position:relative}
+#c-code-editor .sd-code-wrapper .sd-code-content::-webkit-scrollbar{width:8px;height:8px}
+#c-code-editor .sd-code-wrapper .sd-code-content::-webkit-scrollbar-thumb{background:#555;border-radius:4px}
+#c-code-editor .sd-code-wrapper .sd-code-content::-webkit-scrollbar-thumb:hover{background:#777}
+#c-code-editor .sd-code-wrapper .sd-code-content::-webkit-scrollbar-track{background:#1e1e1e}
+#c-code-editor .sd-code-wrapper .sd-code-content .editor-overlay-container{position:relative;min-height:100px}
+#c-code-editor .sd-code-wrapper .sd-code-content .code-textarea,#c-code-editor .sd-code-wrapper .sd-code-content .code-display{margin:0;padding:16px;border:0;width:100%;min-height:100%;font-family:inherit;font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-all;tab-size:2}
+#c-code-editor .sd-code-wrapper .sd-code-content .code-textarea{position:absolute;top:0;left:0;z-index:2;background:transparent!important;color:transparent!important;-webkit-text-fill-color:transparent!important;caret-color:#fff;resize:none;outline:none;overflow:hidden}
+#c-code-editor .sd-code-wrapper .sd-code-content .code-display{position:relative;z-index:1;pointer-events:none}
+#c-code-editor .sd-code-wrapper .sd-code-content .code-display code{color:#d4d4d4;font-family:inherit}
+#c-code-editor .sd-code-wrapper .token.comment,#c-code-editor .sd-code-wrapper .token.block-comment,#c-code-editor .sd-code-wrapper .token.prolog,#c-code-editor .sd-code-wrapper .token.doctype,#c-code-editor .sd-code-wrapper .token.cdata{color:#999}
+#c-code-editor .sd-code-wrapper .token.punctuation{color:#ccc}
+#c-code-editor .sd-code-wrapper .token.tag,#c-code-editor .sd-code-wrapper .token.attr-name,#c-code-editor .sd-code-wrapper .token.namespace,#c-code-editor .sd-code-wrapper .token.deleted{color:#e2777a}
+#c-code-editor .sd-code-wrapper .token.function-name{color:#6196cc}
+#c-code-editor .sd-code-wrapper .token.boolean,#c-code-editor .sd-code-wrapper .token.number,#c-code-editor .sd-code-wrapper .token.function{color:#f08d49}
+#c-code-editor .sd-code-wrapper .token.property,#c-code-editor .sd-code-wrapper .token.class-name,#c-code-editor .sd-code-wrapper .token.constant,#c-code-editor .sd-code-wrapper .token.symbol{color:#f8c555}
+#c-code-editor .sd-code-wrapper .token.selector,#c-code-editor .sd-code-wrapper .token.important,#c-code-editor .sd-code-wrapper .token.atrule,#c-code-editor .sd-code-wrapper .token.keyword,#c-code-editor .sd-code-wrapper .token.builtin{color:#cc99cd}
+#c-code-editor .sd-code-wrapper .token.string,#c-code-editor .sd-code-wrapper .token.char,#c-code-editor .sd-code-wrapper .token.attr-value,#c-code-editor .sd-code-wrapper .token.regex,#c-code-editor .sd-code-wrapper .token.variable{color:#7ec699}
+#c-code-editor .sd-code-wrapper .token.operator,#c-code-editor .sd-code-wrapper .token.entity,#c-code-editor .sd-code-wrapper .token.url{color:#67cdcc}
+#c-code-editor .sd-code-wrapper .token.important,#c-code-editor .sd-code-wrapper .token.bold{font-weight:700}
+#c-code-editor .sd-code-wrapper .token.italic{font-style:italic}
+#c-code-editor .sd-code-wrapper .token.entity{cursor:help}
+#c-code-editor .sd-code-wrapper .token.inserted{color:green}
+/* reboot sd-core (_base.scss) */
+#c-code-editor .sd-scope h2{margin-top:0;margin-bottom:.5rem}
+#c-code-editor .sd-scope p{margin-top:0;margin-bottom:1rem}
+#c-code-editor .sd-scope button,#c-code-editor .sd-scope textarea{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
+#c-code-editor .sd-scope pre,#c-code-editor .sd-scope code{font-family:SFMono-Regular,Menlo,Monaco,Consolas,"Courier New",monospace;font-size:1em}
+#c-code-editor .sd-scope pre{margin-top:0;margin-bottom:1rem;overflow:auto}

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-preview-pdf - Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-preview-pdf"
+         data-subtitle="Trình xem PDF (pdf.js) tự co theo phần tử cha — đồng bộ Core UI #c-preview-pdf"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <sd-section title="pdf.js chạy thật trong kit">
+          <sd-inform color="info" title="Viewer dùng đúng pdf.js của Core UI (pdfjs-dist 4.10.38)">
+            <ul class="mb-0" style="margin-top:4px;padding-left:18px;">
+              <li>Thư viện nằm ở <code>design-system/vendor/pdfjs/</code> (~1,7 MB), tự nạp khi trang có <code>&lt;sd-preview-pdf&gt;</code>; mở bằng file:// vẫn chạy.</li>
+              <li>Thumbnail từng trang, số trang, tìm chữ (phân biệt hoa thường · nguyên từ), chuyển trang, zoom, vừa trang / vừa rộng, xoay, toàn màn hình, tải xuống, phím tắt — giống thư viện thật.</li>
+              <li>Mục lục và cuộn liên tục: chính thư viện 19.0.10 <b>chưa làm</b> (tab Mục lục hiện "sẽ được bổ sung", nút Từng trang chỉ đổi nhãn) — kit giữ y vậy.</li>
+            </ul>
+          </sd-inform>
+        </sd-section>
+
+        <sd-section title="Mặc định — theme dark, thanh bên thumbnail, toolbar nổi">
+          <p class="fs-12 text-black400 mb-12">Bấm thumbnail để chuyển trang. Phím tắt khi viewer đang focus: ← → PageUp/PageDown · Home/End · + − 0 · r / R (xoay) · f (toàn màn hình) · Ctrl+F (tìm).</p>
+          <div style="height:600px">
+            <sd-preview-pdf id="pdf-demo-basic" title="Hop_dong_tin_dung_VCB_2026.pdf" startPage="2" initialZoom="page-fit" sidebar="thumbnails"></sd-preview-pdf>
+          </div>
+        </sd-section>
+
+        <sd-section title="Tìm kiếm — theme light, thanh tìm kiếm mở, tab Tìm">
+          <p class="fs-12 text-black400 mb-12">Bấm icon tìm kiếm → thanh tìm kiếm; kết quả liệt kê ở tab "Tìm". Enter / Shift+Enter (hoặc F3) chuyển kết quả, Esc đóng thanh tìm.</p>
+          <div style="height:600px">
+            <sd-preview-pdf id="pdf-demo-search" title="Hop_dong_tin_dung_VCB_2026.pdf" theme="light" sidebar="search"></sd-preview-pdf>
+          </div>
+        </sd-section>
+
+        <sd-section title="Trạng thái — không có tài liệu · đang tải · lỗi mật khẩu">
+          <p class="fs-12 text-black400 mb-12">Trạng thái không có tài liệu / đang tải / lỗi ẩn header (theo template thư viện). File mẫu thứ ba có mật khẩu <code>123456</code> — bấm "Thử lại" sau khi gán <code>password</code>.</p>
+          <div class="flex gap-4 flex-wrap">
+            <div style="flex:1 1 280px;height:340px"><sd-preview-pdf id="pdf-demo-empty"></sd-preview-pdf></div>
+            <div style="flex:1 1 280px;height:340px"><sd-preview-pdf id="pdf-demo-loading"></sd-preview-pdf></div>
+            <div style="flex:1 1 280px;height:340px"><sd-preview-pdf id="pdf-demo-locked" sidebarOpen="false"></sd-preview-pdf></div>
+          </div>
+          <div class="mt-12"><sd-button id="btn-pdf-unlock" title="Gán password=&quot;123456&quot; rồi thử lại" type="light" color="primary" prefixIcon="lock_open"></sd-button></div>
+        </sd-section>
+
+        <sd-section title="Trong sd-modal">
+          <p class="fs-12 text-black400 mb-12">Component tự co theo phần tử cha, không tự bọc modal. Esc KHÔNG phát <code>sd-close</code> (thư viện để trang tự đóng) — dùng nút Thoát của modal.</p>
+          <sd-button id="btn-pdf-lightbox" title="Mở viewer PDF" type="fill" color="primary" prefixIcon="picture_as_pdf"></sd-button>
+
+          <!-- lazyLoadContent mặc định TRUE (đúng thư viện); trang gán source trước khi mở nên tắt tường minh. -->
+          <sd-modal id="modal-pdf-lightbox" title="Xem PDF" width="960px" lazyLoadContent="false">
+            <div style="height:620px">
+              <sd-preview-pdf id="pdf-demo-modal" title="Hop_dong_tin_dung_VCB_2026.pdf"></sd-preview-pdf>
+            </div>
+            <div sdFooterRight>
+              <sd-button id="btn-pdf-lightbox-close" title="Thoát" type="link" color="primary"></sd-button>
+            </div>
+          </sd-modal>
+        </sd-section>
+
+        <sd-section title="Event log">
+          <p class="fs-12 text-black400 mb-12">sd-loaded · sd-page-change · sd-zoom-change · sd-search-change · sd-download · sd-load-error · sd-close.</p>
+          <pre class="ds-guide-code" id="pdf-event-log">Chưa có sự kiện nào.</pre>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Xem PDF đính kèm: hợp đồng, hoá đơn điện tử, chứng từ scan</li>
+                  <li>Cần sidebar thumbnail, tìm chữ, zoom theo trang, tải xuống, fullscreen</li>
+                  <li>Đọc tài liệu ngay trong trang mà không rời context làm việc</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Chỉ cần xem ảnh tĩnh - dùng sd-preview-image</li>
+                  <li>Phải nhập/điền liệu vào PDF tại chỗ - đây là viewer, không phải editor</li>
+                  <li>Nhiều file cần chọn - dùng sd-upload-file kết hợp viewer</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Trang chi tiết đơn hàng mở PDF chứng từ trong viewer: sidebar danh sách trang, tìm chữ, phóng to vừa trang/vừa rộng, tải xuống và xem toàn màn hình. Người dùng nhập Ctrl+F, nhảy tới trang cụ thể."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML + JS</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;div style="height: 600px"&gt;
+  &lt;sd-preview-pdf
+    title="Hop_dong_tin_dung_VCB_2026.pdf"
+    startPage="2" initialZoom="page-fit" sidebar="thumbnails"&gt;&lt;/sd-preview-pdf&gt;
+&lt;/div&gt;
+
+&lt;!-- source: attribute (URL) hoặc property JS --&gt;
+// string | File | Blob | ArrayBuffer | Uint8Array
+// | { url, httpHeaders?, withCredentials? } | { data }
+viewer.source = 'https://cdn.example.vn/hop-dong.pdf';
+viewer.source = fileInput.files[0];
+viewer.addEventListener('sd-page-change', e =&gt; console.log(e.detail.page));</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>source</td><td>URL (attribute) · File · Blob · ArrayBuffer · Uint8Array · { url, httpHeaders?, withCredentials? } · { data } (property)</td><td>-</td><td>Nguồn PDF. Bí danh cũ: <code>src</code></td></tr>
+                  <tr><td>title</td><td>string</td><td>tên file</td><td>Tên hiển thị ở header</td></tr>
+                  <tr><td>startPage</td><td>number</td><td>1</td><td>Trang mở đầu</td></tr>
+                  <tr><td>initialZoom</td><td>page-fit · page-width · page-actual · số (1 = 100%)</td><td>page-fit</td><td>Bí danh cũ: width · actual · "150" / "150%"</td></tr>
+                  <tr><td>sidebar</td><td>thumbnails · outline · search · none</td><td>thumbnails</td><td>Tab thanh bên mở sẵn (none = không có thanh bên)</td></tr>
+                  <tr><td>sidebarOpen</td><td>boolean</td><td>true</td><td>Mở sẵn thanh bên</td></tr>
+                  <tr><td>scrollMode</td><td>page · continuous</td><td>page</td><td>continuous: thư viện chưa dựng — vẫn từng trang (console.warn)</td></tr>
+                  <tr><td>showToolbar</td><td>boolean</td><td>true</td><td>Toolbar nổi ở đáy</td></tr>
+                  <tr><td>downloadable</td><td>boolean</td><td>true</td><td>Nút tải xuống + nút "Tải file gốc" ở màn lỗi</td></tr>
+                  <tr><td>password</td><td>string (attribute / property)</td><td>-</td><td>Mật khẩu mở file</td></tr>
+                  <tr><td>httpHeaders</td><td>JSON (attribute) · object (property)</td><td>-</td><td>Header HTTP khi tải theo URL</td></tr>
+                  <tr><td>theme</td><td>dark · light</td><td>dark</td><td>Bộ màu</td></tr>
+                  <tr><td>autoId</td><td>string</td><td>-</td><td>data-autoId cho từng nút: components-preview-pdf-{id}-first / -next / -search …</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Events - ánh xạ sang Angular</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Kebab (mirror)</th><th>Angular</th><th>detail</th><th>Khi nào fire</th></tr></thead>
+                <tbody>
+                  <tr><td>sd-loaded</td><td>loaded</td><td>{ totalPages, meta }</td><td>Mở tài liệu xong</td></tr>
+                  <tr><td>sd-page-change</td><td>pageChange</td><td>{ page }</td><td>Lúc mở + mỗi lần đổi trang</td></tr>
+                  <tr><td>sd-zoom-change</td><td>zoomChange</td><td>{ zoom }</td><td>Sau mỗi lần vẽ trang (tỉ lệ thật, 0.25–4)</td></tr>
+                  <tr><td>sd-search-change</td><td>searchChange</td><td>{ term, total, current }</td><td>Mỗi lần tìm / chuyển kết quả / xoá tìm</td></tr>
+                  <tr><td>sd-download</td><td>download</td><td>{ filename }</td><td>Bấm tải xuống</td></tr>
+                  <tr><td>sd-load-error</td><td>loadError</td><td>{ reason: invalid · password · network · unknown, message }</td><td>Không mở được tài liệu</td></tr>
+                  <tr><td>sd-close</td><td>close</td><td>{}</td><td>Chỉ khi gọi <code>requestClose()</code> — Esc không phát</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <sd-inform color="info" title="Phương thức (giống thư viện)">
+                <p class="mb-0" style="margin-top:4px;">goToPage(n) · nextPage() · prevPage() · firstPage() · lastPage() · zoomIn() · zoomOut() · setZoom(mode) · rotate('right'|'left') · toggleSidebar() · setSidebarMode(mode) · setScrollMode(mode) · search(term, { caseSensitive, wholeWord }) · searchNext() · searchPrev() · clearSearch() · openSearch() · closeSearch() · downloadFile() · toggleFullscreen() · retryLoad() · requestClose(). Trang khác cần pdf.js ở chỗ khác thì đặt <code>window.SD_PDFJS_BASE</code> trước khi nạp.</p>
+              </sd-inform>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../assets/sd-preview-pdf-demo.js"></script>
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      showPanel(0);
+    }
+    initPreviewTabs();
+  })();
+
+  // Demos sd-preview-pdf — PDF mẫu 12 trang nhúng sẵn (../assets/sd-preview-pdf-demo.js)
+  (function () {
+    function byId(id) { return document.getElementById(id); }
+    byId('pdf-demo-basic').source = sdDemoPdf('contract');
+    var searchDemo = byId('pdf-demo-search');
+    searchDemo.addEventListener('sd-loaded', function () { searchDemo.openSearch(); searchDemo.search('lãi suất'); }, { once: true });
+    searchDemo.source = sdDemoPdf('contract');
+    /* Đang tải: một Blob đọc mãi không xong — viewer đứng ở trạng thái loading */
+    var pending = new Blob([sdDemoPdf('contract')], { type: 'application/pdf' });
+    pending.arrayBuffer = function () { return new Promise(function () {}); };
+    byId('pdf-demo-loading').source = pending;
+    var locked = byId('pdf-demo-locked');
+    locked.source = sdDemoPdf('locked');
+    byId('btn-pdf-unlock').addEventListener('click', function () { locked.password = '123456'; locked.retryLoad(); });
+    var modal = byId('modal-pdf-lightbox');
+    /* "Vừa trang" đo theo khung lúc vẽ — gán source SAU khi modal đã hiện (khung ẩn đo ra 0px) */
+    byId('btn-pdf-lightbox').addEventListener('click', function () {
+      modal.open();
+      setTimeout(function () { byId('pdf-demo-modal').source = sdDemoPdf('contract'); }, 50);
+    });
+    byId('btn-pdf-lightbox-close').addEventListener('click', function () { modal.close(); });
+  })();
+
+  // Event log
+  (function () {
+    var log = document.getElementById('pdf-event-log');
+    var empty = 'Chưa có sự kiện nào.';
+    function logEvent(label, payload) {
+      if (!log) return;
+      var base = log.textContent === empty ? '' : log.textContent + '\n';
+      log.textContent = base + label + ' detail=' + (payload ? JSON.stringify(payload) : '{}');
+    }
+    document.addEventListener('sd-loaded', function (e) {
+      if (e.target.matches && e.target.matches('sd-preview-pdf')) logEvent('sd-loaded', e.detail);
+    });
+    document.addEventListener('sd-page-change', function (e) {
+      if (e.target.matches && e.target.matches('sd-preview-pdf')) logEvent('sd-page-change', e.detail);
+    });
+    document.addEventListener('sd-zoom-change', function (e) {
+      if (e.target.matches && e.target.matches('sd-preview-pdf')) logEvent('sd-zoom-change', e.detail);
+    });
+    document.addEventListener('sd-download', function (e) {
+      if (e.target.matches && e.target.matches('sd-preview-pdf')) logEvent('sd-download', e.detail);
+    });
+    document.addEventListener('sd-load-error', function (e) {
+      if (e.target.matches && e.target.matches('sd-preview-pdf')) logEvent('sd-load-error', e.detail);
+    });
+    document.addEventListener('sd-search-change', function (e) {
+      if (e.target.matches && e.target.matches('sd-preview-pdf')) logEvent('sd-search-change', e.detail);
+    });
+    document.addEventListener('sd-close', function (e) {
+      if (e.target.matches && e.target.matches('sd-preview-pdf')) logEvent('sd-close', {});
+    });
+  })();
+</script>
+
+</body>
+</html>

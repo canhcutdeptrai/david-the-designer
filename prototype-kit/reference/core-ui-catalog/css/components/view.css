@@ -1,0 +1,14 @@
+/* View — #c-view */
+/* sd-view không có styles riêng: chỉ dùng utility của sd-core + reboot cho <a> */
+#c-view .d-flex{display:flex!important}
+#c-view .align-items-center{align-items:center!important}
+#c-view .T14M{font-size:14px;font-weight:500;line-height:20px}
+#c-view .T14R{font-size:14px;font-weight:400;line-height:20px}
+#c-view .T12R{font-size:12px!important;font-weight:400;line-height:16px}
+#c-view .text-black400{color:var(--sd-black400)!important}
+#c-view .text-success{color:var(--sd-success)!important}
+#c-view .gap-4{gap:4px!important}
+#c-view sd-view a{color:#007bff;text-decoration:none;background-color:transparent}
+#c-view sd-view a:hover{text-decoration:underline}
+/* bố cục trang catalog */
+#c-view .vw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px 24px}

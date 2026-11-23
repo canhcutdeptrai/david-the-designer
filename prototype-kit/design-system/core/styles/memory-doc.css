@@ -1,0 +1,207 @@
+/* ============================================================
+   PROTOTYPE DESIGN SYSTEM — Memory Doc Styles
+
+   Scoped styles for `.memory-doc` wrapper — renders markdown
+   (h1-h6, p, ul/ol, table, code, pre, blockquote) using DS tokens.
+
+   Used by: prototypes/{slug}/memory.html
+   Load after utilities.css.
+   ============================================================ */
+
+.memory-doc {
+  padding: var(--space-6);
+  color: var(--text-primary);
+  font-family: var(--font-family-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+}
+
+/* --- Headings --- */
+.memory-doc h1,
+.memory-doc h2,
+.memory-doc h3,
+.memory-doc h4,
+.memory-doc h5,
+.memory-doc h6 {
+  color: var(--text-primary);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-tight);
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-3);
+}
+
+.memory-doc h1:first-child,
+.memory-doc h2:first-child,
+.memory-doc h3:first-child {
+  margin-top: 0;
+}
+
+.memory-doc h1 {
+  font-size: var(--text-2xl);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-primary);
+}
+.memory-doc h2 {
+  font-size: var(--text-xl);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-secondary);
+}
+.memory-doc h3 { font-size: var(--text-lg); }
+.memory-doc h4 { font-size: var(--text-base); font-weight: var(--font-semibold); }
+.memory-doc h5 { font-size: var(--text-sm); font-weight: var(--font-semibold); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--text-secondary); }
+.memory-doc h6 { font-size: var(--text-sm); color: var(--text-secondary); }
+
+/* --- Paragraphs & inline --- */
+.memory-doc p {
+  margin: 0 0 var(--space-3);
+}
+
+.memory-doc strong {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.memory-doc em {
+  font-style: italic;
+}
+
+.memory-doc a {
+  color: var(--text-link);
+  text-decoration: none;
+}
+.memory-doc a:hover {
+  color: var(--text-link-hover);
+  text-decoration: underline;
+}
+
+/* --- Lists --- */
+.memory-doc ul,
+.memory-doc ol {
+  margin: 0 0 var(--space-3);
+  padding-left: var(--space-6);
+}
+
+.memory-doc ul li,
+.memory-doc ol li {
+  margin-bottom: var(--space-1);
+}
+
+.memory-doc ul ul,
+.memory-doc ol ol,
+.memory-doc ul ol,
+.memory-doc ol ul {
+  margin-top: var(--space-1);
+  margin-bottom: 0;
+}
+
+/* --- Code (inline) --- */
+.memory-doc code {
+  font-family: var(--font-family-mono);
+  font-size: 0.875em;
+  background: var(--surface-tertiary);
+  color: var(--text-primary);
+  padding: var(--space-0-5) var(--space-1);
+  border-radius: var(--radius-sm);
+}
+
+/* --- Code block (pre) --- */
+.memory-doc pre {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-sm);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin: 0 0 var(--space-4);
+  line-height: var(--leading-normal);
+}
+
+.memory-doc pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
+
+/* --- Blockquote --- */
+.memory-doc blockquote {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border-left: 3px solid var(--border-focus);
+  background: var(--surface-active);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.memory-doc blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* --- Horizontal rule --- */
+.memory-doc hr {
+  border: 0;
+  border-top: 1px solid var(--border-primary);
+  margin: var(--space-6) 0;
+}
+
+/* --- Tables --- */
+.memory-doc table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-sm);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.memory-doc thead {
+  background: var(--surface-secondary);
+}
+
+.memory-doc th {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  font-weight: var(--font-semibold);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-primary);
+  white-space: nowrap;
+}
+
+.memory-doc td {
+  padding: var(--space-2) var(--space-3);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-secondary);
+  vertical-align: top;
+}
+
+.memory-doc tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.memory-doc tbody tr:hover {
+  background: var(--surface-hover);
+}
+
+/* --- Memory page body marker --- */
+/* memory.html is a viewer — no primary action buttons in page-header */
+/* !important (2026-10-14): vùng phải của header nay mang lớp sd-core `d-flex` (!important) */
+.memory-page .page-header-actions {
+  display: none !important;
+}
+
+/* --- Fallback (marked.js failed to load) --- */
+.memory-doc-fallback {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-sm);
+  white-space: pre-wrap;
+  padding: var(--space-4);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  border: 1px dashed var(--border-primary);
+  border-radius: var(--radius-md);
+  margin: 0;
+}

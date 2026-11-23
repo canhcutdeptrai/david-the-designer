@@ -1,0 +1,490 @@
+--- /tmp/sdc.bak.sel	2026-10-12 12:28:51.097234521 +0000
++++ design-system/sd-components/sd-components.js	2026-10-12 12:35:05.037635407 +0000
+@@ -2897,7 +2897,16 @@
+ 
+ 
+   /* ══════════════════════════════════════════════════════════
+-     sd-select — mirror theo select.component.ts thật (@sdcorejs/angular
++     sd-select — RÀ SOÁT LẠI 2026-10-12 theo Core UI Catalog `#c-select`
++     (@sd-angular/core 19.0.10): panel (không viền, bóng elevation, bo dưới,
++     275px), dòng chọn 16px/1.4 (nhiều lựa chọn 14px), dòng đã chọn nền 12%
++     + tick vẽ bằng CSS (`mat-pseudo-checkbox`), ô nhiều lựa chọn là
++     pseudo-checkbox 18px scale .75, nút xoá thay mũi tên khi có giá trị và
++     không required, placeholder mặc định = nhãn, giá trị disabled màu
++     --sd-black400. Ghi chú cũ bên dưới (theo @sdcorejs/angular) giữ lại cho
++     phần validation; phần "KHÔNG mirror … clearable" đã lỗi thời.
++
++     (ghi chú cũ) mirror theo select.component.ts thật (@sdcorejs/angular
+      v22.2.12). Rà soát 2026-09-23 khi làm phần Form/Validation &
+      hideInlineError: bản cũ hoàn toàn KHÔNG có required-error/
+      hideInlineError. Bản này thêm đúng phần validation thật có —
+@@ -3063,7 +3072,9 @@
+     _render() {
+       sdSyncFieldHostClass(this, (this.getAttribute('label') || ''), (this.viewedMode === true));
+       var label = this.getAttribute('label') || '';
+-      var placeholder = this.getAttribute('placeholder') || 'Chọn...';
++      /* Placeholder mặc định = NHÃN — catalog: ô rỗng đang mở hiện chính chữ
++         nhãn màu .54 (`mat-mdc-select-placeholder`). Bản trước kit để "Chọn...". */
++      var placeholder = this.getAttribute('placeholder') || label;
+       var size = this.getAttribute('size') || 'md';
+       var required = this.hasAttribute('required');
+       var disabled = this.hasAttribute('disabled');
+@@ -3127,20 +3138,22 @@
+         itemsHtml = items.map(function (item) {
+           var isSelected = selectedArr.indexOf(String(item[vf])) !== -1;
+           var disabledItem = self._isItemDisabled(item) ? ' sd-item-disabled' : '';
+-          return '<div class="sd-dropdown-item sd-dropdown-item--check' + (isSelected ? ' sd-selected' : '') + disabledItem + '" data-value="' + escAttr(String(item[vf])) + '">' +
+-            '<span class="sd-cb' + (isSelected ? ' sd-cb--checked' : '') + '">' +
+-            (isSelected ? '<span class="material-icons" style="font-size:14px;line-height:16px;color:#fff;">check</span>' : '') +
+-            '</span>' +
+-            '<span class="sd-dropdown-item-label">' + esc(item[df]) + '</span>' +
++          /* catalog: mat-option.mat-mdc-option-multiple > mat-pseudo-checkbox-full
++             (ô 18px vẽ bằng CSS, scale .75) + span.mdc-list-item__primary-text > div */
++          return '<div class="sd-dropdown-item sd-dropdown-item--check mat-mdc-option mat-mdc-option-multiple' + (isSelected ? ' sd-selected mdc-list-item--selected' : '') + disabledItem + '" data-value="' + escAttr(String(item[vf])) + '">' +
++            '<span class="mat-pseudo-checkbox mat-pseudo-checkbox-full' + (isSelected ? ' mat-pseudo-checkbox-checked' : '') + '" aria-hidden="true"></span>' +
++            '<span class="mdc-list-item__primary-text sd-dropdown-item-label"><div>' + esc(item[df]) + '</div></span>' +
+             '</div>';
+         }).join('');
+       } else {
+         itemsHtml = items.map(function (item) {
+           var isSelected = String(item[vf]) === String(value);
+           var disabledItem = self._isItemDisabled(item) ? ' sd-item-disabled' : '';
+-          return '<div class="sd-dropdown-item' + (isSelected ? ' sd-selected' : '') + disabledItem + '" data-value="' + escAttr(String(item[vf])) + '">' +
+-            '<span>' + esc(item[df]) + '</span>' +
+-            (isSelected ? '<span class="material-icons-outlined sd-check-icon">check</span>' : '') +
++          /* catalog: mat-option > span.mdc-list-item__primary-text > div, dòng đã
++             chọn thêm mat-pseudo-checkbox-minimal (dấu tick vẽ bằng CSS) SAU chữ. */
++          return '<div class="sd-dropdown-item mat-mdc-option' + (isSelected ? ' sd-selected mdc-list-item--selected' : '') + disabledItem + '" data-value="' + escAttr(String(item[vf])) + '">' +
++            '<span class="mdc-list-item__primary-text"><div>' + esc(item[df]) + '</div></span>' +
++            (isSelected ? '<span class="mat-pseudo-checkbox mat-pseudo-checkbox-minimal mat-pseudo-checkbox-checked" aria-hidden="true"></span>' : '') +
+             '</div>';
+         }).join('');
+       }
+@@ -3156,14 +3169,11 @@
+           var state = (inScope.length === 0) ? 'unchecked'
+             : (inScope.length === scope.length) ? 'checked' : 'indeterminate';
+           itemsHtml =
+-            '<div class="sd-dropdown-item sd-dropdown-item--check sd-select-all' +
++            '<div class="sd-dropdown-item sd-dropdown-item--check mat-mdc-option mat-mdc-option-multiple sd-select-all' +
+               (state === 'checked' ? ' sd-selected' : '') + '" data-select-all="' + state + '">' +
+-            '<span class="sd-cb' + (state === 'checked' ? ' sd-cb--checked' : '') +
+-              (state === 'indeterminate' ? ' sd-cb--indeterminate' : '') + '">' +
+-            (state === 'checked' ? '<span class="material-icons sd-cb-glyph">check</span>' : '') +
+-            (state === 'indeterminate' ? '<span class="material-icons sd-cb-glyph">remove</span>' : '') +
+-            '</span>' +
+-            '<span class="sd-dropdown-item-label">' + esc(SD_SELECT_TEXT.selectAll) + '</span>' +
++            '<span class="mat-pseudo-checkbox mat-pseudo-checkbox-full' + (state === 'checked' ? ' mat-pseudo-checkbox-checked' : '') +
++              (state === 'indeterminate' ? ' mat-pseudo-checkbox-indeterminate' : '') + '" aria-hidden="true"></span>' +
++            '<span class="mdc-list-item__primary-text sd-dropdown-item-label"><div>' + esc(SD_SELECT_TEXT.selectAll) + '</div></span>' +
+             '</div>' + itemsHtml;
+         }
+       }
+@@ -3189,6 +3199,13 @@
+       var clearHtml = (inline && this.clearable && displayText)
+         ? '<span class="material-icons-outlined sd-select-clear" role="button" tabindex="0" aria-label="Xoá">close</span>'
+         : '';
++      /* Nút xoá ở ô THƯỜNG — catalog #c-select: "có giá trị và không required:
++         icon mũi tên đổi thành nút xoá" (clearable mặc định true). Bản trước kit
++         chỉ có × ở biến thể inline. Rà soát 2026-10-12. */
++      var showClearBtn = !inline && this.clearable && !!displayText && !required && !disabled;
++      var arrowHtml = showClearBtn
++        ? '<button type="button" class="sd-clear-btn" title="Xóa" aria-label="Xóa"><span class="material-icons-outlined">close</span></button>'
++        : '<span class="material-icons-outlined sd-select-arrow" aria-hidden="true">keyboard_arrow_down</span>';
+ 
+       /* Ô tìm kiếm trong panel — catalog: "tự hiện khi danh sách > 10 phần tử
+          hoặc items là hàm tải từ server". Kit nhận items qua attribute nên chỉ
+@@ -3223,11 +3240,11 @@
+           (errorMsg ? ' data-error-message="' + escAttr(errorMsg) + '"' : '') + '>' +
+         errorIconHtml +
+         clearHtml +
+-        '<span class="material-icons-outlined sd-select-arrow" aria-hidden="true">keyboard_arrow_down</span>' +
++        arrowHtml +
+         '</div>' +
+         (showErrorText ? '<div class="sd-error-text">' + esc(errorMsg) + '</div>' : '') +
+         (!showErrorText && helperText ? '<div class="sd-helper-text">' + esc(helperText) + '</div>' : '') +
+-        '<div class="sd-dropdown-menu"' +
++        '<div class="sd-dropdown-menu mat-mdc-select-panel sd-select-panel' + (multiple ? ' sd-multiple' : '') + '"' +
+           (minWidthPanel ? ' style="min-width:' + escAttr(/^\d+$/.test(minWidthPanel) ? minWidthPanel + 'px' : minWidthPanel) + '"' : '') +
+           '>' + filterHtml + itemsHtml + '</div>';
+ 
+@@ -3290,8 +3307,8 @@
+         /* viewed === true khoá hẳn; viewed === 'inline' vẫn mở panel được */
+         if (self.hasAttribute('disabled') || self.viewedMode === true) return;
+ 
+-        /* × xoá giá trị ở mặt chữ inline */
+-        if (e.target.closest('.sd-select-clear')) {
++        /* × xoá giá trị — ở mặt chữ inline (.sd-select-clear) hoặc ô thường (.sd-clear-btn) */
++        if (e.target.closest('.sd-select-clear, .sd-clear-btn')) {
+           e.stopPropagation();
+           self.setAttribute('value', '');
+           self.dispatchEvent(new CustomEvent('sd-change', { detail: { value: '' }, bubbles: true }));
+--- /tmp/sdt.bak.sel	2026-10-12 12:28:51.095247774 +0000
++++ design-system/core/styles/sd-tokens.css	2026-10-12 12:31:00.373122742 +0000
+@@ -1402,18 +1402,22 @@
+ 
+ /* Floating label — resting state (empty + unfocused): sits at placeholder position */
+ /* Nhãn nổi — số đo lấy từ cột catalog: lúc nghỉ cách mép trái 16px, chữ 14px,
+-   màu rgba(0,0,0,.54); lúc nổi lên nằm ở -6.75px so với mép trên ô, cao 12px
+-   (catalog giữ font 14px rồi scale .75 → kit đặt thẳng 10.5px cho cùng cỡ) */
++   màu rgba(0,0,0,.54); lúc nổi lên nằm ở -6.75px so với mép trên ô, cao 12px.
++   Rà soát #c-select 2026-10-12 (đo lại cả #c-input): catalog giữ font 14px
++   `line-height: normal` (hộp 16px) rồi `transform: scale(.75)` gốc 0 0 khi nổi.
++   Bản trước kit đặt hộp 20px + font 10.5px khi nổi → chữ lúc nghỉ thấp 0.8px,
++   lúc nổi thấp 1px và RỘNG hơn (giãn chữ 0.496px không co theo như scale). */
+ .sd-form-field .sd-label {
+   position: absolute;
+   top: 50%;
+   left: 15px;              /* + 1px viền = 16px như catalog */
+-  transform: translateY(-50%);
++  transform: translateY(calc(-50% - 0.75px));   /* chữ cách mép trên 13px ở ô 43.5px */
++  transform-origin: 0 0;
+   padding: 0;
+   font-family: var(--sd-font-family);
+   font-size: 14px;
+   font-weight: 400;
+-  line-height: 20px;
++  line-height: 16px;
+   color: rgba(0, 0, 0, .54);
+   background: transparent;
+   pointer-events: none;
+@@ -1425,11 +1429,9 @@
+ .sd-form-field:focus-within .sd-label,
+ .sd-form-field.sd-has-value .sd-label {
+   top: -7.75px;            /* + 1px viền = -6.75px so với mép hộp, như catalog */
+-  transform: translateY(0);
+-  font-size: 10.5px;
+-  line-height: 12px;
+-  padding: 0 4px;
+-  left: 11px;              /* + 1px viền + 4px padding → chữ bắt đầu ở 16px */
++  transform: scale(.75);   /* catalog: matrix(.75,0,0,.75,…) — hộp 16 → 12px */
++  padding: 0 4px;          /* sau scale = 3px */
++  left: 12px;              /* + 1px viền + 3px padding → chữ bắt đầu ở 16px */
+   color: rgba(0, 0, 0, .54);
+   background: #fff;        /* kit: che viền thay cho khe notch của Material */
+ }
+@@ -1452,9 +1454,11 @@
+ .sd-form-field:not(:focus-within):not(.sd-has-value):has(.sd-label) .sd-chip-input::placeholder {
+   opacity: 0;
+ }
++/* catalog `.mat-mdc-form-field-required-marker::after{content:"*";margin-left:1px}`,
++   màu --sd-error (#f82c13) — bản trước kit cách 2px (rà soát #c-select 2026-10-12). */
+ .sd-form-field .sd-label .sd-required {
+   color: var(--sd-error);
+-  margin-left: 2px;
++  margin-left: 1px;
+ }
+ 
+ /* Input element */
+@@ -1925,7 +1929,7 @@
+ }
+ /* Nhãn lúc nghỉ: ở góc trên trong khung (chữ 14px, tâm dòng ngang tâm dòng đầu) */
+ .sd-form-field.sd-textarea-field .sd-label {
+-  top: 10px;
++  top: 12px;               /* hộp nhãn 16px: + 1px viền → chữ cách mép trên 13px */
+   transform: none;
+ }
+ /* Nhãn nổi: DÙNG ĐÚNG -7.75px của sd-input. Bản trước ghi đè thành -10px nên chữ
+@@ -1933,6 +1937,7 @@
+ .sd-form-field.sd-textarea-field:focus-within .sd-label,
+ .sd-form-field.sd-textarea-field.sd-has-value .sd-label {
+   top: -7.75px;
++  transform: scale(.75);
+ }
+ /* Disabled: catalog `sd-textarea textarea.mat-mdc-input-element:disabled
+    { color: var(--sd-black400) !important }` — chữ xám, không phải .87. */
+@@ -2221,6 +2226,13 @@
+ }
+ /* Có icon lỗi đứng trước thì khe giữa hai icon là `gap` của catalog (8 / 4). */
+ sd-select .sd-date-error-icon + .sd-select-arrow { margin-left: 8px; }
++/* Nút xoá thay chỗ mũi tên — cùng ô 20px, cùng lề (catalog đặt cả hai trong
++   `.mat-mdc-form-field-icon-suffix{padding:0 12px}`). */
++sd-select .sd-form-field:not(.sd-inline) .sd-clear-btn { margin: 0 -4px 0 12px; }
++sd-select .sd-form-field.sd-sm:not(.sd-inline) .sd-clear-btn { margin: 0 -8px 0 8px; }
++/* Giá trị khi disabled — catalog `mat-select-disabled .mat-mdc-select-value
++   { color: var(--sd-black400) !important }`. Bản trước kit để .87. */
++sd-select .sd-form-field.sd-disabled .sd-input { color: var(--sd-black400); -webkit-text-fill-color: var(--sd-black400); }
+ sd-select .sd-form-field.sd-sm .sd-date-error-icon + .sd-select-arrow { margin-left: 4px; }
+ /* --- sd-input: các input bổ sung theo Core, rà soát 2026-10-10 ---
+    clearable (× xoá giá trị) và viewed="inline" (ô nhập không khung). */
+@@ -2275,16 +2287,6 @@
+ sd-select .sd-dropdown-item.sd-select-all {
+   border-bottom: 1px solid var(--sd-black200);
+ }
+-/* Ô tích ở trạng thái "một phần": gạch ngang thay cho dấu tích */
+-sd-select .sd-cb.sd-cb--indeterminate {
+-  background: var(--sd-primary);
+-  border-color: var(--sd-primary);
+-}
+-sd-select .sd-cb .sd-cb-glyph {
+-  font-size: 14px;
+-  line-height: 16px;
+-  color: var(--color-neutral-0);
+-}
+ 
+ /* viewed="inline": bỏ khung viền, mặt ngoài chỉ còn chữ; bấm vào mới mở panel */
+ sd-select .sd-form-field.sd-inline {
+@@ -2309,6 +2311,11 @@
+ sd-select .sd-form-field.sd-inline:hover .sd-select-clear,
+ sd-select .sd-select-clear:focus-visible { opacity: 1; }
+ sd-select .sd-select-clear:hover { color: var(--sd-error); }
++/* Panel — catalog `div.mat-mdc-select-panel.sd-select-panel`: KHÔNG viền,
++   padding 0, bo dưới 4px (trên vuông vì dính sát ô), bóng elevation 8 của
++   Material, cao tối đa 275px, nền trắng; cách đáy ô 4px. Bản trước kit: viền
++   1px #e6e6e6, bo đủ 4 góc, bóng nhẹ một lớp, padding 4px 0, cao tối đa 240px.
++   Rà soát #c-select 2026-10-12. */
+ sd-select .sd-dropdown-menu {
+   display: none;
+   position: absolute;
+@@ -2316,13 +2323,15 @@
+   left: 0;
+   right: 0;
+   background: #fff;
+-  border: 1px solid var(--sd-black200);
+-  border-radius: var(--sd-border-radius);
+-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
++  border: 0;
++  border-radius: 0 0 4px 4px;
++  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, .2), 0 8px 10px 1px rgba(0, 0, 0, .14), 0 3px 14px 2px rgba(0, 0, 0, .12);
+   z-index: 1000;
+-  max-height: 240px;
++  max-height: 275px;
++  max-width: 90vw;
+   overflow-y: auto;
+-  padding: 4px 0;
++  padding: 0;
++  box-sizing: border-box;
+ }
+ sd-select.sd-open .sd-dropdown-menu {
+   display: block;
+@@ -2366,8 +2375,8 @@
+   padding: 4px;
+   font-family: var(--sd-font-family);
+   font-size: 14px;
+-  line-height: 20px;
+-  color: rgba(0, 0, 0, .87);
++  line-height: 20px;       /* catalog: input UA chữ đen, ô cao 28px (20 + 2×4) */
++  color: #000;
+ }
+ /* Không có dòng nào khớp từ khoá */
+ sd-select .sd-dropdown-menu .c-filter-empty {
+@@ -2376,79 +2385,106 @@
+   line-height: 20px;
+   color: var(--sd-black400);
+ }
++/* Dòng chọn — catalog `.sd-select-panel .mat-mdc-option{min-height:36px;
++   padding:8px 12px}` + `.mat-mdc-option{font-size:16px (body-large);
++   letter-spacing:.006rem; color:rgba(0,0,0,.87)}`, chữ `line-height:1.4`.
++   Panel nhiều lựa chọn (`.sd-multiple`) thì chữ 14px. Rà soát 2026-10-12 —
++   bản trước kit 14px/20px #212121 cho cả hai, dòng thấp 2.4px. */
+ sd-select .sd-dropdown-item {
+   display: flex;
++  position: relative;
+   align-items: center;
++  justify-content: flex-start;
++  overflow: hidden;
++  min-height: 36px;
++  box-sizing: border-box;
+   padding: 8px 12px;
+   font-family: var(--sd-font-family);
+-  font-size: 14px;
++  font-size: 16px;
+   font-weight: 400;
+-  line-height: 20px;
+-  color: var(--sd-black500);
++  letter-spacing: 0.006rem;
++  color: rgba(0, 0, 0, .87);
+   cursor: pointer;
+-  transition: background 0.1s ease;
++  -webkit-user-select: none;
++  user-select: none;
+ }
++sd-select .sd-dropdown-item .mdc-list-item__primary-text {
++  margin-right: auto;
++  white-space: normal;
++  word-break: break-word;
++  line-height: 1.4;
++}
++sd-select .sd-select-panel.sd-multiple .mdc-list-item__primary-text { font-size: 14px; }
++/* hover 4%, đang chọn 12% của rgba(0,0,0,.87) — KHÔNG phải nền primary-light */
+ sd-select .sd-dropdown-item:hover {
+-  background: var(--sd-black100);
++  background-color: color-mix(in srgb, rgba(0, 0, 0, .87) 4%, transparent);
+ }
+-sd-select .sd-dropdown-item.sd-selected {
+-  /* Item đang chọn: nền tint + chữ đổi màu + dấu check — đúng mat-option của
+-     Material (`--mat-option-selected-state-layer-color` + `-label-text-color`
+-     + pseudo-checkbox).
+-     Rà soát 2026-10-07: BỎ `font-weight: 500`. Material KHÔNG đổi độ đậm khi
+-     chọn (giữ `--mat-option-label-text-weight` như mọi item), nên chữ đậm là
+-     phần kit tự thêm — vừa lệch Core, vừa làm dòng đã chọn nhảy hẳn ra so với
+-     các dòng còn lại. Bỏ đi thì nền tint + màu chữ + dấu check vẫn đủ rõ, mà
+-     item đã chọn của single-select và multi-select cũng về cùng một độ đậm. */
+-  background: var(--sd-primary-light);
+-  color: var(--sd-primary);
++sd-select .sd-dropdown-item.sd-selected:not(.mat-mdc-option-multiple) {
++  background-color: color-mix(in srgb, rgba(0, 0, 0, .87) 12%, transparent);
+ }
+-sd-select .sd-dropdown-item .sd-check-icon {
+-  margin-left: auto;
+-  font-size: 16px;
++sd-select .sd-dropdown-item.sd-selected:not(.mat-mdc-option-multiple) .mdc-list-item__primary-text {
+   color: var(--sd-primary);
+ }
+ sd-select .sd-dropdown-item.sd-item-disabled {
+-  opacity: 0.4;
+-  cursor: not-allowed;
++  opacity: 0.38;
++  cursor: default;
+   pointer-events: none;
+ }
+-/* Multiple-select item layout */
+-sd-select .sd-dropdown-item--check {
+-  gap: 8px;
++
++/* Ô tick vẽ bằng CSS — catalog `mat-pseudo-checkbox` (18px, ::after là dấu
++   tick xoay -45°). minimal = chỉ dấu tick primary sau chữ (scale .7);
++   full = ô viền 2px .54, khi chọn nền primary + tick #fafafa (scale .75). */
++sd-select .mat-pseudo-checkbox {
++  width: 18px;
++  height: 18px;
++  border-radius: 2px;
++  display: inline-block;
++  vertical-align: middle;
++  box-sizing: border-box;
++  position: relative;
++  flex-shrink: 0;
+ }
+-/* Multi-select: item đã chọn KHÔNG có nền tint — đúng Material, rule nền
+-   selected của mat-option loại trừ hẳn `:not(.mat-mdc-option-multiple)` vì ô
+-   checkbox đã nói rõ trạng thái rồi. Giữ nguyên, chỉ bỏ khai báo font-weight
+-   thừa cho khớp với single-select ở trên. */
+-sd-select .sd-dropdown-item--check.sd-selected {
+-  background: transparent;
+-  color: var(--sd-black500);
++sd-select .mat-pseudo-checkbox::after {
++  position: absolute;
++  opacity: 0;
++  content: "";
++  border-bottom: 2px solid currentColor;
+ }
+-sd-select .sd-dropdown-item--check:hover {
+-  background: var(--sd-black100);
++sd-select .mat-pseudo-checkbox-checked::after,
++sd-select .mat-pseudo-checkbox-indeterminate::after { opacity: 1; box-sizing: content-box; }
++sd-select .mat-pseudo-checkbox-checked::after {
++  left: 0; right: 0; bottom: 0; margin: auto;
++  border-left: 2px solid currentColor;
++  transform: rotate(-45deg);
++  transform-origin: center;
++}
++sd-select .mat-pseudo-checkbox-minimal {
++  margin-left: 16px;
++  transform: scale(.7);
++  transform-origin: center right;
+ }
+-sd-select .sd-cb {
+-  flex-shrink: 0;
+-  width: 16px;
+-  height: 16px;
+-  border: 1.5px solid var(--sd-black400);
+-  border-radius: 3px;
+-  background: #fff;
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
++sd-select .mat-pseudo-checkbox-minimal.mat-pseudo-checkbox-checked::after {
++  width: 14px; height: 6px; top: -4.2426406871px;
++  color: var(--sd-primary);
+ }
+-sd-select .sd-cb--checked {
+-  background: var(--sd-primary);
+-  border-color: var(--sd-primary);
++sd-select .mat-pseudo-checkbox-full {
++  border: 2px solid rgba(0, 0, 0, .54);
++  margin-right: 8px;
++  transform: scale(.75);
++}
++sd-select .mat-pseudo-checkbox-full.mat-pseudo-checkbox-checked,
++sd-select .mat-pseudo-checkbox-full.mat-pseudo-checkbox-indeterminate {
++  background-color: var(--sd-primary);
++  border-color: transparent;
+ }
+-sd-select .sd-dropdown-item-label {
+-  flex: 1;
+-  min-width: 0;
+-  overflow: hidden;
+-  text-overflow: ellipsis;
+-  white-space: nowrap;
++sd-select .mat-pseudo-checkbox-full.mat-pseudo-checkbox-checked::after {
++  width: 10px; height: 4px; top: -2.8284271247px;
++  color: #fafafa;
++}
++/* "một phần" (hàng Tất cả — riêng của kit): gạch ngang trắng */
++sd-select .mat-pseudo-checkbox-full.mat-pseudo-checkbox-indeterminate::after {
++  left: 1px; width: 12px; top: 6px;
++  color: #fafafa;
+ }
+ 
+ /* --- sd-tab-group styles ---
+--- /tmp/sel.bak.sel	2026-10-12 12:28:51.099970290 +0000
++++ design-system/preview/components/select.html	2026-10-12 12:32:46.957314741 +0000
+@@ -28,7 +28,7 @@
+ 
+     <div data-pattern="page-header" data-variant="browse"
+          data-title="sd-select"
+-         data-subtitle="Dropdown selector with JSON items, states, sizes"
++         data-subtitle="Ô chọn từ danh sách — một hoặc nhiều giá trị, tự có ô tìm kiếm khi &gt; 10 mục"
+          data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+ 
+     <div class="content-zone">
+@@ -36,6 +36,35 @@
+       <!-- ── Tab: Preview ──────────────────────────────────── -->
+       <div class="tab-panel" data-tab-panel="0">
+ 
++        <!-- ══ Mirror catalog #c-select — 5 biến thể, cùng nội dung. Ba khối
++             "panel đang mở" bật sẵn lớp sd-open; bấm ra ngoài là đóng như thật.
++             Inline style ở các khung bọc chỉ để chừa chỗ cho panel / cố định
++             bề ngang 280px như catalog, không phải kiểu dáng DS. ══ -->
++        <sd-section title="Rỗng, đã chọn, bắt buộc + lỗi, disabled" subtitle="có giá trị và không required: icon mũi tên đổi thành nút xoá">
++          <div class="d-flex flex-wrap gap-16">
++            <div style="width:280px"><sd-select label="Ngân hàng cho vay" valueField="code" displayField="name" items='[{"code":"VCB","name":"Vietcombank"},{"code":"BIDV","name":"BIDV"},{"code":"CTG","name":"VietinBank"},{"code":"TCB","name":"Techcombank"}]'></sd-select></div>
++            <div style="width:280px"><sd-select label="Ngân hàng cho vay" valueField="code" displayField="name" value="BIDV" items='[{"code":"VCB","name":"Vietcombank"},{"code":"BIDV","name":"BIDV"},{"code":"CTG","name":"VietinBank"},{"code":"TCB","name":"Techcombank"}]'></sd-select></div>
++            <div style="width:280px"><sd-select id="sel-cat-required" label="Loại tiền tệ" required valueField="code" displayField="name" items='[{"code":"VND","name":"VND – Đồng Việt Nam"},{"code":"USD","name":"USD – Đô la Mỹ"},{"code":"EUR","name":"EUR – Euro"}]'></sd-select></div>
++            <div style="width:280px"><sd-select label="Loại tiền tệ" disabled valueField="code" displayField="name" value="VND" items='[{"code":"VND","name":"VND – Đồng Việt Nam"},{"code":"USD","name":"USD – Đô la Mỹ"},{"code":"EUR","name":"EUR – Euro"}]'></sd-select></div>
++          </div>
++        </sd-section>
++
++        <sd-section title="Panel đang mở — chọn một" subtitle="dòng đã chọn: nền 12% + dấu tick, chữ primary">
++          <div style="width:280px;min-height:240px"><sd-select class="sd-open" label="Kỳ trả lãi" required valueField="code" displayField="name" value="Q" items='[{"code":"M","name":"Hàng tháng"},{"code":"Q","name":"Hàng quý"},{"code":"H","name":"6 tháng/lần"},{"code":"E","name":"Cuối kỳ"}]'></sd-select></div>
++        </sd-section>
++
++        <sd-section title="multiple — panel đang mở" subtitle="trigger nối tên bằng dấu phẩy, option có checkbox">
++          <div style="width:280px;min-height:230px"><sd-select class="sd-open" label="Loại tài sản bảo đảm" multiple valueField="code" displayField="name" value="BDS,TG" items='[{"code":"BDS","name":"Bất động sản"},{"code":"TG","name":"Tiền gửi có kỳ hạn"},{"code":"GTCG","name":"Giấy tờ có giá"},{"code":"HTK","name":"Hàng tồn kho"}]'></sd-select></div>
++        </sd-section>
++
++        <sd-section title="Hơn 10 phần tử: ô tìm kiếm trong panel" subtitle="tự hiện khi items &gt; 10">
++          <div style="width:280px;min-height:300px"><sd-select id="sel-cat-filter" class="sd-open" label="Chi nhánh ngân hàng" valueField="code" displayField="name" items='[{"code":"1","name":"Vietcombank – CN Hà Nội"},{"code":"2","name":"VietinBank – CN Hà Nội"},{"code":"3","name":"BIDV – CN Hà Nội"},{"code":"4","name":"Techcombank – CN Hà Nội"},{"code":"5","name":"MB – CN Đà Nẵng"},{"code":"6","name":"ACB – CN Cần Thơ"},{"code":"7","name":"VPBank – CN Hải Phòng"},{"code":"8","name":"TPBank – CN Huế"},{"code":"9","name":"SHB – CN Vinh"},{"code":"10","name":"HDBank – CN Nha Trang"},{"code":"11","name":"Sacombank – CN Biên Hoà"},{"code":"12","name":"OCB – CN Quy Nhơn"}]'></sd-select></div>
++        </sd-section>
++
++        <sd-section title="Chế độ xem: viewed" subtitle="viewed='inline' xem ở mục Bổ sung theo Core bên dưới">
++          <sd-select label="Trạng thái hồ sơ" viewed valueField="code" displayField="name" value="P" items='[{"code":"P","name":"Chờ phê duyệt"},{"code":"A","name":"Đã duyệt"}]'></sd-select>
++        </sd-section>
++
+         <sd-section title="Normal — with items">
+           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:900px;">
+             <sd-select label="Bộ phận" placeholder="Chọn bộ phận..." items='[{"id":"1","name":"Kế toán"},{"id":"2","name":"Nhân sự"},{"id":"3","name":"Kỹ thuật"},{"id":"4","name":"Kinh doanh"}]' required></sd-select>
+@@ -335,6 +364,14 @@
+     // so call directly — DOM is ready at this point.
+     initPreviewTabs();
+   })();
++
++  // Khối catalog: ô bắt buộc hiện lỗi như đã chạm; ô tìm kiếm điền sẵn "Hà Nội"
++  (function () {
++    var req = document.getElementById('sel-cat-required');
++    if (req) { req._touched = true; req._render(); }
++    var f = document.querySelector('#sel-cat-filter .c-search-input');
++    if (f) { f.value = 'Hà Nội'; f.dispatchEvent(new Event('input', { bubbles: true })); }
++  })();
+ </script>
+ 
+ </body>

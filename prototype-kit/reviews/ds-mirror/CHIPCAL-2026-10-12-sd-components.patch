@@ -1,0 +1,15 @@
+--- /tmp/sd-components.bak2	2026-10-12 09:30:49.605034871 +0000
++++ prototype-kit-CATALOG-1012m/design-system/sd-components/sd-components.js	2026-10-12 09:34:07.077716837 +0000
+@@ -1730,7 +1730,11 @@
+             this._chipsHtml(removable, disabled) +
+             this._inputHtml(disabled, required, errorMsg, showError) +
+           '</div>' +
+-          '<span class="material-icons-outlined sd-field-suffix sd-cc-suffix">today</span>' +
++          /* Icon `today` ĐÃ GỠ 2026-10-12 (phép 3 của RA-SOAT-2-CHIEU.md):
++             mục `#c-chip-calendar` của catalog KHÔNG có icon-suffix nào — đếm
++             `icon-suffix` và `sd-suffix-icon` trong cả section đều ra 0. `sd-date`
++             thì CÓ icon lịch, `sd-chip-calendar` thì không; ô vẫn mở lịch khi bấm
++             vì chính nó là `readonly` + con trỏ pointer. Rule 18 của AGENTS.md. */
+           (showErrorIcon
+             ? '<span class="material-icons-outlined sd-date-error-icon" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</span>'
+             : '') +

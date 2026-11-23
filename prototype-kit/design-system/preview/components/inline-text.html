@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-inline-text — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-inline-text"
+         data-subtitle="Ô nhập không viền, co giãn theo nội dung — primitive của chế độ inline và chip query-bar"></div>
+
+    <div class="content-zone">
+
+        <sd-section title="chrome='standalone' (mặc định)">
+          <p class="fs-12 text-black400 mb-8">pending → active → focus → error; nút xoá hiện khi hover/focus.</p>
+          <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;">
+            <sd-inline-text placeholder="Nhập tên kế hoạch"></sd-inline-text>
+            <sd-inline-text placeholder="Nhập tên kế hoạch" value="Funding Q4/2026"></sd-inline-text>
+            <sd-inline-text placeholder="Số hợp đồng" value="HĐ-0183" state="error"></sd-inline-text>
+          </div>
+        </sd-section>
+
+        <sd-section title="chrome='seamless'">
+          <p class="fs-12 text-black400 mb-8">Không nền: chữ đậm, active tô primary, lỗi tô đỏ, placeholder nghiêng.</p>
+          <div style="font-size:14px;line-height:28px;max-width:720px;">
+            Giải ngân <sd-inline-text chrome="seamless" placeholder="số tiền" value="1.500.000.000"></sd-inline-text> VND
+            cho hợp đồng <sd-inline-text chrome="seamless" placeholder="số hợp đồng"></sd-inline-text>,
+            kỳ hạn <sd-inline-text chrome="seamless" placeholder="số ngày" value="180" state="error"></sd-inline-text> ngày.
+          </div>
+        </sd-section>
+
+        <sd-section title="disabled · clearable=false · minSize">
+          <p class="fs-12 text-black400 mb-8">Ô co theo <code>size</code> = max(minSize, độ dài giá trị hoặc placeholder).</p>
+          <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;">
+            <sd-inline-text value="Vietcombank" disabled></sd-inline-text>
+            <sd-inline-text placeholder="tháng" clearable="false" minSize="4" value="12"></sd-inline-text>
+          </div>
+        </sd-section>
+
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+</body>
+</html>

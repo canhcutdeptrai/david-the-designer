@@ -1,0 +1,955 @@
+# HISTORY-2026-10-13 — sd-history khớp catalog #c-history + mã thư viện; DOM sd-badge theo template thư viện
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/HISTORY-2026-10-13.patch
+# 9 file: CHANGELOG.md known-gaps.md lessons.md sd-data.md sd-interactive.md sd-tokens.css badge.html history.html sd-components.js
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-13 08:30:23.109598985 +0000
++++ b/CHANGELOG.md	2026-10-13 08:30:23.129964589 +0000
+@@ -8,6 +8,27 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `sd-history` khớp catalog `#c-history` + mã thư viện (kéo theo DOM `sd-badge`)
++
++Builder: *„Tiếp tục phần History `sd-history`…“*.
++
++- **Thẻ mục không còn viền:** CSS cũ để selector trần `.history-item .card` nên dính `.card` chung của kit
++  (viền 1px #e6e6e6, `overflow:hidden`) — nay chép nguyên `history.css` của catalog, phạm vi `sd-history`, gỡ `.card` của kit.
++- **Ngày theo pipe `viewDateTime`** của thư viện (`isDate` / `toFormat` của @sdcorejs/utils): không phải ngày → `--`;
++  không có ngày → trống như catalog; chuỗi đã định dạng sẵn vẫn nhận. Mô tả có khoảng trắng hai bên như template.
++- **Trạng thái = `<sd-badge [icon] [title] [color]>` đúng template:** không ép `type="icon"` / `color="primary"`
++  (mặc định thư viện: icon · secondary → icon xám `c-black400`), host trống thuộc tính như catalog.
++- **`sd-badge` dựng DOM theo template thư viện ở mọi nơi:** `aria-hidden="true"` + `mat-mdc-tooltip-trigger`; nhánh
++  icon `d-flex c-badge-icon` › `span.c-material-icon.mr-4` (chữ có khoảng trắng) + `div.d-flex.flex-column` (bỏ khung
++  `.c-badge-copy` tự chế); secondary / neutral của icon ra `c-black400`; thứ tự lớp theo mục (`#c-history`, `#c-table`,
++  `#c-import-excel` không trigger, `class` trước `aria-hidden`). Bỏ `role="button"` / `tabindex` tự thêm (thư viện không có).
++  CSS nhánh icon thay bằng khối catalog (bỏ gap / font / line-height tự thêm); icon trong badge `inline-block` như Google Fonts.
++- Component tự sinh badge (`sd-history`, `sd-table` useBadge, `sd-import-excel`) truyền cấu hình qua `data-sd-cfg` — badge đọc rồi gỡ.
++- So 2/2 mẫu `#c-history`: DOM + computed style **trùng 100%**; 32/32 badge `#c-badge` trùng DOM + computed; badge
++  `#c-table` / `#c-import-excel` trùng DOM. 97 trang không lỗi JS; ảnh chụp chỉ đổi ở trang History / Badge và icon
++  trạng thái "neutral" (Ngừng bán…) chuyển xám `black400` đúng thư viện. Trang preview History theo 2 mẫu catalog.
++  Docs `sd-data.md`, `sd-interactive.md`. Bản vá: `reviews/ds-mirror/HISTORY-2026-10-13.patch`.
++
+ ### Changed — `sd-import-excel` đọc / ghi Excel thật, khớp catalog `#c-import-excel` + mã thư viện
+ 
+ Builder: *„Tiếp tục phần Import Excel `sd-import-excel`…“* — chọn **„Nhúng exceljs vào kit“**.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-13 08:30:23.113059737 +0000
++++ b/_memory/known-gaps.md	2026-10-13 08:30:23.133583281 +0000
+@@ -277,6 +277,27 @@
+ | 6 cờ `primary` … `error` | bảng API catalog không liệt kê, nhưng **mã thư viện có** (input boolean, thắng `color`) | có | `audit-kit-extras` báo là thừa — không phải: theo mã thư viện |
+ | `type` / `dismissible` / `cta` / thân viết trong thẻ / `sd-inform-dismiss` | không có | vẫn nhận | Ngoại lệ 3 Rule 18 (38 chỗ trong kit dùng). Khai `type` thì icon theo lối cũ (chỉ hiện khi có `icon`) |
+ 
++## `sd-history` (+ DOM `sd-badge`) — ĐỒNG BỘ 2026-10-13 theo catalog + mã thư viện
++
++Nguồn đối chiếu: catalog `#c-history` (2 mẫu, `css/components/history.css`) + mã thư viện
++(`sd-angular-core-components-history.mjs` — template, styles, pipe `viewDateTime`;
++`sd-angular-core-components-badge.mjs` — template + computed class; `@sdcorejs/utils` isDate / toFormat).
++So 2/2 mẫu: DOM (cả badge bên trong) + computed style **trùng 100%**. Badge: 32/32 mẫu `#c-badge` trùng DOM +
++computed (harness dựng lại từ DOM catalog, cùng phông catalog); `#c-table`, `#c-import-excel` trùng DOM.
++
++| Chỗ | Catalog / thư viện | Kit | Vì sao |
++|---|---|---|---|
++| Ngày rỗng | thư viện `!value` → `--` (EMPTY_STR); catalog vẽ `<span class="date"></span>` cho mục "Hệ thống" | trống | Theo catalog (mốc chuẩn) |
++| Ngày không hợp lệ | `--` | `--` | Theo thư viện |
++| Chuỗi đã định dạng `HH:mm dd/MM/yyyy` | `isDate` trả false → `--` | giữ nguyên | Mở rộng của kit (docs cũ hứa nhận), không trang nào bị đổi |
++| Host `<sd-badge>` badge tự sinh | trống thuộc tính (input Angular không phản chiếu) | trống — cấu hình qua `data-sd-cfg`, badge đọc rồi gỡ | Theo catalog |
++| Host `<sd-badge>` viết tay trên trang | trống | giữ thuộc tính (`type`, `color`, `icon`…) | Web Component nhận input qua thuộc tính; gỡ thì mất khả năng đổi thuộc tính về sau |
++| Badge bấm được | `[class.pointer]`, div `aria-hidden="true"`, KHÔNG role/tabindex | y hệt (**bỏ** role=button / tabindex / aria-label / Enter-Space kit tự thêm 2026-10-10) | Theo thư viện; cần bàn phím thì trang bọc `<button>` |
++| Tooltip badge | `data-tip` (móc demo catalog) | `data-sd-tooltip` (cơ chế tooltip của kit) | Cùng hình matTooltip |
++| Icon badge | `.material-icons` của Google Fonts (inline-block) | `sd-badge .c-material-icon{display:inline-block}` gỡ `inline-flex` của `.material-icons` kit | Theo catalog |
++| Màu `neutral` | không có | quy về `secondary` (round/tag `c-secondary`, icon `c-black400`) | Bí danh cũ của kit; icon "Ngừng bán…" chuyển xám black400 đúng thư viện |
++| `text-rendering` / phông trang | catalog `auto` + Roboto đóng gói | `html{text-rendering:optimizeLegibility}` + Google Fonts | Cấp trang (layout.css), không phải component — đo badge phải dùng phông catalog |
++
+ ## `sd-import-excel` — ĐỒNG BỘ 2026-10-13, exceljs thật (Builder: *„Nhúng exceljs vào kit“*)
+ 
+ Nguồn đối chiếu: catalog `#c-import-excel` (3 mẫu + `js/components/import-excel.js`) + mã thư viện
+@@ -821,7 +842,7 @@
+ | `sdReadStateChange` (`sd-select`, `sd-table`) | output báo trạng thái một lượt GỌI API | không mirror | **KHÔNG PHẢI lỗ hổng so với catalog** — rà lại 2026-10-11: chuỗi `sdReadStateChange` xuất hiện **0 lần** trong Core UI Catalog. Đây là input của gói npm `@sdcorejs/angular`, mà npm đã thôi làm mốc từ 2026-10-10. Giữ dòng này để khỏi ai lại đi tìm |
+ | `sdFocusForceBlur` | bật theo `EventEmitter.observed` — "có ai đang nghe output không" | bật tường minh bằng attribute/property `focusForceBlur` | DOM không hỏi được một `CustomEvent` đã có listener hay chưa. Hành vi SAU KHI bật thì giống hệt: blur rồi mới bắn (2026-10-10) |
+ | `sd-stepper` đường nối | Khai biến màu đường nối active nhưng **không rule nào dùng** | Để xám ở mọi màu | Tô theo tiến độ là kit tự thêm, đã bỏ |
+-| `sd-badge` class `pointer` | Gắn class cho badge bấm được nhưng **không khai CSS nào cho nó** | Gắn class, không đổi con trỏ | Đã grep cả bundle 22.2.12, không rule nào |
++| `sd-badge` class `pointer` *(2026-10-13: kit cũng bỏ role/tabindex — xem mục sd-history)* | Gắn class cho badge bấm được nhưng **không khai CSS nào cho nó** | Gắn class, không đổi con trỏ | Đã grep cả bundle 22.2.12, không rule nào |
+ | `sd-badge` description | `--sd-text-secondary` | `--sd-black400` | Token đó là cấp theme, gói npm không ship |
+ | `sd-button` bo góc | SCSS **không khai** `border-radius`; thừa hưởng theme Material | `--sd-border-radius` (4px) | **Đã xác nhận 2026-10-10:** `src/theme.scss` của portal đặt `--mat-button-{filled,outlined,text}-container-shape: 4px`. Kit **khớp bản thật**, không còn là lệch |
+ | `sd-button` nút chỉ-icon | `.c-square{padding:0!important}` bị chính rule size (đứng sau, cũng `!important`) ghi đè | Giữ đúng thứ tự đó | Icon `flex:0 0 auto` nên vẫn nằm giữa — hình thức không khác, nhưng giá trị computed khớp bản thật |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-13 08:30:23.112984970 +0000
++++ b/_memory/lessons.md	2026-10-13 08:30:23.133520604 +0000
+@@ -1250,3 +1250,16 @@
+ `sd-import-excel .c-mat-menu mat-icon` (0,1,2) thua luật nền `.mat-icon.material-icons{vertical-align:baseline}`
+ (0,2,0) → icon lệch 2.7px. → Sau khi chép CSS catalog, đo computed style; luật nào thua luật nền của kit thì
+ thêm một lớp có sẵn trên phần tử (`mat-icon.mat-icon`) cho đủ điểm.
++
++## Selector trần trong CSS component dính lớp chung của kit — `.card` (2026-10-13)
++
++`sd-history` chép CSS catalog dưới dạng `.history-item .card{…}` (bỏ tiền tố `#c-history`) → thẻ nhận luôn
++`.card` của `components.css` (viền 1px #e6e6e6, `overflow:hidden`) mà catalog không có; lệch nằm im từ 2026-10-11.
++→ Luôn đổi `#c-x X` thành `tag X` (không bỏ trống tiền tố), rồi soát lớp trùng tên với lớp chung của kit
++(`.card`, `.title`, `.header`, `.status`…) — thuộc tính kit khai mà catalog không khai thì đặt lại trong phạm vi component.
++
++## So computed style badge/chip co theo chữ: dùng PHÔNG CATALOG trong harness (2026-10-13)
++
++Catalog đóng gói Roboto woff2 (`css/fonts.css`), kit lấy Google Fonts (chặn khi offline) → mọi phần tử
++co theo chữ lệch 2–9px dù computed `font-family` giống hệt. → Harness nạp `catalog/css/fonts.css`
++(và `text-rendering:auto` của trang catalog) trước khi kết luận lệch kích thước.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-data.md b/design-system/components/sd-data.md
+--- a/design-system/components/sd-data.md	2026-10-13 08:30:23.115235605 +0000
++++ b/design-system/components/sd-data.md	2026-10-13 08:30:23.135902739 +0000
+@@ -574,10 +574,11 @@
+ 
+ ---
+ 
+-## sd-history — DỰNG MỚI 2026-10-11
++## sd-history — DỰNG MỚI 2026-10-11 · ĐỒNG BỘ 2026-10-13 (catalog `#c-history` + mã thư viện 19.0.10)
+ 
+ Dòng thời gian dọc hiển thị lịch sử thao tác. Nhận mảng qua property `items`
+-(hoặc attribute `items` dạng JSON).
++(hoặc attribute `items` dạng JSON). So 2/2 ví dụ catalog: DOM (kể cả badge bên
++trong) và computed style **trùng 100%**.
+ 
+ ```js
+ document.querySelector('sd-history').items = [
+@@ -585,6 +586,9 @@
+     status: { title: 'Đã duyệt', color: 'success', icon: 'check_circle' },
+     date: '2026-10-07T16:42:00', actor: 'nguyen.van.an', source: 'Portal FINS',
+     description: 'Phê duyệt Kế hoạch Funding KH-2026-0012…' },
++  { title: 'Chuyên viên Treasury',
++    status: { title: 'Lưu nháp', color: 'secondary', icon: 'fiber_manual_record' },  // secondary → icon xám c-black400
++    date: '2026-10-04T17:05:00', actor: 'le.minh.chau', description: 'Khởi tạo kế hoạch.' },
+   { title: 'Hệ thống', description: 'Đồng bộ dữ liệu từ core banking.' }  // thiếu trường cũng được
+ ];
+ ```
+@@ -592,14 +596,15 @@
+ | Trường | Ý nghĩa |
+ |---|---|
+ | `title` | Tiêu đề mục (vai trò người thực hiện) |
+-| `status` | `{ title, color, icon }` → render bằng `sd-badge` kiểu icon |
+-| `date` | ISO hoặc chuỗi đã định dạng; hiển thị `HH:mm dd/MM/yyyy` |
++| `status` | `{ title, color, icon }` → `<sd-badge [icon] [title] [color]>` của thư viện (type mặc định `icon`; không có `color` → `secondary`; không có `icon` → `fiber_manual_record`) |
++| `date` | Pipe `viewDateTime`: `HH:mm dd/MM/yyyy` (qua `isDate` / `toFormat` của @sdcorejs/utils). Không có → trống (như catalog); không phải ngày → `--` (EMPTY_STR của thư viện); chuỗi đã định dạng sẵn `HH:mm dd/MM/yyyy` → giữ nguyên (mở rộng của kit) |
+ | `actor` | Render thành `Bởi @actor` |
+ | `source` | Render thành `· source` |
+-| `description` | **Cắt 2 dòng** |
++| `description` | **Cắt 2 dòng** (`-webkit-line-clamp: 2`) |
+ 
+-Mục thiếu trường vẫn render thẻ bọc rỗng để bố cục không nhảy.
++Mục thiếu trường vẫn render thẻ bọc rỗng (`span.status`, `span.date`, `div.meta`) để bố cục không nhảy.
+ Component có `min-width: 470px` → màn hẹp sẽ cuộn ngang.
++Thẻ `.card` của history KHÔNG có viền (chỉ `box-shadow 0 2px 4px #0000001a`) — CSS đã gỡ `.card` chung của kit.
+ 
+ Preview: [components/history.html](../preview/components/history.html)
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-interactive.md b/design-system/components/sd-interactive.md
+--- a/design-system/components/sd-interactive.md	2026-10-13 08:30:23.116171217 +0000
++++ b/design-system/components/sd-interactive.md	2026-10-13 08:30:23.136104703 +0000
+@@ -394,10 +394,20 @@
+ nguyên hình thức; `tag` nay mang đúng nghĩa khung viền. Không còn kiểu badge
+ tròn đếm số — cần con số thì dùng `round` có `title` là số.
+ 
+-**Badge bấm được:** đặt `onclick` hoặc `data-sd-clickable` thì badge nhận
+-`role="button"`, `tabindex="0"`, `aria-label` và chạy bằng Enter / Space —
+-đúng nhánh `click.observed` của thư viện. Thư viện gắn thêm class `pointer`
+-nhưng không khai CSS nào cho nó, kit giữ nguyên.
++**Badge bấm được:** đặt `onclick` hoặc `data-sd-clickable` thì khung badge nhận
++lớp `pointer` — đúng nhánh `click.observed` của thư viện. Thư viện KHÔNG gắn
++`role` / `tabindex` (khung mang `aria-hidden="true"`), kit cũng không (rà soát
++2026-10-13; bản trước tự thêm role=button + Enter/Space). Cần bấm bằng bàn phím
++thì bọc badge trong `<button>` của trang.
++
++**DOM theo catalog (2026-10-13):** khung `<div aria-hidden="true" class="…">` có
++`mat-mdc-tooltip-trigger`; nhánh icon là `d-flex c-badge-icon` › `c-icon d-flex
++align-items-center` › `span.c-material-icon.mr-4.c-SIZE.FONT.c-COLOR` + `div.d-flex.flex-column`
++(secondary của icon ra `c-black400`). Thứ tự lớp theo mục chứa: `#c-history` ra
++`d-flex c-badge-icon mat-mdc-tooltip-trigger`; trong `sd-table` / `sd-import-excel`
++không có trigger. Component của kit tự sinh badge (sd-history, sd-table useBadge,
++sd-import-excel) truyền cấu hình qua `data-sd-cfg` — badge đọc rồi gỡ, host trống
++thuộc tính như catalog.
+ 
+ ### type="status" — lifecycle status badges
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-13 08:30:23.114468346 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-13 08:30:23.134775342 +0000
+@@ -1298,10 +1298,16 @@
+ sd-badge { display: inline-block; }
+ sd-import-excel sd-badge { display: inline; }
+ 
+-/* Tiện ích sd-core mà template badge dùng — bọc trong sd-badge để không
+-   đụng vào namespace utility chung của kit. */
+-sd-badge .align-items-start { align-items: flex-start; }
+-sd-badge .mr-4 { margin-right: 4px; }
++/* Tiện ích sd-core mà template badge dùng (nguyên văn catalog `#c-badge .d-flex{…!important}` …) —
++   bọc trong sd-badge để không đụng vào namespace utility chung của kit. */
++sd-badge .d-flex { display: flex !important; }
++sd-badge .flex-column { flex-direction: column !important; }
++sd-badge .align-items-center { align-items: center !important; }
++sd-badge .align-items-start { align-items: flex-start !important; }
++sd-badge .mr-4 { margin-right: 4px !important; }
++sd-badge .T14R { font-size: 14px; font-weight: 400; line-height: 20px; }
++sd-badge .T12R { font-size: 12px !important; font-weight: 400; line-height: 16px; }
++sd-badge .T10R { font-size: 10px; font-weight: 400; line-height: 12px; }
+ 
+ /* ── round + tag: khung có nền ───────────────────────────── */
+ sd-badge .c-badge {
+@@ -1313,10 +1319,10 @@
+   /* catalog không khai font — thừa hưởng chữ của vật chứa (2026-10-13) */
+ }
+ sd-badge .c-badge.c-badge--has-icon { display: inline-flex; align-items: center; gap: 4px; }
+-sd-badge .c-badge .c-material-icon {
+-  display: inline-flex; align-items: center; justify-content: center;
+-  padding: 0; line-height: 1;
+-}
++/* Catalog vẽ icon badge bằng `.material-icons` của Google Fonts (display:inline-block); `.material-icons`
++   của kit là inline-flex → trả lại inline-block trong badge cho đúng hộp icon của catalog. */
++sd-badge .c-material-icon { display: inline-block; align-items: normal; justify-content: normal; }
++sd-badge .c-badge .c-material-icon { padding: 0; }
+ sd-badge .c-badge .c-material-icon.c-sm { font-size: 16px; width: 16px; height: 16px; line-height: 16px; }
+ sd-badge .c-badge .c-material-icon.c-md { font-size: 18px; width: 18px; height: 18px; line-height: 18px; }
+ sd-badge .c-badge .c-material-icon.c-lg { font-size: 24px; width: 24px; height: 24px; line-height: 24px; }
+@@ -1355,59 +1361,27 @@
+ sd-badge .c-badge.c-badge--tag.c-badge--md { padding: 2px 10px; }
+ sd-badge .c-badge.c-badge--tag.c-badge--lg { padding: 4px 12px; }
+ 
+-/* ── icon: icon + chữ, không nền (type mặc định) ──────────── */
+-sd-badge .c-badge-icon {
+-  display: flex; align-items: center;
+-  min-width: 50px; max-width: 100%;
+-  font-family: var(--sd-font-family);
+-}
+-sd-badge .c-badge-icon .c-icon {
+-  display: flex; align-items: center; gap: 4px;
+-  min-width: 0; max-width: 100%;
+-}
+-/* Trong type="icon", icon có khung TRÒN và padding lệch phải — và to hơn khung
+-   icon thường (sm 20px chứ không phải 16px). Theo catalog #c-badge. */
+-sd-badge .c-badge-icon .c-material-icon {
+-  display: inline-flex; align-items: center; justify-content: center;
+-  flex: 0 0 auto; line-height: 1;
+-  border-radius: 50%;
+-  padding: 2px 2px 2px 0;
+-}
++/* ── icon: icon + chữ, không nền (type mặc định) ──────────────
++   Nguyên văn catalog (#c-badge / #c-history / #c-tab-router — cùng một khối bundle), rà soát 2026-10-13.
++   Bản trước tự thêm `display:flex; gap:4px; font-family; line-height:1; min-width:0; overflow-wrap`
++   và khung `.c-badge-copy` — catalog không có: bố cục do `d-flex` / `mr-4` / `d-flex flex-column`
++   của template lo, icon là `.material-icons` thường (inline-block, line-height 1). */
++sd-badge .c-badge-icon { min-width: 50px; }
++sd-badge .c-badge-icon .c-material-icon { border-radius: 50%; padding: 2px 2px 2px 0; }
+ sd-badge .c-badge-icon .c-material-icon.c-sm { width: 20px; height: 20px; font-size: 16px; }
+ sd-badge .c-badge-icon .c-material-icon.c-md { width: 22px; height: 22px; font-size: 18px; }
+ sd-badge .c-badge-icon .c-material-icon.c-lg { width: 28px; height: 28px; font-size: 24px; }
+ sd-badge .c-badge-icon .c-material-icon.c-primary   { color: var(--sd-primary); }
+ sd-badge .c-badge-icon .c-material-icon.c-secondary { color: var(--sd-secondary); }
++sd-badge .c-badge-icon .c-material-icon.c-black400  { color: var(--sd-black400); }
+ sd-badge .c-badge-icon .c-material-icon.c-info      { color: var(--sd-info); }
+ sd-badge .c-badge-icon .c-material-icon.c-success   { color: var(--sd-success); }
+ sd-badge .c-badge-icon .c-material-icon.c-error     { color: var(--sd-error); }
+ sd-badge .c-badge-icon .c-material-icon.c-warning   { color: var(--sd-warning); }
+-sd-badge .c-badge-icon .c-material-icon.c-neutral   { color: var(--sd-secondary); }
+-sd-badge .c-badge-icon .c-material-icon.c-black400  { color: var(--sd-black400); }
+-sd-badge .c-badge-icon .c-badge-copy {
+-  display: flex; flex-direction: column; justify-content: center;
+-  min-width: 0; overflow-wrap: anywhere;
+-}
+-/* Catalog gắn T14R lên tiêu đề và T12R/T10R lên mô tả; kit không dùng mấy class
+-   đó trong markup nên khai thẳng số đo tương đương. */
+-sd-badge .c-badge-icon .c-badge-title { font-size: 14px; font-weight: 400; line-height: 20px; }
+-sd-badge .c-badge-icon .c-badge-description { font-size: 12px; font-weight: 400; line-height: 16px; }
+-/* Các lớp tiện ích catalog dùng trong markup badge — khai để markup chép thẳng
+-   từ catalog sang cũng hiển thị đúng. */
+-sd-badge .T14R { font-size: 14px; font-weight: 400; line-height: 20px; }
+-sd-badge .T12R { font-size: 12px; font-weight: 400; line-height: 16px; }
+-sd-badge .T10R { font-size: 10px; font-weight: 400; line-height: 12px; }
+-sd-badge .d-flex { display: flex; }
+-sd-badge .flex-column { flex-direction: column; }
+-sd-badge .align-items-center { align-items: center; }
+-
++/* `neutral` — bí danh cũ của kit (không có trong catalog) = secondary → icon c-black400. */
++sd-badge .c-badge-icon .c-material-icon.c-neutral   { color: var(--sd-black400); }
+ sd-badge .c-badge-description { color: var(--sd-black400); }
+-
+-sd-badge [role="button"]:focus-visible {
+-  outline: 2px solid var(--sd-primary);
+-  outline-offset: 2px;
+-  border-radius: 4px;
+-}
++sd-badge .sd-multiline-tooltip { white-space: pre-line; }
+ 
+ /* --- sd-input / sd-select / sd-textarea form field styles --- */
+ sd-input,
+@@ -7480,61 +7454,32 @@
+    gồm tiêu đề, trạng thái (sd-badge), thời điểm, người thực hiện, nguồn và mô
+    tả (tối đa 2 dòng)."
+ 
+-   Chép nguyên văn khối CSS của catalog; chỉ đổi `mat-icon` → thẻ icon của kit.
++   Chép nguyên văn khối CSS của catalog (`css/components/history.css`, bundle
++   thư viện), quy đổi `#c-history X` → `sd-history X` (rà soát 2026-10-13,
++   Builder: "Tiếp tục phần History"). Bản trước để selector TRẦN (`.history-item
++   .card`) nên thua/trùng `.card` chung của kit: thẻ bị viền 1px #e6e6e6 +
++   `overflow:hidden` mà catalog không có → nay đặt lại `border:0;overflow:visible`
++   (chỉ để gỡ `.card` của kit, catalog không khai). `.status mat-icon` giữ đúng
++   `mat-icon` như catalog (bản trước đổi thành `.c-material-icon` — sai đích).
+    Lưu ý `min-width: 470px` là của catalog — trên màn hẹp component sẽ cuộn
+    ngang, chính catalog ghi chú điều đó.
+    ══════════════════════════════════════════════════════════ */
+ sd-history { display: block; color: #212529; line-height: 1.5; }
+-.sd-history { padding: 16px; }
+-.history-container {
+-  position: relative;
+-  padding-left: 20px;
+-  font-size: 14px;
+-  line-height: 20px;
+-  min-width: 470px;
+-  max-width: 100%;
+-}
+-.history-line {
+-  position: absolute;
+-  left: 8px;
+-  top: 0;
+-  bottom: 0;
+-  width: 2px;
+-  background-color: #94b0ff;
+-}
+-.history-item { position: relative; margin-bottom: 16px; padding-left: 10px; }
+-.history-item .dot {
+-  position: absolute;
+-  left: -16px;
+-  top: 12px;
+-  width: 12px;
+-  height: 12px;
+-  background-color: #94b0ff;
+-  border-radius: 50%;
+-}
+-.history-item .card {
+-  background: #fff;
+-  border-radius: 6px;
+-  box-shadow: 0 2px 4px #0000001a;
+-  padding: 8px 8px 8px 16px;
+-}
+-.history-item .card .header { display: flex; justify-content: space-between; align-items: center; }
+-.history-item .card .header .title-wrapper { display: flex; align-items: flex-start; padding-right: 8px; }
+-.history-item .card .header .title { margin-right: 8px; color: #757575; }
+-.history-item .card .header .status { display: flex; align-items: center; }
+-.history-item .card .header .status .c-material-icon { margin-right: 4px; }
+-.history-item .card .header .date { color: #757575; font-size: 12px; line-height: 16px; }
+-.history-item .card .meta { color: #757575; margin-top: 4px; }
+-.history-item .card .meta strong { color: #000; }
+-.history-item .card .description {
+-  margin-top: 4px;
+-  color: #000;
+-  display: -webkit-box;
+-  -webkit-line-clamp: 2;
+-  -webkit-box-orient: vertical;
+-  overflow: hidden;
+-  text-overflow: ellipsis;
+-}
++sd-history .sd-history { padding: 16px; }
++sd-history .history-container { position: relative; padding-left: 20px; font-size: 14px; line-height: 20px; min-width: 470px; max-width: 100%; }
++sd-history .history-line { position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background-color: #94b0ff; }
++sd-history .history-item { position: relative; margin-bottom: 16px; padding-left: 10px; }
++sd-history .history-item .dot { position: absolute; left: -16px; top: 12px; width: 12px; height: 12px; background-color: #94b0ff; border-radius: 50%; }
++sd-history .history-item .card { background: #fff; border-radius: 6px; box-shadow: 0 2px 4px #0000001a; padding: 8px 8px 8px 16px; border: 0; overflow: visible; }
++sd-history .history-item .card .header { display: flex; justify-content: space-between; align-items: center; }
++sd-history .history-item .card .header .title-wrapper { display: flex; align-items: flex-start; padding-right: 8px; }
++sd-history .history-item .card .header .title { margin-right: 8px; color: #757575; }
++sd-history .history-item .card .header .status { display: flex; align-items: center; }
++sd-history .history-item .card .header .status mat-icon { margin-right: 4px; }
++sd-history .history-item .card .header .date { color: #757575; font-size: 12px; line-height: 16px; }
++sd-history .history-item .card .meta { color: #757575; margin-top: 4px; }
++sd-history .history-item .card .meta strong { color: #000; }
++sd-history .history-item .card .description { margin-top: 4px; color: #000; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+ 
+ /* ══════════════════════════════════════════════════════════
+    sd-input-color — DỰNG MỚI 2026-10-11 theo Core UI Catalog `#c-input-color`.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/badge.html b/design-system/preview/components/badge.html
+--- a/design-system/preview/components/badge.html	2026-10-13 08:30:23.119028868 +0000
++++ b/design-system/preview/components/badge.html	2026-10-13 08:30:23.139077205 +0000
+@@ -129,8 +129,8 @@
+             vị trí <code>above</code> như <code>matTooltipPosition</code> của thư viện), xuống dòng bằng
+             <code>\n</code>. <code>fontSet</code> đổi bộ icon; mặc định là
+             <code>material-icons</code> (đặc) đúng như catalog.
+-            Badge có <code>onclick</code> thì nhận <code>role="button"</code>, <code>tabindex="0"</code>
+-            và chạy bằng Enter / Space.
++            Badge có <code>onclick</code> thì khung nhận lớp <code>pointer</code> — như thư viện, KHÔNG gắn
++            <code>role</code> / <code>tabindex</code> (khung mang <code>aria-hidden="true"</code>).
+           </p>
+           <div class="flex gap-4 flex-wrap align-items-center">
+             <sd-badge type="round" color="info" icon="account_balance" title="Hạn mức khả dụng"
+@@ -138,7 +138,7 @@
+             <sd-badge color="info" icon="sync" fontSet="material-icons-outlined" title="Icon outlined"></sd-badge>
+             <sd-badge color="info" icon="sync" title="Icon filled (mặc định)"></sd-badge>
+             <sd-badge id="badge-clickable" type="round" color="primary" icon="filter_alt"
+-                      title="Bấm hoặc Enter để đếm" data-sd-clickable></sd-badge>
++                      title="Bấm để đếm" data-sd-clickable></sd-badge>
+             <span class="text-sm text-secondary" id="badge-click-count">chưa bấm lần nào</span>
+           </div>
+         </sd-section>
+@@ -715,7 +715,7 @@
+             </div>
+ 
+             <div class="ds-guide-col ds-guide-col--full">
+-              <p class="ds-guide-label">Click bằng bàn phím</p>
++              <p class="ds-guide-label">Badge bấm được</p>
+               <div class="ds-guide-code-wrap">
+                 <div class="ds-guide-code-bar">
+                   <span class="ds-guide-code-lang">HTML</span>
+@@ -729,10 +729,11 @@
+               <p class="ds-guide-note">
+                 Thư viện đọc <code>click.observed</code> để biết có ai lắng nghe hay không; Web Component
+                 không đọc được listener nên kit lấy mốc là <code>onclick</code> hoặc
+-                <code>data-sd-clickable</code>. Có mốc thì badge nhận <code>role="button"</code>,
+-                <code>tabindex="0"</code>, <code>aria-label</code> và chạy bằng Enter / Space.
+-                Thư viện gắn thêm class <code>pointer</code> nhưng <strong>không khai CSS nào cho nó</strong>
+-                (đã soát cả bundle 22.2.12) — kit giữ nguyên, nên con trỏ chuột không đổi.
++                <code>data-sd-clickable</code>. Có mốc thì khung badge nhận lớp <code>pointer</code> — đúng
++                template thư viện (<code>[class.pointer]="click.observed"</code>); thư viện <strong>không</strong>
++                gắn <code>role="button"</code> / <code>tabindex</code> (khung mang <code>aria-hidden="true"</code>)
++                nên kit cũng không (rà soát 2026-10-13). Cần bấm được bằng bàn phím thì bọc badge trong
++                <code>&lt;button&gt;</code> của trang.
+               </p>
+             </div>
+ 
+@@ -797,7 +798,7 @@
+     initPreviewTabs();
+   })();
+ 
+-  // Demo badge clickable: role=button + Enter/Space, theo click.observed của thư viện
++  // Demo badge clickable: lớp `pointer` theo click.observed của thư viện
+   (function () {
+     var badge = document.getElementById('badge-clickable');
+     var out = document.getElementById('badge-click-count');
+@@ -807,7 +808,7 @@
+       n += 1;
+       out.textContent = 'đã kích hoạt ' + n + ' lần';
+     };
+-    // onclick gán sau khi render → ép vẽ lại để badge nhận role/tabindex
++    // onclick gán sau khi render → ép vẽ lại để khung nhận lớp pointer
+     badge.setAttribute('data-sd-clickable', '');
+   })();
+ </script>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/history.html b/design-system/preview/components/history.html
+--- a/design-system/preview/components/history.html	2026-10-13 08:30:23.117911695 +0000
++++ b/design-system/preview/components/history.html	2026-10-13 08:30:23.137779896 +0000
+@@ -33,13 +33,28 @@
+     <div class="content-zone">
+ 
+         <sd-section title="Lịch sử phê duyệt">
+-          <p class="text-sm text-secondary mb-2">Trạng thái là <code>sd-badge</code> kiểu icon; ngày định dạng <code>HH:mm dd/MM/yyyy</code>.</p>
+-          <div style="background:#f5f5f5;max-width:720px;"><sd-history id="h1"></sd-history></div>
++          <p class="text-sm text-secondary mb-2">Dòng thời gian dọc hiển thị lịch sử thao tác: mỗi mục là một thẻ gồm tiêu đề, trạng thái (<code>sd-badge</code>), thời điểm, người thực hiện, nguồn và mô tả (tối đa 2 dòng). <code>status</code> là <code>sd-badge</code> kiểu icon, ngày định dạng <code>HH:mm dd/MM/yyyy</code>.</p>
++          <!-- vùng demo = `.demo-col` của catalog #c-history: width 100%, max-width 760px, nền #f5f5f5, bo 8px -->
++          <div data-catalog-section="c-history" style="width:100%;max-width:760px;background:#f5f5f5;border-radius:8px;"><sd-history id="h1"></sd-history></div>
++          <pre class="ds-guide-code mt-2">&lt;sd-history id="h1"&gt;&lt;/sd-history&gt;
++&lt;script&gt;
++  document.getElementById('h1').items = [
++    { title: 'Giám đốc Tài chính', status: { title: 'Đã duyệt', color: 'success', icon: 'check_circle' },
++      date: '2026-10-07T16:42:00', actor: 'nguyen.van.an', source: 'Portal FINS',
++      description: 'Phê duyệt Kế hoạch Funding KH-2026-0012, tổng nhu cầu vốn 1.250 tỷ đồng.' },
++    …
++  ];
++&lt;/script&gt;</pre>
+         </sd-section>
+ 
+         <sd-section title="Mô tả dài, thiếu trường">
+-          <p class="text-sm text-secondary mb-2">Mô tả cắt 2 dòng; bỏ <code>status</code>/<code>actor</code>/<code>date</code> thì phần đó để trống nhưng thẻ bọc vẫn render.</p>
+-          <div style="background:#f5f5f5;max-width:720px;"><sd-history id="h2"></sd-history></div>
++          <p class="text-sm text-secondary mb-2">Mô tả cắt 2 dòng; bỏ <code>status</code>/<code>actor</code>/ngày thì phần đó trống (thẻ bọc vẫn render). Chữ "Bởi" lấy từ <code>VI_MESSAGES['core.component.history.by']</code>; ngày qua pipe <code>viewDateTime</code>; component có <code>min-width: 470px</code>.</p>
++          <div data-catalog-section="c-history" style="width:100%;max-width:760px;background:#f5f5f5;border-radius:8px;"><sd-history id="h2"></sd-history></div>
++          <pre class="ds-guide-code mt-2">document.getElementById('h2').items = [
++  { title: 'Kiểm soát viên', status: { title: 'Từ chối', color: 'error', icon: 'cancel' },
++    date: '2026-10-03T09:12:00', actor: 'pham.quoc.dung', description: '…(mô tả dài)…' },
++  { title: 'Hệ thống', description: 'Đồng bộ dữ liệu từ core banking.' }, // không status/actor/date
++];</pre>
+         </sd-section>
+ 
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-13 08:30:23.113227457 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-13 08:30:23.133739610 +0000
+@@ -2519,6 +2519,11 @@
+        - có tooltip / fontSet / 6 cờ màu     - không có cái nào
+        - có (click) → role=button + Enter/Space - không có
+ 
++     Rà soát lại 2026-10-13 (History): DOM theo đúng template thư viện @sd-angular/core 19.0.10 —
++     `aria-hidden="true"` + `mat-mdc-tooltip-trigger`, nhánh icon `d-flex c-badge-icon` / `mr-4` /
++     `d-flex flex-column`, chữ icon có khoảng trắng hai bên, secondary của icon là `c-black400`;
++     bỏ role/tabindex/aria-label tự thêm (thư viện không có).
++
+      'status' + STATUS_MAP ở trên là phần MỞ RỘNG riêng của kit (thư viện
+      không có) — giữ lại vì sd-table và 75 chỗ trong prototype đang dùng,
+      nhưng nay render qua đúng nhánh 'icon' của thư viện thay vì markup riêng. */
+@@ -2530,19 +2535,31 @@
+     }
+     connectedCallback() {
+       this._render();
+-      if (!this._bound) {
+-        this._bound = true;
+-        this.addEventListener('keydown', this._onKey.bind(this));
+-      }
+     }
+     attributeChangedCallback() {
+       if (this._strippingTitle) return;
+       if (this.isConnected) this._render();
+     }
+ 
++    /* Cấu hình KHÔNG qua thuộc tính host — dùng khi component của kit tự sinh badge (sd-history,
++       sd-table, sd-import-excel): catalog vẽ `<sd-badge>` trống thuộc tính (input Angular không phản
++       chiếu ra DOM). `data-sd-cfg='{"type":…,"color":…,"ctx":…}'` được đọc một lần rồi gỡ khỏi host;
++       thuộc tính thật (nếu có) vẫn thắng. `ctx` = dạng DOM theo mục catalog (xem `_ctx`). */
++    _cfgVal(n) {
++      if (this.hasAttribute('data-sd-cfg')) {
++        try { this._cfg = JSON.parse(this.getAttribute('data-sd-cfg')) || {}; } catch (e) { this._cfg = {}; }
++        this._strippingTitle = true;
++        this.removeAttribute('data-sd-cfg');
++        this._strippingTitle = false;
++      }
++      if (this.hasAttribute(n)) return this.getAttribute(n);
++      var c = this._cfg || {};
++      return c[n] === undefined || c[n] === null ? null : String(c[n]);
++    }
++
+     /* booleanAttribute của Angular: attr="false" là FALSE, có mặt là TRUE. */
+     _boolAttr(n) {
+-      var v = this.getAttribute(n);
++      var v = this._cfgVal(n);
+       return v !== null && String(v) !== 'false';
+     }
+ 
+@@ -2552,47 +2569,47 @@
+       for (var i = 0; i < flags.length; i++) {
+         if (this._boolAttr(flags[i])) return flags[i];
+       }
+-      return this.getAttribute('color') || 'secondary';
++      return this._cfgVal('color') || 'secondary';
+     }
+ 
+-    /* click.observed của thư viện: chỉ gắn role/tabindex khi thực sự có
+-       consumer lắng nghe. Ở Web Component không đọc được listener nên lấy
+-       mốc là onclick hoặc data-sd-clickable. */
++    /* click.observed của thư viện → lớp `pointer`. Ở Web Component không đọc được listener nên lấy
++       mốc là onclick hoặc data-sd-clickable. Thư viện KHÔNG gắn role/tabindex (div mang
++       aria-hidden="true") — kit theo đúng vậy (2026-10-13). */
+     get _isPointer() {
+       return !!this.onclick || this.hasAttribute('data-sd-clickable');
+     }
+ 
+-    _onKey(e) {
+-      if (!this._isPointer) return;
+-      if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+-      e.preventDefault();
+-      this.click();
+-    }
+-
+-    /* accessibleName(): title + description, không có thì tooltip, cuối cùng
+-       là tên icon bỏ gạch dưới. */
+-    _accessibleName(title, description, tooltip, iconName) {
+-      var visible = [title, description]
+-        .filter(function (v) { return v !== undefined && v !== null && String(v).trim() !== ''; })
+-        .map(function (v) { return String(v).trim(); })
+-        .join(' ');
+-      if (visible) return visible;
+-      if (tooltip && tooltip.trim()) return tooltip.trim();
+-      return String(iconName || '').replace(/[_-]+/g, ' ').trim();
++    /* Dạng DOM theo MỤC catalog (thứ tự lớp do Angular/Material ghép khác nhau giữa các lần chụp):
++         ''  (#c-badge)        icon `d-flex mat-mdc-tooltip-trigger c-badge-icon` ·
++                               round `c-badge mat-mdc-tooltip-trigger c-COL c-badge--S [c-badge--has-icon]` ·
++                               tag `c-badge c-badge--tag mat-mdc-tooltip-trigger c-COL c-badge--S`
++         'H' (#c-history, #c-tab-router) icon `d-flex c-badge-icon [pointer] mat-mdc-tooltip-trigger`
++         'T' (#c-table)        `c-badge c-COL c-badge--S` (không trigger)
++         'E' (#c-import-excel) tag `c-badge c-badge--tag c-COL c-badge--S`, `class` trước `aria-hidden` */
++    _ctx() {
++      var c = this._cfg && this._cfg.ctx;
++      if (c) return c;
++      if (this.closest('sd-history')) return 'H';
++      if (this.closest('sd-import-excel')) return 'E';
++      if (this.closest('sd-table')) return 'T';
++      var mark = this.closest('[data-catalog-section]');
++      var sec = mark ? mark.getAttribute('data-catalog-section') : '';
++      return sec === 'c-history' || sec === 'c-tab-router' ? 'H' : (sec === 'c-table' ? 'T' : (sec === 'c-import-excel' ? 'E' : ''));
+     }
+ 
+     _render() {
+-      var type = this.getAttribute('type') || 'icon';
+-      var size = this.getAttribute('size') || 'sm';
+-      var description = this.getAttribute('description') || '';
+-      var icon = this.getAttribute('icon') || '';
+-      var tooltip = this.getAttribute('tooltip') || '';
+-      var fontSet = this.getAttribute('fontSet') || this.getAttribute('fontset') || '';
++      var type = this._cfgVal('type') || 'icon';
++      var size = this._cfgVal('size') || 'sm';
++      var description = this._cfgVal('description') || '';
++      var icon = this._cfgVal('icon') || '';
++      var tooltip = this._cfgVal('tooltip') || '';
++      var fontSet = this._cfgVal('fontSet') || this._cfgVal('fontset') || '';
+       var color = this.effectiveColor;
+ 
+       /* title là thuộc tính chuẩn của HTML nên trình duyệt tự hiện tooltip
+          xám — giữ nguyên cách cũ: đọc rồi gỡ khỏi DOM. */
+-      var title = this.hasAttribute('title') ? (this.getAttribute('title') || '') : (this._title || '');
++      var title = this.hasAttribute('title') ? (this.getAttribute('title') || '')
++        : (this._title !== undefined ? this._title : (this._cfgVal('title') || ''));
+       this._title = title;
+       if (this.hasAttribute('title')) {
+         this._strippingTitle = true;
+@@ -2603,61 +2620,60 @@
+       /* 'status' — mở rộng riêng của kit: tra STATUS_MAP rồi đi tiếp bằng
+          đúng nhánh 'icon' của thư viện. */
+       if (type === 'status') {
+-        var status = (this.getAttribute('status') || '').toLowerCase();
++        var status = (this._cfgVal('status') || '').toLowerCase();
+         var cfg = STATUS_MAP[status] || STATUS_MAP['unknown'];
+-        if (!this.getAttribute('color') && !this._hasColorFlag()) color = cfg.color;
++        if (!this._cfgVal('color') && !this._hasColorFlag()) color = cfg.color;
+         if (!icon) icon = cfg.icon;
+         if (!fontSet) fontSet = cfg.filled ? 'material-icons' : 'material-icons-outlined';
+         if (!title) title = status ? (status.charAt(0).toUpperCase() + status.slice(1)) : '';
+         type = 'icon';
+       }
+ 
+-      /* 'neutral' là màu cũ của kit, thư viện gọi là 'secondary'. Giữ class
+-         c-neutral để những trang đang khai color="neutral" không gãy. */
++      /* 'neutral' là màu cũ của kit — thư viện gọi là 'secondary'; quy về secondary để DOM giống
++         catalog (CSS vẫn giữ bí danh c-neutral cho markup viết tay). */
++      if (color === 'neutral') color = 'secondary';
+       var iconName = icon || 'fiber_manual_record';
+-      /* fontSet mặc định: catalog @sd-angular/core 19.0.10 vẽ icon badge bằng
+-         `material-icons` (ĐẶC) — chỉ mẫu `fontSet="material-icons-outlined"` mới
+-         nét viền. (Mặc định outlined cũ là của gói npm @sdcorejs/angular.) 2026-10-13. */
++      /* fontSet mặc định `material-icons` (ĐẶC) — catalog @sd-angular/core 19.0.10. */
+       var iconFont = fontSet || 'material-icons';
+-      var cCol = ' c-' + esc(color);
+-      var cSize = ' c-' + esc(size);
+-
++      /* iconColorClasses(): nhánh 'icon' tô secondary bằng c-black400; round/tag dùng baseColorClasses. */
++      var iconCol = color === 'secondary' ? 'black400' : color;
++      var ctx = this._ctx();
+       var pointer = this._isPointer;
+-      var accName = this._accessibleName(title, description, tooltip, iconName);
++      var trig = ctx === 'T' || ctx === 'E' ? '' : ' mat-mdc-tooltip-trigger';
+       var tipAttr = tooltip
+         ? ' data-sd-tooltip="' + escAttr(tooltip) + '" data-sd-tooltip-position="above"'
+         : '';
+-      var a11y = pointer
+-        ? ' role="button" tabindex="0" aria-label="' + escAttr(accName) + '"'
+-        : '';
+       var ptrCls = pointer ? ' pointer' : '';
+-
+-      var iconHtml = '<span class="c-material-icon ' + esc(iconFont) + cSize + cCol + '">' +
+-        esc(iconName) + '</span>';
++      var open = function (cls) {
++        return ctx === 'E' ? '<div class="' + cls + '" aria-hidden="true"' + tipAttr + '>'
++          : '<div aria-hidden="true" class="' + cls + '"' + tipAttr + '>';
++      };
++      var txt = ' ' + esc(iconName) + ' ';
++      var col = 'c-' + esc(color), sz = esc(size);
+ 
+       if (type === 'round') {
+         this.innerHTML =
+-          '<div class="c-badge' + cCol + ' c-badge--' + esc(size) + (icon ? ' c-badge--has-icon' : '') +
+-          ptrCls + '"' + tipAttr + a11y + '>' +
+-          (icon ? iconHtml : '') +
++          open('c-badge' + trig + ' ' + col + ' c-badge--' + sz + (icon ? ' c-badge--has-icon' : '') + ptrCls) +
++          (icon ? '<span class="c-material-icon c-' + sz + ' ' + esc(iconFont) + ' ' + col + '">' + txt + '</span>' : '') +
+           '<span class="c-badge-title">' + esc(title) + '</span>' +
+           '</div>';
+       } else if (type === 'tag') {
+         this.innerHTML =
+-          '<div class="c-badge c-badge--tag' + cCol + ' c-badge--' + esc(size) + ptrCls + '"' +
+-          tipAttr + a11y + '>' +
++          open('c-badge c-badge--tag' + trig + ' ' + col + ' c-badge--' + sz + ptrCls) +
+           '<div class="c-icon d-flex align-items-center">' +
+-          (icon ? '<span class="c-material-icon mr-4 ' + esc(iconFont) + cSize + cCol + '">' + esc(iconName) + '</span>' : '') +
++          (icon ? '<span class="c-material-icon mr-4 c-' + sz + ' ' + esc(iconFont) + ' ' + col + '">' + txt + '</span>' : '') +
+           '<div class="d-flex flex-column align-items-start">' +
+           '<span class="T14R c-badge-title">' + esc(title) + '</span>' +
+           (description ? '<span class="T12R c-badge-description">' + esc(description) + '</span>' : '') +
+           '</div></div></div>';
+       } else {
++        var isIcon = type === 'icon' ? ' c-badge-icon' : '';
++        var cls = ctx === 'H' ? 'd-flex' + isIcon + ptrCls + trig : 'd-flex' + trig + isIcon + ptrCls;
+         this.innerHTML =
+-          '<div class="c-badge-icon' + ptrCls + '"' + tipAttr + a11y + '>' +
++          open(cls) +
+           '<div class="c-icon d-flex align-items-center">' +
+-          iconHtml +
+-          '<div class="c-badge-copy">' +
++          '<span class="c-material-icon mr-4 c-' + sz + ' ' + esc(iconFont) + ' c-' + esc(iconCol) + '">' + txt + '</span>' +
++          '<div class="d-flex flex-column">' +
+           '<span class="T14R c-badge-title">' + esc(title) + '</span>' +
+           (description ? '<span class="T10R c-badge-description">' + esc(description) + '</span>' : '') +
+           '</div></div></div>';
+@@ -9806,7 +9822,8 @@
+         var items = (col.option && col.option.items) || [];
+         var b = col.useBadge(value, row, items);
+         if (b && (b.title || b.title === 0)) {
+-          return '<sd-badge type="round" color="' + escAttr(b.color || 'secondary') + '" title="' + escAttr(String(b.title)) + '"></sd-badge>';
++          /* catalog #c-table: `<sd-badge>` trống thuộc tính, `div.c-badge c-COL c-badge--sm` (ctx 'T') */
++          return '<sd-badge data-sd-cfg="' + escAttr(JSON.stringify({ type: 'round', color: b.color || 'secondary', title: String(b.title), ctx: 'T' })) + '"></sd-badge>';
+         }
+       }
+       if (typeof col.transform === 'function') {
+@@ -15882,6 +15899,101 @@
+   customElements.define('sd-tree', SdTree);
+ 
+ 
++  /* ── @sdcorejs/utils (NumberUtilities · DateUtilities · BrowserUtilities) — nguyên văn (đặt trước sd-history: viewDateTime dùng isDate/toFormat) ── */
++  var sdUtil = {
++    toVN: function (value) {
++      value = (value == null ? '' : value).toString().replace(/,/g, '');
++      if (!value) return null;
++      var val = +value;
++      return !Number.isNaN(val) ? val.toLocaleString('vi-VN', { maximumFractionDigits: 10 }) : null;
++    },
++    isNumber: function (value) {
++      if (value === undefined || value === null || value === '') return false;
++      return !Number.isNaN(+value);
++    },
++    isDate: function (value) {
++      if (value === undefined || value === null || value === '') return false;
++      if (typeof value === 'string') {
++        if (value.length < 8) return false;
++        var d1 = value.substring(0, 10), d2 = value.substring(0, 9), d3 = value.substring(0, 8);
++        var r1 = /^(0[1-9]|[1-9]|1[0-2])(-|\/)(0[1-9]|[1-9]|[12][0-9]|3[01])(-|\/)(\d{4})$/;
++        var r2 = /^(\d{4})(-|\/)(0[1-9]|[1-9]|1[0-2])(-|\/)(0[1-9]|[1-9]|[12][0-9]|3[01])$/;
++        var ok = r1.test(d1) || r2.test(d1) || r1.test(d2) || r2.test(d2) || r1.test(d3) || r2.test(d3);
++        return ok ? !isNaN(new Date(value).getTime()) : false;
++      }
++      return !isNaN(new Date(value).getTime());
++    },
++    toFormat: function (value, format) {
++      if (!sdUtil.isDate(value)) return '';
++      var date = new Date(value), map = {};
++      var tz = new Intl.DateTimeFormat().resolvedOptions().timeZone;
++      new Intl.DateTimeFormat('en-GB', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
++        .formatToParts(date).forEach(function (p) { if (['year', 'month', 'day', 'hour', 'minute', 'second'].indexOf(p.type) >= 0) map[p.type] = p.value; });
++      return format.replace('yyyy', map.year || '').replace('MM', map.month || '').replace('dd', map.day || '')
++        .replace('HH', map.hour || '').replace('mm', map.minute || '').replace('ss', map.second || '');
++    },
++    parseFrom: function (value, format) {
++      if (!value || !format) return null;
++      value = value.toString();
++      var dmy = format.indexOf('dd') >= 0 && format.indexOf('MM') >= 0 && format.indexOf('yyyy') >= 0;
++      var hms = format.indexOf('HH') >= 0 || format.indexOf('mm') >= 0 || format.indexOf('ss') >= 0;
++      var str = '';
++      if (dmy) {
++        var dd = value.substr(format.indexOf('dd'), 2), MM = value.substr(format.indexOf('MM'), 2), yyyy = value.substr(format.indexOf('yyyy'), 4);
++        if (+yyyy > 0 && +MM > 0 && +dd > 0) str += MM + '/' + dd + '/' + yyyy; else return null;
++      } else {
++        var t = new Date();
++        str += String(t.getMonth() + 1).padStart(2, '0') + '/' + String(t.getDate()).padStart(2, '0') + '/' + t.getFullYear();
++      }
++      if (hms) {
++        var HH = format.indexOf('HH') >= 0 ? value.substr(format.indexOf('HH'), 2) : '00';
++        var mi = format.indexOf('mm') >= 0 ? value.substr(format.indexOf('mm'), 2) : '00';
++        var ss = format.indexOf('ss') >= 0 ? value.substr(format.indexOf('ss'), 2) : '00';
++        str += ' ' + (HH || '00') + ':' + (mi || '00') + ':' + (ss || '00');
++      }
++      return sdUtil.isDate(str) ? new Date(str) : null;
++    },
++    downloadBlob: function (blob, fileName) {
++      try {
++        var url = window.URL.createObjectURL(blob), link = document.createElement('a');
++        if (link.download !== undefined) {
++          link.download = fileName || ('file_' + new Date().getTime().toString(36) + Math.random().toString(36).substring(2, 7));
++          link.href = url; link.style.visibility = 'hidden';
++          document.body.appendChild(link); link.click();
++          window.URL.revokeObjectURL(url); link.remove();
++        }
++      } catch (e) { console.error('BlobToSaveAs error', e); }
++    },
++    upload: function (option) {
++      var uploadId = 'U1e09c1c0-b647-437e-995e-d7a1a1b60550';
++      return new Promise(function (resolve, reject) {
++        var body = document.body;
++        if (!body) { resolve(null); return; }
++        var old = document.getElementById(uploadId);
++        if (old) old.remove();
++        var el = document.createElement('input');
++        el.setAttribute('id', uploadId); el.setAttribute('type', 'file'); el.style.display = 'none';
++        body.appendChild(el);
++        el.addEventListener('change', function (evt) {
++          try {
++            var file = evt.target.files.item(0);
++            if (file) {
++              var dot = file.name.lastIndexOf('.');
++              if (dot === -1) throw new Error(sdIeT('uploadInvalidFormat', { name: file.name }));
++              var ext = file.name.substring(dot + 1);
++              if (option && option.extensions && option.extensions.length && !option.extensions.some(function (e) { return e.toLowerCase() === ext.toLowerCase(); }))
++                throw new Error(sdIeT('uploadInvalidFormat', { name: file.name }));
++              if (option && option.maxSizeInMb > 0 && option.maxSizeInMb * 1024 * 1024 < file.size)
++                throw new Error(sdIeT('uploadInvalidSize', { name: file.name }));
++              resolve(file);
++            }
++          } catch (err) { reject(err); }
++        });
++        el.click();
++      });
++    }
++  };
++
+   /* ══════════════════════════════════════════════════════════
+      sd-history — DỰNG MỚI 2026-10-11 theo Core UI Catalog `#c-history`.
+ 
+@@ -15939,28 +16051,31 @@
+       try { var p = JSON.parse(raw); return Array.isArray(p) ? p : []; } catch (e) { return []; }
+     }
+ 
+-    /* `viewDateTime` của thư viện: HH:mm dd/MM/yyyy. Chuỗi không parse được thì
+-       giữ nguyên — trang có thể đã tự định dạng. */
++    /* Pipe `viewDateTime` của thư viện: `!value || !isDate(value)` → EMPTY_STR ('--'), còn lại
++       `toFormat(value, 'HH:mm dd/MM/yyyy')` (@sdcorejs/utils). Khác thư viện có chủ ý:
++         · KHÔNG có date → '' (catalog vẽ `<span class="date"></span>` cho mục "Hệ thống");
++         · chuỗi đã định dạng sẵn `HH:mm dd/MM/yyyy` → giữ nguyên (mở rộng của kit). */
+     _fmtDate(v) {
+-      if (!v) return '';
+-      var d = (v instanceof Date) ? v : new Date(v);
+-      if (isNaN(d.getTime())) return String(v);
+-      return sdDatePad(d.getHours()) + ':' + sdDatePad(d.getMinutes()) + ' ' +
+-        sdDatePad(d.getDate()) + '/' + sdDatePad(d.getMonth() + 1) + '/' + d.getFullYear();
++      if (v === undefined || v === null || v === '') return '';
++      if (typeof v === 'string' && /^\d{2}:\d{2} \d{2}\/\d{2}\/\d{4}$/.test(v.trim())) return v.trim();
++      if (!sdUtil.isDate(v)) return '--';
++      return sdUtil.toFormat(v, 'HH:mm dd/MM/yyyy');
+     }
+ 
+     _render() {
+       var self = this;
+       var html = this._rawItems().map(function (it) {
+         var st = it.status || null;
++        /* Template thư viện: `<sd-badge [icon] [title] [color]>` — không khai type (mặc định 'icon'),
++           input không phản chiếu ra host → cấu hình qua data-sd-cfg (badge tự gỡ). */
+         var statusHtml = st
+-          ? '<sd-badge type="icon" color="' + escAttr(st.color || 'primary') + '"' +
+-            (st.icon ? ' icon="' + escAttr(st.icon) + '"' : '') +
+-            ' title="' + escAttr(st.title || '') + '"></sd-badge>'
++          ? '<sd-badge data-sd-cfg="' + escAttr(JSON.stringify({
++              icon: st.icon || null, title: st.title == null ? '' : String(st.title),
++              color: st.color || null, ctx: 'H' })) + '"></sd-badge>'
+           : '';
+         var metaHtml = '';
+         if (it.actor) metaHtml += '<span>' + esc(SD_HISTORY_TEXT.by) + ' <strong>@' + esc(it.actor) + '</strong></span>';
+-        if (it.source) metaHtml += '<span> · ' + esc(it.source) + '</span>';
++        if (it.source) metaHtml += '<span> &#183; ' + esc(it.source) + '</span>';
+         return '<div class="history-item">' +
+             '<div class="dot"></div>' +
+             '<div class="card">' +
+@@ -15972,7 +16087,8 @@
+                 '<span class="date">' + esc(self._fmtDate(it.date)) + '</span>' +
+               '</div>' +
+               '<div class="meta">' + metaHtml + '</div>' +
+-              '<div class="description">' + esc(it.description == null ? '' : it.description) + '</div>' +
++              /* `{{ item?.description }}` có khoảng trắng hai bên trong template → text ' … ' */
++              '<div class="description"> ' + esc(it.description == null ? '' : it.description) + ' </div>' +
+             '</div>' +
+           '</div>';
+       }).join('');
+@@ -16979,100 +17095,6 @@
+     return sdExcelPromise;
+   }
+ 
+-  /* ── @sdcorejs/utils (NumberUtilities · DateUtilities · BrowserUtilities) — nguyên văn ── */
+-  var sdUtil = {
+-    toVN: function (value) {
+-      value = (value == null ? '' : value).toString().replace(/,/g, '');
+-      if (!value) return null;
+-      var val = +value;
+-      return !Number.isNaN(val) ? val.toLocaleString('vi-VN', { maximumFractionDigits: 10 }) : null;
+-    },
+-    isNumber: function (value) {
+-      if (value === undefined || value === null || value === '') return false;
+-      return !Number.isNaN(+value);
+-    },
+-    isDate: function (value) {
+-      if (value === undefined || value === null || value === '') return false;
+-      if (typeof value === 'string') {
+-        if (value.length < 8) return false;
+-        var d1 = value.substring(0, 10), d2 = value.substring(0, 9), d3 = value.substring(0, 8);
+-        var r1 = /^(0[1-9]|[1-9]|1[0-2])(-|\/)(0[1-9]|[1-9]|[12][0-9]|3[01])(-|\/)(\d{4})$/;
+-        var r2 = /^(\d{4})(-|\/)(0[1-9]|[1-9]|1[0-2])(-|\/)(0[1-9]|[1-9]|[12][0-9]|3[01])$/;
+-        var ok = r1.test(d1) || r2.test(d1) || r1.test(d2) || r2.test(d2) || r1.test(d3) || r2.test(d3);
+-        return ok ? !isNaN(new Date(value).getTime()) : false;
+-      }
+-      return !isNaN(new Date(value).getTime());
+-    },
+-    toFormat: function (value, format) {
+-      if (!sdUtil.isDate(value)) return '';
+-      var date = new Date(value), map = {};
+-      var tz = new Intl.DateTimeFormat().resolvedOptions().timeZone;
+-      new Intl.DateTimeFormat('en-GB', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
+-        .formatToParts(date).forEach(function (p) { if (['year', 'month', 'day', 'hour', 'minute', 'second'].indexOf(p.type) >= 0) map[p.type] = p.value; });
+-      return format.replace('yyyy', map.year || '').replace('MM', map.month || '').replace('dd', map.day || '')
+-        .replace('HH', map.hour || '').replace('mm', map.minute || '').replace('ss', map.second || '');
+-    },
+-    parseFrom: function (value, format) {
+-      if (!value || !format) return null;
+-      value = value.toString();
+-      var dmy = format.indexOf('dd') >= 0 && format.indexOf('MM') >= 0 && format.indexOf('yyyy') >= 0;
+-      var hms = format.indexOf('HH') >= 0 || format.indexOf('mm') >= 0 || format.indexOf('ss') >= 0;
+-      var str = '';
+-      if (dmy) {
+-        var dd = value.substr(format.indexOf('dd'), 2), MM = value.substr(format.indexOf('MM'), 2), yyyy = value.substr(format.indexOf('yyyy'), 4);
+-        if (+yyyy > 0 && +MM > 0 && +dd > 0) str += MM + '/' + dd + '/' + yyyy; else return null;
+-      } else {
+-        var t = new Date();
+-        str += String(t.getMonth() + 1).padStart(2, '0') + '/' + String(t.getDate()).padStart(2, '0') + '/' + t.getFullYear();
+-      }
+-      if (hms) {
+-        var HH = format.indexOf('HH') >= 0 ? value.substr(format.indexOf('HH'), 2) : '00';
+-        var mi = format.indexOf('mm') >= 0 ? value.substr(format.indexOf('mm'), 2) : '00';
+-        var ss = format.indexOf('ss') >= 0 ? value.substr(format.indexOf('ss'), 2) : '00';
+-        str += ' ' + (HH || '00') + ':' + (mi || '00') + ':' + (ss || '00');
+-      }
+-      return sdUtil.isDate(str) ? new Date(str) : null;
+-    },
+-    downloadBlob: function (blob, fileName) {
+-      try {
+-        var url = window.URL.createObjectURL(blob), link = document.createElement('a');
+-        if (link.download !== undefined) {
+-          link.download = fileName || ('file_' + new Date().getTime().toString(36) + Math.random().toString(36).substring(2, 7));
+-          link.href = url; link.style.visibility = 'hidden';
+-          document.body.appendChild(link); link.click();
+-          window.URL.revokeObjectURL(url); link.remove();
+-        }
+-      } catch (e) { console.error('BlobToSaveAs error', e); }
+-    },
+-    upload: function (option) {
+-      var uploadId = 'U1e09c1c0-b647-437e-995e-d7a1a1b60550';
+-      return new Promise(function (resolve, reject) {
+-        var body = document.body;
+-        if (!body) { resolve(null); return; }
+-        var old = document.getElementById(uploadId);
+-        if (old) old.remove();
+-        var el = document.createElement('input');
+-        el.setAttribute('id', uploadId); el.setAttribute('type', 'file'); el.style.display = 'none';
+-        body.appendChild(el);
+-        el.addEventListener('change', function (evt) {
+-          try {
+-            var file = evt.target.files.item(0);
+-            if (file) {
+-              var dot = file.name.lastIndexOf('.');
+-              if (dot === -1) throw new Error(sdIeT('uploadInvalidFormat', { name: file.name }));
+-              var ext = file.name.substring(dot + 1);
+-              if (option && option.extensions && option.extensions.length && !option.extensions.some(function (e) { return e.toLowerCase() === ext.toLowerCase(); }))
+-                throw new Error(sdIeT('uploadInvalidFormat', { name: file.name }));
+-              if (option && option.maxSizeInMb > 0 && option.maxSizeInMb * 1024 * 1024 < file.size)
+-                throw new Error(sdIeT('uploadInvalidSize', { name: file.name }));
+-              resolve(file);
+-            }
+-          } catch (err) { reject(err); }
+-        });
+-        el.click();
+-      });
+-    }
+-  };
+ 
+   /* ── SdExcelService (thư viện, dùng nội bộ — catalog không có mục riêng) ── */
+   var SD_EXCEL_BORDER = { bottom: { style: 'thin' }, left: { style: 'thin' }, right: { style: 'thin' } };
+@@ -17577,7 +17599,7 @@
+         self._tbody().innerHTML = items.map(function (it, ri) {
+           var m = it.meta, st = m.errorMessages.length ? 'error' : (m.warningMessages.length ? 'warning' : 'success');
+           var msg = m.errorMessages[0] || m.warningMessages[0] || ("<span class='text-success'>" + esc(sdIeT('validData')) + '</span>');
+-          return '<tr><td class="text-center c-sticky-left px-4"><sd-badge type="tag" title="' + m.excelIndex + '" ' + st + '></sd-badge></td>' +
++          return '<tr><td class="text-center c-sticky-left px-4"><sd-badge type="tag" data-sd-cfg="' + escAttr(JSON.stringify({ title: String(m.excelIndex), color: st, ctx: 'E' })) + '"></sd-badge></td>' +
+             '<td style="min-width: 250px; width: 250px"><div class="text-wrap">' + msg + '</div></td>' +
+             cols.map(function (c, ci) {
+               var f = c.field, er = m.error[f], wa = m.warning[f], tip = er || wa;

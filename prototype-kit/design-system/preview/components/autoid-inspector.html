@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-autoid-inspector — Preview</title>
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-area">
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-autoid-inspector"
+         data-subtitle="Công cụ dev/QA — quét data-autoid của mọi sd-* trên trang, tô viền DOM, xuất JSON/CSV/Markdown"></div>
+    <div class="content-zone">
+
+      <sd-section title="Cách dùng">
+        <p class="fs-12 text-black400 mb-16">
+          Inspector đang chạy THẬT trên trang này: nút tròn góc phải dưới. Bấm để mở panel,
+          nó quét đúng các <code>sd-*</code> của form bên dưới. Rê chuột lên nút tròn sẽ hiện
+          dấu × nhỏ để ẩn tạm (reload trang là hiện lại).
+        </p>
+        <p class="fs-12 text-black400 mb-16">
+          Form bên dưới cố tình có <strong>1 autoid trùng</strong> (hai ô dùng chung
+          <code>forms-select-don-vi</code>) và <strong>vài phần tử thiếu autoid</strong> —
+          để tab Audit có việc mà báo. Viền xanh = hợp lệ · đỏ = trùng · cam nét đứt = thiếu.
+        </p>
+        <div class="d-flex" style="gap: 8px; flex-wrap: wrap;">
+          <sd-button id="btn-open" autoId="mo-inspector" type="fill" color="primary" size="sm" prefixIcon="tag" title="Mở Inspector"></sd-button>
+          <sd-button id="btn-rescan" autoId="quet-lai" type="light" color="primary" size="sm" prefixIcon="refresh" title="Quét lại"></sd-button>
+          <sd-button id="btn-host" autoId="bat-host" type="light" color="secondary" size="sm" prefixIcon="auto_awesome" title="Bật config.host (hiện khối E2E)"></sd-button>
+          <sd-button id="btn-disable" autoId="tat-inspector" type="link" color="primary" size="sm" title="enabled = false"></sd-button>
+        </div>
+      </sd-section>
+
+      <sd-section title="Trang mẫu — form giải ngân">
+        <form class="giai-ngan">
+          <div class="form-grid-2 mb-16">
+            <sd-select autoId="don-vi" label="Đơn vị" placeholder="Chọn đơn vị" required
+                       items='[{"id":"vcb","name":"Vietcombank"},{"id":"bidv","name":"BIDV"},{"id":"tcb","name":"Techcombank"}]'
+                       value="vcb"></sd-select>
+            <!-- CỐ Ý trùng autoId với ô trên -> tab Audit báo "Autoid bị trùng" -->
+            <sd-select autoId="don-vi" label="Đơn vị thụ hưởng" placeholder="Chọn đơn vị" required
+                       items='[{"id":"vcb","name":"Vietcombank"},{"id":"bidv","name":"BIDV"}]'></sd-select>
+          </div>
+          <div class="form-grid-2 mb-16">
+            <sd-select autoId="muc-dich" label="Mục đích" placeholder="Chọn mục đích"
+                       items='[{"id":"a","name":"Bổ sung vốn lưu động"},{"id":"b","name":"Đầu tư tài sản"}]'
+                       value="a"></sd-select>
+            <!-- KHÔNG có autoId -> tab Audit báo "Element thiếu autoid" -->
+            <sd-select label="Loại tiền" placeholder="Chọn loại tiền"
+                       items='[{"id":"vnd","name":"VND"},{"id":"usd","name":"USD"}]'></sd-select>
+          </div>
+          <div class="mb-16">
+            <sd-checkbox autoId="xac-nhan" title="Tôi xác nhận số liệu đã đối chiếu"></sd-checkbox>
+          </div>
+          <div class="d-flex justify-content-end" style="gap: 12px;">
+            <!-- KHÔNG có autoId -> thiếu -->
+            <sd-button type="link" color="primary" size="md" title="Bỏ qua"></sd-button>
+            <sd-button autoId="luu" type="fill" color="primary" size="md" title="Lưu"></sd-button>
+          </div>
+        </form>
+      </sd-section>
+
+      <sd-section title="Bảng có autoid">
+        <p class="fs-12 text-black400 mb-8">
+          <code>sd-table</code> gắn <code>data-autoid</code> lên chính thẻ host, nên nó xuất hiện ở
+          nhóm “Top-level elements” với state <code>count=N</code>.
+        </p>
+        <sd-table
+            autoId="lich-tra-no"
+            columns='[
+              {"field":"ky","title":"Kỳ","type":"string","width":"80px"},
+              {"field":"ngay","title":"Ngày đến hạn","type":"string","width":"150px"},
+              {"field":"goc","title":"Gốc (VND)","type":"number","align":"right","option":{"precision":0}},
+              {"field":"lai","title":"Lãi (VND)","type":"number","align":"right","option":{"precision":0}}
+            ]'
+            data='[
+              {"ky":"1","ngay":"15/04/2026","goc":125000000000,"lai":1937500000},
+              {"ky":"2","ngay":"15/10/2026","goc":125000000000,"lai":968750000}
+            ]'></sd-table>
+      </sd-section>
+
+      <sd-section title="Giới hạn đã biết">
+        <p class="fs-12 text-black400 mb-8">
+          Những chỗ catalog có mà kit cố ý không dựng — chi tiết ở <code>_memory/known-gaps.md</code>:
+        </p>
+        <ul class="fs-12 text-black400" style="margin: 0; padding-left: 18px;">
+          <li>Dialog “Ngữ cảnh QC cho Robot Framework”: chính catalog ghi <em>“không dựng”</em>.</li>
+          <li>Hai nút Playwright / Robot Framework chỉ dựng giao diện — sinh file <code>.zip</code> cần host ngoài (<code>config.host</code>).</li>
+          <li>Nhóm “Inside &lt;autoid bảng&gt;” có dựng, nhưng <code>sd-table</code> của kit vẽ ô từ <code>columns</code>/<code>data</code> nên trang này không có sd-* lồng trong bảng để minh hoạ.</li>
+        </ul>
+      </sd-section>
+
+    </div>
+  </div>
+</div>
+
+<!-- Inspector THẬT, position:fixed, quét cả trang này -->
+<sd-autoid-inspector id="aid"></sd-autoid-inspector>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+<script>
+  (function () {
+    var aid = document.getElementById('aid');
+
+    /* Chỉ bắt buộc autoid ở 4 nhóm này — đúng ví dụ `config.requireSelectors`
+       của catalog. Không khai thì mặc định của kit là MỌI phần tử `sd-*`, kể cả
+       sd-section/sd-input vốn không có API autoId. */
+    aid.config = { requireSelectors: ['sd-select', 'sd-button', 'sd-table', 'sd-checkbox'] };
+
+    document.getElementById('btn-open').addEventListener('click', function () { aid.open(); });
+    document.getElementById('btn-rescan').addEventListener('click', function () { aid.rescan(); });
+
+    var hostOn = false;
+    var btnHost = document.getElementById('btn-host');
+    btnHost.addEventListener('click', function () {
+      hostOn = !hostOn;
+      var cfg = { requireSelectors: ['sd-select', 'sd-button', 'sd-table', 'sd-checkbox'] };
+      if (hostOn) cfg.host = 'https://e2e-gen.fins.local';
+      aid.config = cfg;
+      btnHost.setAttribute('title', hostOn ? 'Tắt config.host' : 'Bật config.host (hiện khối E2E)');
+      aid.open();
+    });
+
+    var btnDisable = document.getElementById('btn-disable');
+    btnDisable.addEventListener('click', function () {
+      var on = aid.enabled;
+      aid.enabled = !on;
+      btnDisable.setAttribute('title', on ? 'enabled = true' : 'enabled = false');
+    });
+  })();
+</script>
+</body>
+</html>

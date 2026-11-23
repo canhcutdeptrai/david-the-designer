@@ -1,0 +1,22 @@
+// node selint2.mjs <harness.html> — hành vi sd-select (panel trong host HOẶC trong overlay .sd-select-pane)
+import {chromium} from 'playwright';
+const H=process.argv[2];
+const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',args:['--allow-file-access-from-files']});
+const p=await b.newPage({viewport:{width:1400,height:900}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('file://'+H);await p.waitForTimeout(800);
+const ev=[];await p.exposeFunction('logEv',x=>ev.push(x));
+await p.evaluate(()=>['sd-change'].forEach(n=>document.addEventListener(n,e=>window.logEv(n+' '+e.target.id+' '+JSON.stringify(e.detail&&e.detail.value)))));
+await p.evaluate(()=>{window.PN=id=>{const h=document.getElementById(id);return (h._pane&&h._pane.isConnected&&h._pane.querySelector('.sd-dropdown-menu'))||h.querySelector('.sd-dropdown-menu');};});
+const st=id=>p.evaluate(id=>{const h=document.getElementById(id);const ms=h.querySelector('mat-select');const pn=PN(id);return {val:h.value,open:h.classList.contains('sd-open'),panelVis:pn?getComputedStyle(pn).display!=='none'&&pn.getBoundingClientRect().height>0:null,items:pn?pn.querySelectorAll('.sd-dropdown-item').length:0,ms:ms&&ms.className.replace('mat-mdc-select','').trim(),txt:ms&&ms.textContent.trim(),clear:!!h.querySelector('.sd-clear-btn'),focus:document.activeElement===ms,panes:document.querySelectorAll('.sd-select-pane').length}},id);
+const pick=async(id,text)=>{const h=await p.evaluateHandle(([id,t])=>[...PN(id).querySelectorAll('.sd-dropdown-item')].find(x=>x.textContent.trim()===t),[id,text]);await h.asElement().click();};
+await p.click('#v3 mat-form-field');console.log('open',JSON.stringify(await st('v3')));
+await pick('v3','BIDV – CN Hà Nội');console.log('pick',JSON.stringify(await st('v3')));
+await p.click('#v2 mat-form-field');await pick('v2','Giấy tờ có giá');console.log('multi',JSON.stringify(await st('v2')));
+await pick('v2','Giấy tờ có giá');console.log('multi untoggle',JSON.stringify(await st('v2')));
+await p.click('#v1 mat-form-field');console.log('switch: v2',JSON.stringify(await st('v2')),'v1',JSON.stringify(await st('v1')));
+await p.mouse.click(1300,880);console.log('outside',JSON.stringify(await st('v1')));
+await p.click('#v3 .sd-clear-btn');console.log('clear',JSON.stringify(await st('v3')));
+await p.focus('#v1 mat-select');await p.keyboard.press('ArrowDown');console.log('kbd open',JSON.stringify(await st('v1')));await p.keyboard.press('Escape');console.log('esc',JSON.stringify(await st('v1')));
+console.log('inline',JSON.stringify(await st('v4')));
+console.log('EV',ev.join(' | '));console.log('ERR',errs.join(';')||'none');
+await b.close();

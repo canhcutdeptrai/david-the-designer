@@ -1,0 +1,8493 @@
+{
+ "ng-component": [
+  {
+   "class": "RootComponent",
+   "kind": "ɵcmp",
+   "file": "modules/layout/modules/not-found/pages/root/root.component.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  },
+  {
+   "class": "RootComponent",
+   "kind": "ɵcmp",
+   "file": "modules/layout/modules/forbidden/pages/root/root.component.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "app-home-page": [
+  {
+   "class": "HomePageComponent",
+   "kind": "ɵcmp",
+   "file": "modules/layout/modules/home/components/home-page/home-page.component.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-page": [
+  {
+   "class": "SdPageComponent",
+   "kind": "ɵcmp",
+   "file": "modules/layout/components/page/page.component.d.ts",
+   "inputs": [
+    {
+     "prop": "title",
+     "alias": "title",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "description",
+     "alias": "description",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "noHeader",
+     "alias": "noHeader",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    }
+   ],
+   "outputs": [],
+   "slots": [
+    "[headerLeft]",
+    "[headerRight]",
+    "*"
+   ]
+  }
+ ],
+ "sidebar-mobile-v1": [
+  {
+   "class": "SidebarMobileV1Component",
+   "kind": "ɵcmp",
+   "file": "modules/layout/components/sidebar-mobile-v1/main.component.d.ts",
+   "inputs": [
+    {
+     "prop": "menus",
+     "alias": "menus",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdLayoutMenu[]>"
+    },
+    {
+     "prop": "userInfo",
+     "alias": "userInfo",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdLayoutUserInfo>"
+    },
+    {
+     "prop": "sidebar",
+     "alias": "sidebar",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SidebarConfigurationV1>"
+    }
+   ],
+   "outputs": [],
+   "slots": [
+    "*"
+   ]
+  }
+ ],
+ "lib-layout-user": [
+  {
+   "class": "LayoutUserComponent",
+   "kind": "ɵcmp",
+   "file": "modules/layout/components/sidebar-mobile-v1/components/user/user.component.d.ts",
+   "inputs": [
+    {
+     "prop": "isMobileOrTablet",
+     "alias": "isMobileOrTablet",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<boolean>"
+    },
+    {
+     "prop": "isMenuLock",
+     "alias": "isMenuLock",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<boolean>"
+    },
+    {
+     "prop": "isShowSidebar",
+     "alias": "isShowSidebar",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<boolean>"
+    },
+    {
+     "prop": "userInfo",
+     "alias": "userInfo",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdLayoutUserInfo>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "menuClosed",
+     "alias": "menuClosed",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "menuOpened",
+     "alias": "menuOpened",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "toggleMenuLock",
+     "alias": "toggleMenuLock",
+     "type": "import(\"@angular/core\").OutputEmitterRef<Event>"
+    }
+   ],
+   "slots": []
+  },
+  {
+   "class": "LayoutUserComponent",
+   "kind": "ɵcmp",
+   "file": "modules/layout/components/sidebar-v1/components/user/user.component.d.ts",
+   "inputs": [
+    {
+     "prop": "isMobileOrTablet",
+     "alias": "isMobileOrTablet",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<boolean>"
+    },
+    {
+     "prop": "isMenuLock",
+     "alias": "isMenuLock",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<boolean>"
+    },
+    {
+     "prop": "isShowSidebar",
+     "alias": "isShowSidebar",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<boolean>"
+    },
+    {
+     "prop": "userInfo",
+     "alias": "userInfo",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdLayoutUserInfo>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "menuClosed",
+     "alias": "menuClosed",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "menuOpened",
+     "alias": "menuOpened",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "toggleMenuLock",
+     "alias": "toggleMenuLock",
+     "type": "import(\"@angular/core\").OutputEmitterRef<Event>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-sidebar-mobile-overlay": [
+  {
+   "class": "SidebarMobileOverlayComponent",
+   "kind": "ɵcmp",
+   "file": "modules/layout/components/sidebar-mobile-v1/components/sidebar/sidebar.component.d.ts",
+   "inputs": [
+    {
+     "prop": "isShowSidebar",
+     "alias": "isShowSidebar",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<boolean>"
+    },
+    {
+     "prop": "menus",
+     "alias": "menus",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdLayoutMenu[]>"
+    },
+    {
+     "prop": "userInfo",
+     "alias": "userInfo",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdLayoutUserInfo>"
+    },
+    {
+     "prop": "sidebar",
+     "alias": "sidebar",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SidebarConfigurationV1>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "showSideBar",
+     "alias": "showSideBar",
+     "type": "import(\"@angular/core\").OutputEmitterRef<boolean | null>"
+    },
+    {
+     "prop": "expandSideBar",
+     "alias": "expandSideBar",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "popupUserMenuOpened",
+     "alias": "popupUserMenuOpened",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "popupUserMenuClosed",
+     "alias": "popupUserMenuClosed",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "titleMenuGroupChanged",
+     "alias": "titleMenuGroupChanged",
+     "type": "import(\"@angular/core\").OutputEmitterRef<string | undefined>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sidebar-v1": [
+  {
+   "class": "SidebarV1Component",
+   "kind": "ɵcmp",
+   "file": "modules/layout/components/sidebar-v1/main.component.d.ts",
+   "inputs": [
+    {
+     "prop": "menus",
+     "alias": "menus",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdLayoutMenu[]>"
+    },
+    {
+     "prop": "userInfo",
+     "alias": "userInfo",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdLayoutUserInfo>"
+    },
+    {
+     "prop": "sidebar",
+     "alias": "sidebar",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SidebarConfigurationV1>"
+    }
+   ],
+   "outputs": [],
+   "slots": [
+    "*"
+   ]
+  }
+ ],
+ "sidebar": [
+  {
+   "class": "SidebarComponent",
+   "kind": "ɵcmp",
+   "file": "modules/layout/components/sidebar-v1/components/sidebar/sidebar.component.d.ts",
+   "inputs": [
+    {
+     "prop": "isShowSidebar",
+     "alias": "isShowSidebar",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<boolean>"
+    },
+    {
+     "prop": "menus",
+     "alias": "menus",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdLayoutMenu[]>"
+    },
+    {
+     "prop": "userInfo",
+     "alias": "userInfo",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdLayoutUserInfo>"
+    },
+    {
+     "prop": "sidebar",
+     "alias": "sidebar",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SidebarConfigurationV1>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "expandSideBar",
+     "alias": "expandSideBar",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "popupUserMenuClosed",
+     "alias": "popupUserMenuClosed",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "popupUserMenuOpened",
+     "alias": "popupUserMenuOpened",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "showSideBar",
+     "alias": "showSideBar",
+     "type": "import(\"@angular/core\").OutputEmitterRef<boolean | null>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-layout": [
+  {
+   "class": "SdLayoutComponent",
+   "kind": "ɵcmp",
+   "file": "modules/layout/components/layout-main/layout-main.component.d.ts",
+   "inputs": [
+    {
+     "prop": "menusInput",
+     "alias": "menus",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdLayoutMenu[]>"
+    }
+   ],
+   "outputs": [],
+   "slots": [
+    "*"
+   ]
+  }
+ ],
+ "[sdPermission]": [
+  {
+   "class": "SdPermissionDirective",
+   "kind": "ɵdir",
+   "file": "modules/permission/src/directives/permission.directive.d.ts",
+   "inputs": [
+    {
+     "prop": "sdPermission",
+     "alias": "sdPermission",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "sdPermissionKey",
+     "alias": "sdPermissionKey",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-badge": [
+  {
+   "class": "SdBadge",
+   "kind": "ɵcmp",
+   "file": "components/badge/src/badge.component.d.ts",
+   "inputs": [
+    {
+     "prop": "type",
+     "alias": "type",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdBadgeType, SdBadgeType | null | undefined>"
+    },
+    {
+     "prop": "color",
+     "alias": "color",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<Color, Color | null | undefined>"
+    },
+    {
+     "prop": "primary",
+     "alias": "primary",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "secondary",
+     "alias": "secondary",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "success",
+     "alias": "success",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "info",
+     "alias": "info",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "warning",
+     "alias": "warning",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "error",
+     "alias": "error",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "fontSet",
+     "alias": "fontSet",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<MaterialIconFontSet, MaterialIconFontSet | null | undefined>"
+    },
+    {
+     "prop": "title",
+     "alias": "title",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | number | null | undefined>"
+    },
+    {
+     "prop": "description",
+     "alias": "description",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "tooltip",
+     "alias": "tooltip",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "icon",
+     "alias": "icon",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<Size, Size | null | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "click",
+     "alias": "click",
+     "type": "EventEmitter<Event>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-form-builder": [
+  {
+   "class": "SdFormBuilder",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/form-builder.component.d.ts",
+   "inputs": [
+    {
+     "prop": "formGeneric",
+     "alias": "formGeneric",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "html-attribute": [
+  {
+   "class": "HtmlAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/html/attribute/html-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "attributeChanges",
+     "alias": "attributeChanges",
+     "type": "EventEmitter<any>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "build-queries": [
+  {
+   "class": "BuildQueries",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/html/attribute/components/build-queries/build-queries.component.d.ts",
+   "inputs": [
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "string"
+    },
+    {
+     "prop": "_queries",
+     "alias": "queries",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<Record<string, string>>"
+    }
+   ],
+   "slots": []
+  },
+  {
+   "class": "BuildQueries",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/attribute-selection/components/build-queries/build-queries.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "string"
+    },
+    {
+     "prop": "selections",
+     "alias": "selections",
+     "required": true,
+     "type": "SdFormGenericDefinitionSelection[]"
+    },
+    {
+     "prop": "_valuesKey",
+     "alias": "valuesKey",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<Record<string, string>>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "html-control": [
+  {
+   "class": "HtmlControl",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/html/control/html-control.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "attribute-select": [
+  {
+   "class": "AttributeSelect",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/attribute-select/attribute-select.component.d.ts",
+   "inputs": [
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup"
+    },
+    {
+     "prop": "_label",
+     "alias": "label",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_multiple",
+     "alias": "multiple",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_items",
+     "alias": "items",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<string>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "EventEmitter<string>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "attribute-textarea": [
+  {
+   "class": "AttributeTextarea",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/attribute-textarea/attribute-textarea.component.d.ts",
+   "inputs": [
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup"
+    },
+    {
+     "prop": "_label",
+     "alias": "label",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<string>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "EventEmitter<string>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "group-attribute": [
+  {
+   "class": "GroupAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/group/attribute/group-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "group",
+     "alias": "group",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "checkbox-attribute": [
+  {
+   "class": "CheckboxAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/checkbox/attribute/checkbox-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "checkbox-control": [
+  {
+   "class": "CheckboxControl",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/checkbox/control/checkbox-control.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "select-attribute": [
+  {
+   "class": "SelectAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/select/attribute/select-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "select-control": [
+  {
+   "class": "SelectControl",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/select/control/select-control.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "textarea-attribute": [
+  {
+   "class": "TextareaAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/textarea/attribute/textarea-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "textarea-control": [
+  {
+   "class": "TextareaControl",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/textarea/control/textarea-control.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "attribute-table": [
+  {
+   "class": "AttributeTable",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/attribute-table/attribute-table.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_columnsKey",
+     "alias": "columnsKey",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_columns",
+     "alias": "columns",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "columnsKeyChange",
+     "alias": "columnsKeyChange",
+     "type": "EventEmitter<string>"
+    },
+    {
+     "prop": "columnsChange",
+     "alias": "columnsChange",
+     "type": "EventEmitter<SdFormGenericTableColumn[]>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "expression-builder": [
+  {
+   "class": "ExpressionBuilderComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/expression-builder/expression-builder.component.d.ts",
+   "inputs": [
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "string"
+    },
+    {
+     "prop": "_attributes",
+     "alias": "attributes",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<SdFormGenericExpression>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "EventEmitter<SdFormGenericExpression>"
+    },
+    {
+     "prop": "edit",
+     "alias": "edit",
+     "type": "EventEmitter<void>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "datetime-attribute": [
+  {
+   "class": "DatetimeAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/datetime/attribute/datetime-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "datetime-control": [
+  {
+   "class": "DatetimeControl",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/datetime/control/datetime-control.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "upload-attribute": [
+  {
+   "class": "UploadAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/upload/attribute/upload-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "upload-control": [
+  {
+   "class": "UploadControl",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/upload/control/upload-control.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "attribute-parameter": [
+  {
+   "class": "AttributeParameter",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/attribute-parameter/attribute-parameter.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "string"
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<Record<string, string>>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "attribute-input": [
+  {
+   "class": "AttributeInput",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/attribute-input/attribute-input.component.d.ts",
+   "inputs": [
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup"
+    },
+    {
+     "prop": "_label",
+     "alias": "label",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<string>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "EventEmitter<string>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "attribute-switch": [
+  {
+   "class": "AttributeSwitch",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/attribute-switch/attribute-switch.component.d.ts",
+   "inputs": [
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup"
+    },
+    {
+     "prop": "_label",
+     "alias": "label",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<boolean>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "number-attribute": [
+  {
+   "class": "NumberAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/number/attribute/number-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "number-control": [
+  {
+   "class": "NumberControl",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/number/control/number-control.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "attribute-selection": [
+  {
+   "class": "AttributeSelection",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/attribute-selection/attribute-selection.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "component",
+     "alias": "component",
+     "required": true,
+     "type": "SdFormGenericValues | SdFormGenericTableColumn"
+    },
+    {
+     "prop": "_valuesKey",
+     "alias": "valuesKey",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_values",
+     "alias": "values",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valuesKeyChange",
+     "alias": "valuesKeyChange",
+     "type": "EventEmitter<string>"
+    },
+    {
+     "prop": "valuesChange",
+     "alias": "valuesChange",
+     "type": "EventEmitter<SdFormGenericSelectionStaticItem[]>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "EventEmitter<SdFormGenericComponent>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "build-variables": [
+  {
+   "class": "BuildVariables",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/attribute-selection/components/build-variables/build-variables.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "string"
+    },
+    {
+     "prop": "selections",
+     "alias": "selections",
+     "required": true,
+     "type": "SdFormGenericDefinitionSelection[]"
+    },
+    {
+     "prop": "_valuesKey",
+     "alias": "valuesKey",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<Record<string, string>>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "configure-validation": [
+  {
+   "class": "ConfigureValidationComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/configure-validation/configure-validation.component.d.ts",
+   "inputs": [],
+   "outputs": [
+    {
+     "prop": "accept",
+     "alias": "accept",
+     "type": "EventEmitter<SdFormGenericValidation[]>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "chip-calendar-attribute": [
+  {
+   "class": "ChipCalendarAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/chip-calendar/attribute/chip-calendar-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "chip-calendar-control": [
+  {
+   "class": "ChipCalendarControl",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/chip-calendar/control/chip-calendar-control.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "attribute-expression": [
+  {
+   "class": "AttributeExpression",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/attribute-expression/attribute-expression.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "string"
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<SdFormGenericExpression>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "EventEmitter<SdFormGenericExpression>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "table-attribute": [
+  {
+   "class": "TableAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/table/attribute/table-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "table-control": [
+  {
+   "class": "TableControl",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/table/control/table-control.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "attribute-template": [
+  {
+   "class": "AttributeTemplate",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/attribute-template/attribute-template.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "EventEmitter<SdFormGenericComponent>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "textfield-attribute": [
+  {
+   "class": "TextfieldAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/textfield/attribute/textfield-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "textfield-control": [
+  {
+   "class": "TextFieldControl",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/textfield/control/textfield-control.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "attribute-input-number": [
+  {
+   "class": "AttributeInputNumber",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/attribute-input-number/attribute-input-number.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_label",
+     "alias": "label",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<number>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "radio-attribute": [
+  {
+   "class": "RadioAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/radio/attribute/radio-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "radio-control": [
+  {
+   "class": "RadioControl",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/radio/control/radio-control.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "chip-string-attribute": [
+  {
+   "class": "ChipStringAttribute",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/chip-string/attribute/chip-string-attribute.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "chip-string-control": [
+  {
+   "class": "ChipStringControl",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-builder/components/chip-string/control/chip-string-control.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-feel-expression": [
+  {
+   "class": "SdFeelExpression",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/sd-feel-expression/sd-feel-expression.component.d.ts",
+   "inputs": [
+    {
+     "prop": "components",
+     "alias": "components",
+     "required": true,
+     "type": "(SdFormGenericComponent | SdFormGenericGroup)[]"
+    },
+    {
+     "prop": "_expression",
+     "alias": "expression",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "expressionChange",
+     "alias": "expressionChange",
+     "type": "EventEmitter<SdFormGenericExpression>"
+    },
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<string>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "EventEmitter<{\n        model?: string"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-form-render": [
+  {
+   "class": "SdFormRender",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/form-render.component.d.ts",
+   "inputs": [
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup"
+    },
+    {
+     "prop": "_configuration",
+     "alias": "configuration",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_default",
+     "alias": "defaultEntity",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_properties",
+     "alias": "properties",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "lib-item": [
+  {
+   "class": "LibItemComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/item/item.component.d.ts",
+   "inputs": [
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup<{}>"
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_validator",
+     "alias": "validator",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "lib-html": [
+  {
+   "class": "HtmlComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/item/components/html/html.component.d.ts",
+   "inputs": [
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "_form",
+     "alias": "form",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_hashedValues",
+     "alias": "hashedValues",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "lib-select": [
+  {
+   "class": "SelectComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/item/components/select/select.component.d.ts",
+   "inputs": [
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "_form",
+     "alias": "form",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_validator",
+     "alias": "validator",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "lib-textarea": [
+  {
+   "class": "TextareaComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/item/components/textarea/textarea.component.d.ts",
+   "inputs": [
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup<{}>"
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "lib-datetime": [
+  {
+   "class": "DatetimeComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/item/components/datetime/datetime.component.d.ts",
+   "inputs": [
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup<{}>"
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "lib-upload": [
+  {
+   "class": "UploadComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/item/components/upload/upload.component.d.ts",
+   "inputs": [
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup<{}>"
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_validator",
+     "alias": "validator",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "lib-number": [
+  {
+   "class": "NumberComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/item/components/number/number.component.d.ts",
+   "inputs": [
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup<{}>"
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "lib-chip-calendar": [
+  {
+   "class": "ChipCalendarComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/item/components/chip-calendar/chip-calendar.component.d.ts",
+   "inputs": [
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup<{}>"
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "lib-table": [
+  {
+   "class": "TableComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/item/components/table/table.component.d.ts",
+   "inputs": [
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup<{}>"
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_model",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<any[]>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "lib-textfield": [
+  {
+   "class": "TextfieldComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/item/components/textfield/textfield.component.d.ts",
+   "inputs": [
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup<{}>"
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_validator",
+     "alias": "validator",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "lib-radio": [
+  {
+   "class": "RadioComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/item/components/radio/radio.component.d.ts",
+   "inputs": [
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "_form",
+     "alias": "form",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "lib-chip-string": [
+  {
+   "class": "ChipStringComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/item/components/chip-string/chip-string.component.d.ts",
+   "inputs": [
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup<{}>"
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_component",
+     "alias": "component",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "variable": [
+  {
+   "class": "VariableComponent",
+   "kind": "ɵcmp",
+   "file": "components/form-generic/src/components/form-render/components/variable/variable.component.d.ts",
+   "inputs": [
+    {
+     "prop": "variables",
+     "alias": "variables",
+     "required": true,
+     "type": "SdFormGenericVariable[]"
+    },
+    {
+     "prop": "setVariables",
+     "alias": "setVariables",
+     "required": true,
+     "type": "Subject<{\n        key: string"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "FormGroup<any>"
+    },
+    {
+     "prop": "_entity",
+     "alias": "entity",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-editor": [
+  {
+   "class": "SdEditor",
+   "kind": "ɵcmp",
+   "file": "components/editor/src/editor.component.d.ts",
+   "inputs": [
+    {
+     "prop": "option",
+     "alias": "option",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "height",
+     "alias": "height",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "maxHeight",
+     "alias": "maxHeight",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "maxlength",
+     "alias": "maxlength",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "helperText",
+     "alias": "helperText",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "readonly",
+     "alias": "readonly",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "hideInlineError",
+     "alias": "hideInlineError",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "inlineError",
+     "alias": "inlineError",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "validator",
+     "alias": "validator",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "key",
+     "alias": "key",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "valueModel",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueModel",
+     "alias": "modelChange",
+     "type": ""
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": ""
+    },
+    {
+     "prop": "sdBlur",
+     "alias": "sdBlur",
+     "type": ""
+    },
+    {
+     "prop": "sdFocus",
+     "alias": "sdFocus",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-stepper": [
+  {
+   "class": "SdStepper",
+   "kind": "ɵcmp",
+   "file": "components/stepper/src/stepper.component.d.ts",
+   "inputs": [
+    {
+     "prop": "selectedIndex",
+     "alias": "selectedIndex",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<number>"
+    },
+    {
+     "prop": "linear",
+     "alias": "linear",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "orientation",
+     "alias": "orientation",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<\"horizontal\" | \"vertical\">"
+    },
+    {
+     "prop": "labelPosition",
+     "alias": "labelPosition",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<\"end\" | \"bottom\">"
+    },
+    {
+     "prop": "headerPosition",
+     "alias": "headerPosition",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<\"bottom\" | \"top\">"
+    },
+    {
+     "prop": "animationDuration",
+     "alias": "animationDuration",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "disableRipple",
+     "alias": "disableRipple",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "color",
+     "alias": "color",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Color>"
+    },
+    {
+     "prop": "autoId",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "selectedIndex",
+     "alias": "selectedIndexChange",
+     "type": "import(\"@angular/core\").ModelSignal<number>"
+    },
+    {
+     "prop": "selectionChange",
+     "alias": "selectionChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<StepperSelectionEvent>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-step": [
+  {
+   "class": "SdStep",
+   "kind": "ɵcmp",
+   "file": "components/stepper/src/step.component.d.ts",
+   "inputs": [
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "icon",
+     "alias": "icon",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "optional",
+     "alias": "optional",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "editable",
+     "alias": "editable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "stepControl",
+     "alias": "stepControl",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<AbstractControl<any, any> | null | undefined>"
+    },
+    {
+     "prop": "state",
+     "alias": "state",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "errorMessage",
+     "alias": "errorMessage",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "selectChange",
+     "alias": "selectChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    }
+   ],
+   "slots": [
+    "*"
+   ]
+  }
+ ],
+ "sd-side-drawer": [
+  {
+   "class": "SdSideDrawer",
+   "kind": "ɵcmp",
+   "file": "components/side-drawer/src/side-drawer.component.d.ts",
+   "inputs": [
+    {
+     "prop": "title",
+     "alias": "title",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "width",
+     "alias": "width",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "hideClose",
+     "alias": "hideClose",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, boolean | \"\">"
+    },
+    {
+     "prop": "disableBackdropClose",
+     "alias": "disableBackdropClose",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, boolean | \"\">"
+    },
+    {
+     "prop": "drawerClass",
+     "alias": "drawerClass",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "sdClosed",
+     "alias": "sdClosed",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    }
+   ],
+   "slots": [
+    "[sdHeaderLeft]",
+    "[sdHeaderRight]",
+    "*",
+    "[sdFooter]"
+   ]
+  }
+ ],
+ "sd-anchor": [
+  {
+   "class": "SdAnchor",
+   "kind": "ɵcmp",
+   "file": "components/anchor/src/components/anchor/anchor.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "sidebarWidth",
+     "alias": "sidebarWidth",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "ellipsis",
+     "alias": "ellipsis",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "overScroll",
+     "alias": "overScroll",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "hideNav",
+     "alias": "hideNav",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "color",
+     "alias": "color",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Color>"
+    }
+   ],
+   "outputs": [],
+   "slots": [
+    "*"
+   ]
+  }
+ ],
+ "sd-anchor-item": [
+  {
+   "class": "SdAnchorItem",
+   "kind": "ɵcmp",
+   "file": "components/anchor/src/components/anchor-item/anchor-item.component.d.ts",
+   "inputs": [
+    {
+     "prop": "title",
+     "alias": "title",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "icon",
+     "alias": "icon",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "key",
+     "alias": "key",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    }
+   ],
+   "outputs": [],
+   "slots": [
+    "*"
+   ]
+  }
+ ],
+ "anchor-nav": [
+  {
+   "class": "AnchorNav",
+   "kind": "ɵcmp",
+   "file": "components/anchor/src/components/anchor-nav/anchor-nav.component.d.ts",
+   "inputs": [
+    {
+     "prop": "sections",
+     "alias": "sections",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<readonly SdAnchorItem[]>"
+    },
+    {
+     "prop": "activeSectionId",
+     "alias": "activeSectionId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "ellipsis",
+     "alias": "ellipsis",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<boolean>"
+    },
+    {
+     "prop": "sidebarWidth",
+     "alias": "sidebarWidth",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "parentAutoId",
+     "alias": "parentAutoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "color",
+     "alias": "color",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Color>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "clickSection",
+     "alias": "clickSection",
+     "type": "import(\"@angular/core\").OutputEmitterRef<string>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-history": [
+  {
+   "class": "SdHistoryItem",
+   "kind": "ɵcmp",
+   "file": "components/history/src/history.component.d.ts",
+   "inputs": [
+    {
+     "prop": "items",
+     "alias": "items",
+     "required": false,
+     "type": "SdHistoryItemType[]"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-tab-router-nav": [
+  {
+   "class": "SdTabRouterNavComponent",
+   "kind": "ɵcmp",
+   "file": "components/tab-router/src/components/tab-router-nav/tab-router-nav.component.d.ts",
+   "inputs": [
+    {
+     "prop": "tabs",
+     "alias": "tabs",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdTab[]>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-tab-router-item": [
+  {
+   "class": "SdTabRouterItemComponent",
+   "kind": "ɵcmp",
+   "file": "components/tab-router/src/components/tab-router-item/tab-router-item.component.d.ts",
+   "inputs": [
+    {
+     "prop": "tab",
+     "alias": "tab",
+     "required": true,
+     "type": "SdTab"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-tab-router-outlet": [
+  {
+   "class": "SdTabRouterOutletComponent",
+   "kind": "ɵcmp",
+   "file": "components/tab-router/src/components/tab-router-outlet/tab-router-outlet.component.d.ts",
+   "inputs": [
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-operator": [
+  {
+   "class": "SdOperator",
+   "kind": "ɵcmp",
+   "file": "components/operator/src/operator.component.d.ts",
+   "inputs": [
+    {
+     "prop": "model",
+     "alias": "model",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<Operator | undefined>"
+    },
+    {
+     "prop": "operators",
+     "alias": "operators",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Operator[]>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "autoId",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "model",
+     "alias": "modelChange",
+     "type": "import(\"@angular/core\").ModelSignal<Operator | undefined>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-tab": [
+  {
+   "class": "SdTab",
+   "kind": "ɵcmp",
+   "file": "components/tab/src/tab.component.d.ts",
+   "inputs": [
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "icon",
+     "alias": "icon",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "badge",
+     "alias": "badge",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | number | null | undefined>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "closable",
+     "alias": "closable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "close",
+     "alias": "close",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    }
+   ],
+   "slots": [
+    "*"
+   ]
+  }
+ ],
+ "sd-tab-group": [
+  {
+   "class": "SdTabGroup",
+   "kind": "ɵcmp",
+   "file": "components/tab/src/tab-group.component.d.ts",
+   "inputs": [
+    {
+     "prop": "selectedIndex",
+     "alias": "selectedIndex",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<number>"
+    },
+    {
+     "prop": "variant",
+     "alias": "variant",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<\"line\" | \"pills\" | \"segmented\">"
+    },
+    {
+     "prop": "color",
+     "alias": "color",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Color>"
+    },
+    {
+     "prop": "headerPosition",
+     "alias": "headerPosition",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<\"above\" | \"below\">"
+    },
+    {
+     "prop": "alignTabs",
+     "alias": "alignTabs",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<\"start\" | \"center\" | \"end\">"
+    },
+    {
+     "prop": "stretchTabs",
+     "alias": "stretchTabs",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "animationDuration",
+     "alias": "animationDuration",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "disableRipple",
+     "alias": "disableRipple",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "dynamicHeight",
+     "alias": "dynamicHeight",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "autoId",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "selectedIndex",
+     "alias": "selectedIndexChange",
+     "type": "import(\"@angular/core\").ModelSignal<number>"
+    },
+    {
+     "prop": "tabClosed",
+     "alias": "tabClosed",
+     "type": "import(\"@angular/core\").OutputEmitterRef<SdTabClosedEvent>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-code-editor": [
+  {
+   "class": "SdCodeEditor",
+   "kind": "ɵcmp",
+   "file": "components/code-editor/src/code-editor.component.d.ts",
+   "inputs": [
+    {
+     "prop": "valueModel",
+     "alias": "model",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<any>"
+    },
+    {
+     "prop": "language",
+     "alias": "language",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<CodeLanguage>"
+    },
+    {
+     "prop": "maxHeight",
+     "alias": "maxHeight",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueModel",
+     "alias": "modelChange",
+     "type": "import(\"@angular/core\").ModelSignal<any>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-tree": [
+  {
+   "class": "SdTree",
+   "kind": "ɵcmp",
+   "file": "components/tree/src/tree.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "option",
+     "alias": "option",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "items",
+     "alias": "items",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "tree",
+     "alias": "tree",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "selectedItemsInput",
+     "alias": "selectedItems",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "commands",
+     "alias": "commands",
+     "required": false,
+     "type": "SdTreeViewCommand<T>[]"
+    },
+    {
+     "prop": "selectable",
+     "alias": "selectable",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "selector",
+     "alias": "selector",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "itemTemplate",
+     "alias": "itemTemplate",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "selectedItemsChange",
+     "alias": "selectedItemsChange",
+     "type": ""
+    },
+    {
+     "prop": "selectChange",
+     "alias": "selectChange",
+     "type": ""
+    },
+    {
+     "prop": "expandChange",
+     "alias": "expandChange",
+     "type": ""
+    },
+    {
+     "prop": "collapseChange",
+     "alias": "collapseChange",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "[sdTreeItemDef]": [
+  {
+   "class": "SdTreeItemDefDirective",
+   "kind": "ɵdir",
+   "file": "components/tree/src/tree-item-def.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-inform": [
+  {
+   "class": "SdInform",
+   "kind": "ɵcmp",
+   "file": "components/inform/src/inform.component.d.ts",
+   "inputs": [
+    {
+     "prop": "color",
+     "alias": "color",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<Color, Color | null | undefined>"
+    },
+    {
+     "prop": "primary",
+     "alias": "primary",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "secondary",
+     "alias": "secondary",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "info",
+     "alias": "info",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "success",
+     "alias": "success",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "warning",
+     "alias": "warning",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "error",
+     "alias": "error",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "title",
+     "alias": "title",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "description",
+     "alias": "description",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "icon",
+     "alias": "icon",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "hideIcon",
+     "alias": "hideIcon",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "fontSet",
+     "alias": "fontSet",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<MaterialIconFontSet, MaterialIconFontSet | null | undefined>"
+    },
+    {
+     "prop": "closable",
+     "alias": "closable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "actionLabel",
+     "alias": "actionLabel",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "lineClamp",
+     "alias": "lineClamp",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<number | undefined>"
+    },
+    {
+     "prop": "autoId",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "sdClosed",
+     "alias": "sdClosed",
+     "type": "import(\"@angular/core\").OutputEmitterRef<Event>"
+    },
+    {
+     "prop": "sdAction",
+     "alias": "sdAction",
+     "type": "import(\"@angular/core\").OutputEmitterRef<Event>"
+    }
+   ],
+   "slots": [
+    "[sdInformAction]"
+   ]
+  }
+ ],
+ "[sdInformAction]": [
+  {
+   "class": "SdInformActionDirective",
+   "kind": "ɵdir",
+   "file": "components/inform/src/inform-action.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-splitter": [
+  {
+   "class": "SdSplitterComponent",
+   "kind": "ɵcmp",
+   "file": "components/splitter/src/splitter.component.d.ts",
+   "inputs": [
+    {
+     "prop": "option",
+     "alias": "option",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdSplitterOption | undefined>"
+    },
+    {
+     "prop": "orientation",
+     "alias": "orientation",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SplitterOrientation>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "storageKey",
+     "alias": "storageKey",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "snapThreshold",
+     "alias": "snapThreshold",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number, unknown>"
+    },
+    {
+     "prop": "keyboardStep",
+     "alias": "keyboardStep",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number, unknown>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "resizeEnd",
+     "alias": "resizeEnd",
+     "type": ""
+    },
+    {
+     "prop": "collapsedChange",
+     "alias": "collapsedChange",
+     "type": ""
+    },
+    {
+     "prop": "layoutChange",
+     "alias": "layoutChange",
+     "type": ""
+    }
+   ],
+   "slots": [
+    "sd-splitter-panel"
+   ]
+  }
+ ],
+ "sd-splitter-panel": [
+  {
+   "class": "SdSplitterPanelComponent",
+   "kind": "ɵcmp",
+   "file": "components/splitter/src/splitter-panel/splitter-panel.component.d.ts",
+   "inputs": [
+    {
+     "prop": "panelId",
+     "alias": "panelId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number, unknown>"
+    },
+    {
+     "prop": "unit",
+     "alias": "unit",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SplitterPanelUnit>"
+    },
+    {
+     "prop": "minSize",
+     "alias": "minSize",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number, unknown>"
+    },
+    {
+     "prop": "maxSize",
+     "alias": "maxSize",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number | undefined, unknown>"
+    },
+    {
+     "prop": "collapsible",
+     "alias": "collapsible",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "collapsed",
+     "alias": "collapsed",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<boolean>"
+    },
+    {
+     "prop": "resizable",
+     "alias": "resizable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "collapsed",
+     "alias": "collapsedChange",
+     "type": "import(\"@angular/core\").ModelSignal<boolean>"
+    }
+   ],
+   "slots": [
+    "*"
+   ]
+  }
+ ],
+ "sd-splitter-handle": [
+  {
+   "class": "SdSplitterHandleComponent",
+   "kind": "ɵcmp",
+   "file": "components/splitter/src/splitter-handle/splitter-handle.component.d.ts",
+   "inputs": [
+    {
+     "prop": "orientation",
+     "alias": "orientation",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SplitterOrientation>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "keyboardStep",
+     "alias": "keyboardStep",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number, unknown>"
+    },
+    {
+     "prop": "ariaValueMin",
+     "alias": "ariaValueMin",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<number | undefined>"
+    },
+    {
+     "prop": "ariaValueMax",
+     "alias": "ariaValueMax",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<number | undefined>"
+    },
+    {
+     "prop": "ariaValueNow",
+     "alias": "ariaValueNow",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<number | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "dragStart",
+     "alias": "dragStart",
+     "type": ""
+    },
+    {
+     "prop": "dragMove",
+     "alias": "dragMove",
+     "type": ""
+    },
+    {
+     "prop": "dragEnd",
+     "alias": "dragEnd",
+     "type": ""
+    },
+    {
+     "prop": "toggleRequest",
+     "alias": "toggleRequest",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-import-excel": [
+  {
+   "class": "SdImportExcel",
+   "kind": "ɵcmp",
+   "file": "components/import-excel/src/import-excel.component.d.ts",
+   "inputs": [
+    {
+     "prop": "option",
+     "alias": "option",
+     "required": true,
+     "type": "SdImportExcelOption"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "sdClosed",
+     "alias": "sdClosed",
+     "type": "EventEmitter<any>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-query-builder": [
+  {
+   "class": "SdQueryBuilder",
+   "kind": "ɵcmp",
+   "file": "components/query-builder/src/query-builder.component.d.ts",
+   "inputs": [
+    {
+     "prop": "option",
+     "alias": "option",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "fields",
+     "alias": "fields",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "mode",
+     "alias": "mode",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "comparisonMode",
+     "alias": "comparisonMode",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "autoId",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "value",
+     "alias": "value",
+     "required": false,
+     "type": "string"
+    },
+    {
+     "prop": "filters",
+     "alias": "filters",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "rootLogic",
+     "alias": "rootLogic",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "value",
+     "alias": "valueChange",
+     "type": "string"
+    },
+    {
+     "prop": "filters",
+     "alias": "filtersChange",
+     "type": ""
+    },
+    {
+     "prop": "rootLogic",
+     "alias": "rootLogicChange",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-modal-resizable": [
+  {
+   "class": "SdModalResizable",
+   "kind": "ɵcmp",
+   "file": "components/modal-resizable/src/modal-resizable.component.d.ts",
+   "inputs": [
+    {
+     "prop": "editable",
+     "alias": "editable",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "width",
+     "alias": "width",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "editingChanged",
+     "alias": "editingChanged",
+     "type": ""
+    }
+   ],
+   "slots": [
+    "[sdTitle]",
+    "[sdBody]",
+    "[sdFooter]"
+   ]
+  }
+ ],
+ "sd-document-builder": [
+  {
+   "class": "SdDocumentBuilder",
+   "kind": "ɵcmp",
+   "file": "components/document-builder/src/document-builder.component.d.ts",
+   "inputs": [
+    {
+     "prop": "option",
+     "alias": "option",
+     "required": true,
+     "type": "SdDocumentBuilderOption"
+    },
+    {
+     "prop": "_disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "contentChange",
+     "alias": "contentChange",
+     "type": "EventEmitter<string>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-header-footer-builder": [
+  {
+   "class": "SdHeaderFooterBuilder",
+   "kind": "ɵcmp",
+   "file": "components/document-builder/src/components/header-footer-builder/header-footer-builder.component.d.ts",
+   "inputs": [
+    {
+     "prop": "model",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "modelChange",
+     "alias": "modelChange",
+     "type": "EventEmitter<string>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-avatar": [
+  {
+   "class": "SdAvatar",
+   "kind": "ɵcmp",
+   "file": "components/avatar/src/avatar.component.d.ts",
+   "inputs": [
+    {
+     "prop": "src",
+     "alias": "src",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-upload-file": [
+  {
+   "class": "SdUploadFile",
+   "kind": "ɵcmp",
+   "file": "components/upload-file/src/upload-file.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "args",
+     "alias": "args",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "key",
+     "alias": "key",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "description",
+     "alias": "description",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "previewWidth",
+     "alias": "previewWidth",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "previewHeight",
+     "alias": "previewHeight",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "align",
+     "alias": "align",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "uploadInput",
+     "alias": "upload",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "details",
+     "alias": "details",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "downloadInput",
+     "alias": "download",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "imageValidator",
+     "alias": "imageValidator",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "maxSize",
+     "alias": "maxSize",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "maxWidth",
+     "alias": "maxWidth",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "maxHeight",
+     "alias": "maxHeight",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "scaleToPixel",
+     "alias": "scaleToPixel",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FormGroup<any> | undefined, any>"
+    },
+    {
+     "prop": "nameInput",
+     "alias": "name",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "type",
+     "alias": "type",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "helperText",
+     "alias": "helperText",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "max",
+     "alias": "max",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "maxOfImage",
+     "alias": "maxOfImage",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "extensions",
+     "alias": "extensions",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "model",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "loaded",
+     "alias": "loaded",
+     "type": ""
+    },
+    {
+     "prop": "filesChanged",
+     "alias": "filesChanged",
+     "type": ""
+    },
+    {
+     "prop": "model",
+     "alias": "modelChange",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "preview": [
+  {
+   "class": "PreviewComponent",
+   "kind": "ɵcmp",
+   "file": "components/upload-file/src/components/preview/preview.component.d.ts",
+   "inputs": [],
+   "outputs": [
+    {
+     "prop": "download",
+     "alias": "download",
+     "type": "EventEmitter<PreviewFile>"
+    },
+    {
+     "prop": "close",
+     "alias": "close",
+     "type": "EventEmitter<void>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-section": [
+  {
+   "class": "SdSection",
+   "kind": "ɵcmp",
+   "file": "components/section/src/section.component.d.ts",
+   "inputs": [
+    {
+     "prop": "title",
+     "alias": "title",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "subTitle",
+     "alias": "subTitle",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "icon",
+     "alias": "icon",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "iconColor",
+     "alias": "iconColor",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Color>"
+    },
+    {
+     "prop": "collapsed",
+     "alias": "collapsed",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<boolean>"
+    },
+    {
+     "prop": "collapsible",
+     "alias": "collapsible",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "collapsable",
+     "alias": "collapsable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "hideHeader",
+     "alias": "hideHeader",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "noPaddingBody",
+     "alias": "noPaddingBody",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "collapsed",
+     "alias": "collapsedChange",
+     "type": "import(\"@angular/core\").ModelSignal<boolean>"
+    }
+   ],
+   "slots": [
+    "[sdHeaderLeft]",
+    "[sdHeaderRight]",
+    "*"
+   ]
+  }
+ ],
+ "sd-section-item": [
+  {
+   "class": "SdSectionItem",
+   "kind": "ɵcmp",
+   "file": "components/section/src/section-item/section-item.component.d.ts",
+   "inputs": [
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "labelWidth",
+     "alias": "labelWidth",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string, string | null | undefined>"
+    }
+   ],
+   "outputs": [],
+   "slots": [
+    "*"
+   ]
+  }
+ ],
+ "sd-org-chart": [
+  {
+   "class": "SdOrgChart",
+   "kind": "ɵcmp",
+   "file": "components/org-chart/src/org-chart.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "option",
+     "alias": "option",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "items",
+     "alias": "items",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "itemTemplate",
+     "alias": "itemTemplate",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "collapsible",
+     "alias": "collapsible",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdOrgChartItemDef]": [
+  {
+   "class": "SdOrgChartItemDefDirective",
+   "kind": "ɵdir",
+   "file": "components/org-chart/src/org-chart-item-def.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-ckeditor-styles": [
+  {
+   "class": "SdCKEditorStyles",
+   "kind": "ɵcmp",
+   "file": "components/ckeditor-styles/src/ckeditor-styles.component.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-button": [
+  {
+   "class": "SdButton",
+   "kind": "ɵcmp",
+   "file": "components/button/src/button.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "type",
+     "alias": "type",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdButtonType, SdButtonType | null | undefined>"
+    },
+    {
+     "prop": "color",
+     "alias": "color",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<Color, Color | null | undefined>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdButtonSize, SdButtonSize | null | undefined>"
+    },
+    {
+     "prop": "fontSet",
+     "alias": "fontSet",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<MaterialIconFontSet, MaterialIconFontSet | null | undefined>"
+    },
+    {
+     "prop": "title",
+     "alias": "title",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "width",
+     "alias": "width",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "tooltip",
+     "alias": "tooltip",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "prefixIcon",
+     "alias": "prefixIcon",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "suffixIcon",
+     "alias": "suffixIcon",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "loading",
+     "alias": "loading",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "block",
+     "alias": "block",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "htmlType",
+     "alias": "htmlType",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdButtonHtmlType, SdButtonHtmlType | null | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "click",
+     "alias": "click",
+     "type": "import(\"@angular/core\").OutputEmitterRef<Event>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-modal": [
+  {
+   "class": "SdModal",
+   "kind": "ɵcmp",
+   "file": "components/modal/src/modal.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "title",
+     "alias": "title",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string, string | null | undefined>"
+    },
+    {
+     "prop": "color",
+     "alias": "color",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<Color, Color | null | undefined>"
+    },
+    {
+     "prop": "width",
+     "alias": "width",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string, string | null | undefined>"
+    },
+    {
+     "prop": "height",
+     "alias": "height",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string, string | null | undefined>"
+    },
+    {
+     "prop": "view",
+     "alias": "view",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<\"dialog\" | \"bottom-sheet\" | undefined, \"dialog\" | \"bottom-sheet\" | null | undefined>"
+    },
+    {
+     "prop": "modalClass",
+     "alias": "modalClass",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | Record<string, boolean> | string[], string | Record<string, boolean> | string[] | null | undefined>"
+    },
+    {
+     "prop": "lazyLoadContent",
+     "alias": "lazyLoadContent",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "hideClose",
+     "alias": "hideClose",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, boolean | \"\">"
+    },
+    {
+     "prop": "disableBackdropClose",
+     "alias": "disableBackdropClose",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, boolean | \"\">"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "sdClosed",
+     "alias": "sdClosed",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    }
+   ],
+   "slots": [
+    "[sdHeaderLeft]",
+    "[sdHeaderRight]",
+    "[sdHeader]",
+    "*",
+    "[sdFooterLeft]",
+    "[sdFooterRight]",
+    "[sdFooter]"
+   ]
+  }
+ ],
+ "never": [
+  {
+   "class": "SdBaseSecureComponent",
+   "kind": "ɵdir",
+   "file": "components/base/src/base-secure.component.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-view": [
+  {
+   "class": "SdView",
+   "kind": "ɵcmp",
+   "file": "components/view/src/view.component.d.ts",
+   "inputs": [
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "value",
+     "alias": "value",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "display",
+     "alias": "display",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "hyperlink",
+     "alias": "hyperlink",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "labelTemplate",
+     "alias": "labelTemplate",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<TemplateRef<any> | undefined>"
+    },
+    {
+     "prop": "valueTemplate",
+     "alias": "valueTemplate",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<TemplateRef<any> | undefined>"
+    },
+    {
+     "prop": "selectedItems",
+     "alias": "selectedItems",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any[] | undefined>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-autoid-inspector": [
+  {
+   "class": "SdAutoidInspector",
+   "kind": "ɵcmp",
+   "file": "components/autoid-inspector/src/autoid-inspector.component.d.ts",
+   "inputs": [
+    {
+     "prop": "enabled",
+     "alias": "enabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "config",
+     "alias": "config",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdAutoidInspectorConfiguration | undefined>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-table": [
+  {
+   "class": "SdTable",
+   "kind": "ɵcmp",
+   "file": "components/table/src/table.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "option",
+     "alias": "option",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdTableOption<T>>"
+    }
+   ],
+   "outputs": [],
+   "slots": [
+    "[sdTableTop]"
+   ]
+  }
+ ],
+ "column-title": [
+  {
+   "class": "ColumnTitleComponent",
+   "kind": "ɵcmp",
+   "file": "components/table/src/components/column-title/column-title.component.d.ts",
+   "inputs": [
+    {
+     "prop": "column",
+     "alias": "column",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdTableColumn>"
+    },
+    {
+     "prop": "titleDef",
+     "alias": "titleDef",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdTableTitleDefDirective<any> | undefined>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "desktop-cell": [
+  {
+   "class": "DesktopCellComponent",
+   "kind": "ɵcmp",
+   "file": "components/table/src/components/desktop-cell/desktop-cell.component.d.ts",
+   "inputs": [
+    {
+     "prop": "column",
+     "alias": "column",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdTableColumn>"
+    },
+    {
+     "prop": "item",
+     "alias": "item",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdTableItem<any>>"
+    },
+    {
+     "prop": "cellDef",
+     "alias": "cellDef",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<Record<string, SdTableCellDefDirective<any>>>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "view": [
+  {
+   "class": "ViewComponent",
+   "kind": "ɵcmp",
+   "file": "components/table/src/components/desktop-cell/view/view.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoId",
+     "alias": "autoId",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "column",
+     "alias": "column",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdTableColumn>"
+    },
+    {
+     "prop": "item",
+     "alias": "item",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdTableItem<any>>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "config": [
+  {
+   "class": "ConfigComponent",
+   "kind": "ɵcmp",
+   "file": "components/table/src/components/config/config.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "tableOption",
+     "alias": "tableOption",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdTableOption | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "changes",
+     "alias": "changes",
+     "type": "import(\"@angular/core\").OutputEmitterRef<ConfiguredTableResult>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "selector-action": [
+  {
+   "class": "SelectorActionComponent",
+   "kind": "ɵcmp",
+   "file": "components/table/src/components/selector-action/selector-action.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "tableOption",
+     "alias": "tableOption",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdTableOption | undefined>"
+    },
+    {
+     "prop": "selectedTableItems",
+     "alias": "selectedTableItems",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdTableItem<any>[] | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "clear",
+     "alias": "clear",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-popup-export": [
+  {
+   "class": "SdPopupExport",
+   "kind": "ɵcmp",
+   "file": "components/table/src/components/popup-export/popup-export.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_tableOption",
+     "alias": "tableOption",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "configuration",
+     "alias": "configuration",
+     "required": false,
+     "type": "ConfiguredTableResult"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "export",
+     "alias": "export",
+     "type": "EventEmitter<{\n        file: any | null"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "desktop-command": [
+  {
+   "class": "DesktopCommand",
+   "kind": "ɵcmp",
+   "file": "components/table/src/components/command/desktop-command.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "item",
+     "alias": "item",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "itemIndex",
+     "alias": "itemIndex",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "commands",
+     "alias": "commands",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "mobile-filter": [
+  {
+   "class": "MobileFilterComponent",
+   "kind": "ɵcmp",
+   "file": "components/table/src/components/filter/mobile-filter/mobile-filter.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "filter",
+     "alias": "filter",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdTableOptionFilter<any> | undefined>"
+    },
+    {
+     "prop": "externalFilters",
+     "alias": "externalFilters",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdTableExternalFilter[] | null | undefined>"
+    },
+    {
+     "prop": "columns",
+     "alias": "columns",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdTableColumn[] | null | undefined>"
+    },
+    {
+     "prop": "filterDefs",
+     "alias": "filterDefs",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<readonly SdTableFilterDefDirective[] | null | undefined>"
+    },
+    {
+     "prop": "filterRegister",
+     "alias": "filterRegister",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<TableFilterRegister | undefined>"
+    },
+    {
+     "prop": "cacheValues",
+     "alias": "cacheValues",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Record<string, any[]> | undefined>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "external-filter": [
+  {
+   "class": "ExternalFilterComponent",
+   "kind": "ɵcmp",
+   "file": "components/table/src/components/filter/external-filter/external-filter.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "filter",
+     "alias": "filter",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdTableOptionFilter<any> | undefined>"
+    },
+    {
+     "prop": "externalFilters",
+     "alias": "externalFilters",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdTableExternalFilter[] | null | undefined>"
+    },
+    {
+     "prop": "filterRegister",
+     "alias": "filterRegister",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<TableFilterRegister | undefined>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "column-filter": [
+  {
+   "class": "ColumnFilterComponent",
+   "kind": "ɵcmp",
+   "file": "components/table/src/components/filter/column-filter/column-filter.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "column",
+     "alias": "column",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<SdTableColumn>"
+    },
+    {
+     "prop": "columnFilter",
+     "alias": "columnFilter",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Record<string, any>>"
+    },
+    {
+     "prop": "cacheValues",
+     "alias": "cacheValues",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Record<string, any[]> | undefined>"
+    },
+    {
+     "prop": "value",
+     "alias": "value",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "operator",
+     "alias": "operator",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<Operator | undefined>"
+    },
+    {
+     "prop": "isMobile",
+     "alias": "isMobile",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "operator",
+     "alias": "operatorChange",
+     "type": "import(\"@angular/core\").ModelSignal<Operator | undefined>"
+    },
+    {
+     "prop": "filterChange",
+     "alias": "filterChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "filterCommit",
+     "alias": "filterCommit",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "[sdTableFooterDef]": [
+  {
+   "class": "SdMaterialFooterDefDirective",
+   "kind": "ɵdir",
+   "file": "components/table/src/directives/sd-table-footer-def.directive.d.ts",
+   "inputs": [
+    {
+     "prop": "sdTableFooterDef",
+     "alias": "sdTableFooterDef",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdTableFilterDef]": [
+  {
+   "class": "SdTableFilterDefDirective",
+   "kind": "ɵdir",
+   "file": "components/table/src/directives/sd-table-filter-def.directive.d.ts",
+   "inputs": [
+    {
+     "prop": "sdTableFilterDef",
+     "alias": "sdTableFilterDef",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "defaultShowing",
+     "alias": "defaultShowing",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdTableCellDef]": [
+  {
+   "class": "SdTableCellDefDirective",
+   "kind": "ɵdir",
+   "file": "components/table/src/directives/sd-table-cell-def.directive.d.ts",
+   "inputs": [
+    {
+     "prop": "sdTableCellDef",
+     "alias": "sdTableCellDef",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdTableGroupDef]": [
+  {
+   "class": "SdTableGroupDefDirective",
+   "kind": "ɵdir",
+   "file": "components/table/src/directives/sd-table-group-def.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdTableExpandDef]": [
+  {
+   "class": "SdTableExpandDefDirective",
+   "kind": "ɵdir",
+   "file": "components/table/src/directives/sd-table-expand-def.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdTableColumnFilterDef]": [
+  {
+   "class": "SdTableColumnFilterDefDirective",
+   "kind": "ɵdir",
+   "file": "components/table/src/directives/sd-table-column-filter-def.directive.d.ts",
+   "inputs": [
+    {
+     "prop": "sdTableColumnFilterDef",
+     "alias": "sdTableColumnFilterDef",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdColumnResize]": [
+  {
+   "class": "SdColumnResizeDirective",
+   "kind": "ɵdir",
+   "file": "components/table/src/directives/sd-column-resize.directive.d.ts",
+   "inputs": [
+    {
+     "prop": "sdColumnResize",
+     "alias": "sdColumnResize",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<boolean>"
+    },
+    {
+     "prop": "minWidth",
+     "alias": "minWidth",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "maxWidth",
+     "alias": "maxWidth",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "resizeEnd",
+     "alias": "resizeEnd",
+     "type": "import(\"@angular/core\").OutputEmitterRef<string>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "[stickyShadow]": [
+  {
+   "class": "StickyShadowDirective",
+   "kind": "ɵdir",
+   "file": "components/table/src/directives/sticky-shadow.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdTableTitleDef]": [
+  {
+   "class": "SdTableTitleDefDirective",
+   "kind": "ɵdir",
+   "file": "components/table/src/directives/sd-table-title-def.directive.d.ts",
+   "inputs": [
+    {
+     "prop": "sdTableTitleDef",
+     "alias": "sdTableTitleDef",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-query-bar": [
+  {
+   "class": "SdQueryBar",
+   "kind": "ɵcmp",
+   "file": "components/query-bar/src/query-bar.component.d.ts",
+   "inputs": [
+    {
+     "prop": "option",
+     "alias": "option",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "fields",
+     "alias": "fields",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "filters",
+     "alias": "filters",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "logic",
+     "alias": "logic",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "search",
+     "alias": "search",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "mode",
+     "alias": "mode",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "density",
+     "alias": "density",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "showSearch",
+     "alias": "showSearch",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "showSavedFilters",
+     "alias": "showSavedFilters",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "savedFiltersKey",
+     "alias": "savedFiltersKey",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "showLogicToggle",
+     "alias": "showLogicToggle",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "showClearAll",
+     "alias": "showClearAll",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "showOperatorOnChip",
+     "alias": "showOperatorOnChip",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "filters",
+     "alias": "filtersChange",
+     "type": ""
+    },
+    {
+     "prop": "logic",
+     "alias": "logicChange",
+     "type": ""
+    },
+    {
+     "prop": "search",
+     "alias": "searchChange",
+     "type": ""
+    },
+    {
+     "prop": "queryChange",
+     "alias": "queryChange",
+     "type": ""
+    },
+    {
+     "prop": "apply",
+     "alias": "apply",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-query-inline-value-chip": [
+  {
+   "class": "SdQueryInlineValueChip",
+   "kind": "ɵcmp",
+   "file": "components/query-bar/src/components/inline-value-chip/inline-value-chip.component.d.ts",
+   "inputs": [
+    {
+     "prop": "field",
+     "alias": "field",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "operator",
+     "alias": "operator",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "value",
+     "alias": "value",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "density",
+     "alias": "density",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "showOperator",
+     "alias": "showOperator",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "autoId",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "autofocus",
+     "alias": "autofocus",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueChange",
+     "alias": "valueChange",
+     "type": ""
+    },
+    {
+     "prop": "remove",
+     "alias": "remove",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-query-saved-filters-menu": [
+  {
+   "class": "SdQuerySavedFiltersMenu",
+   "kind": "ɵcmp",
+   "file": "components/query-bar/src/components/saved-filters-menu/saved-filters-menu.component.d.ts",
+   "inputs": [
+    {
+     "prop": "key",
+     "alias": "key",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "query",
+     "alias": "query",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "apply",
+     "alias": "apply",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-query-chip-popover": [
+  {
+   "class": "SdQueryChipPopover",
+   "kind": "ɵcmp",
+   "file": "components/query-bar/src/components/chip-popover/chip-popover.component.d.ts",
+   "inputs": [
+    {
+     "prop": "field",
+     "alias": "field",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "filter",
+     "alias": "filter",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "chipIndex",
+     "alias": "chipIndex",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "autoIdBase",
+     "alias": "autoIdBase",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "switchPickerMenu",
+     "alias": "switchPickerMenu",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "commit",
+     "alias": "commit",
+     "type": ""
+    },
+    {
+     "prop": "swapField",
+     "alias": "swapField",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-query-inline-chip": [
+  {
+   "class": "SdQueryInlineChip",
+   "kind": "ɵcmp",
+   "file": "components/query-bar/src/components/inline-chip/inline-chip.component.d.ts",
+   "inputs": [
+    {
+     "prop": "field",
+     "alias": "field",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "filter",
+     "alias": "filter",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "density",
+     "alias": "density",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "multiple",
+     "alias": "multiple",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "showOperator",
+     "alias": "showOperator",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "autoId",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "valueText",
+     "alias": "valueText",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "isNoData",
+     "alias": "isNoData",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "commit",
+     "alias": "commit",
+     "type": ""
+    },
+    {
+     "prop": "commitRange",
+     "alias": "commitRange",
+     "type": ""
+    },
+    {
+     "prop": "liveChange",
+     "alias": "liveChange",
+     "type": ""
+    },
+    {
+     "prop": "remove",
+     "alias": "remove",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-query-popover-chip": [
+  {
+   "class": "SdQueryPopoverChip",
+   "kind": "ɵcmp",
+   "file": "components/query-bar/src/components/popover-chip/popover-chip.component.d.ts",
+   "inputs": [
+    {
+     "prop": "field",
+     "alias": "field",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "filter",
+     "alias": "filter",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "active",
+     "alias": "active",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "showOperator",
+     "alias": "showOperator",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "valueText",
+     "alias": "valueText",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "menu",
+     "alias": "menu",
+     "required": true,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "open",
+     "alias": "open",
+     "type": ""
+    },
+    {
+     "prop": "remove",
+     "alias": "remove",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-query-actions-bar": [
+  {
+   "class": "SdQueryActionsBar",
+   "kind": "ɵcmp",
+   "file": "components/query-bar/src/components/actions-bar/actions-bar.component.d.ts",
+   "inputs": [
+    {
+     "prop": "showLogicToggle",
+     "alias": "showLogicToggle",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "logic",
+     "alias": "logic",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "filtersCount",
+     "alias": "filtersCount",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "showSavedFilters",
+     "alias": "showSavedFilters",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "savedFiltersKey",
+     "alias": "savedFiltersKey",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "query",
+     "alias": "query",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "showClearAll",
+     "alias": "showClearAll",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "canSearch",
+     "alias": "canSearch",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "logic",
+     "alias": "logicChange",
+     "type": ""
+    },
+    {
+     "prop": "applyFilter",
+     "alias": "applyFilter",
+     "type": ""
+    },
+    {
+     "prop": "clear",
+     "alias": "clear",
+     "type": ""
+    },
+    {
+     "prop": "search",
+     "alias": "search",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-query-build-chip": [
+  {
+   "class": "SdQueryBuildChip",
+   "kind": "ɵcmp",
+   "file": "components/query-bar/src/components/build-chip/build-chip.component.d.ts",
+   "inputs": [
+    {
+     "prop": "building",
+     "alias": "building",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "density",
+     "alias": "density",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "allowedOperators",
+     "alias": "allowedOperators",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "multiple",
+     "alias": "multiple",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "showOperator",
+     "alias": "showOperator",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "autoId",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "pickOperator",
+     "alias": "pickOperator",
+     "type": ""
+    },
+    {
+     "prop": "commitValue",
+     "alias": "commitValue",
+     "type": ""
+    },
+    {
+     "prop": "cancel",
+     "alias": "cancel",
+     "type": ""
+    },
+    {
+     "prop": "seamlessCommit",
+     "alias": "seamlessCommit",
+     "type": ""
+    },
+    {
+     "prop": "draftChange",
+     "alias": "draftChange",
+     "type": ""
+    },
+    {
+     "prop": "draftCommit",
+     "alias": "draftCommit",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-query-field-picker": [
+  {
+   "class": "SdQueryFieldPicker",
+   "kind": "ɵcmp",
+   "file": "components/query-bar/src/components/field-picker/field-picker.component.d.ts",
+   "inputs": [
+    {
+     "prop": "fields",
+     "alias": "fields",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "currentKey",
+     "alias": "currentKey",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "usedKeys",
+     "alias": "usedKeys",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "pick",
+     "alias": "pick",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-preview-image": [
+  {
+   "class": "SdPreviewImage",
+   "kind": "ɵcmp",
+   "file": "components/preview/src/preview-image/preview-image.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "items",
+     "alias": "items",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "title",
+     "alias": "title",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "thumbnailPosition",
+     "alias": "thumbnailPosition",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "showToolbar",
+     "alias": "showToolbar",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "downloadable",
+     "alias": "downloadable",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "zoomable",
+     "alias": "zoomable",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "loop",
+     "alias": "loop",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "startIndex",
+     "alias": "startIndex",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "theme",
+     "alias": "theme",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "close",
+     "alias": "close",
+     "type": ""
+    },
+    {
+     "prop": "activeIndexChange",
+     "alias": "activeIndexChange",
+     "type": ""
+    },
+    {
+     "prop": "download",
+     "alias": "download",
+     "type": ""
+    },
+    {
+     "prop": "imageError",
+     "alias": "imageError",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-preview-pdf": [
+  {
+   "class": "SdPreviewPdf",
+   "kind": "ɵcmp",
+   "file": "components/preview/src/preview-pdf/preview-pdf.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "source",
+     "alias": "source",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "title",
+     "alias": "title",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "startPage",
+     "alias": "startPage",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "initialZoom",
+     "alias": "initialZoom",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "sidebar",
+     "alias": "sidebar",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "sidebarOpen",
+     "alias": "sidebarOpen",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "scrollMode",
+     "alias": "scrollMode",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "showToolbar",
+     "alias": "showToolbar",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "downloadable",
+     "alias": "downloadable",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "password",
+     "alias": "password",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "httpHeaders",
+     "alias": "httpHeaders",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "theme",
+     "alias": "theme",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "close",
+     "alias": "close",
+     "type": ""
+    },
+    {
+     "prop": "loaded",
+     "alias": "loaded",
+     "type": "number"
+    },
+    {
+     "prop": "pageChange",
+     "alias": "pageChange",
+     "type": ""
+    },
+    {
+     "prop": "zoomChange",
+     "alias": "zoomChange",
+     "type": ""
+    },
+    {
+     "prop": "download",
+     "alias": "download",
+     "type": ""
+    },
+    {
+     "prop": "loadError",
+     "alias": "loadError",
+     "type": ""
+    },
+    {
+     "prop": "searchChange",
+     "alias": "searchChange",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-mini-editor": [
+  {
+   "class": "SdMiniEditor",
+   "kind": "ɵcmp",
+   "file": "components/mini-editor/src/mini-editor.component.d.ts",
+   "inputs": [
+    {
+     "prop": "option",
+     "alias": "option",
+     "required": true,
+     "type": "SdMiniEditorOption"
+    },
+    {
+     "prop": "value",
+     "alias": "value",
+     "required": false,
+     "type": "string"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "boolean"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueChange",
+     "alias": "valueChange",
+     "type": "EventEmitter<string>"
+    },
+    {
+     "prop": "contentChange",
+     "alias": "contentChange",
+     "type": "EventEmitter<string>"
+    },
+    {
+     "prop": "blur",
+     "alias": "blur",
+     "type": "EventEmitter<FocusEvent>"
+    },
+    {
+     "prop": "focus",
+     "alias": "focus",
+     "type": "EventEmitter<FocusEvent>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-line-chart": [
+  {
+   "class": "SdLineChartComponent",
+   "kind": "ɵcmp",
+   "file": "components/chart/src/line-chart.component.d.ts",
+   "inputs": [
+    {
+     "prop": "data",
+     "alias": "data",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<ChartData<\"line\", (number | import(\"chart.js\").Point | null)[], unknown>>"
+    },
+    {
+     "prop": "options",
+     "alias": "options",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<import(\"node_modules/chart.js/dist/types/utils\")._DeepPartialObject<import(\"chart.js\").CoreChartOptions<\"line\"> & import(\"chart.js\").ElementChartOptions<\"line\"> & i"
+    },
+    {
+     "prop": "plugins",
+     "alias": "plugins",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Plugin<\"line\", import(\"node_modules/chart.js/dist/types/basic\").AnyObject>[]>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-doughnut-chart": [
+  {
+   "class": "SdDoughnutChartComponent",
+   "kind": "ɵcmp",
+   "file": "components/chart/src/doughnut-chart.component.d.ts",
+   "inputs": [
+    {
+     "prop": "data",
+     "alias": "data",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<ChartData<\"doughnut\", number[], unknown>>"
+    },
+    {
+     "prop": "options",
+     "alias": "options",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<import(\"node_modules/chart.js/dist/types/utils\")._DeepPartialObject<import(\"chart.js\").CoreChartOptions<\"doughnut\"> & import(\"chart.js\").ElementChartOptions<\"doughn"
+    },
+    {
+     "prop": "plugins",
+     "alias": "plugins",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Plugin<\"doughnut\", import(\"node_modules/chart.js/dist/types/basic\").AnyObject>[]>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-bar-chart": [
+  {
+   "class": "SdBarChartComponent",
+   "kind": "ɵcmp",
+   "file": "components/chart/src/bar-chart.component.d.ts",
+   "inputs": [
+    {
+     "prop": "data",
+     "alias": "data",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<ChartData<\"bar\", (number | [number, number] | null)[], unknown>>"
+    },
+    {
+     "prop": "options",
+     "alias": "options",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<import(\"node_modules/chart.js/dist/types/utils\")._DeepPartialObject<import(\"chart.js\").CoreChartOptions<\"bar\"> & import(\"chart.js\").ElementChartOptions<\"bar\"> & imp"
+    },
+    {
+     "prop": "plugins",
+     "alias": "plugins",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Plugin<\"bar\", import(\"node_modules/chart.js/dist/types/basic\").AnyObject>[]>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-pie-chart": [
+  {
+   "class": "SdPieChartComponent",
+   "kind": "ɵcmp",
+   "file": "components/chart/src/pie-chart.component.d.ts",
+   "inputs": [
+    {
+     "prop": "data",
+     "alias": "data",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<ChartData<\"pie\", number[], unknown>>"
+    },
+    {
+     "prop": "options",
+     "alias": "options",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<import(\"node_modules/chart.js/dist/types/utils\")._DeepPartialObject<import(\"chart.js\").CoreChartOptions<\"pie\"> & import(\"chart.js\").ElementChartOptions<\"pie\"> & imp"
+    },
+    {
+     "prop": "plugins",
+     "alias": "plugins",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Plugin<\"pie\", import(\"node_modules/chart.js/dist/types/basic\").AnyObject>[]>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-quick-action": [
+  {
+   "class": "SdQuickAction",
+   "kind": "ɵcmp",
+   "file": "components/quick-action/src/quick-action.component.d.ts",
+   "inputs": [
+    {
+     "prop": "opened",
+     "alias": "opened",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": [
+    "[sdMessage]",
+    "[sdAction]"
+   ]
+  }
+ ],
+ "toast-container": [
+  {
+   "class": "ToastContainerComponent",
+   "kind": "ɵcmp",
+   "file": "services/notify/src/components/toast-container.component.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "toast": [
+  {
+   "class": "ToastComponent",
+   "kind": "ɵcmp",
+   "file": "services/notify/src/components/toast/toast.component.d.ts",
+   "inputs": [
+    {
+     "prop": "data",
+     "alias": "data",
+     "required": true,
+     "type": "ToastData"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-dialog-confirm": [
+  {
+   "class": "DialogConfirmComponent",
+   "kind": "ɵcmp",
+   "file": "services/confirm/src/lib/components/dialog-confirm/dialog-confirm.component.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdDesktop]": [
+  {
+   "class": "SdDesktopDirective",
+   "kind": "ɵdir",
+   "file": "directives/src/sd-desktop.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "a[sdHref]": [
+  {
+   "class": "SdHrefDirective",
+   "kind": "ɵdir",
+   "file": "directives/src/sd-href.directive.d.ts",
+   "inputs": [
+    {
+     "prop": "url",
+     "alias": "sdHref",
+     "required": false,
+     "type": "string"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdTooltip]": [
+  {
+   "class": "SdTooltipDirective",
+   "kind": "ɵdir",
+   "file": "directives/src/sd-tooltip.directive.d.ts",
+   "inputs": [
+    {
+     "prop": "content",
+     "alias": "sdTooltip",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<string | TemplateRef<any>>"
+    },
+    {
+     "prop": "sdTooltipPosition",
+     "alias": "sdTooltipPosition",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<TooltipPosition>"
+    },
+    {
+     "prop": "sdTooltipDelay",
+     "alias": "sdTooltipDelay",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<number>"
+    },
+    {
+     "prop": "sdTooltipColor",
+     "alias": "sdTooltipColor",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdScroll]": [
+  {
+   "class": "SdScrollDirective",
+   "kind": "ɵdir",
+   "file": "directives/src/sd-scroll.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdHoverCopy]": [
+  {
+   "class": "SdHoverCopyDirective",
+   "kind": "ɵdir",
+   "file": "directives/src/sd-hover-copy.directive.d.ts",
+   "inputs": [
+    {
+     "prop": "copyText",
+     "alias": "sdHoverCopy",
+     "required": true,
+     "type": "string"
+    },
+    {
+     "prop": "sdHoverCopyDisabled",
+     "alias": "sdHoverCopyDisabled",
+     "required": false,
+     "type": "boolean"
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdMobile]": [
+  {
+   "class": "SdMobileDirective",
+   "kind": "ɵdir",
+   "file": "directives/src/sd-mobile.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-inline-text": [
+  {
+   "class": "SdInlineText",
+   "kind": "ɵcmp",
+   "file": "forms/inline-text/src/inline-text.component.d.ts",
+   "inputs": [
+    {
+     "prop": "value",
+     "alias": "value",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "control",
+     "alias": "control",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "clearable",
+     "alias": "clearable",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "state",
+     "alias": "state",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "chrome",
+     "alias": "chrome",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "autoId",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "autofocus",
+     "alias": "autofocus",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "minSize",
+     "alias": "minSize",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "value",
+     "alias": "valueChange",
+     "type": ""
+    },
+    {
+     "prop": "cleared",
+     "alias": "cleared",
+     "type": ""
+    },
+    {
+     "prop": "keyupEnter",
+     "alias": "keyupEnter",
+     "type": ""
+    },
+    {
+     "prop": "keydownEscape",
+     "alias": "keydownEscape",
+     "type": ""
+    },
+    {
+     "prop": "sdFocus",
+     "alias": "sdFocus",
+     "type": ""
+    },
+    {
+     "prop": "sdBlur",
+     "alias": "sdBlur",
+     "type": ""
+    },
+    {
+     "prop": "sdKeydown",
+     "alias": "sdKeydown",
+     "type": ""
+    },
+    {
+     "prop": "sdPaste",
+     "alias": "sdPaste",
+     "type": ""
+    },
+    {
+     "prop": "sdCompositionStart",
+     "alias": "sdCompositionStart",
+     "type": ""
+    },
+    {
+     "prop": "sdCompositionEnd",
+     "alias": "sdCompositionEnd",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-autocomplete": [
+  {
+   "class": "SdAutocomplete",
+   "kind": "ɵcmp",
+   "file": "forms/autocomplete/src/autocomplete.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Size>"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FormGroup<any> | undefined, any>"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "helperText",
+     "alias": "helperText",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "valueField",
+     "alias": "valueField",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "displayField",
+     "alias": "displayField",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "disabledField",
+     "alias": "disabledField",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "limit",
+     "alias": "limit",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<number>"
+    },
+    {
+     "prop": "cacheChecksum",
+     "alias": "cacheChecksum",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "hyperlink",
+     "alias": "hyperlink",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "items",
+     "alias": "items",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdSearch<T> | T[] | null | undefined>"
+    },
+    {
+     "prop": "hideInlineError",
+     "alias": "hideInlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "addable",
+     "alias": "addable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdViewed, SdViewedInput>"
+    },
+    {
+     "prop": "clearable",
+     "alias": "clearable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "validator",
+     "alias": "validator",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdCustomValidator | undefined>"
+    },
+    {
+     "prop": "inlineError",
+     "alias": "inlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "appearanceInput",
+     "alias": "appearance",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<MatFormFieldAppearance | undefined>"
+    },
+    {
+     "prop": "valueModel",
+     "alias": "model",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<string | number | null | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueModel",
+     "alias": "modelChange",
+     "type": "import(\"@angular/core\").ModelSignal<string | number | null | undefined>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<string | number | null>"
+    },
+    {
+     "prop": "sdSelection",
+     "alias": "sdSelection",
+     "type": "import(\"@angular/core\").OutputEmitterRef<SdSelectionData<any>>"
+    },
+    {
+     "prop": "sdAdd",
+     "alias": "sdAdd",
+     "type": "EventEmitter<void>"
+    }
+   ],
+   "slots": [
+    "[sdLabel]"
+   ]
+  }
+ ],
+ "sd-date": [
+  {
+   "class": "SdDate",
+   "kind": "ɵcmp",
+   "file": "forms/date/src/date.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Size>"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FormGroup<any> | undefined, any>"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "helperText",
+     "alias": "helperText",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "hideInlineError",
+     "alias": "hideInlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdViewed, SdViewedInput>"
+    },
+    {
+     "prop": "clearable",
+     "alias": "clearable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "inlineError",
+     "alias": "inlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "hyperlink",
+     "alias": "hyperlink",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "appearanceInput",
+     "alias": "appearance",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<MatFormFieldAppearance | undefined>"
+    },
+    {
+     "prop": "floatLabel",
+     "alias": "floatLabel",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<FloatLabelType>"
+    },
+    {
+     "prop": "minInput",
+     "alias": "min",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "minDateInput",
+     "alias": "minDate",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "maxInput",
+     "alias": "max",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "maxDateInput",
+     "alias": "maxDate",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "valueModel",
+     "alias": "model",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<string | number | Date | null | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueModel",
+     "alias": "modelChange",
+     "type": "import(\"@angular/core\").ModelSignal<string | number | Date | null | undefined>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<any>"
+    },
+    {
+     "prop": "sdFocus",
+     "alias": "sdFocus",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    }
+   ],
+   "slots": [
+    "[sdLabel]"
+   ]
+  }
+ ],
+ "sd-input-color": [
+  {
+   "class": "SdInputColor",
+   "kind": "ɵcmp",
+   "file": "forms/input-color/src/input-color.component.d.ts",
+   "inputs": [
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "helperText",
+     "alias": "helperText",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "appearance",
+     "alias": "appearance",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "autoId",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "readonly",
+     "alias": "readonly",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "valueModel",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueModel",
+     "alias": "modelChange",
+     "type": ""
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-label": [
+  {
+   "class": "SdLabel",
+   "kind": "ɵcmp",
+   "file": "forms/label/src/label.component.d.ts",
+   "inputs": [
+    {
+     "prop": "_label",
+     "alias": "label",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_description",
+     "alias": "description",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "_helperText",
+     "alias": "helperText",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdSuffixDef]": [
+  {
+   "class": "SdSuffixDefDirective",
+   "kind": "ɵdir",
+   "file": "forms/directives/src/suffix-def.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdLabelDef]": [
+  {
+   "class": "SdLabelDefDirective",
+   "kind": "ɵdir",
+   "file": "forms/directives/src/label-def.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdViewDef]": [
+  {
+   "class": "SdViewDefDirective",
+   "kind": "ɵdir",
+   "file": "forms/directives/src/view-def.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "[sdItemDef]": [
+  {
+   "class": "SdItemDefDefDirective",
+   "kind": "ɵdir",
+   "file": "forms/directives/src/item-def.directive.d.ts",
+   "inputs": [],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-checkbox": [
+  {
+   "class": "SdCheckbox",
+   "kind": "ɵcmp",
+   "file": "forms/checkbox/src/checkbox.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "color",
+     "alias": "color",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "inlineError",
+     "alias": "inlineError",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "model",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "model",
+     "alias": "modelChange",
+     "type": ""
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-switch": [
+  {
+   "class": "SdSwitch",
+   "kind": "ɵcmp",
+   "file": "forms/switch/src/switch.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "color",
+     "alias": "color",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "hideInlineError",
+     "alias": "hideInlineError",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "model",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "model",
+     "alias": "modelChange",
+     "type": ""
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-select": [
+  {
+   "class": "SdSelect",
+   "kind": "ɵcmp",
+   "file": "forms/select/src/select.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Size>"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FormGroup<any> | undefined, any>"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "helperText",
+     "alias": "helperText",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "valueField",
+     "alias": "valueField",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<T extends object ? { [Key in keyof T & string]: T[Key] extends string | number | boolean | Function | Date | null | undefined ? Key : T[Key] extends any[] ? Key : T"
+    },
+    {
+     "prop": "displayField",
+     "alias": "displayField",
+     "required": true,
+     "type": "import(\"@angular/core\").InputSignal<T extends object ? { [Key in keyof T & string]: T[Key] extends string | number | boolean | Function | Date | null | undefined ? Key : T[Key] extends any[] ? Key : T"
+    },
+    {
+     "prop": "disabledField",
+     "alias": "disabledField",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<\"\" | (T extends object ? { [Key in keyof T & string]: T[Key] extends string | number | boolean | Function | Date | null | undefined ? Key : T[Key] extends any[] ? K"
+    },
+    {
+     "prop": "cacheChecksum",
+     "alias": "cacheChecksum",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "limit",
+     "alias": "limit",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<number>"
+    },
+    {
+     "prop": "hyperlink",
+     "alias": "hyperlink",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "minWidthPanel",
+     "alias": "minWidthPanel",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | number, string | number | null | undefined>"
+    },
+    {
+     "prop": "hideInlineError",
+     "alias": "hideInlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdViewed, SdViewedInput>"
+    },
+    {
+     "prop": "multiple",
+     "alias": "multiple",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "clearable",
+     "alias": "clearable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "validator",
+     "alias": "validator",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdCustomValidator | undefined>"
+    },
+    {
+     "prop": "inlineError",
+     "alias": "inlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "appearanceInput",
+     "alias": "appearance",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<MatFormFieldAppearance | undefined>"
+    },
+    {
+     "prop": "floatLabel",
+     "alias": "floatLabel",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<FloatLabelType>"
+    },
+    {
+     "prop": "items",
+     "alias": "items",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdSearch | T[] | Signal<T[]> | null | undefined>"
+    },
+    {
+     "prop": "valueModel",
+     "alias": "model",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<string | number | boolean | (string | number)[] | null | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueModel",
+     "alias": "modelChange",
+     "type": "import(\"@angular/core\").ModelSignal<string | number | boolean | (string | number)[] | null | undefined>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<any>"
+    },
+    {
+     "prop": "sdSelection",
+     "alias": "sdSelection",
+     "type": "import(\"@angular/core\").OutputEmitterRef<SdSelectionData<any>>"
+    }
+   ],
+   "slots": [
+    "[sdLabel]"
+   ]
+  }
+ ],
+ "ng-template[sdSelectFooterAction]": [
+  {
+   "class": "SdSelectFooterActionDirective",
+   "kind": "ɵdir",
+   "file": "forms/select/src/select-footer-action.directive.d.ts",
+   "inputs": [
+    {
+     "prop": "when",
+     "alias": "when",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [],
+   "slots": []
+  }
+ ],
+ "sd-textarea": [
+  {
+   "class": "SdTextarea",
+   "kind": "ɵcmp",
+   "file": "forms/textarea/src/textarea.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Size>"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FormGroup<any> | undefined, any>"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "helperText",
+     "alias": "helperText",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "rows",
+     "alias": "rows",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<number>"
+    },
+    {
+     "prop": "hideInlineError",
+     "alias": "hideInlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdViewed, SdViewedInput>"
+    },
+    {
+     "prop": "autoHeight",
+     "alias": "autoHeight",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "maxlength",
+     "alias": "maxlength",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number | null, unknown>"
+    },
+    {
+     "prop": "pattern",
+     "alias": "pattern",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "validator",
+     "alias": "validator",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdCustomValidator | undefined>"
+    },
+    {
+     "prop": "inlineError",
+     "alias": "inlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "appearanceInput",
+     "alias": "appearance",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<MatFormFieldAppearance | undefined>"
+    },
+    {
+     "prop": "floatLabel",
+     "alias": "floatLabel",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<FloatLabelType>"
+    },
+    {
+     "prop": "valueModel",
+     "alias": "model",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<any>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueModel",
+     "alias": "modelChange",
+     "type": "import(\"@angular/core\").ModelSignal<any>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<any>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-datetime": [
+  {
+   "class": "SdDatetime",
+   "kind": "ɵcmp",
+   "file": "forms/datetime/src/datetime.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Size>"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FormGroup<any> | undefined, any>"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "helperText",
+     "alias": "helperText",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "hideInlineError",
+     "alias": "hideInlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdViewed, SdViewedInput>"
+    },
+    {
+     "prop": "showSeconds",
+     "alias": "showSeconds",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "clearable",
+     "alias": "clearable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "inlineError",
+     "alias": "inlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "hyperlink",
+     "alias": "hyperlink",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "appearanceInput",
+     "alias": "appearance",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<MatFormFieldAppearance | undefined>"
+    },
+    {
+     "prop": "floatLabel",
+     "alias": "floatLabel",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<FloatLabelType>"
+    },
+    {
+     "prop": "minInput",
+     "alias": "min",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "minDateInput",
+     "alias": "minDate",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "maxInput",
+     "alias": "max",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "maxDateInput",
+     "alias": "maxDate",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "valueModel",
+     "alias": "model",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<string | number | Date | null | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueModel",
+     "alias": "modelChange",
+     "type": "import(\"@angular/core\").ModelSignal<string | number | Date | null | undefined>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<any>"
+    },
+    {
+     "prop": "sdFocus",
+     "alias": "sdFocus",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    }
+   ],
+   "slots": [
+    "[sdLabel]"
+   ]
+  }
+ ],
+ "sd-datetime-picker": [
+  {
+   "class": "SdDatetimePicker",
+   "kind": "ɵcmp",
+   "file": "forms/datetime/src/popup/sd-datetime-picker.component.d.ts",
+   "inputs": [
+    {
+     "prop": "initialValue",
+     "alias": "initialValue",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Date | null>"
+    },
+    {
+     "prop": "minDate",
+     "alias": "minDate",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | number | Date | null>"
+    },
+    {
+     "prop": "maxDate",
+     "alias": "maxDate",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | number | Date | null>"
+    },
+    {
+     "prop": "showSeconds",
+     "alias": "showSeconds",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "confirmed",
+     "alias": "confirmed",
+     "type": "EventEmitter<Date>"
+    },
+    {
+     "prop": "cancelled",
+     "alias": "cancelled",
+     "type": "EventEmitter<void>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-time-spinner": [
+  {
+   "class": "SdTimeSpinner",
+   "kind": "ɵcmp",
+   "file": "forms/datetime/src/popup/sd-time-spinner.component.d.ts",
+   "inputs": [
+    {
+     "prop": "hours",
+     "alias": "hours",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<number>"
+    },
+    {
+     "prop": "minutes",
+     "alias": "minutes",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<number>"
+    },
+    {
+     "prop": "seconds",
+     "alias": "seconds",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<number>"
+    },
+    {
+     "prop": "showSeconds",
+     "alias": "showSeconds",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "hours",
+     "alias": "hoursChange",
+     "type": "import(\"@angular/core\").ModelSignal<number>"
+    },
+    {
+     "prop": "minutes",
+     "alias": "minutesChange",
+     "type": "import(\"@angular/core\").ModelSignal<number>"
+    },
+    {
+     "prop": "seconds",
+     "alias": "secondsChange",
+     "type": "import(\"@angular/core\").ModelSignal<number>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-chip": [
+  {
+   "class": "SdChip",
+   "kind": "ɵcmp",
+   "file": "forms/chip/src/chip.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "appearance",
+     "alias": "appearance",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<MatFormFieldAppearance, MatFormFieldAppearance | null | undefined>"
+    },
+    {
+     "prop": "floatLabel",
+     "alias": "floatLabel",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FloatLabelType, FloatLabelType | null | undefined>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<Size, Size | null | undefined>"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FormGroup<any> | undefined, any>"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string, string | null | undefined>"
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "removable",
+     "alias": "removable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean | ((item: any) => boolean), boolean | ((item: any) => boolean) | null | undefined>"
+    },
+    {
+     "prop": "hideInlineError",
+     "alias": "hideInlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "min",
+     "alias": "min",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number, number | null | undefined>"
+    },
+    {
+     "prop": "max",
+     "alias": "max",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number, number | null | undefined>"
+    },
+    {
+     "prop": "addable",
+     "alias": "addable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdViewed, SdViewedInput>"
+    },
+    {
+     "prop": "hyperlink",
+     "alias": "hyperlink",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "model",
+     "alias": "model",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<(string | number)[] | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "model",
+     "alias": "modelChange",
+     "type": "import(\"@angular/core\").ModelSignal<(string | number)[] | undefined>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<any[]>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-input": [
+  {
+   "class": "SdInput",
+   "kind": "ɵcmp",
+   "file": "forms/input/src/input.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "appearanceInput",
+     "alias": "appearance",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<MatFormFieldAppearance | undefined>"
+    },
+    {
+     "prop": "floatLabel",
+     "alias": "floatLabel",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<FloatLabelType>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Size>"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FormGroup<any> | undefined, any>"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "helperText",
+     "alias": "helperText",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "type",
+     "alias": "type",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<\"number\" | \"text\" | \"password\" | \"email\">"
+    },
+    {
+     "prop": "hideInlineError",
+     "alias": "hideInlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "blurOnEnter",
+     "alias": "blurOnEnter",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "readonly",
+     "alias": "readonly",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdViewed, SdViewedInput>"
+    },
+    {
+     "prop": "minlength",
+     "alias": "minlength",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number | undefined, unknown>"
+    },
+    {
+     "prop": "maxlength",
+     "alias": "maxlength",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number | undefined, unknown>"
+    },
+    {
+     "prop": "pattern",
+     "alias": "pattern",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "patternErrorMessage",
+     "alias": "patternErrorMessage",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "validator",
+     "alias": "validator",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdCustomValidator | undefined>"
+    },
+    {
+     "prop": "inlineError",
+     "alias": "inlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "hyperlink",
+     "alias": "hyperlink",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "valueModel",
+     "alias": "model",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<any>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueModel",
+     "alias": "modelChange",
+     "type": "import(\"@angular/core\").ModelSignal<any>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<any>"
+    },
+    {
+     "prop": "sdFocus",
+     "alias": "sdFocus",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "sdBlur",
+     "alias": "sdBlur",
+     "type": "import(\"@angular/core\").OutputEmitterRef<any>"
+    },
+    {
+     "prop": "keyupEnter",
+     "alias": "keyupEnter",
+     "type": "import(\"@angular/core\").OutputEmitterRef<any>"
+    },
+    {
+     "prop": "cleared",
+     "alias": "cleared",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "sdFocusForceBlur",
+     "alias": "sdFocusForceBlur",
+     "type": "EventEmitter<void>"
+    }
+   ],
+   "slots": [
+    "[sdLabel]"
+   ]
+  }
+ ],
+ "sd-date-range": [
+  {
+   "class": "SdDateRange",
+   "kind": "ɵcmp",
+   "file": "forms/date-range/src/date-range.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Size>"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FormGroup<any> | undefined, any>"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "helperText",
+     "alias": "helperText",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "hideInlineError",
+     "alias": "hideInlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdViewed, SdViewedInput>"
+    },
+    {
+     "prop": "clearable",
+     "alias": "clearable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "appearanceInput",
+     "alias": "appearance",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<MatFormFieldAppearance | undefined>"
+    },
+    {
+     "prop": "floatLabel",
+     "alias": "floatLabel",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<FloatLabelType>"
+    },
+    {
+     "prop": "minInput",
+     "alias": "min",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "maxInput",
+     "alias": "max",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<any>"
+    },
+    {
+     "prop": "valueModel",
+     "alias": "model",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<Daterange | null | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueModel",
+     "alias": "modelChange",
+     "type": "import(\"@angular/core\").ModelSignal<Daterange | null | undefined>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<Daterange | null | undefined>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-chip-calendar": [
+  {
+   "class": "SdChipCalendar",
+   "kind": "ɵcmp",
+   "file": "forms/chip-calendar/src/chip-calendar.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "appearance",
+     "alias": "appearance",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<MatFormFieldAppearance, MatFormFieldAppearance | null | undefined>"
+    },
+    {
+     "prop": "floatLabel",
+     "alias": "floatLabel",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FloatLabelType, FloatLabelType | null | undefined>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<Size, Size | null | undefined>"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FormGroup<any> | undefined, any>"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string, string | null | undefined>"
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "removable",
+     "alias": "removable",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean | ((item: any) => boolean), boolean | ((item: any) => boolean) | null | undefined>"
+    },
+    {
+     "prop": "hideInlineError",
+     "alias": "hideInlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "min",
+     "alias": "min",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number, number | null | undefined>"
+    },
+    {
+     "prop": "max",
+     "alias": "max",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number, number | null | undefined>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdViewed, SdViewedInput>"
+    },
+    {
+     "prop": "hyperlink",
+     "alias": "hyperlink",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<string | undefined, string | null | undefined>"
+    },
+    {
+     "prop": "model",
+     "alias": "model",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<(string | number)[] | undefined>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "model",
+     "alias": "modelChange",
+     "type": "import(\"@angular/core\").ModelSignal<(string | number)[] | undefined>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<any[]>"
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-radio": [
+  {
+   "class": "SdRadio",
+   "kind": "ɵcmp",
+   "file": "forms/radio/src/radio.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "display",
+     "alias": "display",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "items",
+     "alias": "items",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "valueField",
+     "alias": "valueField",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "displayField",
+     "alias": "displayField",
+     "required": true,
+     "type": ""
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "inlineError",
+     "alias": "inlineError",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "color",
+     "alias": "color",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "hyperlink",
+     "alias": "hyperlink",
+     "required": false,
+     "type": ""
+    },
+    {
+     "prop": "model",
+     "alias": "model",
+     "required": false,
+     "type": ""
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "model",
+     "alias": "modelChange",
+     "type": ""
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": ""
+    },
+    {
+     "prop": "sdSelection",
+     "alias": "sdSelection",
+     "type": ""
+    }
+   ],
+   "slots": []
+  }
+ ],
+ "sd-input-number": [
+  {
+   "class": "SdInputNumber",
+   "kind": "ɵcmp",
+   "file": "forms/input-number/src/input-number.component.d.ts",
+   "inputs": [
+    {
+     "prop": "autoIdInput",
+     "alias": "autoId",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "name",
+     "alias": "name",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string>"
+    },
+    {
+     "prop": "size",
+     "alias": "size",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<Size>"
+    },
+    {
+     "prop": "form",
+     "alias": "form",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<FormGroup<any> | undefined, any>"
+    },
+    {
+     "prop": "label",
+     "alias": "label",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "helperText",
+     "alias": "helperText",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "placeholder",
+     "alias": "placeholder",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "hideInlineError",
+     "alias": "hideInlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "blurOnEnter",
+     "alias": "blurOnEnter",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "required",
+     "alias": "required",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "readonly",
+     "alias": "readonly",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "disabled",
+     "alias": "disabled",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<boolean, unknown>"
+    },
+    {
+     "prop": "viewed",
+     "alias": "viewed",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<SdViewed, SdViewedInput>"
+    },
+    {
+     "prop": "type",
+     "alias": "type",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<\"negative\" | \"positive\" | undefined>"
+    },
+    {
+     "prop": "precision",
+     "alias": "precision",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<number>"
+    },
+    {
+     "prop": "format",
+     "alias": "format",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<\"1,234,567.89\" | \"1.234.567,89\" | undefined>"
+    },
+    {
+     "prop": "min",
+     "alias": "min",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number | undefined, unknown>"
+    },
+    {
+     "prop": "max",
+     "alias": "max",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignalWithTransform<number | undefined, unknown>"
+    },
+    {
+     "prop": "validator",
+     "alias": "validator",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<SdCustomValidator | undefined>"
+    },
+    {
+     "prop": "inlineError",
+     "alias": "inlineError",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | undefined>"
+    },
+    {
+     "prop": "hyperlink",
+     "alias": "hyperlink",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<string | null | undefined>"
+    },
+    {
+     "prop": "appearanceInput",
+     "alias": "appearance",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<MatFormFieldAppearance | undefined>"
+    },
+    {
+     "prop": "floatLabel",
+     "alias": "floatLabel",
+     "required": false,
+     "type": "import(\"@angular/core\").InputSignal<FloatLabelType>"
+    },
+    {
+     "prop": "valueModel",
+     "alias": "model",
+     "required": false,
+     "type": "import(\"@angular/core\").ModelSignal<any>"
+    }
+   ],
+   "outputs": [
+    {
+     "prop": "valueModel",
+     "alias": "modelChange",
+     "type": "import(\"@angular/core\").ModelSignal<any>"
+    },
+    {
+     "prop": "sdChange",
+     "alias": "sdChange",
+     "type": "import(\"@angular/core\").OutputEmitterRef<any>"
+    },
+    {
+     "prop": "sdFocus",
+     "alias": "sdFocus",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "sdBlur",
+     "alias": "sdBlur",
+     "type": "import(\"@angular/core\").OutputEmitterRef<any>"
+    },
+    {
+     "prop": "keyupEnter",
+     "alias": "keyupEnter",
+     "type": "import(\"@angular/core\").OutputEmitterRef<any>"
+    },
+    {
+     "prop": "cleared",
+     "alias": "cleared",
+     "type": "import(\"@angular/core\").OutputEmitterRef<void>"
+    },
+    {
+     "prop": "sdFocusForceBlur",
+     "alias": "sdFocusForceBlur",
+     "type": "EventEmitter<void>"
+    }
+   ],
+   "slots": [
+    "[sdLabel]"
+   ]
+  }
+ ]
+}

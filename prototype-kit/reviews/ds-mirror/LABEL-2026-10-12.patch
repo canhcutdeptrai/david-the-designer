@@ -1,0 +1,105 @@
+--- /tmp/sdc.bak.lb	2026-10-12 12:48:04.110004311 +0000
++++ design-system/sd-components/sd-components.js	2026-10-12 12:48:30.519382957 +0000
+@@ -12658,8 +12658,12 @@
+         '<div class="d-flex align-items-center gap-4">' +
+           '<span class="T14M">' + esc(label) + '</span>' +
+           (hint
++            /* Tooltip của icon gợi ý là `matTooltip` (KHÔNG phải sdTooltip):
++               bong bóng #424242, 12px/16px, rộng tối đa 200px, căn giữa, không
++               bóng đổ — kit bật kiểu đó bằng data-sd-tooltip-kind="mat". */
+             ? '<span class="material-icons-outlined sd-label__hint" aria-hidden="true"' +
+-              ' data-sd-tooltip="' + escAttr(hint) + '" data-sd-tooltip-position="below">info_outline</span>'
++              ' data-sd-tooltip="' + escAttr(hint) + '" data-sd-tooltip-position="below"' +
++              ' data-sd-tooltip-kind="mat">info_outline</span>'
+             : '') +
+         '</div>' +
+         (this._bool('required') ? '<span class="text-error mb-2 T14M">*</span>' : '') +
+@@ -15575,7 +15579,10 @@
+ 
+   function sdTooltipPosition(target, node) {
+     var targetRect = target.getBoundingClientRect();
+-    var nodeRect = node.getBoundingClientRect();
++    /* Cỡ THẬT của node (offsetWidth/Height) — không lấy getBoundingClientRect vì
++       kiểu `--mat` có hiệu ứng phóng .8 → 1 lúc hiện, đo giữa chừng ra nhỏ hơn
++       20% và tooltip lệch khỏi tâm. */
++    var nodeRect = { width: node.offsetWidth, height: node.offsetHeight };
+     var gap = 8;
+     var viewportWidth = window.innerWidth;
+     var viewportHeight = window.innerHeight;
+@@ -15646,6 +15653,9 @@
+       var node = sdTooltipGetNode();
+       sdTooltipFill(target, node);
+       node.style.backgroundColor = sdTooltipAttr(target, 'Color') || '';
++      /* `matTooltip` của Angular Material (sd-label helperText…) — khác bong
++         bóng của directive sdTooltip: xem `.sd-tooltip--mat` trong sd-tokens.css */
++      node.classList.toggle('sd-tooltip--mat', target.getAttribute('data-sd-tooltip-kind') === 'mat');
+       node.style.visibility = 'hidden';
+       node.classList.add('sd-tooltip-visible');
+       sdTooltipPosition(target, node);
+--- /tmp/sdt.bak.lb	2026-10-12 12:48:04.111977397 +0000
++++ design-system/core/styles/sd-tokens.css	2026-10-12 12:48:04.140158857 +0000
+@@ -4061,6 +4061,36 @@
+    gắn khi nội dung có ký tự xuống dòng (sd-badge, sd-history, sd-tab-router). */
+ .sd-tooltip.sd-multiline-tooltip { white-space: pre-line; }
+ 
++/* Kiểu `matTooltip` (Angular Material 20, token M2 của catalog `#c-label`) —
++   dùng cho tooltip của icon gợi ý sd-label (`data-sd-tooltip-kind="mat"`).
++   Khác bong bóng sdTooltip ở MỌI số đo: nền #424242 (không phải #616161),
++   đệm 4px 8px, rộng tối đa 200px (không 250), cao tối thiểu 24px, chữ 12px/16px
++   giãn 0.025rem, CĂN GIỮA, KHÔNG bóng đổ, không nhận chuột; hiện bằng hiệu ứng
++   phóng .8 → 1 trong 150ms. Rà soát 2026-10-12. */
++.sd-tooltip.sd-tooltip--mat {
++  background: #424242;
++  padding: 4px 8px;
++  min-width: 40px;
++  max-width: 200px;
++  min-height: 24px;
++  max-height: 40vh;
++  box-sizing: border-box;
++  overflow: hidden;
++  box-shadow: none;
++  border-radius: 4px;
++  font-size: 12px;
++  line-height: 16px;
++  letter-spacing: 0.025rem;
++  text-align: center;
++  word-break: normal;
++  overflow-wrap: anywhere;
++  pointer-events: none;
++}
++.sd-tooltip.sd-tooltip--mat.sd-tooltip-visible {
++  animation: sd-mat-tooltip-show 150ms cubic-bezier(0, 0, .2, 1) forwards;
++}
++@keyframes sd-mat-tooltip-show { 0% { opacity: 0; transform: scale(.8); } 100% { opacity: 1; transform: scale(1); } }
++
+ /* Khung demo của trang preview — nguyên văn lớp demo catalog `#c-tooltip`
+    (`.tt-anchor` + `.c-sd-tooltip-panel.pos-*` neo tuyệt đối quanh nút để mở sẵn
+    cả bốn tooltip; `.tt-tpl b` của ví dụ TemplateRef). Trang thật KHÔNG dùng —
+@@ -7005,13 +7035,14 @@
+    `<mat-icon style="height:1rem;width:1rem;font-size:1rem">`; kit chuyển thành
+    class theo Rule 11 của AGENTS.md (không hardcode font-size trên element) —
+    giá trị tính ra giống hệt: 16px. Font set theo Rule 4: outlined. */
++/* Màu: catalog `mat-icon-no-color` → KẾ THỪA màu chữ (đo ra cùng màu nhãn);
++   bản trước kit tô --sd-black400 và đặt cursor:default — catalog không có
++   (rà soát #c-label 2026-10-12). */
+ sd-label .sd-label__hint {
+   font-size: 16px;
+   width: 16px;
+   height: 16px;
+   line-height: 16px;
+-  color: var(--sd-black400);
+-  cursor: default;
+ }
+ 
+ /* ══════════════════════════════════════════════════════════
+--- /tmp/lb.bak.lb	2026-10-12 12:48:04.113715329 +0000
++++ design-system/preview/components/label.html	2026-10-12 12:49:10.425821416 +0000
+@@ -50,7 +50,7 @@
+         </sd-section>
+ 
+         <sd-section title="helperText">
+-          <p class="text-sm text-secondary mb-2">Icon <code>info_outline</code> 16px, tooltip hiện khi rê chuột.</p>
++          <p class="text-sm text-secondary mb-2">Icon <code>info_outline</code> 16px cùng màu nhãn; rê chuột hiện tooltip kiểu <code>matTooltip</code> phía dưới (nền #424242, rộng tối đa 200px, chữ căn giữa) — khác bong bóng của <code>sdTooltip</code>.</p>
+           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:980px;">
+             <sd-label label="Lãi suất tham chiếu" required helperText="Lãi suất bình quân 3 ngân hàng cùng kỳ hạn, cập nhật ngày làm việc trước"></sd-label>
+             <sd-label label="Kỳ hạn vay" helperText="Tính theo tháng, tối đa 60 tháng" description="Áp dụng cho vay trung và dài hạn"></sd-label>

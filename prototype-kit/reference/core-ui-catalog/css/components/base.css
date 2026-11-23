@@ -1,0 +1,7 @@
+/* Base secure component — #c-base */
+#c-base .base-flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:#212121}
+#c-base .base-step{background:#fff;border:1px solid var(--sd-black200);border-radius:6px;padding:6px 10px}
+#c-base .base-step code{font-family:'Roboto Mono',monospace;font-size:12px}
+#c-base .base-ok{border-color:var(--sd-success);background:var(--sd-success-light)}
+#c-base .base-err{border-color:var(--sd-error);background:var(--sd-error-light);color:var(--sd-error-dark)}
+#c-base .base-arrow{color:var(--sd-black400)}

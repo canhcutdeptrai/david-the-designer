@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-bar-chart · sd-line-chart · sd-pie-chart · sd-doughnut-chart — Preview</title>
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-area">
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="Chart"
+         data-subtitle="sd-bar-chart · sd-line-chart · sd-pie-chart · sd-doughnut-chart — wrapper mỏng quanh Chart.js 4.5.1: [data] [options] [plugins], tự cập nhật khi input đổi, cột/đường tự cuộn ngang khi > 15 nhãn"></div>
+    <div class="content-zone">
+
+      <sd-section title="Bar — sd-bar-chart, 2 dataset, màu mặc định">
+        <sd-bar-chart id="ch-bar" class="chart-demo-box"></sd-bar-chart>
+        <div class="d-flex mt-8" style="gap: 8px; align-items: center;">
+          <sd-button id="ch-bar-upd" type="light" color="primary" size="sm" title="Đổi data (≙ input đổi → chart.update())"></sd-button>
+          <span class="fs-12 text-black400" id="ch-bar-out"></span>
+        </div>
+        <pre class="ds-guide-code mt-8">barData: ChartData&lt;'bar'&gt; = {
+  labels: ['Vietcombank', 'BIDV', 'Techcombank', 'MB', 'VPBank', 'Agribank'],
+  datasets: [
+    { label: 'Hạn mức (tỷ VND)', data: [500, 450, 300, 250, 200, 350] },
+    { label: 'Đã sử dụng (tỷ VND)', data: [320, 410, 120, 180, 60, 240] },
+  ],
+};
+
+&lt;sd-bar-chart [data]="barData" /&gt;
+
+&lt;!-- kit --&gt;
+&lt;sd-bar-chart id="barChart"&gt;&lt;/sd-bar-chart&gt;
+&lt;script&gt; barChart.data = barData; &lt;/script&gt;</pre>
+      </sd-section>
+
+      <sd-section title="Line — sd-line-chart, dòng tiền thu/chi theo tuần">
+        <sd-line-chart id="ch-line" class="chart-demo-box"></sd-line-chart>
+        <pre class="ds-guide-code mt-8">&lt;sd-line-chart [data]="dongTienData" [options]="{ responsive: true }" /&gt;
+&lt;!-- datasets: Thu / Chi theo tuần T36–T47, không khai báo màu → bảng màu mặc định Chart.js --&gt;
+
+&lt;!-- kit: data / options là property JS, hoặc JSON trong attribute cùng tên --&gt;
+&lt;sd-line-chart options='{"responsive":true}'&gt;&lt;/sd-line-chart&gt;</pre>
+      </sd-section>
+
+      <sd-section title="Pie &amp; Doughnut — sd-pie-chart, sd-doughnut-chart, mỗi phần tử một màu">
+        <div class="chart-demo-row">
+          <sd-pie-chart id="ch-pie" class="chart-demo-box"></sd-pie-chart>
+          <sd-doughnut-chart id="ch-dough" class="chart-demo-box"></sd-doughnut-chart>
+        </div>
+        <pre class="ds-guide-code mt-8">&lt;sd-pie-chart [data]="coCauNguonVon" /&gt;
+&lt;sd-doughnut-chart [data]="trangThaiHoSo" [plugins]="[]" /&gt;
+
+&lt;!-- kit: plugins chỉ đọc lúc tạo biểu đồ (như thư viện) — gán trước khi phần tử vào trang --&gt;
+doughnut.plugins = [];</pre>
+      </sd-section>
+
+      <sd-section title="Nhiều nhãn — 20 nhãn &gt; 15 → cuộn ngang">
+        <sd-bar-chart id="ch-many" class="chart-demo-box"></sd-bar-chart>
+        <pre class="ds-guide-code mt-8">&lt;!-- &gt; 15 nhãn: khung tự cuộn ngang, min-width = số nhãn × 50px --&gt;
+&lt;sd-bar-chart [data]="giaiNganTheoNgay" /&gt;</pre>
+      </sd-section>
+
+      <p class="fs-12 text-black400 mt-8 mb-0">Kit nạp <strong>Chart.js 4.5.1 thật</strong> (<code>design-system/vendor/chartjs/</code>) nên có tooltip, animation, bấm legend để ẩn dataset —
+        catalog chỉ vẽ SVG tĩnh. Màu khi không khai báo là của plugin <em>Colors</em> mặc định của Chart.js. Khung trắng quanh mỗi biểu đồ
+        (<code>.chart-demo-box</code>) là của trang demo — component không có nền.</p>
+
+    </div>
+  </div>
+</div>
+<style>
+  /* khung demo của catalog (#c-chart) — chỉ của trang demo, component không có nền / viền */
+  .chart-demo-box { display: block; background: #fff; padding: 16px; border: 1px solid var(--sd-black200); border-radius: 8px; }
+  .chart-demo-row { display: flex; flex-wrap: wrap; gap: 16px; }
+  .chart-demo-row > .chart-demo-box { flex: 1 1 280px; max-width: 420px; }
+</style>
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+<script>
+  (function () {
+    var bar = document.getElementById('ch-bar');
+    var BAR = {
+      labels: ['Vietcombank', 'BIDV', 'Techcombank', 'MB', 'VPBank', 'Agribank'],
+      datasets: [
+        { label: 'Hạn mức (tỷ VND)', data: [500, 450, 300, 250, 200, 350] },
+        { label: 'Đã sử dụng (tỷ VND)', data: [320, 410, 120, 180, 60, 240] }
+      ]
+    };
+    bar.data = BAR;
+
+    var line = document.getElementById('ch-line');
+    line.data = {
+      labels: ['T36', 'T37', 'T38', 'T39', 'T40', 'T41', 'T42', 'T43', 'T44', 'T45', 'T46', 'T47'],
+      datasets: [
+        { label: 'Thu (tỷ VND)', data: [182, 175, 210, 198, 236, 220, 251, 240, 265, 230, 248, 272] },
+        { label: 'Chi (tỷ VND)', data: [160, 190, 185, 205, 210, 245, 230, 228, 240, 255, 236, 250] }
+      ]
+    };
+    line.options = { responsive: true };
+
+    document.getElementById('ch-pie').data = {
+      labels: ['Vietcombank', 'BIDV', 'Techcombank', 'MB', 'VPBank'],
+      datasets: [{ label: 'Cơ cấu nguồn vốn (%)', data: [32, 26, 16, 14, 12] }]
+    };
+    var dough = document.getElementById('ch-dough');
+    dough.plugins = [];
+    dough.data = {
+      labels: ['Đã duyệt', 'Chờ duyệt', 'Trả lại', 'Từ chối'],
+      datasets: [{ label: 'Hồ sơ', data: [48, 23, 9, 4] }]
+    };
+
+    document.getElementById('ch-many').data = {
+      labels: Array.from({ length: 20 }, function (_, i) { return String(i + 1).padStart(2, '0') + '/10'; }),
+      datasets: [{ label: 'Giải ngân theo ngày (tỷ VND)', data: [12, 30, 8, 0, 45, 22, 18, 9, 36, 40, 15, 0, 28, 33, 19, 25, 50, 12, 7, 31] }]
+    };
+
+    /* input đổi → effect thư viện: chart.data = data; chart.update() (giữ nguyên đối tượng Chart) */
+    var flip = false;
+    document.getElementById('ch-bar-upd').addEventListener('click', function () {
+      flip = !flip;
+      bar.data = flip ? {
+        labels: BAR.labels,
+        datasets: [
+          { label: 'Hạn mức (tỷ VND)', data: [520, 450, 320, 250, 260, 350] },
+          { label: 'Đã sử dụng (tỷ VND)', data: [410, 300, 200, 90, 140, 300] }
+        ]
+      } : BAR;
+      document.getElementById('ch-bar-out').textContent = flip ? 'data mới → chart.update()' : 'data ban đầu';
+    });
+  })();
+</script>
+</body>
+</html>

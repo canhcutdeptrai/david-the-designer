@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Page Layout — Enterprise Portal</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <!-- PAGE HEADER — Browse variant -->
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="Danh sách [Record Type]"
+         data-primary-action="Tạo mới"
+         data-primary-icon="add"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <!-- CONTENT ZONE -->
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel browse-tab-table" data-tab-panel="0">
+
+      <!-- ══════════════════════════════════════════════════
+           SD-TABLE — Full (selectable + paginated + inline column filter)
+           Mặc định: KHÔNG filter-bar (outgrid filter). Chỉ dùng ingrid
+           filter — ô filter có sẵn dưới tiêu đề mỗi cột (sd-table tự render).
+           Xem "Browse — Outgrid filter" nếu cần variant có filter-bar.
+           ══════════════════════════════════════════════════ -->
+      <sd-table id="browse-demo-table"
+        selectable
+        paginated
+        pagesize="20"
+        pagesizes="10,20,50,100"
+        total="156"
+        reload-visible
+        export-visible
+        columns='[
+          {"field":"_menu","title":"","type":"menu","option":{"width":"44px","items":[
+            {"icon":"visibility","label":"Xem chi tiết","href":"read-page.html"},
+            {"icon":"edit","label":"Chỉnh sửa","href":"edit-page.html"},
+            {"icon":"check_circle","label":"Phê duyệt"},
+            {"icon":"cancel","label":"Từ chối"},
+            {"icon":"print","label":"In"}
+          ]}},
+          {"field":"code","title":"Mã","type":"link","option":{"href":"read-page.html"}},
+          {"field":"status","title":"Trạng thái","type":"status","option":{"items":[{"id":"active","name":"Hoạt động"},{"id":"pending","name":"Chờ duyệt"},{"id":"deactivated","name":"Ngừng bán"},{"id":"draft","name":"Nháp"},{"id":"inprogress","name":"Đang xử lý"}]}},
+          {"field":"name","title":"Tên","type":"text"},
+          {"field":"category","title":"Danh mục","type":"values","option":{"items":[{"id":"food","name":"Thực phẩm"},{"id":"drink","name":"Đồ uống"},{"id":"household","name":"Gia dụng"},{"id":"cosmetic","name":"Mỹ phẩm"}]}},
+          {"field":"unit","title":"Đơn vị","type":"text"},
+          {"field":"qty","title":"Số lượng","type":"number","align":"right","option":{"precision":0}},
+          {"field":"price","title":"Giá (VND)","type":"number","align":"right","option":{"precision":0}},
+          {"field":"region","title":"Khu vực","type":"values","option":{"items":[{"id":"north","name":"Miền Bắc"},{"id":"central","name":"Miền Trung"},{"id":"south","name":"Miền Nam"}]}},
+          {"field":"creator","title":"Người tạo","type":"text"},
+          {"field":"createdAt","title":"Ngày tạo","type":"datetime"}
+        ]'
+        data='[
+          {"code":"SP-00001","name":"Sữa tươi Vinamilk 1L","category":"food","unit":"Hộp","qty":12500,"price":32000,"region":"north","creator":"thao.nguyen@company.com","createdAt":"2026/04/12 09:15","status":"active"},
+          {"code":"SP-00002","name":"Nước mắm Phú Quốc 500ml","category":"food","unit":"Chai","qty":8300,"price":45000,"region":"south","creator":"hung.tran@company.com","createdAt":"2026/04/11 14:22","status":"active"},
+          {"code":"SP-00003","name":"Bột giặt OMO 4.5kg","category":"household","unit":"Túi","qty":3200,"price":125000,"region":"central","creator":"van.le@company.com","createdAt":"2026/04/10 08:45","status":"pending"},
+          {"code":"SP-00004","name":"Dầu gội Clear 650ml","category":"cosmetic","unit":"Chai","qty":5100,"price":89000,"region":"north","creator":"thao.nguyen@company.com","createdAt":"2026/04/09 16:30","status":"active"},
+          {"code":"SP-00005","name":"Trà xanh Không Độ 500ml","category":"drink","unit":"Chai","qty":20000,"price":10000,"region":"south","creator":"duy.pham@company.com","createdAt":"2026/04/08 11:00","status":"deactivated"},
+          {"code":"SP-00006","name":"Mì Hảo Hảo lốc 30 gói","category":"food","unit":"Lốc","qty":15800,"price":95000,"region":"central","creator":"hung.tran@company.com","createdAt":"2026/04/07 09:45","status":"active"},
+          {"code":"SP-00007","name":"Kem đánh răng P/S 180g","category":"cosmetic","unit":"Tuýp","qty":9600,"price":28000,"region":"north","creator":"van.le@company.com","createdAt":"2026/04/06 13:20","status":"draft"},
+          {"code":"SP-00008","name":"Nước rửa chén Sunlight 3.6kg","category":"household","unit":"Can","qty":7400,"price":75000,"region":"south","creator":"duy.pham@company.com","createdAt":"2026/04/05 10:05","status":"inprogress"},
+          {"code":"SP-00009","name":"Cà phê G7 3in1 hộp 20 gói","category":"drink","unit":"Hộp","qty":11200,"price":55000,"region":"central","creator":"thao.nguyen@company.com","createdAt":"2026/04/04 15:40","status":"active"},
+          {"code":"SP-00010","name":"Bánh quy Oreo 133g","category":"food","unit":"Gói","qty":6700,"price":22000,"region":"north","creator":"hung.tran@company.com","createdAt":"2026/04/03 08:30","status":"pending"}
+        ]'
+      ></sd-table>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Snackbar Batch — luôn render, toggle .visible bằng JS ── -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+      <sd-section title="Browse Page — Hướng dẫn BA / PO">
+        <div class="ds-guide">
+
+          <div class="ds-guide-do-dont">
+            <div class="ds-guide-do">
+              <div class="ds-guide-box-header">
+                <span class="material-icons-outlined mi-16">check_circle</span>
+                Dùng khi
+              </div>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li>Trang danh sách bất kỳ (danh sách đơn hàng, sản phẩm, nhân viên, kho...)</li>
+                <li>Trang quản lý có filter + search + phân trang</li>
+                <li>Entry point để tìm kiếm và điều hướng vào chi tiết</li>
+                <li>Khi cần bulk action: thêm <code>selectable</code> vào sd-table + khai <code>option.selector.actions</code> (thanh thao tác có sẵn của sd-table)</li>
+              </ul>
+            </div>
+            <div class="ds-guide-dont">
+              <div class="ds-guide-box-header">
+                <span class="material-icons-outlined mi-16">cancel</span>
+                Không dùng khi
+              </div>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li>Dashboard/overview (không có table chính)</li>
+                <li>Trang cài đặt với list đơn giản</li>
+                <li>Kết quả tìm kiếm toàn hệ thống</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+            <div class="ds-guide-prd">
+              <p>"Trang Quản lý đơn hàng: filter theo trạng thái, khu vực, từ ngày–đến ngày. Bảng có mã đơn, khách hàng, tổng tiền, trạng thái, ngày tạo. Click hàng → Read page."</p>
+              <p>"Có bulk action: chọn nhiều dòng → snackbar thao tác nổi ở đáy màn hình hiện nút Export và Xóa."</p>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">2 kiểu filter — ingrid vs outgrid</p>
+            <div class="ds-guide-prd">
+              <p><strong>Ingrid filter</strong> — ô filter nằm ngay dưới tiêu đề mỗi cột trong bảng. <strong>Mặc định cho mọi trang Browse</strong>, không cần yêu cầu, sd-table tự render sẵn.</p>
+              <p><strong>Outgrid filter</strong> — thanh filter riêng phía trên bảng (thường gọi là "filter-bar"), có nhiều field lọc gộp lại. <strong>Chỉ dùng khi BA/PO yêu cầu tường minh</strong> (VD: "thêm filter-bar", "cần thanh lọc riêng ngoài bảng", "outgrid filter"). Không tự thêm chỉ vì bảng có nhiều cột hoặc filter phức tạp — nếu không có yêu cầu rõ, dùng ingrid filter.</p>
+              <p>Xem variant outgrid tại trang <strong>Browse — Outgrid filter</strong> trong sidebar.</p>
+            </div>
+          </div>
+
+        </div>
+      </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+      <sd-section title="Browse Page — Hướng dẫn Dev">
+        <div class="ds-guide">
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Quy tắc filter — ingrid (mặc định) vs outgrid (filter-bar)</p>
+            <ul class="ds-guide-list mb-0 pl-0">
+              <li><strong>Ingrid filter</strong> = ô filter dưới tiêu đề mỗi cột — sd-table tự render sẵn, không cần thêm code, không cần thêm <code>hide-inline-filter</code>.</li>
+              <li><strong>Outgrid filter</strong> = <code>data-pattern="filter-bar"</code> (thanh lọc riêng phía trên bảng) — <strong>KHÔNG tự thêm</strong>. Chỉ dùng khi BA/PO yêu cầu tường minh bằng tên ("filter-bar", "outgrid filter", "thanh lọc riêng").</li>
+              <li>Khi dùng outgrid filter, <strong>bắt buộc</strong> thêm <code>hide-inline-filter</code> vào sd-table (tránh trùng 2 lớp filter). Xem code mẫu tại trang <strong>Browse — Outgrid filter</strong>.</li>
+            </ul>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">Cú pháp đầy đủ (có thao tác hàng loạt)</p>
+            <div class="ds-guide-code-wrap">
+              <div class="ds-guide-code-bar">
+                <span class="ds-guide-code-lang">HTML</span>
+                <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+              </div>
+              <pre class="ds-guide-code">&lt;!-- 1. Page header --&gt;
+&lt;div data-pattern="page-header" data-variant="browse"
+     data-title="Danh sách Đơn hàng"
+     data-primary-action="Tạo mới"
+     data-primary-icon="add"&gt;&lt;/div&gt;
+
+&lt;div class="content-zone"&gt;
+  &lt;!-- 2. Table — KHÔNG thêm filter-bar (outgrid filter) trừ khi BA/PO
+       yêu cầu tường minh. sd-table tự render ingrid filter (ô filter
+       dưới tiêu đề mỗi cột) — không cần code thêm. --&gt;
+  &lt;sd-table id="main-table"
+    selectable
+    paginated pageSize="20" pageSizes="10,20,50" total="156"
+    reload-visible export-visible
+    columns='[...]' data='[...]'
+  &gt;&lt;/sd-table&gt;
+&lt;/div&gt;</pre>
+            </div>
+          </div>
+
+          <div class="ds-guide-col ds-guide-col--full">
+            <p class="ds-guide-label">JS — thao tác hàng loạt (selector.actions)</p>
+            <div class="ds-guide-code-wrap">
+              <div class="ds-guide-code-bar">
+                <span class="ds-guide-code-lang">JS</span>
+              </div>
+              <pre class="ds-guide-code">document.getElementById('main-table').option = {
+  selector: {
+    visible: true,
+    actions: [
+      { title: 'Phê duyệt', icon: 'check_circle', color: 'primary', click: function (rows) { openDrawer(/* … */); } },
+      { title: 'Xóa', icon: 'delete', color: 'error', click: function (rows) { /* … */ } }
+    ]
+  }
+};
+// sd-table tự vẽ snackbar "N dữ liệu được chọn" (selector-action, nổi giữa đáy màn hình) khi có dòng được chọn —
+// 2 action đầu là nút, từ action thứ 3 vào "Thêm", tự có nút ❌ bỏ chọn — không cần code thêm.</pre>
+            </div>
+          </div>
+
+        </div>
+      </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  /* ── Thao tác hàng loạt — snackbar selector-action CỦA CHÍNH sd-table (nổi giữa đáy màn hình).
+     Pattern snackbar-batch riêng của kit đã gỡ 2026-10-12. ── */
+  (function () {
+    var t = document.getElementById('browse-demo-table');
+    if (!t) return;
+    t.option = { selector: { visible: true, actions: [
+      { title: 'Export', icon: 'get_app', color: 'primary', click: function (rows) { console.log('Export', rows); } },
+      { title: 'Xóa', icon: 'delete', color: 'error', click: function (rows) { console.log('Xóa', rows); } }
+    ] } };
+  })();
+
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+        // Browse Scroll Mode: kích hoạt khi tab chứa sd-table đang active
+        var activePanel = document.querySelector('.tab-panel[data-tab-panel="' + index + '"]');
+        var contentZone = document.querySelector('.content-zone');
+        if (contentZone && activePanel) {
+          contentZone.classList.toggle('browse-tab-active', activePanel.classList.contains('browse-tab-table'));
+        }
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      // Show first panel on load
+      showPanel(0);
+    }
+
+    // patterns:loaded already fired before this inline script runs,
+    // so call directly — DOM is ready at this point.
+    initPreviewTabs();
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,3662 @@
+/* ============================================================
+   ENTERPRISE PORTAL — Component System
+
+   All UI components: buttons, inputs, tables, cards, badges,
+   modals, notifications, empty/loading/error states.
+   ============================================================ */
+
+/* ── Buttons ──────────────────────────────────────────────── */
+/* Figma: Button — 4 colors × 3 fills + disabled + icon */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: var(--button-height);
+  padding: 0 var(--space-4);
+  font-family: var(--font-family-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  line-height: 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-colors), var(--transition-shadow);
+  white-space: nowrap;
+  outline: none;
+  text-decoration: none;
+}
+
+.btn:focus-visible {
+  box-shadow: var(--shadow-focus);
+}
+
+/* --- Disabled (universal — same for all color/fill combos) --- */
+.btn:disabled, .btn.disabled {
+  background: var(--color-neutral-150);
+  color: var(--color-neutral-400);
+  border-color: transparent;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.btn:disabled .material-icons,
+.btn.disabled .material-icons {
+  color: var(--color-neutral-400);
+}
+
+/* ── Solid Variants (default fill) ─────────────────────────── */
+
+/* Primary — MH Brown CTA */
+.btn-primary {
+  background: var(--color-primary-500);
+  color: var(--color-neutral-0);
+  border-color: var(--color-primary-500);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+}
+.btn-primary:active:not(:disabled) {
+  background: var(--color-primary-700);
+  border-color: var(--color-primary-700);
+}
+.btn-primary .material-icons { color: var(--color-neutral-0); }
+
+/* Secondary — subtle primary background */
+.btn-secondary {
+  background: var(--color-primary-50);
+  color: var(--color-primary-500);
+  border-color: transparent;
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-primary-100);
+}
+.btn-secondary:active:not(:disabled) {
+  background: var(--color-primary-200);
+}
+.btn-secondary .material-icons { color: var(--color-primary-500); }
+
+/* Tertiary — neutral background */
+.btn-tertiary {
+  background: var(--color-neutral-300);
+  color: var(--color-neutral-900);
+  border-color: transparent;
+}
+.btn-tertiary:hover:not(:disabled) {
+  background: var(--color-neutral-400);
+}
+.btn-tertiary:active:not(:disabled) {
+  background: var(--color-neutral-500);
+}
+.btn-tertiary .material-icons { color: var(--color-neutral-900); }
+
+/* Danger — destructive action */
+.btn-danger {
+  background: var(--color-error-500);
+  color: var(--color-neutral-0);
+  border-color: var(--color-error-500);
+}
+.btn-danger:hover:not(:disabled) {
+  background: var(--color-error-600);
+  border-color: var(--color-error-600);
+}
+.btn-danger:active:not(:disabled) {
+  background: var(--color-error-700);
+  border-color: var(--color-error-700);
+}
+.btn-danger .material-icons { color: var(--color-neutral-0); }
+
+/* ── Outline Variants ──────────────────────────────────────── */
+
+.btn-outline-primary {
+  background: transparent;
+  color: var(--color-primary-500);
+  border-color: var(--color-primary-500);
+}
+.btn-outline-primary:hover:not(:disabled) {
+  background: var(--color-primary-50);
+}
+.btn-outline-primary:active:not(:disabled) {
+  background: var(--color-primary-100);
+}
+.btn-outline-primary .material-icons { color: var(--color-primary-500); }
+
+.btn-outline-tertiary {
+  background: transparent;
+  color: var(--color-neutral-900);
+  border-color: var(--color-neutral-900);
+}
+.btn-outline-tertiary:hover:not(:disabled) {
+  background: var(--color-neutral-100);
+}
+.btn-outline-tertiary:active:not(:disabled) {
+  background: var(--color-neutral-200);
+}
+.btn-outline-tertiary .material-icons { color: var(--color-neutral-900); }
+
+.btn-outline-danger {
+  background: transparent;
+  color: var(--color-error-500);
+  border-color: var(--color-error-500);
+}
+.btn-outline-danger:hover:not(:disabled) {
+  background: var(--color-error-50);
+}
+.btn-outline-danger:active:not(:disabled) {
+  background: var(--color-error-100);
+}
+.btn-outline-danger .material-icons { color: var(--color-error-500); }
+
+/* ── Ghost Variants ────────────────────────────────────────── */
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-primary-500);
+  border-color: transparent;
+}
+.btn-ghost:hover:not(:disabled) {
+  background: var(--color-primary-50);
+}
+.btn-ghost:active:not(:disabled) {
+  background: var(--color-primary-100);
+}
+.btn-ghost .material-icons { color: var(--color-primary-500); }
+
+.btn-ghost-tertiary {
+  background: transparent;
+  color: var(--color-neutral-900);
+  border-color: transparent;
+}
+.btn-ghost-tertiary:hover:not(:disabled) {
+  background: var(--color-neutral-100);
+}
+.btn-ghost-tertiary:active:not(:disabled) {
+  background: var(--color-neutral-200);
+}
+.btn-ghost-tertiary .material-icons { color: var(--color-neutral-900); }
+
+.btn-ghost-danger {
+  background: transparent;
+  color: var(--color-error-500);
+  border-color: transparent;
+}
+.btn-ghost-danger:hover:not(:disabled) {
+  background: var(--color-error-50);
+}
+.btn-ghost-danger:active:not(:disabled) {
+  background: var(--color-error-100);
+}
+.btn-ghost-danger .material-icons { color: var(--color-error-500); }
+
+/* ── Sizes ─────────────────────────────────────────────────── */
+
+.btn-sm {
+  height: var(--button-height-sm);
+  padding: 0 var(--space-3);
+  font-size: var(--text-xs);
+}
+
+.btn-lg {
+  height: var(--button-height-lg);
+  padding: 0 var(--space-5);
+  font-size: var(--text-lg);
+}
+
+/* ── Icon-only Button ──────────────────────────────────────── */
+
+.btn-icon {
+  width: var(--button-height);
+  padding: 0;
+}
+
+.btn-sm.btn-icon {
+  width: var(--button-height-sm);
+}
+
+.btn-lg.btn-icon {
+  width: var(--button-height-lg);
+}
+
+/* ── Loading State ─────────────────────────────────────────── */
+
+.btn.loading {
+  color: transparent;
+  position: relative;
+  pointer-events: none;
+}
+
+.btn.loading .material-icons {
+  visibility: hidden;
+}
+
+.btn.loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-neutral-0);
+  border-right-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin 0.6s linear infinite;
+}
+
+.btn-secondary.loading::after,
+.btn-tertiary.loading::after,
+.btn-ghost.loading::after,
+.btn-ghost-tertiary.loading::after,
+.btn-outline-primary.loading::after,
+.btn-outline-tertiary.loading::after {
+  border-color: var(--color-neutral-800);
+  border-right-color: transparent;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* ── Form Inputs ──────────────────────────────────────────── */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.form-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+}
+
+.form-label .required {
+  color: var(--text-error);
+  margin-left: 2px;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  height: var(--input-height);
+  padding: 0 var(--space-3);
+  font-family: var(--font-family-sans);
+  font-size: var(--text-md);
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: var(--transition-colors), var(--transition-shadow);
+  width: 100%;
+}
+
+.form-textarea {
+  height: auto;
+  min-height: 80px;
+  padding: var(--space-2) var(--space-3);
+  resize: vertical;
+  line-height: var(--leading-normal);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.form-input:hover,
+.form-select:hover,
+.form-textarea:hover {
+  border-color: var(--border-strong);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+/* Input Sizes */
+.form-input-sm {
+  height: var(--input-height-sm);
+  font-size: var(--text-sm);
+  padding: 0 var(--space-2);
+}
+
+/* Validation States */
+.form-input.error,
+.form-select.error,
+.form-textarea.error {
+  border-color: var(--border-error);
+}
+
+.form-input.error:focus,
+.form-select.error:focus,
+.form-textarea.error:focus {
+  box-shadow: var(--shadow-focus-error);
+}
+
+.form-input.success,
+.form-select.success {
+  border-color: var(--border-success);
+}
+
+.form-hint {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.form-error {
+  font-size: var(--text-xs);
+  color: var(--text-error);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Input with icon */
+.input-group {
+  position: relative;
+}
+
+.input-group .form-input {
+  padding-left: var(--space-8);
+}
+
+.input-group-icon {
+  position: absolute;
+  left: var(--space-2-5);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+/* Select */
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23BFBFBF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: var(--space-8);
+  cursor: pointer;
+}
+
+/* Checkbox & Radio */
+.form-check {
+  margin-bottom: 0;  /* reboot sd-core: label .5rem */
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  font-size: var(--text-md);
+  color: var(--text-primary);
+}
+
+.form-check input[type="checkbox"],
+.form-check input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary-600);
+  cursor: pointer;
+}
+
+/* Toggle/Switch */
+.toggle {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: var(--color-neutral-300);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background var(--duration-normal) var(--ease-default);
+}
+
+.toggle.active {
+  background: var(--color-primary-600);
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: var(--radius-full);
+  transition: transform var(--duration-normal) var(--ease-default);
+  box-shadow: var(--shadow-xs);
+}
+
+.toggle.active::after {
+  transform: translateX(16px);
+}
+
+
+/* ── Input Field (Figma: Input field) ───────────────── */
+/* Material Outlined style — floating label, 3 sizes, 6 states, 7 types */
+
+/* --- Group Container --- */
+.form-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  position: relative;
+}
+
+/* --- The Bordered Field --- */
+.form-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 40px;
+  padding: 0 var(--space-3);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  position: relative;
+  transition: border-color var(--duration-normal) var(--ease-default),
+              box-shadow var(--duration-normal) var(--ease-default);
+  cursor: text;
+}
+
+/* --- The Input Element Inside --- */
+.form-field-input {
+  flex: 1 0 0;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-family-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-regular);
+  line-height: 20px;
+  color: var(--text-primary);
+  width: 100%;
+  padding: 0;
+}
+
+.form-field-input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* --- Floating Label --- */
+/* Label floats above border when field has value OR is focused.
+   CSS-only: uses :placeholder-shown + :focus-within on parent.
+   Always include label in HTML — it auto-hides when placeholder visible & not focused. */
+.form-field-label {
+  margin-bottom: 0;  /* reboot sd-core label .5rem — nhãn nổi của form-field kit tự định vị */
+  position: absolute;
+  top: -12px;
+  left: 5px;
+  padding: 0 6px;
+  font-family: var(--font-family-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-regular);
+  line-height: 16px;
+  color: var(--text-secondary);
+  background: var(--surface-primary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 1;
+  transition: opacity var(--duration-fast) var(--ease-default);
+}
+
+/* Hide label when input is empty (placeholder visible) and NOT focused */
+.form-field:not(:focus-within) .form-field-input:placeholder-shown ~ .form-field-label {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Show label when focused (even if empty) */
+.form-field:focus-within .form-field-label {
+  opacity: 1;
+}
+
+/* When focused, hide placeholder text so label replaces it */
+.form-field:focus-within .form-field-input::placeholder {
+  opacity: 0;
+}
+
+.form-field-label .material-icons {
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+.form-field-label .required {
+  color: var(--sd-error);
+  font-size: var(--text-sm);
+  opacity: 0.8;
+}
+
+/* --- Leading & Trailing Icons --- */
+.form-field-leading,
+.form-field-trailing {
+  color: var(--icon-placeholder);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.form-field-trailing {
+  cursor: pointer;
+}
+
+/* --- Sizes --- */
+.form-field.form-field-xs {
+  min-height: 24px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.form-field.form-field-xs .form-field-input {
+  font-size: var(--text-sm);
+  line-height: 16px;
+}
+
+.form-field.form-field-xs .form-field-input::placeholder {
+  font-size: var(--text-sm);
+}
+
+.form-field.form-field-xs .form-field-label {
+  top: -10px;
+  font-size: 10px;
+  line-height: 12px;
+  padding: 0 4px;
+}
+
+.form-field.form-field-xs .form-field-trailing,
+.form-field.form-field-xs .form-field-leading {
+  font-size: 14px;
+}
+
+.form-field.form-field-xs .material-icons {
+  font-size: 14px;
+}
+
+.form-field.form-field-sm {
+  min-height: 32px;
+}
+
+.form-field.form-field-lg {
+  min-height: 48px;
+}
+
+/* OTP slot sizes */
+.form-field-otp.form-field-otp-sm .form-field-otp-slot {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  font-size: var(--text-base);
+}
+
+.form-field-otp.form-field-otp-lg .form-field-otp-slot {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  font-size: var(--text-lg);
+}
+
+/* --- State: Hover --- */
+.form-field:hover {
+  border-color: var(--border-strong);
+}
+
+/* --- State: Focus --- */
+.form-field:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+/* --- State: Error --- */
+.form-field.error {
+  border-color: var(--border-error);
+}
+
+.form-field.error:focus-within {
+  box-shadow: var(--shadow-focus-error);
+}
+
+/* --- State: Disabled --- */
+.form-field.disabled {
+  background: var(--surface-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-field.disabled .form-field-input {
+  cursor: not-allowed;
+  color: var(--text-secondary);
+}
+
+.form-field.disabled .form-field-label {
+  background: var(--surface-disabled);
+}
+
+/* --- State: Read-only --- */
+.form-field.readonly {
+  background: var(--surface-disabled);
+}
+
+.form-field.readonly .form-field-input {
+  cursor: default;
+}
+
+.form-field.readonly .form-field-label {
+  background: var(--surface-disabled);
+}
+
+/* --- Hint & Error Text --- */
+.form-field-hint {
+  font-family: var(--font-family-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--font-regular);
+  line-height: 16px;
+  color: var(--text-secondary);
+}
+
+.form-field-error-text {
+  font-family: var(--font-family-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--font-regular);
+  line-height: 16px;
+  color: var(--text-error);
+}
+
+/* --- Character Count --- */
+.form-field-count {
+  font-size: var(--text-xs);
+  line-height: 16px;
+  color: var(--text-secondary);
+  text-align: right;
+  align-self: flex-end;
+}
+
+/* --- Type: Unit (split field with suffix) --- */
+.form-field-unit {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  position: relative;
+  transition: border-color var(--duration-normal) var(--ease-default),
+              box-shadow var(--duration-normal) var(--ease-default);
+}
+
+.form-field-unit:hover {
+  border-color: var(--border-strong);
+}
+
+.form-field-unit:focus-within {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.form-field-unit.error {
+  border-color: var(--border-error);
+}
+
+.form-field-unit.error:focus-within {
+  box-shadow: var(--shadow-focus-error);
+}
+
+.form-field-unit.disabled {
+  pointer-events: none;
+}
+
+.form-field-unit.disabled .form-field-unit-input {
+  background: var(--surface-disabled);
+}
+
+.form-field-unit.disabled .form-field-suffix {
+  background: var(--surface-disabled);
+}
+
+.form-field-unit.readonly .form-field-unit-input {
+  background: var(--surface-disabled);
+}
+
+.form-field-unit.readonly .form-field-suffix {
+  background: var(--surface-disabled);
+}
+
+.form-field-unit.form-field-xs {
+  min-height: 24px;
+}
+
+.form-field-unit.form-field-xs .form-field-unit-input {
+  padding: 0 var(--space-2);
+}
+
+.form-field-unit.form-field-xs .form-field-input {
+  font-size: var(--text-sm);
+}
+
+.form-field-unit.form-field-xs .form-field-suffix {
+  padding: 0 var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.form-field-unit.form-field-sm {
+  min-height: 32px;
+}
+
+.form-field-unit.form-field-lg {
+  min-height: 48px;
+}
+
+.form-field-unit-input {
+  flex: 1 0 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-3);
+  min-height: inherit;
+  min-width: 0;
+  background: var(--surface-primary);
+}
+
+.form-field-unit-input .form-field-input {
+  flex: 1;
+}
+
+.form-field-suffix {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  min-height: inherit;
+  border-left: 1px solid var(--border-primary);
+  background: var(--surface-primary);
+  font-family: var(--font-family-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-regular);
+  line-height: 20px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Upload type — suffix is bolder */
+.form-field-suffix-action {
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+/* Floating label on unit field */
+.form-field-unit .form-field-label {
+  position: absolute;
+  top: -12px;
+  left: 5px;
+  z-index: 1;
+}
+
+/* --- Type: OTP --- */
+.form-field-otp {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.form-field-otp-slot {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  background: var(--surface-primary);
+  text-align: center;
+  font-family: var(--font-family-sans);
+  font-size: var(--text-lg);
+  font-weight: var(--font-medium);
+  line-height: 24px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--duration-normal) var(--ease-default),
+              box-shadow var(--duration-normal) var(--ease-default);
+  padding: 0;
+}
+
+.form-field-otp-slot:hover {
+  border-color: var(--border-strong);
+}
+
+.form-field-otp-slot:focus {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.form-field-otp.error .form-field-otp-slot {
+  border-color: var(--border-error);
+}
+
+.form-field-otp.error .form-field-otp-slot:focus {
+  box-shadow: var(--shadow-focus-error);
+}
+
+.form-field-otp.disabled .form-field-otp-slot {
+  background: var(--surface-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-field-otp.readonly .form-field-otp-slot {
+  background: var(--surface-disabled);
+  cursor: default;
+}
+
+/* --- Type: Tag Chip --- */
+.form-field-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+}
+
+.form-field-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 8px;
+  background: var(--color-neutral-200);
+  border-radius: var(--radius-full);
+  font-family: var(--font-family-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-regular);
+  line-height: 20px;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.form-field-chip .material-icons {
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+/* --- Type: Upload file list --- */
+.form-field-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form-field-file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1);
+  background: var(--surface-secondary);
+  border: 1px dashed var(--border-primary);
+  border-radius: var(--radius-sm);
+}
+
+.form-field-file-icon {
+  flex-shrink: 0;
+  color: var(--icon-default);
+}
+
+.form-field-file-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.form-field-file-name {
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--color-info-500);
+  text-decoration: none;
+}
+
+.form-field-file-size {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.form-field-file-remove {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.form-field-file-remove-btn {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  background: var(--surface-disabled);
+  border: 1px solid var(--surface-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-field-file-remove-btn .material-icons {
+  font-size: 10px;
+  color: var(--text-primary);
+}
+
+/* --- Type: Dropdown (select-like field) --- */
+.form-field-dropdown {
+  position: relative;
+}
+
+.form-field-dropdown .form-field {
+  cursor: pointer;
+}
+
+.form-field-dropdown .form-field-input {
+  cursor: pointer;
+  caret-color: transparent;
+}
+
+.form-field-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-dropdown);
+  max-height: 240px;
+  overflow-y: auto;
+  padding: var(--space-1) 0;
+}
+
+.form-field-dropdown-menu.open {
+  display: block;
+}
+
+.form-field-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-family-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-regular);
+  line-height: 20px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.form-field-dropdown-item:hover {
+  background: var(--surface-hover);
+}
+
+.form-field-dropdown-item.selected {
+  background: var(--surface-selected);
+  color: var(--color-primary-500);
+  font-weight: var(--font-medium);
+}
+
+.form-field-dropdown-item .material-icons {
+  font-size: 16px;
+  color: var(--color-primary-500);
+  margin-left: auto;
+}
+
+/* Dropdown xs size — compact items for th-filter */
+.form-field-dropdown.form-field-xs .form-field-dropdown-menu {
+  max-height: 180px;
+}
+
+.form-field-dropdown.form-field-xs .form-field-dropdown-item {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-sm);
+  line-height: 16px;
+}
+
+/* Chevron rotation when open */
+.form-field-dropdown.open .form-field-trailing {
+  transform: rotate(180deg);
+  transition: transform var(--duration-normal) var(--ease-default);
+}
+
+.form-field-trailing {
+  transition: transform var(--duration-normal) var(--ease-default);
+}
+
+/* --- Type: Datepicker --- */
+.form-field-datepicker-wrapper {
+  position: relative;
+}
+
+.form-field-datepicker {
+  /* ══ LỊCH DÙNG CHUNG — mirror `mat-calendar` của Core UI Catalog ══
+     Rà soát 2026-10-12. Đo cùng số ở `#c-date` · `#c-chip-calendar` ·
+     `#c-date-range` · `#c-datetime`. Bố cục và locale theo catalog (en-US,
+     tuần bắt đầu Chủ nhật) — Builder chốt "Đổi theo catalog để khớp sát nhất".
+
+     `--sd-cal-w` là bề ngang khung lịch: catalog `mat-datepicker-content`
+     296px (sd-date, sd-date-range), `mat-menu` 280px (sd-chip-calendar).
+     Mọi khoảng cách % của Material tính trên (bề ngang − 16px), nên thanh
+     tiêu đề phải biết bề ngang này. */
+  --sd-cal-w: 296px;
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: var(--sd-cal-w);
+  background: var(--surface-primary);
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12);
+  z-index: var(--z-dropdown);
+  padding: 0;
+  user-select: none;
+}
+
+.form-field-datepicker.open {
+  display: block;
+}
+
+/* ─ Thanh tiêu đề: [OCT 2026 ▾] · khoảng đệm · [‹] [›]
+     Catalog: `.mat-calendar-header{padding:8px 8px 0}` bọc
+     `.mat-calendar-controls{display:flex; margin:5% calc(4.7142857143% - 16px)}`,
+     % tính trên bề ngang nội dung (W − 16). Kit gộp hai lớp đó làm một nên
+     cộng sẵn 8px đệm vào lề. */
+.form-field-datepicker-header {
+  display: flex;
+  align-items: center;
+  height: 36px;
+}
+.form-field-datepicker > .form-field-datepicker-header {
+  margin:
+    calc(8px + (var(--sd-cal-w) - 16px) * .05)
+    calc(8px + (var(--sd-cal-w) - 16px) * .047142857 - 16px)
+    calc((var(--sd-cal-w) - 16px) * .05);
+}
+
+/* Nút kỳ: cao 24px, đệm 0 8px, lề 0 8px, bo 4px, chữ 14px/500.
+   Catalog đứng YÊN — không mở bảng chọn tháng/năm (xem sd-components.js). */
+.form-field-datepicker-period {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 1 auto;
+  height: 24px;
+  margin: 0 8px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  font-family: var(--font-family-sans);
+  font-size: 14px;
+  font-weight: 500;
+  /* `--mat-sys-title-small-tracking: .006rem` = 0.096px — đo được trên catalog */
+  letter-spacing: .006rem;
+  color: rgba(0, 0, 0, .87);
+  cursor: pointer;
+  white-space: nowrap;
+}
+/* Lớp phủ trạng thái 4% của nút Material (cùng cách `sd-button` đã mirror) */
+.form-field-datepicker-period:hover,
+.form-field-datepicker-nav:hover {
+  background: rgba(0, 0, 0, .04);
+}
+
+.form-field-datepicker-title {
+  font: inherit;
+  color: inherit;
+}
+
+/* Mũi tên ▾ — catalog vẽ bằng <svg> polygon 10×5, fill `rgba(0,0,0,.54)`,
+   cách chữ 5px. Kit vẽ bằng tam giác CSS cùng số đo: Rule 4 của AGENTS.md
+   cấm inline SVG cho icon, và Material Icons không có glyph 10×5. */
+.form-field-datepicker-caret {
+  flex: 0 0 auto;
+  width: 0;
+  height: 0;
+  margin-left: 5px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(0, 0, 0, .54);
+}
+
+.form-field-datepicker-spacer {
+  flex: 1 1 auto;
+}
+
+/* Nút ‹ ›: icon-button tròn 36px, đệm 6px, icon 24px. Bản trước 28px bo 4px. */
+.form-field-datepicker-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: rgba(0, 0, 0, .87);
+  padding: 6px;
+}
+.form-field-datepicker-nav .material-icons-outlined ,
+.form-field-datepicker-nav .mat-icon {
+  font-size: 24px;
+}
+
+/* ─ Nhãn thứ: catalog `th` 14px/500 `rgba(0,0,0,.54)`, đệm `0 0 8px` */
+.form-field-datepicker-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 0 8px;
+}
+
+.form-field-datepicker-weekday {
+  font-family: var(--font-family-sans);
+  font-size: 14px;
+  font-weight: var(--font-medium);
+  color: rgba(0, 0, 0, .54);
+  letter-spacing: .006rem;
+  text-align: center;
+  padding: 0 0 8px;
+  line-height: 16px;
+}
+
+/* Đường kẻ dưới hàng thứ: catalog `th.mat-calendar-table-header-divider` cao 8px,
+   `::after` 1px `rgba(0,0,0,.12)` tràn ra hai bên 8px — tức đúng mép khung. */
+.form-field-datepicker-divider {
+  position: relative;
+  height: 8px;
+}
+.form-field-datepicker-divider::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(0, 0, 0, .12);
+}
+
+/* ─ Lưới ngày. `container-type` để nhãn tháng và chiều cao hàng tính được theo
+     bề ngang LƯỚI (catalog dùng % của bảng), không theo bề ngang ô. */
+.form-field-datepicker-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  padding: 0 8px 8px;
+  container-type: inline-size;
+}
+
+/* Ô ngày: catalog `.mat-calendar-body-cell-content` TRÒN, rộng 90% ô, chữ
+   14px thường `rgba(0,0,0,.87)`, viền trong suốt 1px. Lề % của phần tử lưới
+   tính trên bề ngang Ô, nên `5% auto` + `aspect-ratio:1` cho đúng ô vuông
+   cạnh = bề ngang ô (37.7px ở khung 280, 40px ở khung 296) — y hệt bảng của
+   catalog. */
+.form-field-datepicker-day {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  margin: 5% auto;
+  font-family: var(--font-family-sans);
+  font-size: 14px;
+  font-weight: var(--font-regular);
+  color: rgba(0, 0, 0, .87);
+  border: 1px solid transparent;
+  background: none;
+  border-radius: 999px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.form-field-datepicker-day:hover {
+  background: var(--surface-hover);
+}
+
+/* Catalog: ô hôm nay chỉ có VIỀN `rgba(0,0,0,.54)`, không nền, không đậm chữ. */
+.form-field-datepicker-day.today {
+  border-color: rgba(0, 0, 0, .54);
+}
+
+/* Catalog `.mat-calendar-body-selected`: nền `#AE7129` đặc, chữ trắng. */
+.form-field-datepicker-day.selected {
+  background: var(--color-primary-500);
+  color: var(--text-on-primary);
+}
+/* Hôm nay ĐỒNG THỜI đang chọn: vòng trắng lồng trong
+   (`.mat-calendar-body-selected.mat-calendar-body-today{box-shadow:inset 0 0 0 1px #fff}`). */
+.form-field-datepicker-day.selected.today {
+  border-color: transparent;
+  box-shadow: inset 0 0 0 1px #fff;
+}
+
+.form-field-datepicker-day.other-month {
+  color: var(--text-tertiary);
+}
+
+.form-field-datepicker-day.disabled {
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Nhãn tháng ("OCT") đầu lưới — catalog `.mat-calendar-body-label`:
+   14px/500 `rgba(0,0,0,.54)`, căn trái, lề trái 4.7142857143% bề ngang bảng,
+   cao đúng một hàng ô. */
+.form-field-datepicker-label {
+  display: flex;
+  align-items: center;
+  min-height: calc(100cqi / 7);
+  padding-left: 4.7142857143cqi;
+  font-family: var(--font-family-sans);
+  font-size: 14px;
+  font-weight: var(--font-medium);
+  letter-spacing: .006rem;
+  color: rgba(0, 0, 0, .54);
+}
+.form-field-datepicker-blank { min-height: calc(100cqi / 7); }
+
+.sd-cal-span-1 { grid-column: span 1; }
+.sd-cal-span-2 { grid-column: span 2; }
+.sd-cal-span-3 { grid-column: span 3; }
+.sd-cal-span-4 { grid-column: span 4; }
+.sd-cal-span-5 { grid-column: span 5; }
+.sd-cal-span-6 { grid-column: span 6; }
+.sd-cal-span-7 { grid-column: span 7; }
+
+/* --- Type: DateTime (Date + Time picker) --- */
+.form-field-datetime {
+  position: relative;
+}
+
+.form-field-datetime-popup {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-dropdown);
+  user-select: none;
+  overflow: hidden;
+}
+
+.form-field-datetime-popup.open {
+  display: flex;
+}
+
+/* Left panel: date display + selected datetime */
+.form-field-datetime-left {
+  width: 180px;
+  background: var(--surface-secondary);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-right: 1px solid var(--border-primary);
+}
+
+.form-field-datetime-year {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: var(--font-regular);
+}
+
+.form-field-datetime-date {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-regular);
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.form-field-datetime-time {
+  font-size: 2.5rem;
+  font-weight: var(--font-regular);
+  color: var(--text-secondary);
+  letter-spacing: 2px;
+  margin-top: var(--space-2);
+}
+
+.form-field-datetime-time .dt-active {
+  color: var(--text-primary);
+}
+
+/* Right panel: calendar or clock */
+.form-field-datetime-right {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3);
+  min-width: 280px;
+}
+
+/* Reuse datepicker styles for calendar inside datetime */
+.form-field-datetime-right .form-field-datepicker-header,
+.form-field-datetime-right .form-field-datepicker-weekdays,
+.form-field-datetime-right .form-field-datepicker-days {
+  /* Inherited from datepicker */
+}
+
+/* View tabs: Calendar / Clock toggle */
+.form-field-datetime-tabs {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.form-field-datetime-tab {
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-family-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.form-field-datetime-tab.active {
+  color: var(--color-primary-500);
+  border-bottom-color: var(--color-primary-500);
+}
+
+/* Time picker clock */
+.form-field-timepicker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.form-field-timepicker-clock {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: var(--surface-secondary);
+}
+
+/* Clock center dot */
+.form-field-timepicker-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-info-500);
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+/* Clock hand (line from center to selected number) */
+.form-field-timepicker-hand {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  width: 2px;
+  background: var(--color-info-500);
+  transform-origin: bottom center;
+  z-index: 1;
+  border-radius: 1px;
+}
+
+/* Numbers on clock face */
+.form-field-timepicker-number {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-regular);
+  color: var(--text-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.form-field-timepicker-number:hover {
+  background: var(--surface-hover);
+}
+
+.form-field-timepicker-number.selected {
+  background: var(--color-info-500);
+  color: var(--text-inverse);
+  font-weight: var(--font-medium);
+}
+
+/* Inner ring numbers (13-24) — smaller, closer to center */
+.form-field-timepicker-number.inner {
+  font-size: var(--text-sm);
+  width: 28px;
+  height: 28px;
+  color: var(--text-secondary);
+}
+
+.form-field-timepicker-number.inner.selected {
+  background: var(--color-info-500);
+  color: var(--text-inverse);
+}
+
+/* Minute mode indicator */
+.form-field-timepicker-mode {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* Confirm button */
+.form-field-datetime-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--border-primary);
+}
+
+
+/* ── Cards ────────────────────────────────────────────────── */
+
+.card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Allow dropdown/datepicker popups to escape parent boundaries */
+.card:has(.form-field-dropdown, .form-field-datepicker-wrapper, .form-field-datetime) {
+  overflow: visible;
+}
+
+.data-table:has(.form-field-dropdown, .form-field-datepicker-wrapper) {
+  overflow: visible;
+}
+
+.data-table:has(.form-field-dropdown, .form-field-datepicker-wrapper) thead,
+.data-table:has(.form-field-dropdown, .form-field-datepicker-wrapper) th {
+  overflow: visible;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+.card-title {
+  margin: 0;  /* reboot sd-core: h1–h6 margin-bottom .5rem — thẻ kit tự lo lề */
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.card-body {
+  padding: var(--space-4);
+}
+
+.card-footer {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border-secondary);
+  background: var(--surface-secondary);
+}
+
+/* KPI Card — mẫu HTML viết tay CŨ của kit ("KPI stat chip"), catalog không có.
+   Rà soát #c-kpi-card 2026-10-12: tên lớp `.kpi-card` TRÙNG với lớp bên trong
+   `bpm-kpi-card` (mirror catalog), và `flex-direction: column` ở đây rò sang làm
+   icon của bpm-kpi-card nhảy lên TRÊN nhãn (thẻ 104×112 thay vì 140×76).
+   Giữ lại cho trang cũ (build.md: không xoá class), nhưng loại trừ thẻ con của
+   bpm-kpi-card. Trang mới dùng `bpm-filter-scorecard` / `bpm-kpi-card`. */
+.kpi-card:not(bpm-kpi-card > .kpi-card) {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.kpi-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kpi-card-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+}
+
+.kpi-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpi-card-value {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  font-family: var(--font-family-mono);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-none);
+}
+
+.kpi-card-trend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+}
+
+.kpi-card-trend.up {
+  color: var(--text-success);
+}
+
+.kpi-card-trend.down {
+  color: var(--text-error);
+}
+
+.kpi-card-trend .period {
+  color: var(--text-tertiary);
+  font-weight: var(--font-regular);
+}
+
+
+/* ── Data Table ───────────────────────────────────────────── */
+
+.table-container {
+  border: 1px solid var(--border-primary);
+  border-radius: 0;
+  background: var(--surface-primary);
+  display: flex;
+  flex-direction: column;
+  max-height: 600px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.table-container .table-scroll {
+  overflow: auto;
+  flex: 1;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-base);
+}
+
+/* ─ Column resize handle */
+.data-table th .col-resize-handle {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: var(--z-sticky);
+  user-select: none;
+}
+
+.data-table th .col-resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  left: 2px;
+  width: 2px;
+  background: transparent;
+  border-radius: 1px;
+  transition: background var(--duration-fast);
+}
+
+.data-table th .col-resize-handle:hover::after,
+.data-table th .col-resize-handle.resizing::after {
+  background: var(--color-primary-500);
+}
+
+.data-table.resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+/* ─ Header: Type A (standard, no inline filter) */
+.data-table th {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background: var(--surface-secondary);
+  height: 56px;
+  padding: var(--space-2) var(--space-2);
+  text-align: left;
+  font-weight: var(--font-medium);
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-primary);
+  white-space: normal;
+  line-height: 1.4;
+  user-select: none;
+  vertical-align: top;
+  overflow: hidden;
+}
+
+/* Th inner text: max 2 lines with ellipsis + tooltip */
+.data-table th .th-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.data-table th.sortable {
+  cursor: pointer;
+  transition: color var(--duration-fast);
+}
+
+.data-table th.sortable:hover {
+  color: var(--text-primary);
+}
+
+.data-table th .sort-icon {
+  display: inline-flex;
+  margin-left: var(--space-1);
+  opacity: 0.3;
+  vertical-align: middle;
+}
+
+.data-table th.sorted .sort-icon {
+  opacity: 1;
+  color: var(--color-primary-500);
+}
+
+/* ─ Header: Type B (has inline column filter) */
+.data-table th.has-filter {
+  height: 88px;
+  padding: var(--space-2) var(--space-2);
+  vertical-align: top;
+  white-space: normal;
+}
+
+.data-table th .th-label {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  gap: var(--space-1);
+  margin-bottom: var(--space-1);
+  font-weight: var(--font-medium);
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.data-table th .th-filter {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  bottom: var(--space-2);
+  left: var(--space-2);
+  right: var(--space-2);
+}
+
+.data-table th .th-filter-input {
+  height: 24px;
+  width: 100%;
+  min-width: 80px;
+  padding: 0 var(--space-2);
+  font-family: var(--font-family-sans);
+  font-size: var(--text-xs);
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: var(--transition-colors), var(--transition-shadow);
+}
+
+.data-table th .th-filter-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.data-table th .th-filter-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ─ Filter select variant inside header */
+.data-table th .th-filter-select {
+  height: 24px;
+  width: 100%;
+  min-width: 80px;
+  padding: 0 var(--space-5) 0 var(--space-2);
+  font-family: var(--font-family-sans);
+  font-size: var(--text-xs);
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23BFBFBF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  appearance: none;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.data-table th .th-filter-select:focus {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ─ Data cells */
+.data-table td {
+  padding: var(--space-2) var(--space-2);
+  height: var(--table-row-height);
+  border-bottom: 1px solid var(--border-table-row);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  line-height: var(--leading-snug);
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 0;
+}
+
+.data-table tr:last-child td {
+  border-bottom: 1px solid var(--border-table-row);
+}
+
+.data-table tr:hover td {
+  background: var(--surface-hover);
+}
+
+.data-table tr.selected td {
+  background: var(--surface-selected);
+}
+
+/* ─ Compact variant */
+.data-table.compact td,
+.data-table.compact th {
+  padding: var(--space-1-5) var(--space-2);
+}
+
+.data-table.compact td {
+  height: var(--table-row-height-compact);
+}
+
+.data-table.compact th.has-filter {
+  padding: var(--space-1) var(--space-2);
+}
+
+/* ─ Column: Checkbox */
+.data-table .col-check {
+  width: 48px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.data-table .col-check input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--color-primary-500);
+  cursor: pointer;
+  vertical-align: middle;
+  margin: 0;
+}
+
+/* ─ Column: Drag handle */
+.data-table .col-drag {
+  width: 32px;
+  text-align: center;
+  color: var(--icon-placeholder);
+}
+
+.data-table .col-drag .drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: var(--icon-placeholder);
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+
+.data-table tr:hover .col-drag .drag-handle {
+  opacity: 1;
+}
+
+/* ─ Column: Row sequence number */
+.data-table .col-seq {
+  width: 48px;
+  text-align: right;
+  font-size: var(--text-base);
+  color: var(--text-tertiary);
+  padding-right: var(--space-2);
+  vertical-align: middle;
+}
+
+/* ─ Column: Numeric */
+.data-table .col-numeric {
+  text-align: right;
+  font-size: var(--text-base);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─ Column: Actions (⋮) */
+.data-table .col-actions {
+  width: 48px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* ─ Cell: ID / Link */
+.data-table .cell-link {
+  color: var(--text-link);
+  font-size: var(--text-base);
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  transition: color var(--duration-fast);
+}
+
+.data-table .cell-link:hover {
+  color: var(--text-link-hover);
+  text-decoration: underline;
+}
+
+/* ─ Cell: Secondary / muted text */
+.data-table .cell-muted {
+  color: var(--text-secondary);
+  font-size: var(--text-base);
+}
+
+/* ─ Cell: Datetime */
+.data-table .cell-datetime {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ─ Cell: Double line (primary + secondary stacked) */
+.data-table .cell-double {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+  min-height: 32px;
+}
+
+.data-table .cell-double .cell-primary {
+  font-size: var(--text-base);
+  line-height: 20px;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.data-table .cell-double .cell-secondary {
+  font-size: var(--text-base);
+  line-height: 20px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─ Cell: Sequential (primary + secondary inline) */
+.data-table .cell-sequential {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--space-2);
+}
+
+.data-table .cell-sequential .cell-primary {
+  font-size: var(--text-base);
+  line-height: 20px;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.data-table .cell-sequential .cell-secondary {
+  font-size: var(--text-base);
+  line-height: 20px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─ Cell: Small text (12px) */
+.data-table .cell-small {
+  font-size: var(--text-xs);
+  line-height: 16px;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─ Cell: Secondary-only text (grey 14px) */
+.data-table .cell-secondary {
+  font-size: var(--text-base);
+  line-height: 20px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─ Cell: Icon group (action icons inline) */
+.data-table .cell-icon-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.data-table .cell-icon-group .cell-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--icon-default);
+  cursor: pointer;
+  transition: color var(--duration-fast);
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.data-table .cell-icon-group .cell-icon-btn:hover {
+  color: var(--text-primary);
+}
+
+/* ─ Cell: Badge / Chip group */
+.data-table .cell-badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+}
+
+.data-table .cell-badge-group .badge-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
+  font-size: var(--text-xs);
+  line-height: 16px;
+  font-weight: var(--font-regular);
+  color: var(--color-info-500);
+  background: var(--color-info-50);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+/* ─ Cell: Inline field (select/input in cell) */
+.data-table .cell-field {
+  display: flex;
+  align-items: center;
+}
+
+.data-table .cell-field select,
+.data-table .cell-field input {
+  height: 32px;
+  width: 100%;
+  padding: 0 var(--space-5) 0 var(--space-2);
+  font-family: var(--font-family-sans);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.data-table .cell-field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23BFBFBF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.data-table .cell-field select:focus,
+.data-table .cell-field input:focus {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ─ Cell: Inline button */
+.data-table .cell-button .btn {
+  height: 32px;
+  width: 100%;
+}
+
+/* ─ Cell: Image / Thumbnail */
+.data-table .cell-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.data-table .cell-image img {
+  height: 32px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* ─ Cell: Folder (tree row with arrow + folder icon) */
+.data-table .cell-folder {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.data-table .cell-folder .folder-arrow {
+  display: inline-flex;
+  color: var(--icon-default);
+  cursor: pointer;
+}
+
+.data-table .cell-folder .folder-icon {
+  display: inline-flex;
+  color: var(--icon-default);
+}
+
+/* ─ Cell: Folder content (indented with subdirectory arrow) */
+.data-table .cell-folder-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-left: calc(16px + var(--space-2));
+}
+
+.data-table .cell-folder-content .subfolder-icon {
+  display: inline-flex;
+  color: var(--icon-default);
+}
+
+/* ── Table Footer — 3-zone layout ────────────────────────── */
+
+.table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 50px;
+  padding: 0 var(--space-3);
+  border-top: 1px solid var(--border-primary);
+  background: var(--surface-primary);
+  gap: var(--space-3);
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* Left zone: action icon buttons (reload, settings, export) */
+.table-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 1;
+}
+
+.table-footer-actions .btn-ghost {
+  gap: var(--space-1-5);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  height: var(--button-height-sm);
+  padding: 0 var(--space-2);
+}
+.table-footer-actions .btn-ghost .material-icons {
+  color: inherit;
+}
+
+/* Right-center zone: items-per-page + page range info */
+.table-footer-center {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.table-footer-center .footer-label {
+  white-space: nowrap;
+}
+
+.table-page-select {
+  height: 24px;
+  padding: 0 var(--space-5) 0 var(--space-2);
+  font-family: var(--font-family-sans);
+  font-size: var(--text-xs);
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23BFBFBF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  appearance: none;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+}
+
+.table-page-select:focus {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.table-page-count {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.table-page-divider {
+  color: var(--border-strong);
+}
+
+/* Right zone: prev/next navigation */
+.table-footer-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+
+.pagination-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.pagination-btn.active {
+  background: var(--color-primary-500);
+  color: var(--text-on-primary);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Legacy: full pagination strip (Browse pages with many pages) */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Legacy footer info text */
+.table-footer-info {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+/* ─ Bulk Actions Bar */
+/* ── Bulk Actions Snackbar ────────────────────────────────── */
+
+.bulk-snackbar-wrapper {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-bottom: var(--space-2);
+  z-index: var(--z-dropdown);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-default),
+              transform var(--duration-normal) var(--ease-default);
+  transform: translateX(-50%) translateY(8px);
+}
+
+.bulk-snackbar-wrapper.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.bulk-snackbar {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding-right: var(--space-2);
+  background: var(--surface-primary);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1),
+              0 16px 32px 0 rgba(0, 0, 0, 0.2);
+  gap: var(--space-4);
+}
+
+.bulk-snackbar-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  align-self: stretch;
+  background: var(--color-primary-500);
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  font-size: var(--text-lg);
+  font-weight: var(--font-medium);
+  color: var(--text-inverse);
+  flex-shrink: 0;
+}
+
+.bulk-snackbar-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.bulk-snackbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.bulk-snackbar-actions .btn.btn-icon {
+  width: 32px;
+  padding: 0;
+}
+
+.bulk-snackbar-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  color: var(--icon-default);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--duration-fast);
+}
+
+.bulk-snackbar-close:hover {
+  background: var(--surface-hover);
+}
+
+/* Legacy bulk-actions-bar support */
+.bulk-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-primary-50);
+  border-bottom: 1px solid var(--color-primary-200);
+  font-size: var(--text-sm);
+}
+
+.bulk-actions-bar .selected-count {
+  font-weight: var(--font-semibold);
+  color: var(--color-primary-700);
+  margin-right: var(--space-1);
+}
+
+
+/* ── Badges / Status ──────────────────────────────────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px 8px;
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  border-radius: var(--radius-full);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.badge-neutral {
+  background: var(--color-neutral-100);
+  color: var(--color-neutral-700);
+}
+
+.badge-primary {
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+}
+
+.badge-success {
+  background: var(--color-success-50);
+  color: var(--color-success-700);
+}
+
+.badge-warning {
+  background: var(--color-warning-50);
+  color: var(--color-warning-700);
+}
+
+.badge-error {
+  background: var(--color-error-50);
+  color: var(--color-error-700);
+}
+
+.badge-info {
+  background: var(--color-info-50);
+  color: var(--color-info-700);
+}
+
+/* Status Dot */
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.status-dot.active    { background: var(--color-success-500); }
+.status-dot.inactive  { background: var(--color-neutral-400); }
+.status-dot.warning   { background: var(--color-warning-500); }
+.status-dot.error     { background: var(--color-error-500); }
+.status-dot.info      { background: var(--color-info-500); }
+
+.status-dot.pulse {
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+
+/* ── Scorecard — ĐÃ GỠ 2026-10-12 ─────────────────────────────
+   `.sd-scorecard*` thuộc component `sd-scorecard` riêng của kit (Figma
+   Prototype Scorecard) mà Core UI catalog không có. Builder quyết gỡ theo Rule 18;
+   dùng `bpm-filter-scorecard` / `bpm-kpi-card` (CSS ở sd-tokens.css). */
+
+
+/* ── Filter Bar (External Filter Panel) ───────────────────── */
+
+/* ════════════════════════════════════════════════════════════════
+   FILTER BAR (outgrid filter) — mirror `external-filter` của catalog #c-table
+   Rà soát toàn mục 2026-10-12. Bảy chỗ đã sửa, ghi ngay tại chỗ.
+   ════════════════════════════════════════════════════════════════ */
+.filter-bar {
+  display: block;
+  position: relative;
+  z-index: calc(var(--z-sticky) + 1);
+}
+
+/* Vỏ: catalog dùng `.rounded-8.bg-white.c-shadow-section` — tức nền trắng, bo 8px
+   và BỐN đường inset 1px #f2f2f2 làm viền + một bóng đổ nhẹ, KHÔNG phải
+   `border: 1px solid #e6e6e6` như bản trước của kit. `.c-shadow-section` đã có
+   sẵn công thức đúng (dùng chung với sd-section). */
+.filter-bar-shell {
+  border-radius: 8px;
+  background: #fff;
+  overflow: visible;
+}
+
+/* ─ Header: catalog `px-16 py-8` → cao 48px, KHÔNG phải 36px.
+     Đường kẻ ngăn cách nằm ở `border-top` của BODY, không phải inset-shadow
+     dưới header, và màu là #e6e6e6 chứ không phải #f2f2f2. */
+.filter-bar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 16px;
+  cursor: pointer;
+  background: transparent;
+}
+
+.filter-bar-header-left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+/* Icon filter_alt: catalog 24px (`.mi-xl`) màu `text-secondary`, cách nhãn 8px
+   bằng `.mr-8`. Bản trước là 16px màu --icon-default. */
+.filter-bar-header-left .material-icons-outlined ,.filter-bar-header-left .mat-icon {
+  flex-shrink: 0;
+}
+
+/* Tiêu đề "Bộ lọc": catalog `.T16M` = 16px/500/24px. Bản trước 14px/500/21px. */
+.filter-bar-header-left .T16M {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filter-bar-header-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Hai nút trong header: catalog là `sd-button` type=link, square, size=sm
+   (`c-button c-link c-square c-sm`), icon 16px — bản trước kit dựng bằng
+   `<button>` thuần + icon 14px, vi phạm Rule 0b của AGENTS.md ("component cơ
+   bản KHÔNG BAO GIỜ được custom"). Khoảng cách tới chevron là `.mr-4`. */
+.filter-bar-actions {
+  display: flex;
+  align-items: center;
+  margin-right: 4px;
+}
+
+.filter-bar-collapse {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--sd-black400);   /* catalog --sd-secondary #212121 — kit nhạt hơn, xem dưới */
+  flex-shrink: 0;
+}
+
+/* Icon header màu NHẠT — QUYẾT ĐỊNH CỦA BUILDER 2026-10-14: *„Trừ fields thì các icon trong
+   external filter (icon filter, icon reset filter, icon setting, icon arrow up/down) để màu
+   nhẹ hơn“*. Catalog: filter_alt `text-secondary` #212121, hai nút `link secondary` #000,
+   chevron #212121 → cả bốn về `--sd-black400` #757575 (màu chữ phụ của kit). Chữ "Bộ lọc"
+   và các ô lọc giữ nguyên. Nút vẫn là `sd-button` — chỉ đè màu chữ/icon trong vỏ này
+   (rule `link secondary` của sd-button mang !important nên phải !important theo). */
+.filter-bar .filter-bar-header-left .material-icons-outlined { color: var(--sd-black400) !important; }
+.filter-bar .filter-bar-actions sd-button .c-button.c-link.mat-secondary { color: var(--sd-black400) !important; }
+
+/* ─ Body: catalog `p-16` + `border-top: 1px solid #e6e6e6`.
+     Bản trước còn `align-items: flex-end` để xếp nút "Tìm kiếm" — nút đó đã gỡ
+     (catalog không có), nên body nay chỉ còn đúng cái lưới.
+     Rà soát lần 2 (2026-10-12): gỡ `max-height:500px` + `overflow:hidden` +
+     transition. Catalog không có hiệu ứng trượt nào (Rule 6 cũng cấm), còn
+     `max-height` cắt mất hàng ô lọc thứ 7 trở đi khi bộ lọc dài. */
+.filter-bar-body {
+  padding: 16px;
+  border-top: 1px solid var(--sd-black200);
+  background: transparent;
+}
+
+/* ─ Lưới ô lọc: catalog dùng `.row.mx-0 { row-gap:16px }` với cột
+     `col-lg-3 col-md-3 col-sm-6 px-8` → 4 cột từ 768px, 2 cột từ 576px,
+     1 cột dưới đó. Bản trước kit cố định `repeat(6, 1fr)` ở MỌI bề ngang.
+     Rà soát lần 2 (2026-10-12): `px-8` của mỗi cột vừa tạo khe 16px GIỮA hai
+     cột vừa để lề 8px ở HAI MÉP NGOÀI (`mx-0` không bù lại). Bản lần 1 chỉ có
+     khe giữa → ô đầu sát mép body (x=16 thay vì 24), mỗi ô rộng hơn 4px.
+     `padding: 0 8px` dựng lại đúng lề ngoài đó; đo ở 1242px ra ô 286.5px tại
+     x = 24 / 326.5 / 629 / 931.5, khớp catalog. */
+.filter-bar-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 576px) {
+  .filter-bar-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 768px) {
+  .filter-bar-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.filter-bar-grid > * { min-width: 0; }
+
+.filter-bar-grid .form-input,
+.filter-bar-grid .form-select {
+  height: var(--input-height);
+  font-size: var(--text-base);
+  width: 100%;
+}
+
+.filter-bar-grid .form-field,
+.filter-bar-grid .form-field-dropdown {
+  width: 100%;
+}
+
+.filter-bar-grid .form-field-dropdown .form-field-dropdown-menu {
+  width: 100%;
+}
+
+/* ─ Trạng thái thu gọn: chỉ còn header (48px), body ẩn hẳn. */
+.filter-bar.minimized .filter-bar-body {
+  display: none;
+}
+
+/* Legacy inline filter-bar support */
+.filter-bar.inline {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  flex-wrap: wrap;
+  border-radius: 0;
+  background: transparent;
+}
+
+.filter-bar.inline .form-input,
+.filter-bar.inline .form-select {
+  height: var(--input-height-sm);
+  font-size: var(--text-sm);
+  width: auto;
+  min-width: 140px;
+}
+
+.filter-bar.inline .search-filter {
+  min-width: 220px;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-2-5);
+  background: var(--color-primary-50);
+  color: var(--color-primary-700);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+}
+
+.filter-chip-remove {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.filter-chip-remove:hover {
+  background: var(--color-primary-200);
+}
+
+.filter-clear {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--duration-fast);
+  background: none;
+  border: none;
+  font-family: var(--font-family-sans);
+}
+
+.filter-clear:hover {
+  color: var(--text-error);
+}
+
+
+/* ── Modal ────────────────────────────────────────────────── */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--surface-overlay);
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10vh;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--duration-normal) var(--ease-default),
+              visibility var(--duration-normal);
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background: var(--surface-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(-8px) scale(0.98);
+  transition: transform var(--duration-slow) var(--ease-out);
+  z-index: var(--z-modal);
+}
+
+.modal-overlay.open .modal {
+  transform: translateY(0) scale(1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-primary);
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.modal-close {
+  padding: 0;  /* reboot sd-core không xoá padding UA của <button> */
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: var(--transition-colors);
+}
+
+.modal-close:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: var(--space-5);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--border-primary);
+  flex-shrink: 0;
+}
+
+/* Modal Sizes */
+.modal-sm { max-width: 400px; }
+.modal-lg { max-width: 680px; }
+.modal-xl { max-width: 900px; }
+
+
+/* ── Notifications / Toast ────────────────────────────────── */
+
+.toast-container {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 320px;
+  max-width: 420px;
+  pointer-events: all;
+  animation: slideInRight var(--duration-slow) var(--ease-out);
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.toast-message {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  margin-top: var(--space-0-5);
+}
+
+.toast-close {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  transition: color var(--duration-fast);
+}
+
+.toast-close:hover {
+  color: var(--text-primary);
+}
+
+/* Toast Variants */
+.toast-success { border-left: 3px solid var(--color-success-500); }
+.toast-warning { border-left: 3px solid var(--color-warning-500); }
+.toast-error   { border-left: 3px solid var(--color-error-500); }
+.toast-info    { border-left: 3px solid var(--color-info-500); }
+
+.toast-success .toast-icon { color: var(--color-success-500); }
+.toast-warning .toast-icon { color: var(--color-warning-500); }
+.toast-error   .toast-icon { color: var(--color-error-500); }
+.toast-info    .toast-icon { color: var(--color-info-500); }
+
+
+/* ── Inline Alert / Banner — LỚP CŨ của kit, trang mới dùng <sd-inform> ──
+   2026-10-15 (Builder: „inform warning thì lệch core“): hộp `.alert.alert-X` mà trang CŨ còn dựng — nhất là hộp dựng bằng JS
+   (`banner.className = 'alert alert-warning'` + innerHTML) mà migrate-prototype.mjs không đổi được — trước vẽ theo kiểu riêng của
+   kit cũ (chữ màu cam, icon viền, viền nhạt). Nay vẽ Y HÌNH `sd-inform` của kit (#c-inform, số đo ở sd-tokens.css mục
+   sd-inform): viền + nền màu chủ đề, icon trạng thái ĐẶC 20px màu chủ đề, dòng đầu (khi có hơn một dòng) là tiêu đề 14/600
+   cùng màu chữ thân, phần còn lại thân 14/20 #212121, đệm 12px 16px, khe 12px, bo 8px. Icon viền của trang cũ (warning_amber,
+   info, check_circle_outline…) đổi sang icon mặc định của màu đó như catalog. */
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: #fff;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--sd-black500);
+}
+.alert-info              { border-color: var(--sd-info);    background: var(--sd-info-light); }
+.alert-success           { border-color: var(--sd-success); background: var(--sd-success-light); }
+.alert-warning           { border-color: var(--sd-warning); background: var(--sd-warning-light); }
+.alert-error,
+.alert-danger            { border-color: var(--sd-error);   background: var(--sd-error-light); }
+.alert-primary           { border-color: var(--sd-primary); background: var(--sd-primary-light); }
+
+/* icon đầu hộp */
+.alert > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  font-size: 0 !important;
+  line-height: 20px;
+  overflow: hidden;
+}
+.alert > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child::before {
+  content: 'info';
+  font-family: 'Material Icons';
+  font-size: 20px;
+  line-height: 20px;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+.alert-success > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child::before { content: 'check_circle'; }
+.alert-warning > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child::before { content: 'warning'; }
+.alert-error > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child::before,
+.alert-danger > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child::before { content: 'error'; }
+.alert-info > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child { color: var(--sd-info); }
+.alert-success > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child { color: var(--sd-success); }
+.alert-warning > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child { color: var(--sd-warning); }
+.alert-error > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child,
+.alert-danger > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child { color: var(--sd-error); }
+.alert-primary > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child { color: var(--sd-primary); }
+
+/* chữ: khối nội dung như `.c-inform-content` (cột, khe 2px); mọi đoạn bên trong 14/20, không lề */
+.alert > div {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--sd-black500);
+  overflow-wrap: break-word;
+}
+.alert > div > * { margin: 0 !important; font-size: 14px !important; line-height: 20px !important; color: var(--sd-black500); }
+.alert > div > :first-child:not(:only-child) { font-weight: 600 !important; }   /* tiêu đề cùng màu chữ thân như sd-inform của kit (lệch catalog có chủ ý, Builder 2026-10-15) */
+
+
+/* ── Empty State ──────────────────────────────────────────── */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+}
+
+.empty-state > img {
+  margin-bottom: var(--space-4);
+}
+
+.empty-state-title {
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.empty-state-description {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: var(--space-5);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   sd-etable — Editable / Inline-edit Table
+   Mirrors the edit-table reference (node 235:2858).
+   Dùng khi table cần inline editing (select, input trong cells).
+   Khác với sd-table (display-only config-driven).
+   ══════════════════════════════════════════════════════════════ */
+
+.sd-etable {
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  width: 100%;
+}
+
+.sd-etable table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  font-family: inherit;
+}
+
+/* ── Header ── */
+.sd-etable thead tr.etable-name-row th {
+  padding: 10px 12px 6px;
+  background: var(--surface-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  text-align: left;
+  border-bottom: 1px solid var(--border-secondary);
+  white-space: nowrap;
+}
+
+.sd-etable thead tr.etable-filter-row th {
+  padding: 6px 8px 8px;
+  background: var(--surface-secondary);
+  border-bottom: 2px solid var(--border-secondary);
+}
+
+/* narrow control columns (drag, add-row, row-action) */
+.sd-etable th.etable-ctrl,
+.sd-etable td.etable-ctrl {
+  width: 40px;
+  min-width: 40px;
+  text-align: center;
+  padding: 0 4px;
+  background: var(--surface-secondary);
+  border-right: 1px solid var(--border-secondary);
+}
+.sd-etable tbody td.etable-ctrl {
+  background: var(--surface-secondary);
+  color: var(--text-tertiary);
+}
+
+/* filter row cell layout */
+.sd-etable .etable-filter-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sd-etable .etable-filter-cell .material-icons-outlined ,
+.sd-etable .etable-filter-cell .mat-icon {
+  font-size: 16px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+.sd-etable .etable-filter-input {
+  flex: 1;
+  height: 28px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: 0 8px;
+  font-size: var(--text-sm);
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.sd-etable .etable-filter-input:focus {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 2px var(--color-primary-100);
+}
+.sd-etable .etable-filter-input::placeholder { color: var(--text-placeholder); }
+
+/* ── Body ── */
+.sd-etable tbody tr {
+  border-bottom: 1px solid var(--border-secondary);
+  transition: background .12s;
+}
+.sd-etable tbody tr:last-child { border-bottom: none; }
+.sd-etable tbody tr:hover td { background: var(--surface-hover); }
+.sd-etable tbody tr:hover td.etable-ctrl { background: var(--surface-hover); }
+
+.sd-etable td {
+  padding: 6px 10px;
+  vertical-align: middle;
+  color: var(--text-primary);
+}
+
+/* ── Inline form controls inside cells ── */
+.sd-etable .etable-select,
+.sd-etable .etable-input {
+  width: 100%;
+  height: 34px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: 0 10px;
+  font-size: var(--text-sm);
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--surface-primary);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.sd-etable .etable-select:focus,
+.sd-etable .etable-input:focus {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 2px var(--color-primary-100);
+}
+.sd-etable .etable-input::placeholder { color: var(--text-placeholder); }
+.sd-etable .etable-select[multiple] { height: auto; padding: 4px 8px; min-height: 34px; }
+.sd-etable .etable-input:disabled {
+  background: var(--surface-secondary);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+/* range value: two inputs side by side */
+.sd-etable .etable-range {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.sd-etable .etable-range .etable-input { min-width: 80px; }
+.sd-etable .etable-range-sep {
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+/* ── Control icons ── */
+.sd-etable .etable-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: var(--text-tertiary);
+  opacity: 0;
+  transition: opacity .15s;
+}
+.sd-etable tbody tr:hover .etable-drag-handle { opacity: 1; }
+.sd-etable .etable-drag-handle .material-icons-outlined ,
+.sd-etable .etable-drag-handle .mat-icon { font-size: 16px; }
+
+.sd-etable .etable-add-row-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px; height: 24px;
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  opacity: 0;
+  transition: opacity .15s, color .15s, background .15s;
+  cursor: pointer;
+}
+.sd-etable tbody tr:hover .etable-add-row-btn { opacity: 1; }
+.sd-etable .etable-add-row-btn:hover { background: var(--surface-tertiary); color: var(--color-primary-500); }
+.sd-etable .etable-add-row-btn .material-icons-outlined ,
+.sd-etable .etable-add-row-btn .mat-icon { font-size: 16px; }
+
+/* ── Empty state ── */
+.sd-etable .etable-empty {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+/* ── Footer ── */
+.sd-etable .etable-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 8px 12px;
+  border-top: 1px dashed var(--border-secondary);
+  background: var(--surface-secondary);
+}
+
+
+/* ── Loading / Skeleton ───────────────────────────────────── */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-100) 25%,
+    var(--color-neutral-200) 50%,
+    var(--color-neutral-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-text {
+  height: 12px;
+  margin-bottom: var(--space-2);
+}
+
+.skeleton-text:last-child {
+  width: 60%;
+}
+
+.skeleton-heading {
+  height: 20px;
+  width: 40%;
+  margin-bottom: var(--space-3);
+}
+
+.skeleton-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+}
+
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2-5) var(--space-3);
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+/* Spinner */
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--color-neutral-200);
+  border-top-color: var(--color-primary-600);
+  border-radius: var(--radius-full);
+  animation: spin 0.7s linear infinite;
+}
+
+.spinner-sm { width: 16px; height: 16px; border-width: 2px; }
+.spinner-lg { width: 40px; height: 40px; border-width: 4px; }
+
+/* Full-area loading overlay */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-overlay);
+  border-radius: inherit;
+}
+
+
+/* ── Error State ──────────────────────────────────────────── */
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+}
+
+.error-state-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--color-error-500);
+  margin-bottom: var(--space-4);
+}
+
+.error-state-title {
+  font-size: var(--text-md);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.error-state-description {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  max-width: 360px;
+  margin-bottom: var(--space-5);
+}
+
+
+/* ── Dropdown Menu ────────────────────────────────────────── */
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-1);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 180px;
+  padding: var(--space-1);
+  z-index: var(--z-dropdown);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.dropdown-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.dropdown-item:hover {
+  background: var(--surface-hover);
+}
+
+.dropdown-item.danger {
+  color: var(--text-error);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border-secondary);
+  margin: var(--space-1) 0;
+}
+
+
+/* ── Tooltip ──────────────────────────────────────────────── */
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-neutral-800);
+  color: var(--color-neutral-0);
+  font-size: var(--text-xs);
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--duration-fast), visibility var(--duration-fast);
+  pointer-events: none;
+  z-index: var(--z-tooltip);
+}
+
+.tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+
+/* ── Progress Bar ─────────────────────────────────────────── */
+
+.progress-bar {
+  height: 6px;
+  background: var(--color-neutral-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--duration-slow) var(--ease-default);
+}
+
+.progress-fill.primary { background: var(--color-primary-500); }
+.progress-fill.success { background: var(--color-success-500); }
+.progress-fill.warning { background: var(--color-warning-500); }
+.progress-fill.error   { background: var(--color-error-500); }
+
+
+/* ════════════════════════════════════════════════════════════
+   DS PREVIEW — Usage Guide  (.ds-guide-*)
+   Dùng riêng trong design-system/preview/ — không dùng trong prototypes/
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Layout container ──────────────────────────────────────── */
+
+.ds-guide {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+
+.ds-guide-col--full {
+  grid-column: 1 / -1;
+}
+
+.ds-guide-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 10px;
+}
+
+/* ── DO / DON'T boxes ──────────────────────────────────────── */
+
+.ds-guide-do-dont {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ds-guide-do,
+.ds-guide-dont {
+  border-radius: var(--radius-md);
+  padding: 0;
+  background: var(--surface-primary);
+  border: 1px solid var(--color-neutral-200);
+  overflow: hidden;
+}
+
+/* Thin top border as the only color accent */
+.ds-guide-do   { border-top: 3px solid var(--color-success-500); }
+.ds-guide-dont { border-top: 3px solid var(--color-error-500); }
+
+.ds-guide-box-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 14px 8px;
+}
+
+.ds-guide-do .ds-guide-box-header   { color: var(--color-success-600); }
+.ds-guide-dont .ds-guide-box-header { color: var(--color-error-600); }
+
+.ds-guide-do .ds-guide-list,
+.ds-guide-dont .ds-guide-list {
+  margin: 0;
+  padding: 0 14px 14px 28px;
+  color: var(--color-neutral-900);
+  font-size: var(--text-sm);
+  line-height: 1.85;
+}
+
+/* ── PRD example quote ─────────────────────────────────────── */
+
+.ds-guide-prd {
+  background: var(--color-primary-50);
+  border-left: 3px solid var(--color-primary-300);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 10px 14px;
+  color: var(--color-neutral-900);
+  font-size: var(--text-base);
+  font-style: italic;
+}
+
+.ds-guide-prd p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.ds-guide-prd p + p {
+  margin-top: 6px;
+}
+
+/* ── Code block with copy button ───────────────────────────── */
+
+.ds-guide-code-wrap {
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.ds-guide-code-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 10px 5px 14px;
+  background: var(--color-neutral-150);
+  border-bottom: 1px solid var(--color-neutral-300);
+}
+
+.ds-guide-code-lang {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.ds-guide-code-wrap .ds-guide-code {
+  border: none;
+  border-radius: 0;
+  margin: 0;
+}
+
+.ds-guide-code {
+  display: block;
+  background: var(--color-neutral-100);
+  padding: 12px 16px;
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  color: var(--color-neutral-900);
+  overflow-x: auto;
+  white-space: pre;
+  margin: 0;
+  line-height: 1.65;
+}
+
+/* ── Attributes / Events table ─────────────────────────────── */
+
+.ds-guide-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--text-sm);
+  color: var(--color-neutral-900);
+  border: 1px solid var(--color-neutral-400);
+  border-radius: var(--radius-md);
+}
+
+/* Corner rounding for cells at table edges */
+.ds-guide-table thead th:first-child { border-top-left-radius: var(--radius-md); }
+.ds-guide-table thead th:last-child  { border-top-right-radius: var(--radius-md); }
+.ds-guide-table tbody tr:last-child td:first-child { border-bottom-left-radius: var(--radius-md); }
+.ds-guide-table tbody tr:last-child td:last-child  { border-bottom-right-radius: var(--radius-md); }
+
+/* Vertical column dividers (skip last cell) */
+.ds-guide-table th:not(:last-child),
+.ds-guide-table td:not(:last-child) {
+  border-right: 1px solid var(--color-neutral-200);
+}
+
+.ds-guide-table thead th {
+  background: var(--color-neutral-150);
+  color: var(--color-neutral-700);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-neutral-400);
+  white-space: nowrap;
+  text-align: left;
+}
+
+.ds-guide-table tbody tr:nth-child(even) {
+  background: var(--color-neutral-50);
+}
+
+.ds-guide-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-neutral-200);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.ds-guide-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ds-guide-table td:first-child {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  color: var(--color-primary-600);
+  white-space: nowrap;
+}
+
+.ds-guide-table td:nth-child(3) {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  color: var(--color-neutral-700);
+}
+
+.ds-guide-table td em {
+  color: var(--color-neutral-600);
+  font-style: normal;
+}
+
+
+/* Utilities moved to utilities.css */
+
+
+/* ── Menu "Thiết lập bộ lọc" (nút bánh răng của filter-bar) — 2026-10-23 ──
+   Builder: „phần Thiết lập bộ lọc bấm vào đang chưa hoạt động“. Thư viện (ExternalFilterComponent): `mat-menu`
+   `.sd-custom-panel-filter-configuration` {width:240px; max-height:550px; overflow-y:auto}, mỗi ô lọc một
+   `button[mat-menu-item]` bọc `sd-checkbox [label]=title [model]=đang hiện [disabled]=required`. Luật Material menu
+   dưới đây chép NGUYÊN từ khối menu của sd-query-bar (cùng theme portal-fins), đổi phạm vi sang pane riêng của menu này. */
+
+/* pane như `.cdk-overlay-pane` của CDK (container overlay `pointer-events:none`) */
+.cdk-overlay-pane.sd-filter-config-pane{position:absolute;z-index:5;display:flex;max-width:100%;box-sizing:border-box;pointer-events:auto}
+.cdk-overlay-pane.sd-filter-config-pane{ --mat-sys-label-large-font: 'Geist'; --mat-sys-label-large-line-height: 1.25rem; --mat-sys-label-large-size: 0.875rem; --mat-sys-label-large-tracking: 0.006rem; --mat-sys-label-large-weight: 500; }
+.cdk-overlay-pane.sd-filter-config-pane{--mat-menu-container-shape:4px;--mat-menu-divider-bottom-spacing:0;--mat-menu-divider-top-spacing:0;--mat-menu-item-spacing:16px;--mat-menu-item-icon-size:24px;--mat-menu-item-leading-spacing:16px;--mat-menu-item-trailing-spacing:16px;--mat-menu-item-with-icon-leading-spacing:16px;--mat-menu-item-with-icon-trailing-spacing:16px;--mat-menu-container-elevation-shadow:0px 5px 5px -3px rgba(0,0,0,.2),0px 8px 10px 1px rgba(0,0,0,.14),0px 3px 14px 2px rgba(0,0,0,.12);--mat-menu-item-label-text-color:rgba(0,0,0,.87);--mat-menu-item-icon-color:rgba(0,0,0,.87);--mat-menu-item-hover-state-layer-color:rgba(0,0,0,.04);--mat-menu-item-focus-state-layer-color:rgba(0,0,0,.12);--mat-menu-container-color:#fff;--mat-menu-divider-color:rgba(0,0,0,.12)}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item{font-family:inherit;border-radius:0}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-content{margin:0;padding:8px 0;outline:0}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-content,.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-content .mat-mdc-menu-item .mat-mdc-menu-item-text{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;flex:1;white-space:normal;font-family:var(--mat-sys-label-large-font);line-height:var(--mat-sys-label-large-line-height);font-size:var(--mat-sys-label-large-size);letter-spacing:var(--mat-sys-label-large-tracking);font-weight:var(--mat-sys-label-large-weight)}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-panel{min-width:112px;max-width:280px;overflow:auto;box-sizing:border-box;outline:0;animation:_mat-menu-enter 120ms cubic-bezier(0, 0, 0.2, 1);border-radius:var(--mat-menu-container-shape);background-color:var(--mat-menu-container-color);box-shadow:var(--mat-menu-container-elevation-shadow);will-change:transform,opacity}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item{display:flex;position:relative;align-items:center;justify-content:flex-start;overflow:hidden;padding:0;cursor:pointer;width:100%;text-align:left;box-sizing:border-box;color:inherit;font-size:inherit;background:none;text-decoration:none;margin:0;min-height:48px;padding-left:var(--mat-menu-item-leading-spacing);padding-right:var(--mat-menu-item-trailing-spacing);-webkit-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item:has(.material-icons,mat-icon,[matButtonIcon]){padding-left:var(--mat-menu-item-with-icon-leading-spacing);padding-right:var(--mat-menu-item-with-icon-trailing-spacing)}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item,.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item:visited,.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item:link{color:var(--mat-menu-item-label-text-color)}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item[disabled]{cursor:default;opacity:.38}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item[disabled]::after{display:block;position:absolute;content:"";top:0;left:0;bottom:0;right:0}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item:focus{outline:0}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item .mat-icon{flex-shrink:0;margin-right:var(--mat-menu-item-spacing);height:var(--mat-menu-item-icon-size);width:var(--mat-menu-item-icon-size)}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item:not([disabled]):hover{background-color:var(--mat-menu-item-hover-state-layer-color)}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item .mat-mdc-menu-ripple{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-panel.sd-custom-panel-filter-configuration{width:240px;max-width:240px;max-height:550px;overflow-y:auto}
+.cdk-overlay-pane.sd-filter-config-pane .mat-mdc-menu-item sd-checkbox{pointer-events:none}   /* bấm cả dòng = bấm nút như thư viện; ô tick chỉ hiển thị trạng thái */
+/* ô lọc tắt trong menu Thiết lập */
+.filter-bar-grid > [data-sd-ext-hidden]{display:none !important}
+
+/* ── Nhắc nâng trang kit cũ — trang chỉ nạp CSS (2026-10-15) ──
+   Builder: „phần này cần hiện ở mỗi trang có thay đổi của prototype … với tất cả prototype khi gửi cho người khác“.
+   Hộp nhắc thường do sd-components.js dựng (sdLegacyPageNotice — sd-inform warning góc phải dưới, đóng được). Trang kit cũ KHÔNG
+   nạp sd-components.js (vd prototypes/index.html chỉ nạp CSS, hoặc chỉ nạp shell.js / sidebar.js) thì không có JS nào để dựng →
+   vẽ cùng hình bằng CSS. Nhận trang theo luật của công cụ nâng: còn link Google Fonts Roboto của template cũ, chưa có
+   legacy-reset.css (công cụ nạp cho mọi trang đã nâng), không phải trang xem memory (memory-doc.css — công cụ bỏ qua).
+   CSS không đọc được chữ, nên: không có nút đóng (pointer-events:none — bấm xuyên qua được), xuống dòng cố định (white-space:pre,
+   rộng 480px) để đặt được tiêu đề + icon lên trên khung. Ba lớp giả: html::after = khung + thân, html::before = tiêu đề,
+   body::after = icon. Số đo theo sd-inform (sd-tokens.css): đệm 12px 16px, icon 20px, khe 12px, tiêu đề 14/600, thân 14/20. */
+html:has(link[href*="fonts.googleapis.com/css2"][href*="family='Geist'"]):not(:has(script[src*="sd-components.js"], link[href*="legacy-reset.css"], link[href*="memory-doc.css"]))::after,
+html:has(link[href*="fonts.googleapis.com/css2"][href*="family='Geist'"]):not(:has(script[src*="sd-components.js"], link[href*="legacy-reset.css"], link[href*="memory-doc.css"]))::before,
+html:has(link[href*="fonts.googleapis.com/css2"][href*="family='Geist'"]):not(:has(script[src*="sd-components.js"], link[href*="legacy-reset.css"], link[href*="memory-doc.css"])) body::after {
+  position: fixed;
+  z-index: 2000;
+  pointer-events: none;
+  box-sizing: border-box;
+  margin: 0;
+  font-family: 'Geist', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: normal;
+  text-align: left;
+  text-transform: none;
+  color: var(--sd-black500, #212121);
+  white-space: pre;
+}
+html:has(link[href*="fonts.googleapis.com/css2"][href*="family='Geist'"]):not(:has(script[src*="sd-components.js"], link[href*="legacy-reset.css"], link[href*="memory-doc.css"]))::after {
+  content: "Khoảng cách và component sẽ lệch Core cho tới khi nâng cấp.\A Muốn nâng cấp tất cả feature một lần thay vì từng feature: dán\A \"Nâng cấp toàn bộ prototype theo kit mới\" (AI chạy node\A ai-instructions/tools/migrate-prototype.mjs prototypes/ cho cả\A thư mục).";
+  right: 16px;
+  bottom: 16px;
+  width: 480px;
+  height: 148px;              /* viền 1 + đệm trên 12 + tiêu đề 20 + khe 2 + thân 5 dòng × 20 + đệm dưới 12 + viền 1 */
+  overflow: hidden;
+  padding: 34px 16px 12px 48px;
+  border: 1px solid var(--sd-warning, #ff9600);
+  border-radius: 8px;
+  background: var(--sd-warning-light, #ffeacc);
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12);   /* mat-elevation-z4 */
+  font-weight: 400;
+}
+html:has(link[href*="fonts.googleapis.com/css2"][href*="family='Geist'"]):not(:has(script[src*="sd-components.js"], link[href*="legacy-reset.css"], link[href*="memory-doc.css"]))::before {
+  content: "Trang dựng bằng kit cũ — chưa nâng cấp";
+  right: 16px;
+  bottom: 131px;              /* 16 + 148 − viền 1 − đệm 12 − dòng 20 */
+  width: 480px;
+  height: 20px;
+  overflow: hidden;
+  padding: 0 16px 0 49px;     /* viền 1 + đệm 16 + icon 20 + khe 12 */
+  font-weight: 600;
+  z-index: 2001;
+}
+html:has(link[href*="fonts.googleapis.com/css2"][href*="family='Geist'"]):not(:has(script[src*="sd-components.js"], link[href*="legacy-reset.css"], link[href*="memory-doc.css"])) body::after {
+  content: "warning";
+  right: 459px;               /* 16 + 480 − viền 1 − đệm 16 − icon 20 */
+  bottom: 131px;
+  width: 20px;
+  height: 20px;
+  overflow: hidden;
+  font-family: "Material Icons";
+  font-size: 20px;
+  line-height: 20px;
+  font-weight: normal;
+  font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  color: var(--sd-warning, #ff9600);
+  z-index: 2001;
+}

@@ -1,0 +1,578 @@
+# LEGACY-DOM 2026-10-15 — chạy trên prototype thật của Builder (design-test): sd-table[data-legacy-dom] (cột #, không c-detail-row, giữ ô trang sửa, nhận tick JS, không cắt trang), popup lịch tách khỏi thẻ đồng bộ, .alert vẽ y hình sd-inform, công cụ: sd-button type lạ → light, bỏ qua trang xuất tự chứa kit, no-index cho bảng đổi từ <table>
+# Builder: 'đây là mục prototype thật đang bị các lỗi layout khi áp dụng kit mới' (cột Mã biến mất, inform warning lệch core)
+# 12 file — xem danh sách 'diff' bên dưới
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/LEGACY-DOM-2026-10-15.patch (sau LEGACY-SAFE-2026-10-15.patch)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-14 18:11:34.835851278 +0000
++++ b/CHANGELOG.md	2026-10-15 01:10:15.782271844 +0000
+@@ -8,6 +8,43 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Fixed — chạy trên prototype THẬT của Builder (`design-test.zip`, 110 trang, 4 vai): cột Mã biến mất, dòng lệch dữ liệu, inform warning lệch Core (Builder 2026-10-15: *„đây là mục prototype thật đang bị các lỗi layout khi áp dụng kit mới“*)
++
++- **Cách tìm**: dựng lại bản gốc từ `_pre-migrate/` (trang Builder đã nâng bằng công cụ v4), mở từng trang ba bản (kit 12/10 · kit
++  Builder đang dùng · kit mới + công cụ v5), so chữ trên màn hình theo component + **ghi lại mọi selector JS của trang** (querySelector /
++  closest) và số phần tử tìm được ở bản cũ / bản mới → ra đúng móc DOM nào gãy. 88 trang (bỏ trang nháp `_*`, `__probe*`).
++- **Nguyên nhân cột Mã biến mất / dòng lệch (Danh sách bộ lệnh…)**: trang cũ ĐẾM Ô theo vị trí trên DOM của kit cũ —
++  `.table-hide-seq sd-table td.c-td:nth-child(2){display:none}` (ẩn cột "#"), `cells[7].innerHTML = statusHtml(…)`, `tbody tr` thứ i =
++  dòng dữ liệu thứ i, tự cắt trang / ẩn dòng bằng JS. Kit mới theo catalog bỏ cột "#" và chèn `tr.c-detail-row` sau mỗi dòng → lệch một
++  ô / một dòng: cột Mã bị CSS ẩn, ô Mục đích bị ghi icon cờ, "false/true" hiện ở cột cờ, trạng thái lấy nhầm dòng, chữ "han" rơi ra.
++  **Sửa**: chế độ tương thích `sd-table[data-legacy-dom]` (công cụ v5 gắn lên mọi sd-table của trang cũ; `legacy-shim.js` gắn cho bảng
++  JS tạo lúc chạy): giữ cột "#" như kit cũ · không chèn `tr.c-detail-row` (đường kẻ dòng chuyển sang ô, hình như cũ) · ô chọn mang lại
++  lớp cũ (`c-th`/`c-td`, `.sd-table-row-check`/`.sd-table-check-all`) · vẽ lại khi chọn dòng / sắp xếp mà dữ liệu chưa đổi thì giữ ô trang
++  đã tự sửa (kit cũ không vẽ lại khi chọn dòng) · ô trang tự tick bằng JS được nhận · không cắt trang phía client (kit cũ vẽ hết dòng,
++  trang tự cắt). Ô / tiêu đề / chân bảng vẫn vẽ theo catalog. Bảng `<table>` tĩnh công cụ đổi sang sd-table mang `no-index`.
++- **Popup lịch nằm trong thẻ một nhịp sau khi vẽ** (`sd-date` / `sd-date-range` / `sd-datetime` / `sd-chip-calendar` / `sd-autocomplete`):
++  khối lịch chỉ được tách ra overlay khi MutationObserver chạy (bất đồng bộ) → JS chạy ngay sau khi bảng vẽ đếm `sd-table tbody tr`
++  trúng 5 hàng tuần của ô lọc ngày trong tiêu đề (Phân cấp danh mục: số "1.1" gắn nhầm dòng). Nay tách ngay khi host vẽ lại bằng innerHTML.
++- **Inform warning lệch Core (Chỉnh sửa Treasury request)**: hộp "đã từ chối…" dựng bằng JS (`banner.className = 'alert alert-warning'`
++  + innerHTML) — công cụ không đổi được markup trong JS, hộp vẽ theo CSS `.alert` CŨ của kit (chữ cam, icon viền). **Sửa**: lớp `.alert` /
++  `.alert-info|success|warning|error|danger|primary` (lớp cũ, trang mới không dùng) nay vẽ Y HÌNH `sd-inform` catalog — viền + nền màu chủ
++  đề, icon trạng thái đặc 20px (icon viền cũ đổi bằng `::before`), dòng đầu là tiêu đề 14/600 màu chủ đề, thân 14/20 #212121, đệm
++  12px 16px. Đo cạnh `<sd-inform color="warning" title description>`: trùng.
++- **Nút mất** (`type="primary"` / `type="secondary"` — "Lưu", "Đẩy ERP"): kit cũ vẽ như `light`, thư viện không vẽ type lạ → công cụ đổi
++  `type` lạ thành `light` (đúng hình cũ).
++- **Kết quả trên design-test**: sau khi nâng, không còn chữ / nút nào mất, không lỗi JS; chênh lệch còn lại là theo Core (helperText thành
++  icon (i), nhãn ô hiện trong khung, nút quay lại chỉ icon, `data-cancel-label="Thoát"` trang khai nay được tôn trọng).
++- **CÒN LẠI — mã riêng của trang dựa vào DOM bên trong component cũ** (kit không thể giả lập mà vẫn theo Core; ghi known-gaps):
++  `multi-filter.js` (`.sd-dropdown-item`, `input.sd-input` — biến sd-select thành chọn nhiều), `table-filter.js` (`th.c-has-filter
++  .c-th-filter` — lọc trên tiêu đề; kit mới có lọc thật nên phần này tự thôi chạy), `treasury-request.js` / `danh-sach.js`
++  (`.sd-form-field`), `tr-table-bulk.js` (`.c-checkbox-input`), `theo-doi.html` (chờ `.sd-dropdown-item` mới chạy lọc + phân trang
++  riêng → không chạy), chân bảng tự điều khiển (`.c-paginator-center .T12M`, `aria-label="Trang đầu"`). Hình không vỡ, nhưng các bộ lọc
++  / phân trang tự viết đó không còn tác dụng.
++- **Trang xuất tự chứa kit** (export.md — không nạp `design-system/`): công cụ nay bỏ qua (trước sửa vào chính mã kit nhúng →
++  `<sd-textarea>` đệ quy vô hạn ở `danh-muc-du-lieu-chu.html`). Áp kit mới không ảnh hưởng trang loại này.
++- Kiểm tra: kit 94 trang 0 lỗi JS · 13 kịch bản tương tác PASS · bài so 193 trang mẫu không lùi · design-test 88 trang 0 lỗi JS.
++- Bản vá: `reviews/ds-mirror/LEGACY-DOM-2026-10-15.patch`.
++
+ ### Fixed — áp kit vào prototype cũ: không lệch / vỡ (Builder 2026-10-15: *„giờ tôi cần áp dụng kit này thì các file đã có trong folder prototype không bị lệch/vỡ“* — sau hai lỗi: *„inform warning thì lệch core“*, *„Các cột Mã trong một số trang bị biến mất và lỗi layout“*)
+ 
+ - **Cách tìm**: bài so tự động — mỗi trang dựng bằng kit 12/10 mở 3 lần (kit cũ · kit mới chưa nâng · kit mới đã nâng), so chữ hiện trên
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-14 18:11:34.836820635 +0000
++++ b/_memory/known-gaps.md	2026-10-15 01:03:45.210021588 +0000
+@@ -21,6 +21,8 @@
+ | 2026-10-11 | Ô nhập — viền khi hover / focus / lỗi | Catalog ghim màu viền ô nhập ở **mọi trạng thái** bằng `!important` (`.mat-mdc-notch-piece.mdc-notched-outline__leading{border-color:var(--sd-black200)!important}`), nên hover không đổi màu, focus chỉ **dày lên 2px** chứ không chuyển nâu, và **ô lỗi vẫn giữ viền xám** — chỉ `hideInlineError` mới cho viền đỏ. Kit đã làm theo. **Builder nên xem lại:** bản cũ của kit (hover xám đậm, focus nâu + quầng, lỗi viền đỏ) dễ thấy hơn nhiều khi điền form dài | Đã mirror đúng catalog theo yêu cầu "mọi thứ giống catalog". Từ 2026-10-13 mọi `sd-*` dùng DOM Material: luật nằm ở các khối `catalog #c-…` (`.mat-mdc-notch-piece… {border-color:var(--sd-black200)!important}`) trong `sd-tokens.css` — muốn trả lại thì sửa ở đó. Ba rule `.sd-form-field:hover` / `:focus-within` / `.sd-error` nay chỉ còn áp cho markup viết tay |
+ | 2026-10-11 | **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]** `sd-stepper` — nhãn bước đang làm | Catalog **có** rule tô nhãn bước đang làm màu brand + 600, nhưng rule `.mat-step-label-active` đứng trước lại nhiều class hơn nên luôn thắng → nhãn bước đang làm KHÔNG khác các bước khác. Kit chép lại đúng tương quan điểm đó. **Builder nên xem lại:** bước đang làm giờ chỉ phân biệt bằng vòng tròn (số, nền đặc), nhãn thì giống hệt bước khác | Đây là hành vi THẬT của catalog (nhiều khả năng là lỗi thứ tự rule của thư viện). Muốn trả lại: nâng điểm rule `sd-stepper .sd-stepper__label--selected` |
+ | 2026-10-14 | Kit có, `.d.ts` 19.0.10 không có (phát hiện khi sinh `html-to-angular-api.md`) | `sd-select showSelectAll` / `hideReadError` · `sd-input-number clearable` · `sd-radio helperText` · `sd-date-range inlineError` · `autoId` trên `sd-label` / `sd-view` / `sd-history` / `sd-import-excel` / `sd-form-builder` / `sd-document-builder` / `sd-header-footer-builder` · `sd-table addable` / `filterRequired` / cột number `option.precision`. Ngược lại `.d.ts` CÓ mà kit đã gỡ theo bảng API catalog: `sd-tab-group disableRipple` / `autoId`; `sd-side-drawer` 19.0.10 chỉ có `[sdFooter]` (không `sdFooterLeft/Right`) | Rule 18 đo theo **bảng API catalog**, còn `.d.ts` là mã thật — hai nguồn lệch nhau. Chờ Builder chọn nguồn khi rà Rule 18. Bảng dịch đã ghi "Kit-only — bỏ khi dịch" |
++| 2026-10-15 | **`sd-table[data-legacy-dom]` — chế độ trang cũ** | Có cột "#" (catalog không có), không có `tr.c-detail-row`, không cắt trang phía client, giữ ô trang tự sửa khi vẽ lại. Chỉ trang cũ (công cụ gắn). Trang muốn về đúng Core: bỏ CSS / JS đếm ô theo vị trí (`nth-child`, `cells[n]`, `tbody tr` thứ i) rồi gỡ thuộc tính | Rule 18 ngoại lệ 3; gỡ khi không còn prototype cũ |
++| 2026-10-15 | **Mã riêng của prototype dựa vào DOM bên trong component kit cũ** (design-test: `multi-filter.js`, `table-filter.js`, `treasury-request.js`, `tr-table-bulk.js`, `theo-doi.html`, chân bảng tự điều khiển) | Selector `.sd-dropdown-item`, `input.sd-input`, `.sd-form-field`, `.c-checkbox-input`, `th.c-has-filter .c-th-filter`, `.c-paginator-center .T12M` không còn (DOM nay là Material của catalog) → bộ lọc chọn nhiều / lọc trên tiêu đề / phân trang tự viết không chạy (hình không vỡ) | Kit không giả lập DOM cũ được mà vẫn theo Core; phải viết lại mã trang theo API component (`sd-select multiple`, sự kiện `sd-change`, lọc / phân trang có sẵn của sd-table) — chờ Builder quyết |
+ | 2026-10-15 | **Áp kit vào prototype cũ — còn khác kit 12/10 (bài so 193 trang)** | Không mất chữ do công cụ nữa. Còn khác, CÓ CHỦ Ý theo Core: cột `#` của sd-table · `helperText` → icon (i) · dòng phân trang / "Export" / "Thiết lập" · nút quay lại chỉ icon · `sd-section avatar` (báo `!`). Còn để nguyên (báo `!`, không chắc → không đổi): bảng JS đổ dòng (vẫn `<table>` — Rule 10 muốn `sd-table`), hộp thông báo JS ghi chữ / có id-nút bên trong / dựng bằng JS, markup trong chuỗi JS dùng làm nội dung `sd-code-editor`. Chưa có trang thật của Builder (Treasury, Danh sách bộ lệnh) để chạy bài so — hai lỗi Builder chụp được dựng lại trên trang mẫu `ai2` | Chờ Builder gửi thư mục prototype thật |
+ | 2026-10-15 | **Bí danh kit cũ còn giữ trong `sd-components.js`** | `sd-badge type="status"` · `<sd-scorecard>` (vẽ bằng bpm-*) · nhắc "trang kit cũ chưa nâng" | Rule 18 ngoại lệ 3; trang mới không dùng — gỡ khi không còn prototype cũ |
+ | 2026-10-14 | **`migrate-prototype.mjs` v4 — đổi component tự dựng** | Chưa tự đổi (chỉ báo `!`, cách sửa ở `ai-instructions/migrate-components.md`): bảng dựng bằng JS / JS đọc ghi bảng / dòng có onclick / rowspan; modal dựng bằng JS; nút có lớp CSS của trang (widget riêng — đúng Rule 0b); tab dựng bằng JS hoặc nội dung không liền sau thanh tab; phân trang, toast, menu thả xuống, avatar, chấm trạng thái, khối trống, thanh bước, `input type=file` tự dựng. `<select>` dựng bằng JS đổi LÚC CHẠY (select gốc ẩn làm nguồn) — markup nguồn vẫn là `<select data-legacy-upgrade>`. Các bảng tài liệu API trong `design-system/preview/**` cũng là `<table>` tĩnh (`--components --dry` liệt kê) — là trang tài liệu của kit, không phải prototype, để nguyên. Bản đóng băng `tra-cuu-cam-nang` không đổi | Mỗi chỗ cần hiểu JS của trang; tự đổi dễ làm hỏng hành vi mà không báo lỗi |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-14 18:11:34.837264058 +0000
++++ b/_memory/lessons.md	2026-10-15 01:03:45.212016464 +0000
+@@ -22,6 +22,15 @@
+ Bộ trang: trang gốc + preview cũ + **mọi khối ```html trong tài liệu cũ** (thứ AI chép nhiều nhất) + trang mẫu chứa đúng ca Builder gặp.
+ Bài học phụ: phần tử con có id / lớp JS dùng làm móc → coi cả khối là của JS, đừng đổi; markup trong `<!-- -->` của template không phải nội dung.
+ 
++## Prototype thật: so chữ chưa đủ — ghi lại SELECTOR JS của trang tìm được gì ở bản cũ / bản mới (2026-10-15)
++
++Bài so chữ 193 trang mẫu đã sạch mà trang thật của Builder vẫn vỡ: người dựng trang viết helper riêng (`table-freeze-columns.js`,
++`multi-filter.js`…) và CSS `nth-child` bám vào DOM BÊN TRONG component kit cũ. Cách bắt nhanh: bọc `querySelector(All)` / `closest` bằng
++`addInitScript`, chỉ ghi lời gọi có stack từ `prototypes/`, so số phần tử tìm được bản cũ ↔ bản mới — selector "cũ có, mới không" chính
++là móc gãy (ra `.sd-dropdown-item`, `input.sd-input`, `tbody tr` lệch vì `tr.c-detail-row`…). Thêm hai bẫy: (1) MutationObserver là bất
++đồng bộ — khối popup kit định tách ra overlay vẫn nằm trong thẻ khi JS của trang chạy đồng bộ ngay sau khi vẽ; (2) dựng lại bản gốc
++từ `_pre-migrate/` trước khi so, đừng so trên bản Builder đã nâng bằng công cụ cũ.
++
+ ## Đổi markup tự động trên trang có JS: ba lưới an toàn (migrate-components 2026-10-14)
+ 
+ - **Kiểm cú pháp sau khi đổi**: mỗi `<script>` vốn chạy được phải còn chạy (`vm.Script`) — đổi markup trong chuỗi JS mà đoán sai dấu nháy
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/html-to-angular.md b/ai-instructions/html-to-angular.md
+--- a/ai-instructions/html-to-angular.md	2026-10-14 18:11:34.837677505 +0000
++++ b/ai-instructions/html-to-angular.md	2026-10-15 01:03:51.257482313 +0000
+@@ -47,7 +47,7 @@
+ 
+ **Trang đã qua `migrate-prototype.mjs`** (có `<!-- kit-migrated … -->`): mọi thuộc tính `data-legacy-*` và `data-legacy-reset` chỉ là
+ móc cho `legacy-shim.js` / `legacy-reset.css` của prototype → **bỏ**; `<select data-legacy-upgrade>` → `<sd-select [items] [(model)]>`;
+-modal mở bằng `style.display` / lớp `open` → `SdModal` mở bằng code. Xem `ai-instructions/migrate-components.md` mục 4.
++modal mở bằng `style.display` / lớp `open` → `SdModal` mở bằng code. `sd-table data-legacy-dom` → bảng thường (catalog không có cột "#"; logic trang cũ đếm ô theo vị trí phải viết lại theo `columns` / `transform`). Xem `ai-instructions/migrate-components.md` mục 4.
+ 
+ **Bí danh tên cũ** kit còn nhận nhưng Angular **không** nhận (Rule 18 ngoại lệ 3): `sd-inform type` → `color` ·
+ `dismissible` → `closable` · `sd-badge type="status" status="k"` → `[color]` + `[icon]` tra STATUS_MAP (bảng ở `generate-components.md`) ·
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/migrate-components.md b/ai-instructions/migrate-components.md
+--- a/ai-instructions/migrate-components.md	2026-10-14 18:11:34.837834804 +0000
++++ b/ai-instructions/migrate-components.md	2026-10-15 01:03:45.212555202 +0000
+@@ -47,6 +47,9 @@
+ | Header viết tay `.page-header` (`.page-title`, `.record-id`, `.page-subtitle`, `.back-link`, `.page-header-actions`) | khung header của `sd-page` (như pattern page-header) | Trang mới: `data-pattern="page-header"` |
+ | `sd-badge type="status" status` dựng bằng JS · `<sd-scorecard>` | giữ — kit vẽ bằng badge icon STATUS_MAP / `bpm-filter-scorecard` · `bpm-kpi-card` | Bí danh cho trang cũ; trang mới viết thẳng API catalog |
+ | `<select>` / ô nhập bị ẩn (`display:none`, `[hidden]`, `d-none`…) | giữ nguyên | Chỗ JS cũ giữ trạng thái — hình thật là widget khác |
++| Mọi `<sd-table>` của trang cũ | thêm `data-legacy-dom` | Chế độ trang cũ: cột "#", không `tr.c-detail-row`, không cắt trang phía client, giữ ô trang tự sửa — để CSS `nth-child` / JS `cells[n]` / `tbody tr` thứ i của trang cũ đúng ô, đúng dòng. Hình ô / chân bảng vẫn theo catalog |
++| `<sd-button type="primary\|secondary\|…">` (type lạ) | `type="light"` | Kit cũ vẽ type lạ như light; thư viện không vẽ nút |
++| `div.alert.alert-X` dựng bằng JS | giữ — lớp `.alert` nay vẽ y hình `sd-inform` | Trang mới viết `<sd-inform>` |
+ | Nội dung `<pre>` / `<code>` / `sd-mini-editor` / `sd-editor` / `sd-code-editor` / `sd-document-builder` / `[contenteditable]` | không đụng | Chữ / mã mẫu giữ nguyên văn |
+ | Tên cũ của kit: `sd-inform type=` · `dismissible` · `cta` · sự kiện `sd-inform-dismiss` · `sd-section collapsable` · `sd-button type="text"` · `slot="header-right\|left\|footer"` | `color` (+ `hideIcon` nếu kiểu cũ không icon) · `closable` · `actionLabel` · `sd-closed` · `collapsible` · `type="link"` · `sdHeaderRight` / `sdHeaderLeft` / `sdFooter` (+ lớp căn phải) | Hình không đổi |
+ 
+@@ -67,6 +70,7 @@
+ | thanh tab chưa đổi được | `<sd-tab-group><sd-tab label="…">nội dung</sd-tab>…</sd-tab-group>`; bỏ JS bật / tắt tab cũ, nghe `sd-tab-change` (`e.detail.index`) nếu cần |
+ | phân trang tự dựng | Bỏ; `<sd-table paginated pageSize="20">` |
+ | toast | `SdNotifyService` (xem `design-system/components/sd-overlay.md`) |
++| mã riêng của trang dùng DOM bên trong component cũ (`.sd-dropdown-item`, `input.sd-input`, `.sd-form-field`, `.c-checkbox-input`, `th.c-has-filter`, `.c-paginator-center`) — công cụ không báo được | Viết lại theo API: `sd-select multiple` (thay bộ chọn nhiều tự dựng), `el.value` / sự kiện `sd-change`, lọc + phân trang có sẵn của `sd-table` |
+ | menu thả xuống | Cột command / menu của sd-table; catalog 19.0.10 không có menu của nút |
+ | avatar / chấm trạng thái / khối trống | `<sd-avatar name src>` · `<sd-badge color icon title>` theo STATUS_MAP · ảnh trống của kit (Rule 12) |
+ | thanh bước | `<sd-stepper>` |
+@@ -75,6 +79,6 @@
+ 
+ ## 4. Chuyển sang Angular
+ 
+-Thuộc tính `data-legacy-*` (`-change`, `-modal`, `-onclose`, `-toggle`, `-title`, `-onselect`, `-panel`, `-ctl`, `-upgrade`, `-minw`) và
++Thuộc tính `data-legacy-*` (`-change`, `-modal`, `-onclose`, `-toggle`, `-title`, `-onselect`, `-panel`, `-ctl`, `-upgrade`, `-minw`, `-dom`) và
+ `data-legacy-reset` chỉ là móc cho legacy-shim / legacy-reset của prototype — **bỏ hết** khi dịch. `<select data-legacy-upgrade>` →
+ `<sd-select [items]="…" [(model)]="…">`. Mở / đóng modal → `SdModal` theo `html-to-angular.md`.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/tools/lib/components.mjs b/ai-instructions/tools/lib/components.mjs
+--- a/ai-instructions/tools/lib/components.mjs	2026-10-14 18:11:34.837989346 +0000
++++ b/ai-instructions/tools/lib/components.mjs	2026-10-15 00:52:15.161806376 +0000
+@@ -508,6 +508,8 @@
+     if (dropped.length) ctx.note(what + ' — bỏ lớp .' + dropped.join(' .') + ' khỏi sd-table (luật CSS của trang nhắm vào ô bảng, sẽ đè bảng Core)');
+     if (keep.length) out.push({ name: 'class', value: keep.join(' '), q: '"' });
+     out.push({ name: 'hide-inline-filter', value: null, q: '' });
++    /* bảng HTML cũ không có cột "#" — `no-index` để chế độ trang cũ (data-legacy-dom) không thêm cột đó */
++    out.push({ name: 'no-index', value: null, q: '' });
+     out.push({ name: 'columns', value: enc(cols), q: "'" }, { name: 'data', value: enc(data), q: "'" });
+     st.comp['sd-table'] = (st.comp['sd-table'] || 0) + 1;
+     /* bọc <div>: sd-table là con trực tiếp của .content-zone thì layout chuyển sang chế độ "bảng chiếm hết chiều cao"
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/tools/migrate-prototype.mjs b/ai-instructions/tools/migrate-prototype.mjs
+--- a/ai-instructions/tools/migrate-prototype.mjs	2026-10-14 18:11:34.838240009 +0000
++++ b/ai-instructions/tools/migrate-prototype.mjs	2026-10-15 01:07:54.198681144 +0000
+@@ -464,7 +464,7 @@
+   return 'component: ' + (parts.length ? parts.join(', ') : '0') + ' · tên cũ → Core ' + (st.alias || 0);
+ }
+ function linkShim(s, st) {
+-  if (!/data-legacy-(change|modal|toggle|title|onselect|panel|onclose|upgrade|minw)/.test(s) || /legacy-shim\.js/.test(s)) return s;
++  if (!/data-legacy-(change|modal|toggle|title|onselect|panel|onclose|upgrade|minw|dom)/.test(s) || /legacy-shim\.js/.test(s)) return s;
+   const m = s.match(/<script[^>]+src=["']([^"']*?)sd-components\/sd-components\.js["'][^>]*><\/script>/i);
+   if (!m) { st.notes.push('không thấy <script> sd-components.js — tự thêm design-system/core/js/legacy-shim.js'); return s; }
+   st.shim = true;
+@@ -540,6 +540,27 @@
+   });
+ }
+ 
++
++/* 16. sd-table của trang cũ → `data-legacy-dom` (2026-10-15). Kit cũ vẽ [chọn][cây]["#"][cột…] và mỗi dòng dữ liệu một
++   <tr>; trang cũ ĐẾM Ô theo vị trí (`td.c-td:nth-child(2){display:none}` ẩn "#", `cells[7].innerHTML = …`, `tbody tr`
++   thứ i = dòng thứ i). Kit mới theo catalog bỏ "#" và chèn `tr.c-detail-row` → lệch một ô / một dòng (cột Mã biến mất,
++   ô bị ghi đè sai cột). Thuộc tính này bật chế độ tương thích của sd-table (cột "#" như kit cũ, không chèn dòng chi tiết, giữ ô
++   trang tự sửa khi vẽ lại); ô / dòng / chân bảng vẫn vẽ theo catalog. Gắn cả thẻ trong chuỗi JS (thuộc tính không giá trị, không đụng dấu nháy). */
++function markLegacyTables(s, st) {
++  return s.replace(/<sd-table(?=[\s>\/])(?![^>]*\bdata-legacy-dom\b)/g, () => { st.ltable = (st.ltable || 0) + 1; return '<sd-table data-legacy-dom'; });
++}
++
++
++/* 17. sd-button type lạ (`type="primary"`, `type="secondary"`…) — kit cũ vẽ như `light`, thư viện / kit mới KHÔNG vẽ nút
++   (mất nút, vd "Đẩy ERP"). Đổi thành `type="light"` = đúng hình kit cũ đã hiện (2026-10-15). Giá trị dựng bằng JS thì để nguyên. */
++function fixButtonType(s, st) {
++  return s.replace(/(<sd-button\b[^>]*?\stype=)(\\?["'])([^"'\\]*)\2/g, (m, a, q, v) => {
++    if (/^(fill|light|outline|link|text)$/.test(v) || /[+$]/.test(v)) return m;
++    st.btype = (st.btype || 0) + 1;
++    return a + q + 'light' + q;
++  });
++}
++
+ /* báo cáo — không tự sửa */
+ function report(s, st) {
+   const handHeader = /<div[^>]*class=["'][^"']*\bpage-header\b(?![\w-])[^"']*["']/.test(s) && !/data-pattern=["']page-header["']/.test(s) && !/c-page-header/.test(s);
+@@ -572,6 +593,13 @@
+       REDO_CUR.set(f, true);
+     }
+   }
++  /* Trang XUẤT (export.md) tự chứa cả kit trong <style>/<script> — không nạp gì từ design-system/ nên áp kit mới không ảnh
++     hưởng; nâng nó là sửa vào chính mã kit đã nhúng (đã gặp: <textarea> trong SdTextarea nhúng bị đổi thành <sd-textarea> →
++     đệ quy vô hạn). Bỏ qua (2026-10-15). */
++  if (!/<(?:script|link)\b[^>]*(?:src|href)\s*=\s*["'][^"']*design-system\//i.test(src) && /customElements\.define\(\s*['"]sd-/.test(src)) {
++    console.log('· ' + f + ' — trang xuất tự chứa kit (không nạp design-system/) → không phụ thuộc kit mới, bỏ qua');
++    total.skipped++; continue;
++  }
+   const st = { spacing: {}, noop: {}, inform: 0, alias: 0, comp: {}, widgets: [], inline: 0, collide: 0, pagedef: 0, hie: 0, reset: 0, badge: 0, href: 0, precision: 0, slot: 0, label: 0, css: false, notes: [] };
+   if (ONLY_INFORM || ONLY_COMP) {
+     const st = { inform: 0, alias: 0, comp: {}, widgets: [], notes: [] };
+@@ -624,7 +652,9 @@
+   s = fixNumberPrecision(s, st);
+   s = fixSlots(s, st);
+   s = fixButtonLabel(s, st);
++  s = fixButtonType(s, st);
+   s = markReset(s, st);
++  s = markLegacyTables(s, st);
+   s = linkLegacyCss(s, st);
+   s = linkShim(s, st);
+   s = P.restore(s);
+@@ -635,7 +665,7 @@
+   const nNo = Object.values(st.noop).reduce((a, b) => a + b, 0);
+   console.log((UPGRADE ? '↑ ' : '✓ ') + f + (UPGRADE ? ' (nâng tiếp từ v' + ver + ')' : '') + ' — khoảng cách ' + nSp + ' · lớp chết gỡ ' + nNo + ' · inline !important ' + st.inline + ' · lớp đè CSS trang gỡ ' + st.collide +
+     ' · luật trang trùng tên lớp ' + st.pagedef + ' · hideInlineError ' + st.hie + ' · dải thông báo → sd-inform ' + st.inform + ' · ' + compSummary(st) + ' · reset ' + st.reset + ' thẻ · badge status ' + st.badge + ' · sd-button href ' + st.href + ' · cột số ' + st.precision +
+-    ' · slot→sdHeader* ' + st.slot + ' · nhãn sd-button ' + st.label + (st.minw ? ' · min-width → data-legacy-minw ' + st.minw : '') +
++    ' · slot→sdHeader* ' + st.slot + ' · nhãn sd-button ' + st.label + (st.minw ? ' · min-width → data-legacy-minw ' + st.minw : '') + (st.ltable ? ' · sd-table chế độ trang cũ ' + st.ltable : '') + (st.btype ? ' · sd-button type lạ → light ' + st.btype : '') +
+     (st.css ? ' · nạp legacy-reset.css' : '') + (st.shim ? ' · nạp legacy-shim.js' : ''));
+   if (nNo) console.log('    · lớp kit cũ KHÔNG có (vô tác dụng) nay sd-core có nghĩa px → đã gỡ để giữ hình: ' + Object.entries(st.noop).map(([k, v]) => k + (v > 1 ? '×' + v : '')).join(' ') +
+     ' — muốn có khoảng thì thêm lại theo px (vd p-12)');
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-data.md b/design-system/components/sd-data.md
+--- a/design-system/components/sd-data.md	2026-10-14 18:11:34.838534099 +0000
++++ b/design-system/components/sd-data.md	2026-10-15 01:03:45.213266325 +0000
+@@ -10,6 +10,11 @@
+ 
+ ## sd-table
+ 
++> **`data-legacy-dom` — chế độ trang kit cũ (2026-10-15).** `migrate-prototype.mjs` gắn lên mọi sd-table của trang dựng bằng kit cũ:
++> giữ cột "#" như kit cũ, không chèn `tr.c-detail-row`, không cắt trang phía client, giữ ô trang tự sửa qua lần vẽ lại (chọn dòng /
++> sắp xếp), nhận ô chọn trang tự tick bằng JS. Để CSS `nth-child` / JS `cells[n]` / `tbody tr` thứ i viết cho DOM cũ vẫn đúng ô, đúng
++> dòng. **Trang mới không dùng** — catalog không có cột "#" và có dòng chi tiết sau mỗi dòng.
++
+ Config-driven data table — tự render columns, filters, pagination từ JSON.
+ 
+ **`option` — một object thay cho loạt attribute phẳng (2026-10-11):**
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/js/legacy-shim.js b/design-system/core/js/legacy-shim.js
+--- a/design-system/core/js/legacy-shim.js	2026-10-14 18:11:34.838900010 +0000
++++ b/design-system/core/js/legacy-shim.js	2026-10-15 00:34:24.546477285 +0000
+@@ -232,6 +232,9 @@
+   function scan(root) {
+     if (!root.querySelectorAll) return;
+     root.querySelectorAll('[data-legacy-minw]').forEach(applyMinW);
++    /* sd-table do JS cũ tạo (createElement / innerHTML lúc chạy) → cũng bật chế độ trang cũ như bảng tĩnh đã nâng */
++    root.querySelectorAll('sd-table:not([data-legacy-dom])').forEach(function (t) { t.setAttribute('data-legacy-dom', ''); });
++    if (root.matches && root.matches('sd-table:not([data-legacy-dom])')) root.setAttribute('data-legacy-dom', '');
+     if (root.matches && root.matches('[data-legacy-minw]')) applyMinW(root);
+     root.querySelectorAll('[data-legacy-modal]').forEach(bindModal);
+     root.querySelectorAll('[data-legacy-toggle]').forEach(bindToggle);
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/components.css b/design-system/core/styles/components.css
+--- a/design-system/core/styles/components.css	2026-10-14 14:01:22.417765437 +0000
++++ b/design-system/core/styles/components.css	2026-10-15 00:51:14.409110619 +0000
+@@ -2843,47 +2843,85 @@
+ .toast-info    .toast-icon { color: var(--color-info-500); }
+ 
+ 
+-/* ── Inline Alert / Banner ────────────────────────────────── */
+-
++/* ── Inline Alert / Banner — LỚP CŨ của kit, trang mới dùng <sd-inform> ──
++   2026-10-15 (Builder: „inform warning thì lệch core“): hộp `.alert.alert-X` mà trang CŨ còn dựng — nhất là hộp dựng bằng JS
++   (`banner.className = 'alert alert-warning'` + innerHTML) mà migrate-prototype.mjs không đổi được — trước vẽ theo kiểu riêng của
++   kit cũ (chữ màu cam, icon viền, viền nhạt). Nay vẽ Y HÌNH `sd-inform` của catalog (#c-inform, số đo ở sd-tokens.css mục
++   sd-inform): viền + nền màu chủ đề, icon trạng thái ĐẶC 20px màu chủ đề, dòng đầu (khi có hơn một dòng) là tiêu đề 14/600
++   màu chủ đề, phần còn lại thân 14/20 #212121, đệm 12px 16px, khe 12px, bo 8px. Icon viền của trang cũ (warning_amber,
++   info, check_circle_outline…) đổi sang icon mặc định của màu đó như catalog. */
+ .alert {
+   display: flex;
+   align-items: flex-start;
+-  gap: var(--space-3);
+-  padding: var(--space-3) var(--space-4);
+-  border-radius: var(--radius-lg);
+-  font-size: var(--text-sm);
+-}
+-
+-.alert-icon {
+-  width: 18px;
+-  height: 18px;
+-  flex-shrink: 0;
+-  margin-top: 1px;
+-}
+-
+-.alert-info {
+-  background: var(--color-info-50);
+-  border: 1px solid var(--color-info-200);
+-  color: var(--color-info-700);
+-}
+-
+-.alert-success {
+-  background: var(--color-success-50);
+-  border: 1px solid var(--color-success-200);
+-  color: var(--color-success-700);
+-}
+-
+-.alert-warning {
+-  background: var(--color-warning-50);
+-  border: 1px solid var(--color-warning-200);
+-  color: var(--color-warning-700);
+-}
+-
+-.alert-error {
+-  background: var(--color-error-50);
+-  border: 1px solid var(--color-error-200);
+-  color: var(--color-error-700);
+-}
++  gap: 12px;
++  border: 1px solid transparent;
++  border-radius: 8px;
++  padding: 12px 16px;
++  background: #fff;
++  font-size: 14px;
++  line-height: 20px;
++  color: var(--sd-black500);
++}
++.alert-info              { border-color: var(--sd-info);    background: var(--sd-info-light); }
++.alert-success           { border-color: var(--sd-success); background: var(--sd-success-light); }
++.alert-warning           { border-color: var(--sd-warning); background: var(--sd-warning-light); }
++.alert-error,
++.alert-danger            { border-color: var(--sd-error);   background: var(--sd-error-light); }
++.alert-primary           { border-color: var(--sd-primary); background: var(--sd-primary-light); }
++
++/* icon đầu hộp */
++.alert > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child {
++  flex: 0 0 auto;
++  width: 20px;
++  height: 20px;
++  margin: 0;
++  font-size: 0 !important;
++  line-height: 20px;
++  overflow: hidden;
++}
++.alert > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child::before {
++  content: 'info';
++  font-family: 'Material Icons';
++  font-size: 20px;
++  line-height: 20px;
++  font-weight: normal;
++  font-style: normal;
++  letter-spacing: normal;
++  text-transform: none;
++  white-space: nowrap;
++  -webkit-font-feature-settings: 'liga';
++  font-feature-settings: 'liga';
++  -webkit-font-smoothing: antialiased;
++}
++.alert-success > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child::before { content: 'check_circle'; }
++.alert-warning > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child::before { content: 'warning'; }
++.alert-error > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child::before,
++.alert-danger > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child::before { content: 'error'; }
++.alert-info > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child, .alert-info .alert-title { color: var(--sd-info); }
++.alert-success > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child, .alert-success .alert-title { color: var(--sd-success); }
++.alert-warning > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child, .alert-warning .alert-title { color: var(--sd-warning); }
++.alert-error > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child, .alert-error .alert-title,
++.alert-danger > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child, .alert-danger .alert-title { color: var(--sd-error); }
++.alert-primary > :is(.material-icons, .material-icons-outlined, .material-symbols-outlined, .alert-icon):first-child, .alert-primary .alert-title { color: var(--sd-primary); }
++
++/* chữ: khối nội dung như `.c-inform-content` (cột, khe 2px); mọi đoạn bên trong 14/20, không lề */
++.alert > div {
++  flex: 1 1 auto;
++  min-width: 0;
++  display: flex;
++  flex-direction: column;
++  gap: 2px;
++  color: var(--sd-black500);
++  overflow-wrap: break-word;
++}
++.alert > div > * { margin: 0 !important; font-size: 14px !important; line-height: 20px !important; color: var(--sd-black500); }
++.alert > div > :first-child:not(:only-child) { font-weight: 600 !important; }
++.alert-info > div > :first-child:not(:only-child)    { color: var(--sd-info); }
++.alert-success > div > :first-child:not(:only-child) { color: var(--sd-success); }
++.alert-warning > div > :first-child:not(:only-child) { color: var(--sd-warning); }
++.alert-error > div > :first-child:not(:only-child),
++.alert-danger > div > :first-child:not(:only-child)  { color: var(--sd-error); }
++.alert-primary > div > :first-child:not(:only-child) { color: var(--sd-primary); }
+ 
+ 
+ /* ── Empty State ──────────────────────────────────────────── */
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/legacy-reset.css b/design-system/core/styles/legacy-reset.css
+--- a/design-system/core/styles/legacy-reset.css	2026-10-14 16:58:02.311978713 +0000
++++ b/design-system/core/styles/legacy-reset.css	2026-10-15 00:37:40.429976160 +0000
+@@ -98,3 +98,10 @@
+ /* <select data-legacy-upgrade> (option dựng bằng JS): select gốc chỉ còn là nguồn dữ liệu cho JS cũ — legacy-shim.js vẽ
+    <sd-select> Core ngay trước nó. JS cũ có bật style.display của select cũng không hiện lại ô trần. */
+ select[data-legacy-proxied] { display: none !important; }
++
++/* sd-table[data-legacy-dom] (2026-10-15): bảng của trang kit cũ không có `tr.c-detail-row` (trang cũ đếm `tbody tr`
++   theo thứ tự dòng dữ liệu) → đường kẻ 1px giữa hai dòng nằm ở ô của dòng dữ liệu, hình như catalog (dòng cuối không kẻ). */
++sd-table[data-legacy-dom] .c-container .c-table table tbody tr.c-row:not(:last-child) > td.mat-mdc-cell { border-bottom-width: 1px !important; border-bottom-style: solid; }
++/* ô chọn của bảng trang cũ: CSS trang hay đặt bề rộng cột đầu (`th:nth-child(1){width:64px}`) — bỏ trần 42px để ô chọn phủ
++   kín cột, khỏi khe trắng giữa ô chọn (dính trái) và cột kế tiếp */
++sd-table[data-legacy-dom] .sd-selection-cell { max-width: none; }
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-14 18:11:34.841439382 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-15 00:46:43.334187884 +0000
+@@ -752,6 +752,20 @@
+     };
+     st.mo = new MutationObserver(function () { sdFloatSync(host); });
+     st.mo.observe(host, { childList: true, attributes: true, attributeFilter: ['class'] });
++    /* Tách khối popup NGAY khi host vẽ lại bằng innerHTML (2026-10-15), không đợi MutationObserver (bất đồng bộ): trong
++       khoảng chờ đó lịch đóng vẫn nằm trong thẻ → JS chạy đồng bộ ngay sau khi vẽ thấy cả `table.mat-calendar-table`
++       của lịch (vd trang cũ đếm `sd-table tbody tr` trúng 5 hàng tuần của ô lọc ngày → đánh số / gắn lớp lệch dòng).
++       Catalog: đóng thì lịch không có trong thẻ. */
++    var ih = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
++    if (ih && ih.set) {
++      try {
++        Object.defineProperty(host, 'innerHTML', {
++          configurable: true,
++          get: function () { return ih.get.call(this); },
++          set: function (v) { ih.set.call(this, v); sdFloatSync(host); }
++        });
++      } catch (e) { /* để MutationObserver lo như cũ */ }
++    }
+   }
+   function sdFloatSync(host) {
+     var st = host._sdFloat; if (!st) return;
+@@ -8443,10 +8457,11 @@
+   function sdMatColumnClass(field) { return 'mat-column-' + String(field == null ? '' : field).replace(/[^a-z0-9_-]/gi, '-'); }
+   /* Ô chọn dòng — `mat-checkbox` thuần, nguyên văn catalog `mat-checkbox.mat-mdc-checkbox.c-selection.px-8.mat-primary`
+      (không touch-target / ripple — đúng bản chụp catalog). Móc JS: `data-sel-row` / `data-sel-all`; `aria-label` của kit (Rule 9). */
+-  function sdTableCheckboxHtml(checked, hook, label) {
++  /* legacyCls: lớp ô tick của kit cũ (`sd-table-row-check` / `sd-table-check-all`) — chỉ bảng `data-legacy-dom` */
++  function sdTableCheckboxHtml(checked, hook, label, legacyCls) {
+     return '<mat-checkbox class="mat-mdc-checkbox c-selection px-8 mat-primary' + (checked ? ' mat-mdc-checkbox-checked' : '') + '" ' + hook + '>' +
+       '<div class="mdc-form-field mat-internal-form-field"><div class="mdc-checkbox">' +
+-        '<input type="checkbox" class="mdc-checkbox__native-control' + (checked ? ' mdc-checkbox--selected' : '') + '" aria-label="' + label + '"' + (checked ? ' checked' : '') + '>' +
++        '<input type="checkbox" class="mdc-checkbox__native-control' + (checked ? ' mdc-checkbox--selected' : '') + (legacyCls ? ' ' + legacyCls : '') + '" aria-label="' + label + '"' + (checked ? ' checked' : '') + '>' +
+         '<div class="mdc-checkbox__background">' +
+           '<svg focusable="false" viewBox="0 0 24 24" aria-hidden="true" class="mdc-checkbox__checkmark">' +
+             '<path fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59" class="mdc-checkbox__checkmark-path"></path></svg>' +
+@@ -8464,7 +8479,7 @@
+   class SdTable extends HTMLElement {
+     static get observedAttributes() {
+       return ['columns', 'data', 'tree', 'selectable', 'paginated', 'pagesize', 'total', 'pagesizes',
+-              'config-visible', 'reload-visible', 'export-visible', 'hide-inline-filter', 'no-index',
++              'config-visible', 'reload-visible', 'export-visible', 'hide-inline-filter', 'no-index', 'data-legacy-dom',
+               'addable', 'add-label',
+               /* `hidereaderror`/`hideReadError` ĐÃ GỠ 2026-10-12 (phép 3 của
+                  RA-SOAT-2-CHIEU.md): chuỗi này xuất hiện 0 lần trong Core UI
+@@ -8868,6 +8883,32 @@
+       if (this._pageSizeSel) pageSize = this._pageSizeSel;   /* người dùng đã đổi ô "Đang hiển thị" */
+       var hideInlineFilter = this.hasAttribute('hide-inline-filter');
+       /* `no-index` giữ làm bí danh không tác dụng: cột `#` đã gỡ theo catalog. */
++      /* CHẾ ĐỘ TƯƠNG THÍCH TRANG KIT CŨ — `data-legacy-dom` (migrate-prototype.mjs gắn lên mọi sd-table của trang cũ),
++         2026-10-15. Trang cũ có CSS / JS ĐẾM Ô theo vị trí (`td.c-td:nth-child(2){display:none}` để ẩn cột "#",
++         `cells[7].innerHTML = …`, `tbody tr` thứ i = dòng dữ liệu thứ i). Kit cũ: [chọn][cây]["#"][cột…], mỗi dòng
++         dữ liệu một <tr>. Kit mới (catalog) bỏ "#" và chèn `tr.c-detail-row` sau mỗi dòng → mọi phép đếm lệch một:
++         cột Mã bị ẩn, ô bị ghi đè sai cột, dòng lấy nhầm dữ liệu. Ở chế độ này kit:
++           · giữ cột "#" như kit cũ (catalog không có cột này — chỉ trang cũ; trang nào đã tự ẩn / tự thay nội dung ô "#"
++             bằng CSS / JS thì vẫn như cũ, vd đổi thành nút ⋮);
++           · không chèn `tr.c-detail-row` (đường kẻ giữa dòng chuyển sang ô của dòng dữ liệu — hình như cũ);
++           · ô chọn mang lại lớp cũ (`c-th` / `c-td`, ô tick `.sd-table-row-check` / `.sd-table-check-all`);
++           · vẽ lại vì chọn dòng / sắp xếp / đổi trang mà dữ liệu chưa đổi → giữ ô trang đã tự sửa (trang cũ sửa ô
++             sau khi bảng vẽ — kit cũ không vẽ lại khi chọn dòng); ô chọn trang tự tick bằng JS được nhận;
++           · không cắt trang phía client (kit cũ vẽ hết dòng, trang cũ tự cắt / ẩn dòng).
++         Trang MỚI không dùng thuộc tính này. */
++      var legacyDom = this.hasAttribute('data-legacy-dom');
++      var legacyIdx = legacyDom && !this.hasAttribute('no-index');
++      /* trang cũ tự tick ô chọn bằng JS (`cb.checked = true`) — kit cũ không vẽ lại nên ô vẫn tick; kit mới giữ trạng thái chọn
++         riêng (`_sel`) → lần vẽ sau ô bị bỏ tick. Ở chế độ trang cũ: ô nào trang đã đổi khác lúc kit vẽ thì nhận làm trạng thái. */
++      if (legacyDom && this._renderedSel) {
++        if (!this._sel) this._sel = {};
++        var rsel = this._renderedSel, csel = this._sel;
++        Array.prototype.forEach.call(this.querySelectorAll('tbody > tr.c-row[data-row-key]'), function (tr) {
++          var cb = tr.querySelector('input.sd-table-row-check'); if (!cb) return;
++          var k = tr.getAttribute('data-row-key');
++          if (!!cb.checked !== !!rsel[k]) { if (cb.checked) csel[k] = true; else delete csel[k]; }
++        });
++      }
+ 
+       if (columns.length === 0) {
+         this.innerHTML = '<div class="sd-table-empty">No columns defined</div>';
+@@ -8959,13 +9000,14 @@
+       };
+       var theadHtml = '<tr class="mat-mdc-header-row mdc-data-table__header-row c-first-header">';
+       if (selectable) {
+-        theadHtml += '<th class="' + HCELL + ' sd-selection-cell p-0 mat-mdc-table-sticky' + selBorder + ' mat-column-sdSelection" style="position: sticky; left: ' + selLeft + 'px; top: 0px; z-index: 103;">' +
++        theadHtml += '<th class="' + HCELL + ' sd-selection-cell p-0 mat-mdc-table-sticky' + selBorder + ' mat-column-sdSelection' + (legacyDom ? ' c-th' : '') + '" style="position: sticky; left: ' + selLeft + 'px; top: 0px; z-index: 103;">' +
+           '<span class="c-selection-slot"></span></th>';   // ô chọn tất cả: điền sau khi biết số dòng
+       }
+       if (isTree) {
+         /* cột mở / đóng cây — kit (catalog không có mẫu bảng cây) */
+         theadHtml += '<th class="' + HCELL + ' p-0 c-th c-tree-toggle-cell" style="width: 36px; ' + STICKY_TOP + '"></th>';
+       }
++      if (legacyIdx) theadHtml += '<th class="' + HCELL + ' px-8 py-8 c-th c-legacy-index mat-column-sdLegacyIndex" style="width: 80px; min-width: 80px; ' + STICKY_TOP + '">#</th>';
+       if (hasCommands) {
+         theadHtml += '<th class="' + HCELL + ' p-0 mat-mdc-table-sticky mat-mdc-table-sticky-border-elem-left mat-column-sdCommand" style="position: sticky; left: ' + cmdLeft + 'px; top: 0px; z-index: 103; width: 50px;"></th>';
+       }
+@@ -9113,7 +9155,9 @@
+       var _totalAttr = parseInt(this.getAttribute('total'), 10);
+       /* server: chỉ khi hàm trả `{ items, total }` — trả mảng trơn nghĩa là "đây là toàn bộ", giữ tĩnh */
+       var serverPaging = paginated && !isTree && this._isServer() && this._serverTotal != null;
+-      var clientPaging = paginated && !isTree && !this._isServer() && !(_totalAttr > data.length);
++      /* bảng trang cũ (`data-legacy-dom`): kit cũ vẽ HẾT dòng, phân trang chỉ là chữ — trang cũ tự cắt trang / ẩn dòng theo
++         `tbody tr` → giữ hiển thị tĩnh như cũ, không cắt (cắt thì dòng thứ 11+ biến mất, số đếm của trang sai) */
++      var clientPaging = paginated && !isTree && !this._isServer() && !(_totalAttr > data.length) && !legacyDom;
+       /* chế độ server: trang đã tự cắt; kit chỉ tính "x–y/total" theo trang đang xin + `total` hàm trả về */
+       var pageStart = serverPaging ? (this._pageIndex || 0) * pageSize : 0;
+       if (clientPaging) {
+@@ -9138,7 +9182,7 @@
+         treeEnterKeys = this._treePrevKeys;
+       }
+ 
+-      var nCols = (selectable ? 1 : 0) + (isTree ? 1 : 0) + (hasCommands ? 1 : 0) + columns.length;
++      var nCols = (selectable ? 1 : 0) + (isTree ? 1 : 0) + (hasCommands ? 1 : 0) + (legacyIdx ? 1 : 0) + columns.length;
+       var rowKeyOf = function (item) {
+         return (item.row && item.row.id != null) ? 'id:' + item.row.id : 'k:' + item.key;
+       };
+@@ -9162,8 +9206,8 @@
+           (isTree ? ' data-tree-key="' + escAttr(key) + '"' : '') + '>';
+ 
+         if (selectable) {
+-          tbodyHtml += '<td class="' + BCELL + ' sd-selection-cell p-0 mat-mdc-table-sticky' + selBorder + ' mat-column-sdSelection" style="position: sticky; left: ' + selLeft + 'px; z-index: 1;">' +
+-            sdTableCheckboxHtml(isSel, 'data-sel-row', 'Chọn dòng') + '</td>';
++          tbodyHtml += '<td class="' + BCELL + ' sd-selection-cell p-0 mat-mdc-table-sticky' + selBorder + ' mat-column-sdSelection' + (legacyDom ? ' c-td' : '') + '" style="position: sticky; left: ' + selLeft + 'px; z-index: 1;">' +
++            sdTableCheckboxHtml(isSel, 'data-sel-row', 'Chọn dòng', legacyDom ? 'sd-table-row-check' : '') + '</td>';
+         }
+ 
+         if (isTree) {
+@@ -9178,6 +9222,11 @@
+           }
+         }
+ 
++        if (legacyIdx) {
++          /* nhãn như kit cũ: bảng cây "1.2.3", bảng phẳng số thứ tự dòng đang vẽ */
++          tbodyHtml += '<td class="' + BCELL + ' c-td px-0 c-legacy-index mat-column-sdLegacyIndex"><desktop-cell class="d-block px-8"><view><div class="text-break text-black400">' +
++            (isTree ? key.split('-').map(function (k2) { return parseInt(k2, 10) + 1; }).join('.') : (displayIdx + 1)) + '</div></view></desktop-cell></td>';
++        }
+         if (hasCommands) tbodyHtml += self._commandCellHtml(row, displayIdx, commands, cmdLeft);
+ 
+         columns.forEach(function (col, colIdx) {
+@@ -9200,7 +9249,7 @@
+         tbodyHtml += '</tr>';
+         /* Dòng chi tiết rỗng sau mỗi dòng — catalog `tr.c-detail-row` cao 0; đường
+            kẻ 1px giữa các dòng nằm ở ô của dòng này, không ở dòng dữ liệu. */
+-        tbodyHtml += '<tr class="mat-mdc-row mdc-data-table__row c-detail-row"><td class="' + BCELL + ' p-0 mat-column-sdSubInformation mat-mdc-table-sticky" colspan="' + nCols + '" style="position: sticky; left: 0px; z-index: 1;"></td></tr>';
++        if (!legacyDom) tbodyHtml += '<tr class="mat-mdc-row mdc-data-table__row c-detail-row"><td class="' + BCELL + ' p-0 mat-column-sdSubInformation mat-mdc-table-sticky" colspan="' + nCols + '" style="position: sticky; left: 0px; z-index: 1;"></td></tr>';
+       });
+       isEmptyRows = rowsToRender.length === 0;
+ 
+@@ -9297,11 +9346,27 @@
+       /* Ô chọn tất cả ở đầu cột — catalog bỏ trống khi bảng rỗng. */
+       var nSel = this._selAll.filter(function (k) { return self._sel[k]; }).length;
+       theadHtml = theadHtml.replace('<span class="c-selection-slot"></span>', isEmptyRows ? '' :
+-        sdTableCheckboxHtml(!!(nSel && nSel === this._selAll.length), 'data-sel-all', 'Chọn tất cả'));
++        sdTableCheckboxHtml(!!(nSel && nSel === this._selAll.length), 'data-sel-all', 'Chọn tất cả', legacyDom ? 'sd-table-check-all' : ''));
+       /* Đang tải (chế độ server, Promise chưa xong) — catalog: .c-loading phủ
+          bảng trừ 56px dưới + mat-spinner 100px. */
+       var loadingHtml = this._serverPending
+         ? '<div class="c-loading">' + SD_MAT_SPINNER.table + '</div>' : '';
++      /* chế độ trang cũ: ô dữ liệu trang đã tự sửa (thay nội dung / thêm lớp / style) — giữ qua lần vẽ lại khi dữ liệu chưa đổi */
++      var legacyStamp = legacyDom ? (this.getAttribute('data') || '') + '|' + (this.getAttribute('columns') || '') : null;
++      var carryTd = null, carryTh = null;
++      if (legacyDom && this._legacyStamp === legacyStamp && this.querySelector('tbody')) {
++        carryTd = {}; carryTh = {};
++        Array.prototype.forEach.call(this.querySelectorAll('tbody > tr.c-row[data-row-key] > td'), function (td) {
++          var f = (td.className.match(/(?:^|\s)mat-column-([\w-]+)/) || [])[1];
++          if (f && f !== 'sdSelection' && f !== 'sdCommand') carryTd[td.parentNode.getAttribute('data-row-key') + '|' + f] = td;
++        });
++        Array.prototype.forEach.call(this.querySelectorAll('thead > tr > th'), function (th) {
++          var f = (th.className.match(/(?:^|\s)mat-column-([\w-]+)/) || [])[1];
++          if (f) carryTh[f] = { cls: th.className, style: th.getAttribute('style') };
++        });
++      }
++      this._legacyStamp = legacyStamp;
++      if (legacyDom) { var rs = {}; (this._selAll || []).forEach(function (k3) { if (self._sel[k3]) rs[k3] = true; }); this._renderedSel = rs; }
+       this.innerHTML = '<div class="c-container">' + loadingHtml +
+         '<div class="c-table">' +
+         '<table class="mat-mdc-table mdc-data-table__table cdk-table mat-sort">' +   /* lớp như catalog #c-table (2026-10-14) */
+@@ -9313,6 +9378,23 @@
+         addableHtml +
+         footerHtml + '</div>' +
+         (selectable ? this._selectorActionHtml(nSel) : '');
++      if (carryTd) {
++        Array.prototype.forEach.call(this.querySelectorAll('tbody > tr.c-row[data-row-key] > td'), function (nt) {
++          var f = (nt.className.match(/(?:^|\s)mat-column-([\w-]+)/) || [])[1];
++          var old = f && carryTd[nt.parentNode.getAttribute('data-row-key') + '|' + f];
++          if (!old) return;
++          var touched = !old.querySelector(':scope > desktop-cell') || old.className !== nt.className ||
++            (old.getAttribute('style') || '') !== (nt.getAttribute('style') || '');
++          if (touched) nt.parentNode.replaceChild(old, nt);
++        });
++        Array.prototype.forEach.call(this.querySelectorAll('thead > tr > th'), function (th) {
++          var f = (th.className.match(/(?:^|\s)mat-column-([\w-]+)/) || [])[1];
++          var o = f && carryTh[f];
++          if (!o) return;
++          if (o.cls !== th.className) th.className = o.cls;
++          if ((o.style || '') !== (th.getAttribute('style') || '')) { if (o.style == null) th.removeAttribute('style'); else th.setAttribute('style', o.style); }
++        });
++      }
+ 
+       // Lưu tập key đang hiển thị làm mốc cho lần render sau (hiệu ứng mở dòng).
+       if (isTree) {

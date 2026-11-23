@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-document-builder — Preview</title>
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-area">
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-document-builder"
+         data-subtitle="Trình soạn văn bản khổ A4 (CKEditor 5) — biến {{…}}, bình luận, bảng, ảnh, ngắt trang, xoay giấy, xuất Word kèm header/footer"></div>
+    <div class="content-zone">
+
+      <sd-section title="Trang A4 dọc — biến chưa bind / đã bind, bình luận, bảng">
+        <p class="fs-12 text-black400 mb-8">CKEditor 5 thật với đúng cấu hình + plugin của thư viện (xoay giấy, heading, font, màu, bảng, ảnh, ngắt trang, biến, bình luận).
+          Kéo một biến bên dưới thả vào văn bản (≙ <code>dataTransfer 'ck-variable'</code>); bôi đen một đoạn để hiện nút <em>Bình luận</em>.</p>
+        <div class="d-flex mb-8" style="gap: 8px; flex-wrap: wrap; align-items: center;">
+          <span class="fs-12 text-black400">Biến:</span>
+          <span class="sd-docb-demo-var" draggable="true" data-var='{"id":"tenKhachHang","value":"tenKhachHang","display":"Tên khách hàng"}'>{{Tên khách hàng}}</span>
+          <span class="sd-docb-demo-var" draggable="true" data-var='{"id":"Hạn mức","value":"Hạn mức","display":"Hạn mức"}'>{{Hạn mức}}</span>
+          <sd-button id="db-bind" type="light" color="primary" size="sm" title="bindValue('Hạn mức', …)"></sd-button>
+          <sd-button id="db-clear" type="link" color="primary" size="sm" title="clearAllValues()"></sd-button>
+          <sd-button id="db-head" type="link" color="primary" size="sm" title="heading.all() → scroll"></sd-button>
+          <sd-button id="db-rot" type="link" color="primary" size="sm" title="setOrientation()"></sd-button>
+          <sd-button id="db-export" type="link" color="primary" size="sm" title="exportDocx() kèm header/footer"></sd-button>
+        </div>
+        <p class="fs-12 text-black400 mb-8">Kết quả: <code id="db-out">—</code></p>
+        <div style="background: #f8f9fa">
+        <sd-document-builder id="db1" style="display: block; width: 100%; height: 640px">
+<p style="text-align:center;">
+<strong>CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong>
+<br>Độc lập – Tự do – Hạnh phúc</p>
+<h1 style="text-align:center;">
+<span style="font-size:16pt;">TỜ TRÌNH PHÊ DUYỆT HẠN MỨC TÍN DỤNG</span>
+</h1>
+<p style="text-align:center;">Số: <span class="variable-widget ck-widget" data-id="Số tờ trình" data-value="Số tờ trình" data-display="Số tờ trình" data-binding="true" contenteditable="false">TT-0158/2026/FINS</span>
+</p>
+<p>Kính gửi: <span class="variable-widget ck-widget" data-id="Người phê duyệt" data-value="Người phê duyệt" data-display="Người phê duyệt" data-binding="false" contenteditable="false">{{Người phê duyệt}}</span>
+</p>
+<h3 style="font-size:16pt;font-weight:bold;line-height:1.15;">1. Thông tin khoản vay</h3>
+<p>Ngân hàng cho vay: <span class="variable-widget ck-widget" data-id="Ngân hàng" data-value="Ngân hàng" data-display="Ngân hàng" data-binding="true" contenteditable="false">Vietcombank – Chi nhánh Hà Nội</span>. Hạn mức đề xuất: <span class="variable-widget ck-widget" data-id="Hạn mức" data-value="Hạn mức" data-display="Hạn mức" data-binding="false" contenteditable="false">{{Hạn mức}}</span> VND, thời hạn <span class="variable-widget ck-widget" data-id="Kỳ hạn (tháng)" data-value="Kỳ hạn (tháng)" data-display="Kỳ hạn (tháng)" data-binding="false" contenteditable="false">{{Kỳ hạn (tháng)}}</span> tháng.</p>
+<p>Mục đích: bổ sung vốn lưu động theo Kế hoạch Funding quý IV/2026 đã được Ban Tổng Giám đốc thông qua.</p>
+<h3 style="font-size:16pt;font-weight:bold;line-height:1.15;">2. Lịch trả nợ dự kiến</h3>
+<figure class="table">
+<table style="border-style:solid;border-color:#ccc;border-width:1px;width:100%;">
+<tbody>
+<tr>
+<td style="border-style:solid;border-color:#ccc;border-width:1px;text-align:center;">
+<strong>Kỳ</strong>
+</td>
+<td style="border-style:solid;border-color:#ccc;border-width:1px;text-align:center;">
+<strong>Ngày trả nợ</strong>
+</td>
+<td style="border-style:solid;border-color:#ccc;border-width:1px;text-align:center;">
+<strong>Gốc (VND)</strong>
+</td>
+<td style="border-style:solid;border-color:#ccc;border-width:1px;text-align:center;">
+<strong>Lãi (VND)</strong>
+</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-color:#ccc;border-width:1px;text-align:center;">1</td>
+<td style="border-style:solid;border-color:#ccc;border-width:1px;text-align:center;">15/01/2027</td>
+<td style="border-style:solid;border-color:#ccc;border-width:1px;text-align:right;">125.000.000.000</td>
+<td style="border-style:solid;border-color:#ccc;border-width:1px;text-align:right;">6.500.000.000</td>
+</tr>
+<tr>
+<td style="border-style:solid;border-color:#ccc;border-width:1px;text-align:center;">2</td>
+<td style="border-style:solid;border-color:#ccc;border-width:1px;text-align:center;">15/04/2027</td>
+<td style="border-style:solid;border-color:#ccc;border-width:1px;text-align:right;">125.000.000.000</td>
+<td style="border-style:solid;border-color:#ccc;border-width:1px;text-align:right;">4.875.000.000</td>
+</tr>
+</tbody>
+</table>
+</figure>
+<p>Lãi suất áp dụng: 5,2%/năm, điều chỉnh 3 tháng/lần theo lãi suất cơ sở.</p>
+<ul>
+<li>Tài sản bảo đảm: tín chấp.</li>
+<li>Phí trả nợ trước hạn: 1% trên số tiền trả trước.</li>
+</ul>
+<p style="text-align:right;">
+<i>Hà Nội, ngày 08 tháng 10 năm 2026</i>
+</p>
+        </sd-document-builder>
+        </div>
+        <pre class="ds-guide-code mt-8">&lt;sd-document-builder id="db" style="display:block;width:100%;height:640px"&gt;…nội dung ban đầu…&lt;/sd-document-builder&gt;
+&lt;script&gt;
+  db.option = { orientation: 'PORTRAIT', onOrientation: o =&gt; (huong = o), comment: { onPendingComment: c =&gt; … } };
+  db.addEventListener('sd-change', e =&gt; noiDung = e.detail.content);      // ≙ (contentChange)
+  db.getVariablePluginAPI().bindValue('Hạn mức', '500.000.000.000');
+  db.exportDocx({ fileName: 'to-trinh.doc', header: hf.model, footer: '…' });
+&lt;/script&gt;</pre>
+      </sd-section>
+
+      <sd-section title="Header / footer — sd-header-footer-builder">
+        <p class="fs-12 text-black400 mb-8">Toolbar rút gọn của thư viện; hai nút cuối chèn <code>[PAGE]</code> / <code>[TOTAL]</code> (mso-field-code) cho file Word.</p>
+        <sd-header-footer-builder id="hf1">
+<p style="text-align:center;"><strong>CÔNG TY CỔ PHẦN TÀI CHÍNH FINS</strong></p><p style="text-align:right;">Trang <span class="page-number-marker" style="background: #eee; border: 1px dashed #999; padding: 0 4px;">[PAGE]</span> / <span class="total-page-marker" style="background: #eee; border: 1px dashed #999; padding: 0 4px;">[TOTAL]</span></p>
+        </sd-header-footer-builder>
+        <pre class="ds-guide-code mt-8">&lt;sd-header-footer-builder id="hf"&gt;…&lt;/sd-header-footer-builder&gt;
+&lt;script&gt; hf.addEventListener('sd-change', e =&gt; headerHtml = e.detail.model); &lt;/script&gt;   // ≙ [(model)]</pre>
+      </sd-section>
+
+      <sd-section title="Event log">
+        <pre class="ds-guide-code" id="db-event-log">Chưa có sự kiện nào.</pre>
+      </sd-section>
+
+    </div>
+  </div>
+</div>
+<style>
+  /* chip biến để kéo thả — chỉ của trang demo */
+  .sd-docb-demo-var { display: inline-block; padding: 2px 8px; border-radius: 4px; border: 1px solid #90caf9; background: #e3f2fd;
+    color: #1976d2; font-size: 12px; font-weight: 600; cursor: grab; user-select: none; }
+</style>
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+<script>
+  (function () {
+    var db = document.getElementById('db1'), hf = document.getElementById('hf1');
+    var out = document.getElementById('db-out');
+    var log = document.getElementById('db-event-log'), lines = [];
+    function push(t) { lines.unshift(new Date().toLocaleTimeString('vi-VN') + '  ' + t); log.textContent = lines.slice(0, 12).join('\n'); }
+    /* tìm đường dẫn model của một đoạn chữ — để khôi phục bình luận mẫu (startPath / endPath) */
+    function findRange(ed, text) {
+      var root = ed.model.document.getRoot();
+      for (var item of ed.model.createRangeIn(root).getItems()) {
+        if (item.is('$textProxy') && item.data.indexOf(text) >= 0) {
+          var off = item.data.indexOf(text) + item.startOffset;
+          return { startPath: ed.model.createPositionAt(item.parent, off).path, endPath: ed.model.createPositionAt(item.parent, off + text.length).path };
+        }
+      }
+    }
+    db.option = {
+      orientation: 'PORTRAIT',
+      onOrientation: function (o) { out.textContent = 'orientation = ' + o; },
+      comment: {
+        onPendingComment: function (c) {
+          var api = db.getCommentPluginAPI();
+          api.setPendingSelection(c.startPath, c.endPath);
+          push('onPendingComment  “' + c.originalText + '”');
+        },
+        onSelectComment: function (id) { push('onSelectComment  ' + id); }
+      }
+    };
+    db.addEventListener('sd-ready', function () {
+      var ed = db.editor, api = db.getCommentPluginAPI();
+      var r1 = findRange(ed, 'Kế hoạch Funding quý IV/2026'), r2 = findRange(ed, '5,2%/năm');
+      if (r1) api.setComments([{ id: 'cm-1', startPath: r1.startPath, endPath: r1.endPath, originalText: 'Kế hoạch Funding quý IV/2026' }]);
+      if (r2) api.setPendingSelection(r2.startPath, r2.endPath);
+    });
+    db.addEventListener('sd-change', function (e) { push('sd-change  ' + e.detail.content.length + ' ký tự'); });
+    hf.addEventListener('sd-change', function (e) { push('sd-header-footer-builder sd-change  ' + e.detail.model.slice(0, 60)); });
+
+    document.querySelectorAll('.sd-docb-demo-var').forEach(function (el) {
+      el.addEventListener('dragstart', function (e) { e.dataTransfer.setData('ck-variable', el.getAttribute('data-var')); });
+    });
+    document.getElementById('db-bind').addEventListener('click', function () {
+      var n = db.getVariablePluginAPI().bindValue('Hạn mức', '500.000.000.000');
+      out.textContent = 'bindValue → ' + n + ' biến';
+    });
+    document.getElementById('db-clear').addEventListener('click', function () {
+      db.getVariablePluginAPI().clearAllValues(); out.textContent = 'clearAllValues()';
+    });
+    document.getElementById('db-head').addEventListener('click', function () {
+      var hs = db.heading.all();
+      out.textContent = hs.map(function (h) { return 'h' + h.level + ' ' + h.text; }).join(' / ');
+      if (hs[1]) db.heading.scroll(hs[1].id);
+    });
+    document.getElementById('db-rot').addEventListener('click', function () {
+      db.setOrientation(db.getOrientation() === 'PORTRAIT' ? 'LANDSCAPE' : 'PORTRAIT');
+    });
+    document.getElementById('db-export').addEventListener('click', function () {
+      db.exportDocx({ fileName: 'to-trinh.doc', header: hf.model, footer: '<p style="text-align:right;">Trang <span style="mso-field-code: PAGE"></span></p>' });
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,1634 @@
+--- a/design-system/sd-components/sd-components.js
++++ b/design-system/sd-components/sd-components.js
+@@ -5013,60 +5013,184 @@
+         return;
+       }
+ 
++      /* ── DOM Material y hệt catalog #c-input-number (đồng bộ 2026-10-13) ──
++           div.d-flex.align-items-center[.c-focused|.c-disabled]
++             mat-form-field.mat-mdc-form-field.sd-{md|sm}…
++               .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined
++                 .mat-mdc-form-field-flex
++                   .mdc-notched-outline (leading · notch[label] · trailing)
++                   .mat-mdc-form-field-infix > input.mat-mdc-input-element
++                   .mat-mdc-form-field-icon-suffix (lỗi · × · hậu tố)
++               .mat-mdc-form-field-subscript-wrapper (hint | mat-error)
++         Nhãn nổi khi CÓ giá trị hoặc đang focus; khe viền (`notch`) rộng
++         `calc(<bề ngang nhãn>px * scale + 9px)` như Angular tính. */
+       var errorMsg = this._computeError();
+       var showError = !!errorMsg && (this._touched || !!this.inlineError);
+-      var sizeClass = size !== 'md' ? ' sd-' + size : '';
+-      var disabledClass = disabled ? ' sd-disabled' : '';
+-      var hasValueClass = displayVal ? ' sd-has-value' : '';
+-      // catalog chỉ tô viền ĐỎ khi ẩn dòng lỗi (`.hide-inline-error.mat-form-field-invalid`);
+-      // còn lại ô lỗi vẫn giữ viền xám — xem chú thích ở .sd-form-field.sd-error
+-      var hideIE = this.hasAttribute('hideInlineError') || this.hasAttribute('hideinlineerror');
+-      var errorClass = showError ? (hideIE ? ' sd-error sd-hide-inline-error' : ' sd-error') : '';
+-      var reqHtml = required ? '<span class="sd-required">*</span>' : '';
+-      var labelHtml = label ? '<label class="sd-label">' + esc(label) + reqHtml + '</label>' : '';
++      /* catalog chỉ có sd-md và sd-sm; size khác (lg cũ của kit) quy về md — bí danh */
++      var sz = size === 'sm' ? 'sm' : 'md';
++      /* vẽ lại thì ô nhập mới chưa focus → bỏ trạng thái focus cũ */
++      this._focused = false;
++      var floated = !!displayVal;
++      var hasLabel = !!label;
+       var showClear = clearable && val !== null && !disabled && !readOnly;
+       var showErrorIcon = showError && hideInlineError;
+       var showErrorText = showError && !hideInlineError;
+       var suffixIcon = this.suffixIcon, suffixText = this.suffix;
+-      // Mirror <ng-template sdSuffixDef> - luôn đứng SAU CÙNG (bên phải nhất), sau cả
+-      // clear-btn/error-icon, đúng thứ tự matSuffix trong input-number.component.html thật.
+-      /* catalog: <span class="T14R text-black400">VND</span> trong hàng suffix */
++      /* <ng-template sdSuffixDef> — catalog: `<span class="T14R text-black400">VND</span>` */
+       var suffixHtml = suffixIcon
+-        ? '<mat-icon class="mat-icon sd-input-suffix-icon sd-suffix-icon material-icons" aria-hidden="true">' + esc(suffixIcon) + '</mat-icon>'
+-        : (suffixText ? '<span class="T14R text-black400 sd-input-suffix-text">' + esc(suffixText) + '</span>' : '');
++        ? '<mat-icon class="mat-icon sd-suffix-icon material-icons" aria-hidden="true" matsuffix>' + esc(suffixIcon) + '</mat-icon>'
++        : (suffixText ? '<span class="T14R text-black400">' + esc(suffixText) + '</span>' : '');
++      var hasSuffix = showErrorIcon || showClear || !!suffixHtml;
++      if (!this._uid) this._uid = (SdInputNumber._seq = (SdInputNumber._seq || 0) + 1);
++      var inputId = 'mat-input-' + this._uid, labelId = 'mat-mdc-form-field-label-' + this._uid,
++          errorId = 'mat-mdc-error-' + this._uid;
++      var ng = (this._touched ? ' ng-touched' : ' ng-untouched') + (this._dirty ? ' ng-dirty' : ' ng-pristine') +
++        (errorMsg ? ' ng-invalid' : ' ng-valid');
++
++      var mffCls = 'mat-mdc-form-field sd-' + sz + (hideInlineError ? ' hide-inline-error' : '') +
++        ' mat-mdc-form-field-type-mat-input mat-form-field-appearance-outline' +
++        (hasLabel && !floated ? ' mat-form-field-hide-placeholder' : '') + ' mat-primary' +
++        (hasSuffix ? ' mat-mdc-form-field-has-icon-suffix' : '') +
++        (showError ? ' mat-form-field-invalid' : '') + (disabled ? ' mat-form-field-disabled' : '') +
++        (this._focused ? ' mat-focused' : '') + ng;
++      var wrapCls = 'mat-mdc-text-field-wrapper mdc-text-field mdc-text-field--outlined' +
++        (hasLabel ? '' : ' mdc-text-field--no-label') + (this._focused ? ' mdc-text-field--focused' : '') +
++        (showError ? ' mdc-text-field--invalid' : '') + (disabled ? ' mdc-text-field--disabled' : '');
++      var outlineCls = 'mdc-notched-outline' + (hasLabel
++        ? ' mdc-notched-outline--upgraded' + (floated ? ' mdc-notched-outline--notched' : '')
++        : ' mdc-notched-outline--no-label');
++      /* helperText — catalog (#c-input): icon `info_outline` sau chữ nhãn, chữ gợi ý ở `title` */
++      var helperHtml = helperText
++        ? '<mat-icon class="mat-icon material-icons" aria-hidden="true" title="' + escAttr(helperText) + '">info_outline</mat-icon>' : '';
++      var labelHtml = hasLabel
++        ? '<label matformfieldfloatinglabel class="mdc-floating-label mat-mdc-floating-label' + (floated ? ' mdc-floating-label--float-above' : '') + '"' +
++            ' id="' + labelId + '" for="' + inputId + '">' +
++            '<mat-label style="display: inline-block"><div style="display: flex; align-items: center; gap: 4px"><span>' + esc(label) + '</span>' + helperHtml + '</div></mat-label>' +
++            (required ? '<span aria-hidden="true" class="mat-mdc-form-field-required-marker mdc-floating-label--required"></span>' : '') +
++          '</label>'
++        : '';
+ 
+       this.innerHTML =
+-        '<div class="sd-form-field' + sizeClass + disabledClass + hasValueClass + errorClass + '">' +
+-          labelHtml +
+-          '<input class="sd-input" type="text" inputmode="decimal"' +
+-            ' placeholder="' + escAttr(placeholder) + '" value="' + escAttr(displayVal) + '"' +
+-            (disabled ? ' disabled' : '') + (readOnly ? ' readonly' : '') +
+-            (this.autoId ? ' data-autoId="' + escAttr(this.autoId) + '"' : '') +
+-            ' data-disabled="' + (disabled ? 'true' : 'false') + '"' +
+-            ' data-invalid="' + (showError ? 'true' : 'false') + '"' +
+-            ' data-empty="' + (val === null ? 'true' : 'false') + '"' +
+-            ' data-required="' + (required ? 'true' : 'false') + '">' +
+-          (showErrorIcon
+-            ? '<mat-icon class="mat-icon sd-date-error-icon sd-error-icon material-icons" aria-hidden="true" data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</mat-icon>'
+-            : '') +
+-          /* catalog: <button class="sd-clear-btn sd-hover"> — ẩn cho tới khi rê
+-             chuột / focus; bản trước kit dùng nút xoá của sd-date luôn hiện. */
+-          (showClear
+-            ? '<button type="button" class="sd-clear-btn sd-hover" title="' + escAttr(SD_NUM_TEXT.clear) + '" aria-label="' + escAttr(SD_NUM_TEXT.clear) + '">' +
+-              '<mat-icon class="mat-icon material-icons" aria-hidden="true">close</mat-icon></button>'
+-            : '') +
+-          suffixHtml +
+-        '</div>' +
+-        (showErrorText ? '<div class="sd-error-text">' + esc(errorMsg) + '</div>'
+-          : (helperText ? '<div class="sd-helper-text">' + esc(helperText) + '</div>' : ''));
++        '<div class="d-flex align-items-center' + (this._focused ? ' c-focused' : '') + (disabled ? ' c-disabled' : '') + '" aria-hidden="true">' +
++          '<mat-form-field class="' + mffCls + '">' +
++            '<div class="' + wrapCls + '">' +
++              '<div class="mat-mdc-form-field-flex">' +
++                '<div matformfieldnotchedoutline class="' + outlineCls + '">' +
++                  '<div class="mat-mdc-notch-piece mdc-notched-outline__leading"></div>' +
++                  '<div class="mat-mdc-notch-piece mdc-notched-outline__notch">' + labelHtml + '</div>' +
++                  '<div class="mat-mdc-notch-piece mdc-notched-outline__trailing"></div>' +
++                '</div>' +
++                '<div class="mat-mdc-form-field-infix">' +
++                  '<input aria-hidden="true" matinput autocorrect="off" type="text" inputmode="decimal"' +
++                    ' class="mat-mdc-input-element mat-mdc-form-field-input-control mdc-text-field__input' + ng + '"' +
++                    ' id="' + inputId + '" placeholder="' + escAttr(placeholder) + '"' +
++                    (required ? ' required' : '') + ' aria-required="' + (required ? 'true' : 'false') + '"' +
++                    (disabled ? ' disabled' : '') + (readOnly ? ' readonly' : '') +
++                    ' aria-invalid="' + (showError ? 'true' : 'false') + '" autocomplete="off"' +
++                    (this.autoId ? ' data-autoId="' + escAttr(this.autoId) + '"' : '') +
++                    (displayVal ? ' value="' + escAttr(displayVal) + '"' : '') + '>' +
++                '</div>' +
++                (hasSuffix
++                  ? '<div class="mat-mdc-form-field-icon-suffix">' +
++                      (showErrorIcon
++                        ? '<mat-icon class="mat-icon sd-error-icon material-icons" aria-hidden="true" matsuffix data-sd-tooltip="' + escAttr(errorMsg) + '" data-sd-tooltip-position="above">error</mat-icon>'
++                        : '') +
++                      /* catalog: <button class="sd-clear-btn sd-hover"> — ẩn tới khi rê chuột / focus */
++                      (showClear
++                        ? '<button type="button" class="sd-clear-btn sd-hover" matsuffix title="' + escAttr(SD_NUM_TEXT.clear) + '" aria-label="' + escAttr(SD_NUM_TEXT.clear) + '">' +
++                          '<mat-icon class="mat-icon material-icons" aria-hidden="true">close</mat-icon></button>'
++                        : '') +
++                      suffixHtml +   /* hậu tố luôn đứng SAU CÙNG */
++                    '</div>'
++                  : '') +
++              '</div>' +
++            '</div>' +
++            '<div aria-atomic="true" aria-live="polite" class="mat-mdc-form-field-subscript-wrapper mat-mdc-form-field-bottom-align">' +
++              (showErrorText
++                ? '<div class="mat-mdc-form-field-error-wrapper"><mat-error class="mat-mdc-form-field-error mat-mdc-form-field-bottom-align" id="' + errorId + '">' + esc(errorMsg) + '</mat-error></div>'
++                : '<div class="mat-mdc-form-field-hint-wrapper"><div class="mat-mdc-form-field-hint-spacer"></div></div>') +
++            '</div>' +
++          '</mat-form-field>' +
++        '</div>';
++      this._updateNotch();
+ 
+       this._bind();
+     }
+ 
++    /* Khe viền cho nhãn nổi — Angular đặt `width: calc(<label.scrollWidth>px *
++       var(--mat-mdc-form-field-floating-label-scale, 0.75) + 9px)` lên notch.
++       Ô đang ẩn (tab đóng…) chưa có layout → đo tạm bằng canvas theo font nhãn,
++       rồi đo lại ở khung hình kế tiếp / khi font tải xong. */
++    _updateNotch() {
++      var self = this;
++      var notch = this.querySelector('.mdc-notched-outline__notch');
++      var lbl = this.querySelector('.mdc-floating-label');
++      if (!notch) return;
++      if (!lbl || !lbl.classList.contains('mdc-floating-label--float-above')) { notch.style.width = ''; return; }
++      var w = lbl.scrollWidth;
++      if (!w) {
++        try {
++          var c = SdInputNumber._cv || (SdInputNumber._cv = document.createElement('canvas').getContext('2d'));
++          var cs = getComputedStyle(lbl);
++          c.font = (cs.fontWeight || '400') + ' 14px ' + (cs.fontFamily || 'Roboto');
++          w = Math.round(c.measureText(lbl.textContent || '').width +
++            (lbl.querySelector('.mat-mdc-form-field-required-marker') ? c.measureText('*').width + 1 : 0));
++        } catch (e) { w = 0; }
++        if (!this._notchRetry && typeof requestAnimationFrame === 'function') {
++          this._notchRetry = true;
++          requestAnimationFrame(function () { self._notchRetry = false; if (self.isConnected && self.querySelector('.mdc-floating-label') && self.querySelector('.mdc-floating-label').scrollWidth) self._updateNotch(); });
++        }
++      }
++      notch.style.width = 'calc(' + w + 'px * var(--mat-mdc-form-field-floating-label-scale, 0.75) + 9px)';
++      /* Bề ngang nhãn còn đổi khi font tải xong / ô hết bị ẩn → theo dõi nhãn
++         bằng ResizeObserver và đo lại (Angular cũng đo lại khi layout đổi). */
++      if (typeof ResizeObserver === 'function' && this._roLabel !== lbl) {
++        if (!this._ro) this._ro = new ResizeObserver(function () { if (self.isConnected) self._updateNotch(); });
++        if (this._roLabel) this._ro.unobserve(this._roLabel);
++        this._ro.observe(lbl);
++        this._roLabel = lbl;
++      }
++    }
++
++    /* Focus/blur chỉ bật tắt lớp trạng thái (không vẽ lại — giữ con trỏ):
++       c-focused · mat-focused · mdc-text-field--focused · nhãn nổi + khe viền. */
++    _setFocusState(on) {
++      this._focused = !!on;
++      var flex = this.querySelector('.d-flex'), mff = this.querySelector('mat-form-field'),
++          wrap = this.querySelector('.mat-mdc-text-field-wrapper'), outline = this.querySelector('.mdc-notched-outline'),
++          lbl = this.querySelector('.mdc-floating-label'), input = this.querySelector('.mat-mdc-input-element');
++      /* chèn / gỡ lớp ĐÚNG VỊ TRÍ như Angular in ra (trước nhóm ng-*, sau mat-primary…) */
++      function place(el, cls, onFlag, before) {
++        if (!el) return;
++        var list = el.className.split(/\s+/).filter(function (c) { return c && c !== cls; });
++        if (onFlag) {
++          var at = list.length;
++          for (var i = 0; i < list.length; i++) { if (before(list[i])) { at = i; break; } }
++          list.splice(at, 0, cls);
++        }
++        el.className = list.join(' ');
++      }
++      var isNg = function (c) { return /^ng-/.test(c); };
++      var never = function () { return false; };
++      var floated = !!on || !!(input && input.value);
++      place(flex, 'c-focused', !!on, never);
++      place(mff, 'mat-focused', !!on, isNg);
++      place(wrap, 'mdc-text-field--focused', !!on, function (c) { return c === 'mdc-text-field--invalid' || c === 'mdc-text-field--disabled'; });
++      if (lbl) {
++        lbl.classList.toggle('mdc-floating-label--float-above', floated);
++        place(outline, 'mdc-notched-outline--notched', floated, never);
++        place(mff, 'mat-form-field-hide-placeholder', !floated, function (c) { return c === 'mat-primary'; });
++      }
++      this._updateNotch();
++    }
++
+     _bind() {
+       var self = this;
+-      var input = this.querySelector('.sd-input');
++      var input = this.querySelector('.mat-mdc-input-element');
+       if (input) {
++        input.addEventListener('focus', function () { if (!self._inRender) self._setFocusState(true); });
++        input.addEventListener('blur', function () { if (!self._inRender) self._focused = false; });
++
+         input.addEventListener('keydown', function (e) { self._onKeydown(e); });
+         input.addEventListener('keydown', function (e) {
+         if (e.key === 'Enter' && self.blurOnEnter) { e.preventDefault(); input.blur(); }
+@@ -5172,8 +5296,7 @@
+         var newPos = Math.max(0, cursor + formatted.length - oldLen);
+         if (input.setSelectionRange) input.setSelectionRange(newPos, newPos);
+       }
+-      var field = this.querySelector('.sd-form-field');
+-      if (field) field.classList.toggle('sd-has-value', !!formatted);
++      if (formatted !== this._lastTyped) { this._dirty = true; this._lastTyped = formatted; }
+     }
+ 
+     /* Dán số - mirror onPaste thật: chuẩn hoá nghiêm ngặt bằng regex nhóm-đúng-3-chữ-số
+@@ -5206,7 +5329,7 @@
+     }
+ 
+     _onBlurEvent() {
+-      var input = this.querySelector('.sd-input');
++      var input = this.querySelector('.mat-mdc-input-element');
+       var display = input ? input.value : '';
+       this._touched = true;
+       if (!display || display.trim() === '') { this._commit(null); return; }
+@@ -5222,8 +5345,8 @@
+       this.dispatchEvent(new CustomEvent('sd-cleared', { bubbles: true }));
+     }
+ 
+-    focus() { var input = this.querySelector('.sd-input'); if (input) input.focus(); }
+-    blur() { var input = this.querySelector('.sd-input'); if (input) input.blur(); }
++    focus() { var input = this.querySelector('.mat-mdc-input-element'); if (input) input.focus(); }
++    blur() { var input = this.querySelector('.mat-mdc-input-element'); if (input) input.blur(); }
+   }
+   customElements.define('sd-input-number', SdInputNumber);
+ 
+@@ -8744,7 +8867,8 @@
+         var f = ' size="sm" data-filter-field="' + escAttr(col.field) + '"';
+         switch (col.type) {
+           case 'number':
+-            return '<sd-input-number' + f + (has(_fv) ? ' value="' + escAttr(String(_fv)) + '"' : '') + '></sd-input-number>';
++            /* catalog #c-table: ô lọc là `mat-form-field.sd-sm.hide-inline-error` (không có dòng lỗi) */
++            return '<sd-input-number' + f + ' hideInlineError' + (has(_fv) ? ' value="' + escAttr(String(_fv)) + '"' : '') + '></sd-input-number>';
+           case 'date':
+           case 'datetime': {
+             /* catalog: cột date VÀ datetime đều lọc bằng sd-date-range (Từ – đến) */
+@@ -10534,6 +10658,19 @@
+   };
+   // localStorage của saved filters có thể ném trong chế độ riêng tư - bọc try/catch,
+   // cộng bộ nhớ tạm trong tab để preview vẫn chạy đúng khi ném.
++  /* Overlay dùng chung, gắn ở <body> như `cdk-overlay-container` của Angular CDK.
++     Panel nổi (menu, popover) của component kit đặt trong một `.cdk-overlay-pane`
++     con của nó — đúng cây DOM thật của thư viện (catalog vẽ pane là anh em
++     ngay sau host). */
++  function sdOverlayContainer() {
++    var c = document.querySelector('body > .cdk-overlay-container');
++    if (!c) {
++      c = document.createElement('div');
++      c.className = 'cdk-overlay-container';
++      document.body.appendChild(c);
++    }
++    return c;
++  }
+   var qbStorageMem = {};
+   function qbStorageGet(key) {
+     try { var raw = window.localStorage.getItem(key); return raw ? JSON.parse(raw) : null; }
+@@ -10607,6 +10744,7 @@
+     }
+     disconnectedCallback() {
+       this._unbindDocument();
++      this._setPane('');
+     }
+     attributeChangedCallback(name) {
+       sdSyncAutoId(this, 'components-query-bar-');
+@@ -10808,30 +10946,67 @@
+       html += '</div></sd-query-actions-bar>';
+       html += '</div>';
+ 
+-      if (this._addOpen) html += this._renderAddMenu();
+-      if (this._savedOpen) html += this._renderSavedMenu();
+       this.setAttribute('data-mode', mode);
+       this.setAttribute('data-density', density);
+-      /* mode inline cũng cần bảng chọn cho chip nhiều lựa chọn (xem
+-         _renderInlineValueSummary) — trước đây chỉ mode popover mới dựng. */
+-      if (this._openField && this._draft) html += this._renderPopover();
+ 
+-      /* Catalog: `sd-query-bar > .c-query-bar` (không có lớp bọc); panel menu là
+-         anh em ngay sau thanh. */
++      /* Panel nổi: field picker · bộ lọc đã lưu · chip popover. mode inline cũng
++         cần popover cho chip nhiều lựa chọn (xem _renderInlineValueSummary). */
++      var paneHtml = '';
++      if (this._addOpen) paneHtml = this._renderAddMenu();
++      else if (this._savedOpen) paneHtml = this._renderSavedMenu();
++      else if (this._openField && this._draft) paneHtml = this._renderPopover();
++
++      /* Catalog: `sd-query-bar > .c-query-bar` (không có lớp bọc); panel nằm
++         trong `.cdk-overlay-pane` NGOÀI thẻ host (overlay CDK). */
+       this.innerHTML = html;
++      this._setPane(paneHtml);
+       this._afterRender();
+     }
+ 
++    /* Dựng / gỡ `.cdk-overlay-pane` của thanh trong overlay dùng chung ở <body>.
++       Pane nhận cùng bộ lắng nghe click / sd-change / input như thẻ host vì
++       sự kiện trong pane không nổi qua host nữa. */
++    _setPane(html) {
++      var self = this;
++      if (!html) {
++        if (this._pane) {
++          if (this._pane.parentNode) this._pane.parentNode.removeChild(this._pane);
++          this._pane = null;
++        }
++        return;
++      }
++      if (!this._pane) {
++        var pane = document.createElement('div');
++        pane.className = 'cdk-overlay-pane';
++        pane.setAttribute('data-sd-overlay', 'query-bar');
++        pane.addEventListener('click', function (e) { self._onClick(e); });
++        pane.addEventListener('sd-change', function (e) { self._onControlChange(e); });
++        pane.addEventListener('input', function (e) { self._onInput(e); });
++        this._pane = pane;
++      }
++      if (!this._pane.isConnected) sdOverlayContainer().appendChild(this._pane);
++      this._pane.innerHTML = html;
++    }
++    /* querySelectorAll trên CẢ thanh lẫn pane nổi */
++    _qa(sel) {
++      var list = Array.prototype.slice.call(this.querySelectorAll(sel));
++      if (this._pane) list = list.concat(Array.prototype.slice.call(this._pane.querySelectorAll(sel)));
++      return list;
++    }
++    _inside(node) {
++      return !!node && (this.contains(node) || (!!this._pane && this._pane.contains(node)));
++    }
++
+     _afterRender() {
+       var self = this;
+       // sd-date/sd-datetime trong mirror render readonly - gỡ readonly để nhập thật
+       // (cơ chế giống SdConfirmService), value được query-bar phân tích ngay.
+-      this.querySelectorAll('[data-qb-role="date-raw"] .sd-input').forEach(function (input) {
++      this._qa('[data-qb-role="date-raw"] .sd-input').forEach(function (input) {
+         if (input.hasAttribute('readonly')) input.removeAttribute('readonly');
+       });
+       this._fixDatePlaceholders();
+       this._resolveLazyChips();
+-      this.querySelectorAll('[data-qb-role="lazy-list"]').forEach(function (el) {
++      this._qa('[data-qb-role="lazy-list"]').forEach(function (el) {
+         var mode = el.getAttribute('data-qb-mode') || 'draft';
+         var fieldKey = el.getAttribute('data-qb-field');
+         var f = (mode === 'live') ? self._findFilter(fieldKey) : self._draft;
+@@ -10845,7 +11020,7 @@
+ 
+     /* sd-date placeholder mặc định dài - né trùng ký tự khi bên cạnh nhau */
+     _fixDatePlaceholders() {
+-      this.querySelectorAll('[data-qb-role="date-raw"]').forEach(function (host) {
++      this._qa('[data-qb-role="date-raw"]').forEach(function (host) {
+         var side = host.getAttribute('data-qb-side');
+         var input = host.querySelector('.sd-input');
+         if (input && side === 'from') input.setAttribute('placeholder', 'Từ dd/MM/yyyy');
+@@ -10965,7 +11140,7 @@
+ 
+     _resolveLazyChips() {
+       var self = this;
+-      this.querySelectorAll('[data-qb-role="lazy-chip-text"]').forEach(function (el) {
++      this._qa('[data-qb-role="lazy-chip-text"]').forEach(function (el) {
+         if (el._qbResolving) return;
+         var fieldKey = el.getAttribute('data-qb-field');
+         var filter = self._findFilter(fieldKey);
+@@ -11279,7 +11454,7 @@
+     _populateLazyList(f, field, text, mode) {
+       var self = this;
+       var listEl = null;
+-      this.querySelectorAll('[data-qb-role="lazy-list"]').forEach(function (el) {
++      this._qa('[data-qb-role="lazy-list"]').forEach(function (el) {
+         if (el.getAttribute('data-qb-mode') === mode && el.getAttribute('data-qb-field') === f.field) listEl = el;
+       });
+       if (!listEl) return;
+@@ -11416,14 +11591,17 @@
+         left = Math.max(8, Math.min(left, window.innerWidth - nw - 8));
+         var top = r.bottom;   /* mat-menu-below: sát mép dưới nút kích hoạt */
+         if (top + nh > window.innerHeight - 8 && r.top > nh + 8) top = r.top - nh - 4;
+-        node.style.left = Math.round(left) + 'px';
+-        node.style.top = Math.round(top) + 'px';
++        /* toạ độ đặt lên `.cdk-overlay-pane` (container phủ kín màn hình, fixed) */
++        var paneEl = self._pane;
++        if (!paneEl) return;
++        paneEl.style.left = Math.round(left) + 'px';
++        paneEl.style.top = Math.round(top) + 'px';
+       }
+       var tryPlace = function () {
+-        if (!self.isConnected) return;
+-        place(self.querySelector('.c-chip-popover'), false);
+-        place(self.querySelector('.c-field-picker-menu'), false);   /* mat-menu-after */
+-        place(self.querySelector('.c-saved-filters-menu'), true);   /* xPosition="before" */
++        if (!self.isConnected || !self._pane) return;
++        place(self._pane.querySelector('.c-chip-popover'), false);
++        place(self._pane.querySelector('.c-field-picker-menu'), false);   /* mat-menu-after */
++        place(self._pane.querySelector('.c-saved-filters-menu'), true);   /* xPosition="before" */
+       };
+       tryPlace();
+       if (this._positionTimer) clearTimeout(this._positionTimer);
+@@ -11448,7 +11626,9 @@
+         this._docBound = true;
+         this._docClickBound = function (e) { self._onDocClick(e); };
+         this._docKeyBound = function (e) { self._onDocKey(e); };
+-        this._docScrollBound = function () {
++        this._docScrollBound = function (e) {
++          /* cuộn BÊN TRONG panel (danh sách lazy, checkbox dài) không đóng panel */
++          if (e && e.target && e.target.nodeType === 1 && self._pane && self._pane.contains(e.target)) return;
+           if (self._openField || self._addOpen || self._savedOpen) {
+             self._openField = null;
+             self._draft = null;
+@@ -11798,7 +11978,11 @@
+       /* Như backdrop của mat-menu: bấm ra ngoài panel (kể cả chỗ trống trên thanh)
+          là đóng; nút / chip trên thanh tự xử lý trong _onClick. */
+       if (e.__sdQbHandled === this) return;
+-      if (this.contains(e.target) && e.target.closest && e.target.closest('.mat-mdc-menu-panel, [data-qb-role], sd-operator')) return;
++      /* bấm trong panel — dùng composedPath (đường đi lúc phát sự kiện) vì
++         thao tác trong panel có thể đã vẽ lại panel, e.target rời cây */
++      var path = (e.composedPath && e.composedPath()) || [];
++      if (this._pane && (path.indexOf(this._pane) !== -1 || this._pane.contains(e.target))) return;
++      if (this.contains(e.target) && e.target.closest && e.target.closest('[data-qb-role], sd-operator')) return;
+       // "đóng → commit": click ngoài popover thì commit bản nháp (đúng mô tả Portal).
+       if (this._openField && this._draft) {
+         this._commitDraft(true);
+@@ -11818,7 +12002,7 @@
+          khi rời ô → blur trước để số vừa gõ vào bản nháp rồi mới commit. */
+       if (this._openField && this._draft) {
+         var ae = document.activeElement;
+-        if (ae && ae !== document.body && this.contains(ae) && ae.blur) ae.blur();
++        if (ae && ae !== document.body && this._inside(ae) && ae.blur) ae.blur();
+         if (this._openField && this._draft) this._commitDraft(true);
+         return;
+       }
+--- a/design-system/core/styles/sd-tokens.css
++++ b/design-system/core/styles/sd-tokens.css
+@@ -2150,7 +2150,7 @@
+ .sd-form-field ~ .sd-error-text,
+ .sd-input-field-wrap ~ .sd-error-text { letter-spacing: 0.4px; }
+ sd-table column-filter .sd-form-field,
+-sd-query-bar .sd-form-field { letter-spacing: normal; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .sd-form-field { letter-spacing: normal; }
+ /* sd-date-range: đo lại 2026-10-12 — catalog giãn 0.496px ở nhãn, thẻ mirror (quyết
+    định bề ngang ô), dấu `–`; CHỈ thẻ <input> bên trong là `normal` (font: inherit
+    không mang letter-spacing). Bản trước để `normal` cả cụm → ô "Từ" hẹp 5px, dấu
+@@ -2164,7 +2164,6 @@
+    .form-field-datepicker* có sẵn trong components.css. --- */
+ sd-date .sd-date-error-icon,
+ sd-datetime .sd-date-error-icon,
+-sd-input-number .sd-date-error-icon,
+ sd-chip .sd-date-error-icon,
+ sd-chip-calendar .sd-date-error-icon,
+ sd-input .sd-date-error-icon,
+@@ -2192,30 +2191,24 @@
+ /* sd-input dùng cùng hàng suffix (catalog #c-input: × ở 248, có hậu tố thì × 220 +
+    icon 248 — khe 8px). Rà soát #c-input 2026-10-12. */
+ sd-input .sd-form-field > .sd-input + *,
+-sd-input-number .sd-form-field > .sd-input + *,
+ sd-datetime .sd-form-field > .sd-input + *,
+ sd-date .sd-form-field > .sd-input + * { margin-left: 12px; }
+ sd-input .sd-form-field > .sd-input ~ * + *,
+-sd-input-number .sd-form-field > .sd-input ~ * + *,
+ sd-datetime .sd-form-field > .sd-input ~ * + *,
+ sd-date .sd-form-field > .sd-input ~ * + * { margin-left: 8px; }
+ sd-input .sd-form-field:not(.sd-sm):not(.sd-lg) > .sd-input ~ *:last-child,
+-sd-input-number .sd-form-field:not(.sd-sm):not(.sd-lg) > .sd-input ~ *:last-child,
+ sd-datetime .sd-form-field:not(.sd-sm):not(.sd-lg) > .sd-input ~ *:last-child,
+ sd-date .sd-form-field:not(.sd-sm):not(.sd-lg) > .sd-input ~ *:last-child { margin-right: -4px; }
+ /* Cỡ sm — luật Material dùng chung `.sd-sm .mat-mdc-form-field-icon-suffix
+    {padding:0 8px; gap:4px}`, icon đuôi + icon lỗi 16px (nút × giữ 20px). Đo ở
+    #c-date (sm: × 232, today 256 ở khung 280). Kit đệm 16 → lề phải −8px. */
+ sd-input .sd-form-field.sd-sm > .sd-input + *,
+-sd-input-number .sd-form-field.sd-sm > .sd-input + *,
+ sd-datetime .sd-form-field.sd-sm > .sd-input + *,
+ sd-date .sd-form-field.sd-sm > .sd-input + * { margin-left: 8px; }
+ sd-input .sd-form-field.sd-sm > .sd-input ~ * + *,
+-sd-input-number .sd-form-field.sd-sm > .sd-input ~ * + *,
+ sd-datetime .sd-form-field.sd-sm > .sd-input ~ * + *,
+ sd-date .sd-form-field.sd-sm > .sd-input ~ * + * { margin-left: 4px; }
+ sd-input .sd-form-field.sd-sm > .sd-input ~ *:last-child,
+-sd-input-number .sd-form-field.sd-sm > .sd-input ~ *:last-child,
+ sd-datetime .sd-form-field.sd-sm > .sd-input ~ *:last-child,
+ sd-date .sd-form-field.sd-sm > .sd-input ~ *:last-child { margin-right: -8px; }
+ sd-date .sd-form-field.sd-sm .sd-suffix-icon,
+@@ -2224,10 +2217,8 @@
+ sd-datetime .sd-form-field.sd-sm .sd-suffix-icon svg,
+ sd-date .sd-form-field.sd-sm .sd-date-error-icon,
+ sd-input .sd-form-field.sd-sm .sd-date-error-icon,
+-sd-input-number .sd-form-field.sd-sm .sd-date-error-icon,
+ sd-datetime .sd-form-field.sd-sm .sd-date-error-icon { font-size: 16px; width: 16px; height: 16px; line-height: 16px; }
+ sd-input .sd-form-field .sd-date-error-icon,
+-sd-input-number .sd-form-field .sd-date-error-icon,
+ sd-datetime .sd-form-field .sd-date-error-icon,
+ sd-date .sd-form-field .sd-date-error-icon {
+   font-size: 20px; width: 20px; height: 20px; line-height: 20px;
+@@ -2237,12 +2228,10 @@
+    .mat-mdc-form-field-icon-suffix { color: #BA200E }` (đo ở #c-input và
+    #c-input-number). Rà soát 2026-10-12. */
+ sd-input .sd-form-field.sd-error:not(:focus-within):not(.sd-disabled):hover .sd-date-error-icon,
+-sd-input-number .sd-form-field.sd-error:not(:focus-within):not(.sd-disabled):hover .sd-date-error-icon,
+ sd-datetime .sd-form-field.sd-error:not(:focus-within):not(.sd-disabled):hover .sd-date-error-icon,
+ sd-date .sd-form-field.sd-error:not(:focus-within):not(.sd-disabled):hover .sd-date-error-icon { color: var(--sd-error-dark); }
+ /* Giá trị khi disabled — catalog `--sd-black400`, bản trước .87 */
+ sd-input .sd-form-field.sd-disabled .sd-input,
+-sd-input-number .sd-form-field.sd-disabled .sd-input,
+ sd-datetime .sd-form-field.sd-disabled .sd-input,
+ sd-date .sd-form-field.sd-disabled .sd-input { color: var(--sd-black400); -webkit-text-fill-color: var(--sd-black400); }
+ /* Icon đuôi của sd-datetime — catalog `span.cursor-pointer.sd-suffix-icon` 20×20,
+@@ -2280,27 +2269,156 @@
+   font-size: 14px; width: 14px; height: 14px; line-height: 14px;
+   color: inherit; cursor: auto; pointer-events: auto;
+ }
+-sd-input-number .sd-input-suffix-text {
+-  flex-shrink: 0;
+-  font-family: var(--sd-font-family);
+-  font-size: 14px;
+-  line-height: 20px;
+-  color: var(--sd-black400);
+-  white-space: nowrap;
+-}
+-sd-input-number .sd-input-suffix-icon {
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  flex-shrink: 0;
+-  margin-left: 4px;
+-  font-size: 18px;
+-  color: var(--sd-black400);
+-}
+-sd-input-number .sd-form-field.sd-disabled .sd-input-suffix-text,
+-sd-input-number .sd-form-field.sd-disabled .sd-input-suffix-icon {
+-  color: var(--sd-black300);
+-}
++/* ══ sd-input-number — DOM Material (mat-form-field) y hệt catalog #c-input-number
++   (đồng bộ 2026-10-13). CHÉP NGUYÊN VĂN css/components/input-number.css của catalog,
++   đổi phạm vi `#c-input-number` → `sd-input-number` (bỏ khung demo, sd-inline-text
++   và tiện ích d-flex/T14* vốn đã có ở kit). Thêm: cỡ `sd-sm` (query-builder /
++   date của catalog), icon hậu tố sd-md (input.css), luật `--no-label`, và token M3
++   `--mat-sys-body-*` / `--mat-sys-on-surface*` (catalog khai toàn cục ở `html`,
++   material-tokens.css — kit khai trong phạm vi thẻ). Các luật `.sd-form-field`
++   cũ của sd-input-number đã gỡ. ══ */
++sd-input-number{--mat-sys-body-large-font:Roboto;--mat-sys-body-large-line-height:1.5rem;--mat-sys-body-large-size:1rem;--mat-sys-body-large-tracking:0.031rem;--mat-sys-body-large-weight:400;--mat-sys-body-small-font:Roboto;--mat-sys-body-small-line-height:1rem;--mat-sys-body-small-size:0.75rem;--mat-sys-body-small-tracking:0.025rem;--mat-sys-body-small-weight:400;--mat-sys-on-surface:#1a1b1f;--mat-sys-on-surface-variant:#44474e}
++sd-input-number{--mat-form-field-outlined-outline-width:1px;--mat-form-field-outlined-focus-outline-width:2px;--mat-form-field-outlined-container-shape:4px;--mat-form-field-outlined-caret-color:#ae7129;--mat-form-field-outlined-focus-outline-color:#ae7129;--mat-form-field-outlined-focus-label-text-color:color-mix(in srgb, #ae7129 87%, transparent);--mat-form-field-disabled-input-text-placeholder-color:color-mix(in srgb, rgba(0, 0, 0, 0.87) 38%, transparent);--mat-form-field-error-text-color:#f44336;--mat-form-field-error-trailing-icon-color:#f82c13;--mat-form-field-error-hover-trailing-icon-color:#ba200e;--mat-form-field-error-focus-trailing-icon-color:#ba200e;--mat-form-field-outlined-label-text-color:rgba(0,0,0,.54);--mat-form-field-outlined-hover-label-text-color:rgba(0,0,0,.87);--mat-form-field-outlined-disabled-label-text-color:color-mix(in srgb, rgba(0, 0, 0, 0.87) 38%, transparent);--mat-form-field-outlined-input-text-color:rgba(0,0,0,.87);--mat-form-field-outlined-disabled-input-text-color:color-mix(in srgb, rgba(0, 0, 0, 0.87) 38%, transparent);--mat-form-field-outlined-input-text-placeholder-color:rgba(0,0,0,.54);--mat-form-field-outlined-error-caret-color:#f44336;--mat-form-field-outlined-error-focus-label-text-color:#f44336;--mat-form-field-outlined-error-label-text-color:#f44336;--mat-form-field-outlined-error-hover-label-text-color:#f44336;--mat-form-field-outlined-outline-color:rgba(0,0,0,.38);--mat-form-field-outlined-disabled-outline-color:color-mix(in srgb, rgba(0, 0, 0, 0.87) 12%, transparent);--mat-form-field-outlined-hover-outline-color:rgba(0,0,0,.87);--mat-form-field-outlined-error-focus-outline-color:#f44336;--mat-form-field-outlined-error-hover-outline-color:#f44336;--mat-form-field-outlined-error-outline-color:#f44336;--mat-form-field-container-height:44px;--mat-form-field-container-vertical-padding:10px}
++sd-input-number label{display:inline-block;margin-bottom:.5rem}
++sd-input-number input,sd-input-number button,sd-input-number select,sd-input-number optgroup,sd-input-number textarea{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
++sd-input-number button,sd-input-number input{overflow:visible}
++sd-input-number button{border-radius:0}
++sd-input-number button:not(:disabled),sd-input-number [type=button]:not(:disabled){cursor:pointer}
++sd-input-number textarea{overflow:auto;resize:vertical}
++sd-input-number .mat-icon.material-icons{font-family:'Material Icons';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga';-webkit-font-smoothing:antialiased}
++sd-input-number .mat-icon{color:var(--mat-icon-color, inherit)}
++sd-input-number .mdc-text-field{display:inline-flex;align-items:baseline;padding:0 16px;position:relative;box-sizing:border-box;overflow:hidden;will-change:opacity,transform,color;border-top-left-radius:4px;border-top-right-radius:4px;border-bottom-right-radius:0;border-bottom-left-radius:0}
++sd-input-number .mdc-text-field__input{width:100%;min-width:0;border:none;border-radius:0;background:none;padding:0;-moz-appearance:none;-webkit-appearance:none;height:28px}
++sd-input-number .mdc-text-field__input:focus{outline:none}
++sd-input-number .mdc-text-field__input::placeholder{opacity:0}
++sd-input-number .mdc-text-field--focused .mdc-text-field__input::placeholder{opacity:1}
++sd-input-number .mdc-text-field--outlined .mdc-text-field__input{height:100%}
++sd-input-number .mdc-text-field--outlined .mdc-text-field__input{display:flex;border:none !important;background-color:rgba(0,0,0,0)}
++sd-input-number .mdc-text-field--disabled .mdc-text-field__input{pointer-events:auto}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-text-field__input{color:var(--mat-form-field-outlined-input-text-color);caret-color:var(--mat-form-field-outlined-caret-color)}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-text-field__input::placeholder{color:var(--mat-form-field-outlined-input-text-placeholder-color)}
++sd-input-number .mdc-text-field--outlined.mdc-text-field--invalid:not(.mdc-text-field--disabled) .mdc-text-field__input{caret-color:var(--mat-form-field-outlined-error-caret-color)}
++sd-input-number .mdc-text-field--outlined.mdc-text-field--disabled .mdc-text-field__input{color:var(--mat-form-field-outlined-disabled-input-text-color)}
++sd-input-number .mdc-text-field--outlined{height:56px;overflow:visible;padding-right:max(16px,var(--mat-form-field-outlined-container-shape));padding-left:max(16px,var(--mat-form-field-outlined-container-shape) + 4px)}
++sd-input-number .mdc-floating-label{position:absolute;left:0;transform-origin:left top;line-height:1.15rem;text-align:left;text-overflow:ellipsis;white-space:nowrap;cursor:text;overflow:hidden;will-change:transform}
++sd-input-number .mdc-text-field .mdc-floating-label{top:50%;transform:translateY(-50%);pointer-events:none}
++sd-input-number .mdc-notched-outline .mdc-floating-label{display:inline-block;position:relative;max-width:100%}
++sd-input-number .mdc-text-field--outlined .mdc-floating-label{left:4px;right:auto}
++sd-input-number .mdc-text-field--disabled .mdc-floating-label{cursor:default}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-floating-label{color:var(--mat-form-field-outlined-label-text-color)}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-floating-label{color:var(--mat-form-field-outlined-focus-label-text-color)}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .mdc-floating-label{color:var(--mat-form-field-outlined-hover-label-text-color)}
++sd-input-number .mdc-text-field--outlined.mdc-text-field--disabled .mdc-floating-label{color:var(--mat-form-field-outlined-disabled-label-text-color)}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--invalid .mdc-floating-label{color:var(--mat-form-field-outlined-error-label-text-color)}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--invalid.mdc-text-field--focused .mdc-floating-label{color:var(--mat-form-field-outlined-error-focus-label-text-color)}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--invalid:not(.mdc-text-field--disabled):hover .mdc-floating-label{color:var(--mat-form-field-outlined-error-hover-label-text-color)}
++sd-input-number .mdc-text-field--outlined .mdc-floating-label{font-family:var(--mat-form-field-outlined-label-text-font, var(--mat-sys-body-large-font));font-size:var(--mat-form-field-outlined-label-text-size, var(--mat-sys-body-large-size));font-weight:var(--mat-form-field-outlined-label-text-weight, var(--mat-sys-body-large-weight));letter-spacing:var(--mat-form-field-outlined-label-text-tracking, var(--mat-sys-body-large-tracking))}
++sd-input-number .mdc-floating-label--float-above{cursor:auto;transform:translateY(-106%) scale(0.75)}
++sd-input-number .mdc-text-field--outlined .mdc-floating-label--float-above{transform:translateY(-37.25px) scale(1);font-size:.75rem}
++sd-input-number .mdc-notched-outline .mdc-floating-label--float-above{text-overflow:clip}
++sd-input-number .mdc-notched-outline--upgraded .mdc-floating-label--float-above{max-width:133.3333333333%}
++sd-input-number .mdc-text-field--outlined.mdc-notched-outline--upgraded .mdc-floating-label--float-above,sd-input-number .mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above{transform:translateY(-34.75px) scale(0.75)}
++sd-input-number .mdc-text-field--outlined.mdc-notched-outline--upgraded .mdc-floating-label--float-above,sd-input-number .mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above{font-size:1rem}
++sd-input-number .mdc-floating-label--required:not(.mdc-floating-label--hide-required-marker)::after{margin-left:1px;margin-right:0;content:"*"}
++sd-input-number .mdc-notched-outline{display:flex;position:absolute;top:0;right:0;left:0;box-sizing:border-box;width:100%;max-width:100%;height:100%;text-align:left;pointer-events:none}
++sd-input-number .mdc-text-field--outlined .mdc-notched-outline{z-index:1}
++sd-input-number .mat-mdc-notch-piece{box-sizing:border-box;height:100%;pointer-events:none;border-top:1px solid;border-bottom:1px solid}
++sd-input-number .mdc-text-field--focused .mat-mdc-notch-piece{border-width:2px}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mat-mdc-notch-piece{border-color:var(--mat-form-field-outlined-outline-color);border-width:var(--mat-form-field-outlined-outline-width)}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled):not(.mdc-text-field--focused):hover .mat-mdc-notch-piece{border-color:var(--mat-form-field-outlined-hover-outline-color)}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mat-mdc-notch-piece{border-color:var(--mat-form-field-outlined-focus-outline-color)}
++sd-input-number .mdc-text-field--outlined.mdc-text-field--disabled .mat-mdc-notch-piece{border-color:var(--mat-form-field-outlined-disabled-outline-color)}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--invalid .mat-mdc-notch-piece{border-color:var(--mat-form-field-outlined-error-outline-color)}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--invalid:not(.mdc-text-field--focused):hover .mdc-notched-outline .mat-mdc-notch-piece{border-color:var(--mat-form-field-outlined-error-hover-outline-color)}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--invalid.mdc-text-field--focused .mat-mdc-notch-piece{border-color:var(--mat-form-field-outlined-error-focus-outline-color)}
++sd-input-number .mdc-text-field--outlined:not(.mdc-text-field--disabled).mdc-text-field--focused .mdc-notched-outline .mat-mdc-notch-piece{border-width:var(--mat-form-field-outlined-focus-outline-width)}
++sd-input-number .mdc-notched-outline__leading{border-left:1px solid;border-right:none;border-top-right-radius:0;border-bottom-right-radius:0;border-top-left-radius:var(--mat-form-field-outlined-container-shape);border-bottom-left-radius:var(--mat-form-field-outlined-container-shape)}
++sd-input-number .mdc-text-field--outlined .mdc-notched-outline .mdc-notched-outline__leading{width:max(12px,var(--mat-form-field-outlined-container-shape))}
++sd-input-number .mdc-notched-outline__trailing{flex-grow:1;border-left:none;border-right:1px solid;border-top-left-radius:0;border-bottom-left-radius:0;border-top-right-radius:var(--mat-form-field-outlined-container-shape);border-bottom-right-radius:var(--mat-form-field-outlined-container-shape)}
++sd-input-number .mdc-notched-outline__notch{flex:0 0 auto;width:auto}
++sd-input-number .mdc-text-field--outlined .mdc-notched-outline .mdc-notched-outline__notch{max-width:min(var(--mat-form-field-notch-max-width, 100%),calc(100% - max(12px, var(--mat-form-field-outlined-container-shape)) * 2))}
++sd-input-number .mdc-text-field--outlined .mdc-notched-outline--notched .mdc-notched-outline__notch{max-width:min(100%,calc(100% - max(12px, var(--mat-form-field-outlined-container-shape)) * 2))}
++sd-input-number .mdc-text-field--outlined .mdc-notched-outline--notched .mdc-notched-outline__notch{padding-top:1px}
++sd-input-number .mdc-text-field--focused.mdc-text-field--outlined .mdc-notched-outline--notched .mdc-notched-outline__notch{padding-top:2px}
++sd-input-number .mdc-notched-outline--notched .mdc-notched-outline__notch{padding-left:0;padding-right:8px;border-top:none}
++sd-input-number .mdc-text-field--disabled{pointer-events:none}
++sd-input-number .mat-mdc-form-field-input-control.mat-mdc-form-field-input-control{-webkit-font-smoothing:antialiased;font:inherit;letter-spacing:inherit;text-decoration:inherit;text-transform:inherit;border:none}
++sd-input-number .mat-mdc-form-field .mat-mdc-floating-label.mdc-floating-label{-webkit-font-smoothing:antialiased;line-height:normal;pointer-events:all;will-change:auto}
++sd-input-number .mat-mdc-form-field:not(.mat-form-field-disabled) .mat-mdc-floating-label.mdc-floating-label{cursor:inherit}
++sd-input-number .mat-mdc-text-field-wrapper .mat-mdc-form-field-input-control{height:auto}
++sd-input-number .mat-mdc-text-field-wrapper{height:auto;flex:auto;will-change:auto}
++sd-input-number .mat-mdc-form-field-has-icon-suffix .mat-mdc-text-field-wrapper{padding-right:0}
++sd-input-number .mat-form-field-disabled .mdc-text-field__input::placeholder{color:var(--mat-form-field-disabled-input-text-placeholder-color)}
++sd-input-number .mat-mdc-text-field-wrapper .mat-mdc-form-field-infix .mat-mdc-floating-label{left:auto;right:auto}
++sd-input-number .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-text-field__input{display:inline-block}
++sd-input-number .mat-mdc-form-field .mat-mdc-text-field-wrapper.mdc-text-field .mdc-notched-outline__notch{padding-top:0}
++sd-input-number .mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field .mdc-notched-outline__notch{border-left:1px solid rgba(0,0,0,0)}
++sd-input-number .mat-mdc-form-field-infix{min-height:var(--mat-form-field-container-height);padding-top:var(--mat-form-field-filled-with-label-container-padding-top, 24px);padding-bottom:var(--mat-form-field-filled-with-label-container-padding-bottom, 8px)}
++sd-input-number .mdc-text-field--outlined .mat-mdc-form-field-infix{padding-top:var(--mat-form-field-container-vertical-padding);padding-bottom:var(--mat-form-field-container-vertical-padding)}
++sd-input-number .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label{top:calc(var(--mat-form-field-container-height)/2)}
++sd-input-number .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above{--mat-mdc-form-field-label-transform: translateY(calc(calc(6.75px + var(--mat-form-field-container-height) / 2) * -1)) scale(var(--mat-mdc-form-field-floating-label-scale, 0.75));transform:var(--mat-mdc-form-field-label-transform)}
++sd-input-number .mat-mdc-form-field-subscript-wrapper{box-sizing:border-box;width:100%;position:relative}
++sd-input-number .mat-mdc-form-field-hint-wrapper,sd-input-number .mat-mdc-form-field-error-wrapper{position:absolute;top:0;left:0;right:0;padding:0 16px;opacity:1;transform:translateY(0);animation:_mat-form-field-subscript-animation 0ms cubic-bezier(0.55, 0, 0.55, 0.2)}
++sd-input-number .mat-mdc-form-field-bottom-align::before{content:"";display:inline-block;height:16px}
++sd-input-number .mat-mdc-form-field-hint-wrapper{display:flex}
++sd-input-number .mat-mdc-form-field-hint-spacer{flex:1 0 1em}
++sd-input-number .mat-mdc-form-field-error{display:block;color:var(--mat-form-field-error-text-color)}
++sd-input-number .mat-mdc-form-field-subscript-wrapper,sd-input-number .mat-mdc-form-field-bottom-align::before{-webkit-font-smoothing:antialiased;font-family:var(--mat-form-field-subscript-text-font, var(--mat-sys-body-small-font));line-height:var(--mat-form-field-subscript-text-line-height, var(--mat-sys-body-small-line-height));font-size:var(--mat-form-field-subscript-text-size, var(--mat-sys-body-small-size));letter-spacing:var(--mat-form-field-subscript-text-tracking, var(--mat-sys-body-small-tracking));font-weight:var(--mat-form-field-subscript-text-weight, var(--mat-sys-body-small-weight))}
++sd-input-number .mat-mdc-form-field{--mat-mdc-form-field-floating-label-scale: 0.75;display:inline-flex;flex-direction:column;min-width:0;text-align:left;-webkit-font-smoothing:antialiased;font-family:var(--mat-form-field-container-text-font, var(--mat-sys-body-large-font));line-height:var(--mat-form-field-container-text-line-height, var(--mat-sys-body-large-line-height));font-size:var(--mat-form-field-container-text-size, var(--mat-sys-body-large-size));letter-spacing:var(--mat-form-field-container-text-tracking, var(--mat-sys-body-large-tracking));font-weight:var(--mat-form-field-container-text-weight, var(--mat-sys-body-large-weight))}
++sd-input-number .mat-mdc-form-field .mdc-text-field--outlined .mdc-floating-label--float-above{font-size:calc(var(--mat-form-field-outlined-label-text-populated-size)*var(--mat-mdc-form-field-floating-label-scale))}
++sd-input-number .mat-mdc-form-field .mdc-text-field--outlined .mdc-notched-outline--upgraded .mdc-floating-label--float-above{font-size:var(--mat-form-field-outlined-label-text-populated-size)}
++sd-input-number .mat-mdc-form-field-flex{display:inline-flex;align-items:baseline;box-sizing:border-box;width:100%}
++sd-input-number .mat-mdc-text-field-wrapper{width:100%;z-index:0}
++sd-input-number .mat-mdc-form-field-icon-suffix{align-self:center;line-height:0;pointer-events:auto;position:relative;z-index:1}
++sd-input-number .mat-mdc-form-field-icon-suffix>.mat-icon{padding:0 12px;box-sizing:content-box}
++sd-input-number .mat-mdc-form-field-icon-suffix{color:var(--mat-form-field-trailing-icon-color, var(--mat-sys-on-surface-variant))}
++sd-input-number .mat-form-field-disabled .mat-mdc-form-field-icon-suffix{color:var(--mat-form-field-disabled-trailing-icon-color, color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent))}
++sd-input-number .mat-form-field-invalid .mat-mdc-form-field-icon-suffix{color:var(--mat-form-field-error-trailing-icon-color)}
++sd-input-number .mat-form-field-invalid:not(.mat-focused):not(.mat-form-field-disabled) .mat-mdc-text-field-wrapper:hover .mat-mdc-form-field-icon-suffix{color:var(--mat-form-field-error-hover-trailing-icon-color)}
++sd-input-number .mat-form-field-invalid.mat-focused .mat-mdc-text-field-wrapper .mat-mdc-form-field-icon-suffix{color:var(--mat-form-field-error-focus-trailing-icon-color)}
++sd-input-number .mat-mdc-form-field-icon-suffix{padding:0 0 0 4px}
++sd-input-number .mat-mdc-form-field-subscript-wrapper .mat-icon,sd-input-number .mat-mdc-form-field label .mat-icon{width:1em;height:1em;font-size:inherit}
++sd-input-number .mat-mdc-form-field-infix{flex:auto;min-width:0;width:180px;position:relative;box-sizing:border-box}
++sd-input-number .mat-mdc-form-field .mdc-notched-outline__notch{margin-left:-1px;-webkit-clip-path:inset(-9em -999em -9em 1px);clip-path:inset(-9em -999em -9em 1px)}
++sd-input-number .mdc-notched-outline .mdc-floating-label{max-width:calc(100% + 1px)}
++sd-input-number .mdc-notched-outline--upgraded .mdc-floating-label--float-above{max-width:calc(133.3333333333% + 1px)}
++sd-input-number .mat-mdc-form-field{font-size:16px;width:100%}
++sd-input-number .mat-mdc-form-field .mat-mdc-form-field-required-marker{color:var(--sd-error)}
++sd-input-number .mat-mdc-form-field .mat-mdc-notch-piece.mdc-notched-outline__leading{border-color:var(--sd-black200)!important}
++sd-input-number .mat-mdc-form-field .mat-mdc-notch-piece.mdc-notched-outline__notch{border-top-color:var(--sd-black200)!important;border-bottom-color:var(--sd-black200)!important}
++sd-input-number .mat-mdc-form-field .mat-mdc-notch-piece.mdc-notched-outline__trailing{border-color:var(--sd-black200)!important}
++sd-input-number .mat-mdc-form-field .sd-clear-btn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:0;padding:0;background:transparent;cursor:pointer;color:#757575;transition:background-color 80ms ease,color 80ms ease}
++sd-input-number .mat-mdc-form-field .sd-clear-btn:hover{background:rgba(0,0,0,.06);color:var(--sd-error)}
++sd-input-number .mat-mdc-form-field .sd-clear-btn mat-icon{font-size:16px;width:16px;height:16px;line-height:16px}
++sd-input-number .mat-mdc-form-field .sd-clear-btn.sd-hover{visibility:hidden}
++sd-input-number .mat-mdc-form-field .mat-mdc-form-field-flex:hover .sd-clear-btn.sd-hover,sd-input-number .mat-mdc-form-field .mat-mdc-form-field-flex:focus-within .sd-clear-btn.sd-hover{visibility:visible}
++sd-input-number .mat-mdc-form-field.mat-form-field-appearance-outline .mat-mdc-form-field-flex{align-items:center}
++sd-input-number .mat-mdc-form-field.mat-form-field-appearance-outline .mat-mdc-form-field-infix input.mat-mdc-input-element,sd-input-number .mat-mdc-form-field.mat-form-field-appearance-outline .mat-mdc-form-field-infix textarea.mat-mdc-input-element{font-size:14px;margin-top:10px}
++sd-input-number .mat-mdc-form-field.hide-inline-error .mat-mdc-form-field-subscript-wrapper{display:none}
++sd-input-number .mat-mdc-form-field.hide-inline-error.mat-form-field-invalid .mat-mdc-notch-piece.mdc-notched-outline__leading{border-color:var(--sd-error)!important}
++sd-input-number .mat-mdc-form-field.hide-inline-error.mat-form-field-invalid .mat-mdc-notch-piece.mdc-notched-outline__notch{border-top-color:var(--sd-error)!important;border-bottom-color:var(--sd-error)!important}
++sd-input-number .mat-mdc-form-field.hide-inline-error.mat-form-field-invalid .mat-mdc-notch-piece.mdc-notched-outline__trailing{border-color:var(--sd-error)!important}
++sd-input-number .mat-mdc-form-field.sd-md{--mat-form-field-container-height:40px;--mat-form-field-container-vertical-padding:3px}
++sd-input-number .mat-mdc-form-field.sd-md.mat-form-field-appearance-outline .mat-mdc-form-field-infix{padding:0 0 8px 0!important;border-top-width:11.5px;min-height:43.5px;width:auto}
++sd-input-number .mat-mdc-form-field.sd-md.mat-form-field-appearance-outline .mat-mdc-form-field-icon-suffix{top:0;right:0;padding:0 12px;display:flex;align-items:center;gap:8px}
++sd-input-number .mat-mdc-form-field.sd-md.mat-form-field-appearance-outline .mat-mdc-form-field-icon-suffix .sd-error-icon{height:20px;width:20px;font-size:20px;text-align:center;padding:0}
++sd-input-number .mat-mdc-floating-label{font-size:14px!important}
++sd-input-number.sd-has-label{padding-top:4px}
++sd-input-number.sd-viewed{padding-top:0}
++sd-input-number .mat-mdc-form-field.mat-form-field-appearance-outline.mat-form-field-disabled .mat-mdc-text-field-wrapper{background:var(--sd-black100)}
++sd-input-number .mat-mdc-form-field input.mat-mdc-input-element:disabled{color:var(--sd-black400)!important}
++sd-input-number .mat-mdc-form-field.sd-sm{--mat-form-field-container-height:32px;--mat-form-field-container-vertical-padding:3px}
++sd-input-number .mat-mdc-form-field.sd-sm.mat-form-field-appearance-outline .mat-mdc-form-field-infix{min-height:32px;width:auto}
++sd-input-number .mat-mdc-form-field.sd-sm.mat-form-field-appearance-outline .mat-mdc-form-field-infix input.mat-mdc-input-element{margin-top:2px;font-size:14px}
++sd-input-number .mat-mdc-form-field.sd-sm.mat-form-field-appearance-outline .mat-mdc-form-field-icon-suffix{top:0;right:0;padding:0 8px;display:flex;align-items:center;gap:4px}
++sd-input-number .mat-mdc-form-field.sd-sm.mat-form-field-appearance-outline .mat-mdc-form-field-icon-suffix .sd-suffix-icon{height:16px;width:16px;font-size:16px;text-align:center;padding:0}
++sd-input-number .mat-mdc-form-field.sd-sm.mat-form-field-appearance-outline .mat-mdc-form-field-infix{border-top-width:6px;min-height:32px;width:auto}
++sd-input-number .mat-mdc-form-field.sd-sm.mat-form-field-appearance-outline .mat-mdc-form-field-icon-suffix .sd-suffix-icon,sd-input-number .mat-mdc-form-field.sd-sm.mat-form-field-appearance-outline .mat-mdc-form-field-icon-suffix .sd-error-icon{height:16px;width:16px;font-size:16px;text-align:center;padding:0}
++sd-input-number .mat-mdc-form-field .sd-suffix-icon{color:#757575}
++sd-input-number .mat-mdc-form-field.sd-md.mat-form-field-appearance-outline .mat-mdc-form-field-icon-suffix .sd-suffix-icon{height:20px;width:20px;font-size:20px;text-align:center;padding:0}
++sd-input-number .mdc-notched-outline--no-label .mdc-notched-outline__notch{display:none}
++sd-input-number .mdc-text-field--no-label .mat-mdc-input-element::placeholder{opacity:1}
++sd-input-number .mdc-text-field--no-label .mdc-text-field__input::placeholder{opacity:1}
+ /* Popup CŨ của sd-datetime (cột trái tóm tắt + tab Ngày/Giờ + mặt đồng hồ)
+    ĐÃ BỎ 2026-10-12 — xem khối `sd-datetime-picker` ở cuối file. Hai rule phụ
+    `.form-field-datetime-time .sd-dt-seg` và `.form-field-datetime-actions`
+@@ -3270,10 +3388,13 @@
+ sd-table column-filter .c-inline-column { width: 100%; max-width: 100%; }
+ sd-table column-filter .c-inline-column > * { flex: 1 1 0%; min-width: 0; width: 100%; }
+ sd-table column-filter .sd-form-field { background-color: #fff; }
++/* catalog `#c-table column-filter .c-inline-column .mat-mdc-text-field-wrapper{background-color:#fff}` */
++sd-table column-filter .c-inline-column .mat-mdc-text-field-wrapper { background-color: #fff; }
+ /* Ô lọc chữ / số cao 36px (luật riêng của #c-table: `.sd-sm .mat-mdc-form-field-infix
+    {border-top-width:6px;min-height:32px}`); ô chọn và ô khoảng ngày giữ 32px. */
+-sd-table column-filter .c-inline-column > sd-input .sd-form-field,
+-sd-table column-filter .c-inline-column > sd-input-number .sd-form-field { min-height: 36px; }
++sd-table column-filter .c-inline-column > sd-input .sd-form-field { min-height: 36px; }
++/* sd-input-number (DOM Material): catalog #c-table cho ô nhập cao 28px → infix 3 + 2 + 28 + 3 = 36px */
++sd-table column-filter .c-inline-column > sd-input-number .mat-mdc-form-field-infix input.mat-mdc-input-element { height: 28px; }
+ sd-table column-filter .c-inline-column > sd-date-range .sd-form-field { min-height: 32px; }
+ /* Ô khoảng ngày trong đầu bảng — catalog #c-table: chữ giãn .496px (thẻ mirror
+    quyết định bề ngang ô "Từ"), infix đệm 3px + input lệch 2px → chữ cách đỉnh 5px,
+@@ -5083,18 +5204,18 @@
+   display: block;
+   font-family: Roboto, system-ui, sans-serif;
+ }
+-sd-query-bar button { font-family: inherit; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) button { font-family: inherit; }
+ /* Catalog không reset padding của <button> → UA 1px 6px còn nguyên ở mọi nút
+    không tự đặt padding (× của chip seamless/token: icon co 13px). Kit có reset
+    `*{padding:0}` (layout.css) nên trả lại giá trị UA; `:where` giữ độ ưu tiên
+    thấp để mọi rule có class (padding:0 của c-add-filter, c-search-trigger…) vẫn thắng. */
+-:where(sd-query-bar) button { padding: 1px 6px; }
++:where(sd-query-bar, .cdk-overlay-pane[data-sd-overlay="query-bar"]) button { padding: 1px 6px; }
+ /* --- Thanh query-bar: SỐ ĐO VÀ BỐ CỤC THEO CATALOG #c-query-bar ---
+    Hai vùng: __main (ô tìm kiếm + chip + nút "+", tự xuống dòng) và __actions
+    (AND/OR + xoá hết + bộ lọc đã lưu + tìm, dồn phải, KHÔNG xuống dòng).
+    Mọi nút ở __actions là nút ICON 28px (comfortable 32px) có viền, không phải
+    sd-button chữ như bản trước. --- */
+-sd-query-bar .c-query-bar {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-query-bar {
+   display: flex;
+   align-items: flex-start;
+   flex-wrap: nowrap;
+@@ -5104,9 +5225,9 @@
+   border-radius: 8px;
+   box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+ }
+-sd-query-bar .c-query-bar.c-density-compact { padding: 8px; }
+-sd-query-bar .c-query-bar.c-density-comfortable { padding: 10px; }
+-sd-query-bar .c-query-bar__main {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-query-bar.c-density-compact { padding: 8px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-query-bar.c-density-comfortable { padding: 10px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-query-bar__main {
+   flex: 1 1 auto;
+   min-width: 0;
+   display: flex;
+@@ -5115,14 +5236,14 @@
+   gap: 6px;
+ }
+ /* Vạch ngăn giữa vùng chip và vùng hành động — catalog `.c-bar-divider`. */
+-sd-query-bar .c-bar-divider {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-bar-divider {
+   flex: 0 0 auto;
+   align-self: stretch;
+   width: 1px;
+   min-height: 28px;
+   background: #e2e4e7;
+ }
+-sd-query-bar .c-query-bar__actions {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-query-bar__actions {
+   flex: 0 0 auto;
+   display: flex;
+   align-items: center;
+@@ -5130,7 +5251,7 @@
+ }
+ 
+ /* Ô tìm kiếm */
+-sd-query-bar .c-search {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-search {
+   display: flex;
+   align-items: center;
+   gap: 6px;
+@@ -5140,10 +5261,10 @@
+   border-radius: 6px;
+   background: #fff;
+ }
+-sd-query-bar .c-density-compact .c-search { height: 28px; }
+-sd-query-bar .c-density-comfortable .c-search { height: 32px; }
+-sd-query-bar .c-search .c-search-icon { font-size: 16px; width: 16px; height: 16px; color: #7a7a7a; }
+-sd-query-bar .c-search .c-search-input {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-compact .c-search { height: 28px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-comfortable .c-search { height: 32px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-search .c-search-icon { font-size: 16px; width: 16px; height: 16px; color: #7a7a7a; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-search .c-search-input {
+   flex: 1;
+   border: none;
+   outline: none;
+@@ -5154,11 +5275,11 @@
+      ở layout.css nên trả lại giá trị UA để khung 224px giống catalog. */
+   padding: 1px 2px;
+ }
+-sd-query-bar .c-search .c-search-input::placeholder { color: #7a7a7a; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-search .c-search-input::placeholder { color: #7a7a7a; }
+ 
+ /* Chip bộ lọc: viên thuốc VIỀN, xám khi chưa có giá trị, nền --sd-primary-light
+    và giá trị tô màu chủ đề khi đã có. Nút xoá nằm TRONG chip. */
+-sd-query-bar .c-chip {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip {
+   display: inline-flex;
+   align-items: center;
+   gap: 4px;
+@@ -5174,26 +5295,26 @@
+   max-width: 100%;
+   transition: background-color .12s ease, border-color .12s ease, color .12s ease;
+ }
+-sd-query-bar .c-density-compact .c-chip { height: 28px; }
+-sd-query-bar .c-density-comfortable .c-chip { height: 32px; }
+-sd-query-bar .c-chip:hover { border-color: var(--sd-primary); }
+-sd-query-bar .c-chip.c-chip-active { border-color: var(--sd-primary-light); background: var(--sd-primary-light); }
+-sd-query-bar .c-chip.c-chip-active .c-chip-value { color: var(--sd-primary); }
+-sd-query-bar .c-chip.c-chip-inactive { padding-right: 10px; }
+-sd-query-bar .c-divider { width: 1px; height: 16px; background: #e2e4e7; margin: 0 2px; }
+-sd-query-bar .c-chip .c-chip-chevron { font-size: 18px; width: 18px; height: 18px; color: currentColor; }
+-sd-query-bar .c-chip .c-chip-icon { font-size: 16px; width: 16px; height: 16px; }
+-sd-query-bar .c-chip .c-chip-label { font-weight: 500; white-space: nowrap; }
+-sd-query-bar .c-chip .c-chip-operator { display: inline-flex; align-items: center; color: inherit; }
+-sd-query-bar .c-chip .c-chip-sep { color: #7a7a7a; }
+-sd-query-bar .c-chip .c-chip-value {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-compact .c-chip { height: 28px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-comfortable .c-chip { height: 32px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip:hover { border-color: var(--sd-primary); }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip.c-chip-active { border-color: var(--sd-primary-light); background: var(--sd-primary-light); }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip.c-chip-active .c-chip-value { color: var(--sd-primary); }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip.c-chip-inactive { padding-right: 10px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-divider { width: 1px; height: 16px; background: #e2e4e7; margin: 0 2px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip .c-chip-chevron { font-size: 18px; width: 18px; height: 18px; color: currentColor; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip .c-chip-icon { font-size: 16px; width: 16px; height: 16px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip .c-chip-label { font-weight: 500; white-space: nowrap; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip .c-chip-operator { display: inline-flex; align-items: center; color: inherit; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip .c-chip-sep { color: #7a7a7a; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip .c-chip-value {
+   font-weight: 500;
+   max-width: 180px;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+ }
+-sd-query-bar .c-chip .c-chip-remove {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip .c-chip-remove {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+@@ -5206,12 +5327,12 @@
+   cursor: pointer;
+   color: #7a7a7a;
+ }
+-sd-query-bar .c-chip .c-chip-remove .material-icons-outlined ,
+-sd-query-bar .c-chip .c-chip-remove .mat-icon { font-size: 14px; width: 14px; height: 14px; }
+-sd-query-bar .c-chip .c-chip-remove:hover { background: #0000000f; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip .c-chip-remove .material-icons-outlined ,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip .c-chip-remove .mat-icon { font-size: 14px; width: 14px; height: 14px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip .c-chip-remove:hover { background: #0000000f; }
+ 
+ /* Nút "+" thêm bộ lọc: tròn, VIỀN NÉT ĐỨT */
+-sd-query-bar .c-add-filter {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-add-filter {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+@@ -5223,15 +5344,15 @@
+   color: #5f6368;
+   transition: border-color .12s ease, color .12s ease, background-color .12s ease;
+ }
+-sd-query-bar .c-density-compact .c-add-filter { width: 28px; height: 28px; }
+-sd-query-bar .c-density-comfortable .c-add-filter { width: 32px; height: 32px; }
+-sd-query-bar .c-add-filter .material-icons-outlined ,
+-sd-query-bar .c-add-filter .mat-icon { font-size: 18px; width: 18px; height: 18px; }
+-sd-query-bar .c-add-filter:hover:not([disabled]) { border-color: var(--sd-primary); color: var(--sd-primary); }
+-sd-query-bar .c-add-filter[disabled] { opacity: .5; cursor: not-allowed; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-compact .c-add-filter { width: 28px; height: 28px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-comfortable .c-add-filter { width: 32px; height: 32px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-add-filter .material-icons-outlined ,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-add-filter .mat-icon { font-size: 18px; width: 18px; height: 18px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-add-filter:hover:not([disabled]) { border-color: var(--sd-primary); color: var(--sd-primary); }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-add-filter[disabled] { opacity: .5; cursor: not-allowed; }
+ 
+ /* AND / OR — chữ MONO viết hoa, không phải "VÀ"/"HOẶC" */
+-sd-query-bar .c-logic-toggle {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-logic-toggle {
+   display: inline-flex;
+   align-items: center;
+   padding: 2px;
+@@ -5239,9 +5360,9 @@
+   border: 1px solid #e2e4e7;
+   border-radius: 6px;
+ }
+-sd-query-bar .c-density-compact .c-logic-toggle { height: 28px; }
+-sd-query-bar .c-density-comfortable .c-logic-toggle { height: 32px; }
+-sd-query-bar .c-logic-toggle .c-logic-segment {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-compact .c-logic-toggle { height: 28px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-comfortable .c-logic-toggle { height: 32px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-logic-toggle .c-logic-segment {
+   height: 100%;
+   padding: 0 10px;
+   border: none;
+@@ -5254,16 +5375,16 @@
+   cursor: pointer;
+   border-radius: 4px;
+ }
+-sd-query-bar .c-logic-toggle .c-logic-segment.c-logic-active {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-logic-toggle .c-logic-segment.c-logic-active {
+   background: #fff;
+   color: var(--sd-primary);
+   box-shadow: 0 1px 2px rgba(0, 0, 0, .08);
+ }
+ 
+ /* Ba nút icon bên phải */
+-sd-query-bar .c-clear-all,
+-sd-query-bar .c-search-trigger,
+-sd-query-bar .c-saved-filters {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-clear-all,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-search-trigger,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-saved-filters {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+@@ -5276,107 +5397,118 @@
+   width: 28px;
+   height: 28px;
+ }
+-sd-query-bar .c-density-comfortable .c-clear-all,
+-sd-query-bar .c-density-comfortable .c-search-trigger { width: 32px; height: 32px; }
+-sd-query-bar .c-clear-all .material-icons-outlined,
+-sd-query-bar .c-clear-all .mat-icon,
+-sd-query-bar .c-search-trigger .material-icons-outlined,
+-sd-query-bar .c-search-trigger .mat-icon,
+-sd-query-bar .c-saved-filters .material-icons-outlined ,
+-sd-query-bar .c-saved-filters .mat-icon { font-size: 18px; width: 18px; height: 18px; }
+-sd-query-bar .c-clear-all:hover:not([disabled]),
+-sd-query-bar .c-search-trigger:hover:not([disabled]),
+-sd-query-bar .c-saved-filters:hover:not([disabled]) { border-color: var(--sd-primary); color: var(--sd-primary); }
+-sd-query-bar .c-clear-all:hover { border-color: #dc2626; color: #dc2626; }
+-sd-query-bar .c-clear-all[disabled],
+-sd-query-bar .c-search-trigger[disabled],
+-sd-query-bar .c-saved-filters[disabled] { opacity: .5; cursor: not-allowed; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-comfortable .c-clear-all,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-comfortable .c-search-trigger { width: 32px; height: 32px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-clear-all .material-icons-outlined,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-clear-all .mat-icon,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-search-trigger .material-icons-outlined,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-search-trigger .mat-icon,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-saved-filters .material-icons-outlined ,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-saved-filters .mat-icon { font-size: 18px; width: 18px; height: 18px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-clear-all:hover:not([disabled]),
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-search-trigger:hover:not([disabled]),
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-saved-filters:hover:not([disabled]) { border-color: var(--sd-primary); color: var(--sd-primary); }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-clear-all:hover { border-color: #dc2626; color: #dc2626; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-clear-all[disabled],
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-search-trigger[disabled],
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-saved-filters[disabled] { opacity: .5; cursor: not-allowed; }
+ 
+ /* Ba menu nổi + thẻ vỏ + toán tử trên chip — CHÉP NGUYÊN VĂN từ CSS catalog
+    `#c-query-bar` (mat-menu M2: biến --mat-menu-*, .mat-mdc-menu-panel /
+    -content / -item, .c-chip-popover, .c-field-picker-menu, .c-saved-filters-menu,
+    .c-pop-*, .c-field-item-*, .c-sf-*, .c-or-connector, .c-chip-operator, thẻ vỏ
+-   sd-query-*). Kit đặt panel bằng `position:fixed` theo nút kích hoạt — chỗ catalog
+-   dùng overlay CDK. Rà 2026-10-13. */
+-sd-query-bar .mat-mdc-menu-panel { position: fixed; z-index: var(--z-max, 9999); }
+-sd-query-bar sd-query-field-picker { display: block; }
++   sd-query-*). Rà 2026-10-13.
++   Ba panel nằm NGOÀI thẻ host như overlay CDK của Angular:
++     body > div.cdk-overlay-container > div.cdk-overlay-pane > .mat-mdc-menu-panel
++   (catalog vẽ `.cdk-overlay-pane` là anh em ngay sau `<sd-query-bar>`). Mọi rule
++   của thanh nên được viết `:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay=
++   "query-bar"]))` — `:where` giữ NGUYÊN độ ưu tiên cũ (bằng một thẻ), nên chuyển
++   panel ra ngoài không làm đổi thứ tự thắng/thua của bất kỳ rule nào.
++   `data-sd-overlay` chỉ là móc CSS của kit (Rule 18, ngoại lệ 1). */
++.cdk-overlay-container {
++  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
++  pointer-events: none; z-index: var(--z-max, 9999);
++  /* pane catalog thừa hưởng `.sd-scope`: Roboto 14px / 1.5, #212529 */
++  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
++  font-size: 14px; line-height: 1.5; color: #212529; text-align: left;
++}
++.cdk-overlay-container:empty { display: none; }
++/* catalog `#c-query-bar .cdk-overlay-pane` (kit thêm `position` theo toạ độ màn hình) */
++.cdk-overlay-pane[data-sd-overlay="query-bar"] { position: absolute; z-index: 5; display: flex; max-width: 100%; box-sizing: border-box; pointer-events: auto; }
++.cdk-overlay-pane[data-sd-overlay="query-bar"][hidden] { display: none; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) sd-query-field-picker { display: block; }
+ /* Token M3 `--mat-sys-label-large-*` — catalog khai TOÀN CỤC trên `html`
+    (css/material-tokens.css); rule `.mat-mdc-menu-content` chép ở dưới đọc chúng
+    (chữ menu 14px / 20px / 500 / Roboto / .006rem). Kit chưa khai các biến này ở
+    đâu nên trước đây chữ trong 3 menu ra 400 / 21px. Khai trong phạm vi thanh. */
+-sd-query-bar { --mat-sys-label-large-font: Roboto; --mat-sys-label-large-line-height: 1.25rem; --mat-sys-label-large-size: 0.875rem; --mat-sys-label-large-tracking: 0.006rem; --mat-sys-label-large-weight: 500; }
+-sd-query-bar{--mat-menu-container-shape:4px;--mat-menu-divider-bottom-spacing:0;--mat-menu-divider-top-spacing:0;--mat-menu-item-spacing:16px;--mat-menu-item-icon-size:24px;--mat-menu-item-leading-spacing:16px;--mat-menu-item-trailing-spacing:16px;--mat-menu-item-with-icon-leading-spacing:16px;--mat-menu-item-with-icon-trailing-spacing:16px;--mat-menu-container-elevation-shadow:0px 5px 5px -3px rgba(0,0,0,.2),0px 8px 10px 1px rgba(0,0,0,.14),0px 3px 14px 2px rgba(0,0,0,.12);--mat-menu-item-label-text-color:rgba(0,0,0,.87);--mat-menu-item-icon-color:rgba(0,0,0,.87);--mat-menu-item-hover-state-layer-color:rgba(0,0,0,.04);--mat-menu-item-focus-state-layer-color:rgba(0,0,0,.12);--mat-menu-container-color:#fff;--mat-menu-divider-color:rgba(0,0,0,.12)}
+-sd-query-bar sd-query-chip-popover{display:contents}
+-sd-query-bar .mat-mdc-menu-item{font-family:inherit;border-radius:0}
+-sd-query-bar .mat-mdc-menu-content{margin:0;padding:8px 0;outline:0}
+-sd-query-bar .mat-mdc-menu-content,sd-query-bar .mat-mdc-menu-content .mat-mdc-menu-item .mat-mdc-menu-item-text{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;flex:1;white-space:normal;font-family:var(--mat-sys-label-large-font);line-height:var(--mat-sys-label-large-line-height);font-size:var(--mat-sys-label-large-size);letter-spacing:var(--mat-sys-label-large-tracking);font-weight:var(--mat-sys-label-large-weight)}
+-sd-query-bar .mat-mdc-menu-panel{min-width:112px;max-width:280px;overflow:auto;box-sizing:border-box;outline:0;animation:_mat-menu-enter 120ms cubic-bezier(0, 0, 0.2, 1);border-radius:var(--mat-menu-container-shape);background-color:var(--mat-menu-container-color);box-shadow:var(--mat-menu-container-elevation-shadow);will-change:transform,opacity}
+-sd-query-bar .mat-mdc-menu-item{display:flex;position:relative;align-items:center;justify-content:flex-start;overflow:hidden;padding:0;cursor:pointer;width:100%;text-align:left;box-sizing:border-box;color:inherit;font-size:inherit;background:none;text-decoration:none;margin:0;min-height:48px;padding-left:var(--mat-menu-item-leading-spacing);padding-right:var(--mat-menu-item-trailing-spacing);-webkit-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+-sd-query-bar .mat-mdc-menu-item:has(.material-icons,mat-icon,[matButtonIcon]){padding-left:var(--mat-menu-item-with-icon-leading-spacing);padding-right:var(--mat-menu-item-with-icon-trailing-spacing)}
+-sd-query-bar .mat-mdc-menu-item,sd-query-bar .mat-mdc-menu-item:visited,sd-query-bar .mat-mdc-menu-item:link{color:var(--mat-menu-item-label-text-color)}
+-sd-query-bar .mat-mdc-menu-item[disabled]{cursor:default;opacity:.38}
+-sd-query-bar .mat-mdc-menu-item[disabled]::after{display:block;position:absolute;content:"";top:0;left:0;bottom:0;right:0}
+-sd-query-bar .mat-mdc-menu-item:focus{outline:0}
+-sd-query-bar .mat-mdc-menu-item .mat-icon{flex-shrink:0;margin-right:var(--mat-menu-item-spacing);height:var(--mat-menu-item-icon-size);width:var(--mat-menu-item-icon-size)}
+-sd-query-bar .mat-mdc-menu-item:not([disabled]):hover{background-color:var(--mat-menu-item-hover-state-layer-color)}
+-sd-query-bar .mat-mdc-menu-item .mat-mdc-menu-ripple{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}
+-sd-query-bar .c-token-op{display:inline-flex;align-items:center;color:inherit}
+-sd-query-bar .c-token-op .c-op-trigger{padding:0;color:inherit}
+-sd-query-bar .c-token-op .c-op-icon svg{width:14px;height:14px;display:block}
+-sd-query-bar .c-or-connector{font-family:Roboto Mono,monospace;font-size:10px;font-weight:700;letter-spacing:.6px;color:#7a7a7a;padding:0 2px}
+-sd-query-bar .mat-mdc-menu-panel.c-chip-popover{min-width:280px;max-width:320px}
+-sd-query-bar .mat-mdc-menu-panel.c-chip-popover .c-pop-header{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #e2e4e7;font-size:13px;font-weight:500;color:#212121}
+-sd-query-bar .mat-mdc-menu-panel.c-chip-popover .c-pop-header mat-icon{font-size:16px;width:16px;height:16px;color:var(--sd-primary)}
+-sd-query-bar .mat-mdc-menu-panel.c-chip-popover .c-pop-header .c-pop-header-operator{margin-left:auto}
+-sd-query-bar .mat-mdc-menu-panel.c-chip-popover .c-pop-header-field{display:inline-flex;align-items:center;gap:4px;padding:2px 4px 2px 6px;margin-left:-4px;background:transparent;border:1px solid transparent;border-radius:4px;font:inherit;font-weight:500;color:#212121;cursor:pointer;transition:background-color .12s ease,border-color .12s ease}
+-sd-query-bar .mat-mdc-menu-panel.c-chip-popover .c-pop-body{padding:10px 12px;display:flex;flex-direction:column;gap:12px}
+-sd-query-bar .mat-mdc-menu-panel.c-chip-popover .c-pop-between{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+-/* Trong popover, ô nhập của catalog cao 24px / line-height 24px (chữ của
+-   mat-form-field lấy `--mat-sys-body-large-line-height` 1.5rem vì nằm trong
+-   overlay, không thừa hưởng 21px của trang như ở #c-input), mép trên cách
+-   khung 5px (kit căn giữa ra 4px → margin-top 2px). Đo 2026-10-13. */
+-sd-query-bar .c-chip-popover .sd-form-field .sd-input { height: 24px; line-height: 24px; margin-top: 2px; font-family: Roboto; }
+-sd-query-bar sd-query-popover-chip{display:contents}
+-sd-query-bar .c-chip .c-chip-operator{display:inline-flex;align-items:center;color:inherit}
+-sd-query-bar .c-chip-operator .c-op-trigger{padding:0;color:inherit}
+-sd-query-bar .c-chip-operator .c-op-icon svg{width:14px;height:14px;display:block}
+-sd-query-bar sd-query-actions-bar{display:contents}
+-sd-query-bar sd-query-saved-filters-menu{display:inline-flex}
+-sd-query-bar .mat-mdc-menu-panel.c-saved-filters-menu{min-width:220px;max-width:320px}
+-sd-query-bar .mat-mdc-menu-panel.c-saved-filters-menu .mat-mdc-menu-item.c-sf-row{min-height:40px;padding-left:16px;padding-right:4px}
+-sd-query-bar .mat-mdc-menu-panel.c-saved-filters-menu .mat-mdc-menu-item.c-sf-row .mat-mdc-menu-item-text{display:flex;align-items:center;gap:8px;min-width:0;line-height:1.4}
+-sd-query-bar .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-lead{display:inline-flex;align-items:center;justify-content:center;font-size:18px!important;width:18px!important;height:18px!important;line-height:1}
+-sd-query-bar .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-name{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+-sd-query-bar .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-del{flex:0 0 auto;margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;color:#7a7a7a;cursor:pointer;padding:0}
+-sd-query-bar .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-del mat-icon{margin:0!important;padding:0;font-size:16px!important;width:16px!important;height:16px!important;line-height:16px!important;text-align:center;overflow:hidden}
+-sd-query-bar .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-del:hover{background:#0000000f;color:#d23535}
+-sd-query-bar .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-divider{border:0;border-top:1px solid #e2e4e7;margin:4px 0}
+-sd-query-bar .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-save mat-icon{margin-right:8px}
+-sd-query-bar .mat-mdc-menu-panel.c-field-picker-menu{min-width:200px;max-width:260px}
+-sd-query-bar .mat-mdc-menu-panel.c-field-picker-menu .mat-mdc-menu-item{min-height:36px}
+-sd-query-bar .mat-mdc-menu-panel.c-field-picker-menu .mat-mdc-menu-item .mat-mdc-menu-item-text{display:flex;align-items:center;flex:1;min-width:0}
+-sd-query-bar .mat-mdc-menu-panel.c-field-picker-menu .c-field-item-icon{font-size:16px;width:16px;height:16px;margin-right:8px;color:#5f6368;flex-shrink:0}
+-sd-query-bar .mat-mdc-menu-panel.c-field-picker-menu .c-field-item-label{flex:1 1 auto;min-width:0;font-size:13px;color:#212121;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+-sd-query-bar .mat-mdc-menu-panel.c-field-picker-menu .c-field-item-type{flex-shrink:0;margin-left:auto;padding-left:12px;font-family:Roboto Mono,monospace;font-size:11px;color:#7a7a7a}
+-sd-query-bar .mat-mdc-menu-panel.c-field-picker-menu .c-field-item-check{flex-shrink:0;font-size:14px;width:14px;height:14px;margin-left:6px;color:var(--sd-primary)}
+-sd-query-bar sd-query-inline-value-chip{display:inline-flex}
+-sd-query-bar sd-query-inline-chip{display:contents}
+-sd-query-bar sd-query-build-chip{display:contents}
+-sd-query-bar .qb-value-empty { padding: 6px 0; }
+-sd-query-bar .qb-menu-empty { padding: 6px 0; }
+-sd-query-bar .qb-range-row,
+-sd-query-bar .qb-date-row,
+-sd-query-bar .qb-radio-row {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) { --mat-sys-label-large-font: Roboto; --mat-sys-label-large-line-height: 1.25rem; --mat-sys-label-large-size: 0.875rem; --mat-sys-label-large-tracking: 0.006rem; --mat-sys-label-large-weight: 500; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])){--mat-menu-container-shape:4px;--mat-menu-divider-bottom-spacing:0;--mat-menu-divider-top-spacing:0;--mat-menu-item-spacing:16px;--mat-menu-item-icon-size:24px;--mat-menu-item-leading-spacing:16px;--mat-menu-item-trailing-spacing:16px;--mat-menu-item-with-icon-leading-spacing:16px;--mat-menu-item-with-icon-trailing-spacing:16px;--mat-menu-container-elevation-shadow:0px 5px 5px -3px rgba(0,0,0,.2),0px 8px 10px 1px rgba(0,0,0,.14),0px 3px 14px 2px rgba(0,0,0,.12);--mat-menu-item-label-text-color:rgba(0,0,0,.87);--mat-menu-item-icon-color:rgba(0,0,0,.87);--mat-menu-item-hover-state-layer-color:rgba(0,0,0,.04);--mat-menu-item-focus-state-layer-color:rgba(0,0,0,.12);--mat-menu-container-color:#fff;--mat-menu-divider-color:rgba(0,0,0,.12)}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) sd-query-chip-popover{display:contents}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-item{font-family:inherit;border-radius:0}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-content{margin:0;padding:8px 0;outline:0}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-content,:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-content .mat-mdc-menu-item .mat-mdc-menu-item-text{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;flex:1;white-space:normal;font-family:var(--mat-sys-label-large-font);line-height:var(--mat-sys-label-large-line-height);font-size:var(--mat-sys-label-large-size);letter-spacing:var(--mat-sys-label-large-tracking);font-weight:var(--mat-sys-label-large-weight)}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel{min-width:112px;max-width:280px;overflow:auto;box-sizing:border-box;outline:0;animation:_mat-menu-enter 120ms cubic-bezier(0, 0, 0.2, 1);border-radius:var(--mat-menu-container-shape);background-color:var(--mat-menu-container-color);box-shadow:var(--mat-menu-container-elevation-shadow);will-change:transform,opacity}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-item{display:flex;position:relative;align-items:center;justify-content:flex-start;overflow:hidden;padding:0;cursor:pointer;width:100%;text-align:left;box-sizing:border-box;color:inherit;font-size:inherit;background:none;text-decoration:none;margin:0;min-height:48px;padding-left:var(--mat-menu-item-leading-spacing);padding-right:var(--mat-menu-item-trailing-spacing);-webkit-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-item:has(.material-icons,mat-icon,[matButtonIcon]){padding-left:var(--mat-menu-item-with-icon-leading-spacing);padding-right:var(--mat-menu-item-with-icon-trailing-spacing)}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-item,:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-item:visited,:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-item:link{color:var(--mat-menu-item-label-text-color)}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-item[disabled]{cursor:default;opacity:.38}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-item[disabled]::after{display:block;position:absolute;content:"";top:0;left:0;bottom:0;right:0}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-item:focus{outline:0}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-item .mat-icon{flex-shrink:0;margin-right:var(--mat-menu-item-spacing);height:var(--mat-menu-item-icon-size);width:var(--mat-menu-item-icon-size)}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-item:not([disabled]):hover{background-color:var(--mat-menu-item-hover-state-layer-color)}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-item .mat-mdc-menu-ripple{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-op{display:inline-flex;align-items:center;color:inherit}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-op .c-op-trigger{padding:0;color:inherit}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-op .c-op-icon svg{width:14px;height:14px;display:block}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-or-connector{font-family:Roboto Mono,monospace;font-size:10px;font-weight:700;letter-spacing:.6px;color:#7a7a7a;padding:0 2px}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-chip-popover{min-width:280px;max-width:320px}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-chip-popover .c-pop-header{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #e2e4e7;font-size:13px;font-weight:500;color:#212121}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-chip-popover .c-pop-header mat-icon{font-size:16px;width:16px;height:16px;color:var(--sd-primary)}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-chip-popover .c-pop-header .c-pop-header-operator{margin-left:auto}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-chip-popover .c-pop-header-field{display:inline-flex;align-items:center;gap:4px;padding:2px 4px 2px 6px;margin-left:-4px;background:transparent;border:1px solid transparent;border-radius:4px;font:inherit;font-weight:500;color:#212121;cursor:pointer;transition:background-color .12s ease,border-color .12s ease}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-chip-popover .c-pop-body{padding:10px 12px;display:flex;flex-direction:column;gap:12px}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-chip-popover .c-pop-between{display:grid;grid-template-columns:1fr 1fr;gap:8px}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) sd-query-popover-chip{display:contents}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip .c-chip-operator{display:inline-flex;align-items:center;color:inherit}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip-operator .c-op-trigger{padding:0;color:inherit}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip-operator .c-op-icon svg{width:14px;height:14px;display:block}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) sd-query-actions-bar{display:contents}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) sd-query-saved-filters-menu{display:inline-flex}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-saved-filters-menu{min-width:220px;max-width:320px}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-saved-filters-menu .mat-mdc-menu-item.c-sf-row{min-height:40px;padding-left:16px;padding-right:4px}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-saved-filters-menu .mat-mdc-menu-item.c-sf-row .mat-mdc-menu-item-text{display:flex;align-items:center;gap:8px;min-width:0;line-height:1.4}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-lead{display:inline-flex;align-items:center;justify-content:center;font-size:18px!important;width:18px!important;height:18px!important;line-height:1}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-name{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-del{flex:0 0 auto;margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;color:#7a7a7a;cursor:pointer;padding:0}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-del mat-icon{margin:0!important;padding:0;font-size:16px!important;width:16px!important;height:16px!important;line-height:16px!important;text-align:center;overflow:hidden}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-del:hover{background:#0000000f;color:#d23535}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-divider{border:0;border-top:1px solid #e2e4e7;margin:4px 0}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-saved-filters-menu .c-sf-save mat-icon{margin-right:8px}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-field-picker-menu{min-width:200px;max-width:260px}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-field-picker-menu .mat-mdc-menu-item{min-height:36px}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-field-picker-menu .mat-mdc-menu-item .mat-mdc-menu-item-text{display:flex;align-items:center;flex:1;min-width:0}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-field-picker-menu .c-field-item-icon{font-size:16px;width:16px;height:16px;margin-right:8px;color:#5f6368;flex-shrink:0}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-field-picker-menu .c-field-item-label{flex:1 1 auto;min-width:0;font-size:13px;color:#212121;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-field-picker-menu .c-field-item-type{flex-shrink:0;margin-left:auto;padding-left:12px;font-family:Roboto Mono,monospace;font-size:11px;color:#7a7a7a}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .mat-mdc-menu-panel.c-field-picker-menu .c-field-item-check{flex-shrink:0;font-size:14px;width:14px;height:14px;margin-left:6px;color:var(--sd-primary)}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) sd-query-inline-value-chip{display:inline-flex}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) sd-query-inline-chip{display:contents}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) sd-query-build-chip{display:contents}
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-value-empty { padding: 6px 0; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-menu-empty { padding: 6px 0; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-range-row,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-date-row,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-radio-row {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   flex-wrap: wrap;
+ }
+-sd-query-bar .qb-date-sep { flex-shrink: 0; }
+-sd-query-bar .qb-date-row sd-date,
+-sd-query-bar .qb-date-row sd-datetime { flex: 1 1 120px; min-width: 120px; }
+-sd-query-bar .qb-range-row sd-input-number { flex: 1 1 110px; }
+-sd-query-bar .qb-check-list {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-date-sep { flex-shrink: 0; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-date-row sd-date,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-date-row sd-datetime { flex: 1 1 120px; min-width: 120px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-range-row sd-input-number { flex: 1 1 110px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-check-list {
+   display: flex;
+   flex-direction: column;
+   gap: 2px;
+@@ -5384,8 +5516,8 @@
+   overflow-y: auto;
+   padding: 4px 0;
+ }
+-sd-query-bar .qb-radio-row sd-radio { margin-right: 8px; }
+-sd-query-bar .qb-lazy-search {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-radio-row sd-radio { margin-right: 8px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-lazy-search {
+   display: inline-flex;
+   align-items: center;
+   gap: 4px;
+@@ -5398,18 +5530,18 @@
+ }
+ /* Ô tìm trong popover lazy-values dùng chung bộ class .c-search-* của thanh,
+    nhưng nằm trong .qb-lazy-search nên khai lại icon/input cho đủ. */
+-sd-query-bar .qb-lazy-search .c-search-icon { font-size: 16px; width: 16px; height: 16px; color: #7a7a7a; }
+-sd-query-bar .qb-lazy-search .c-search-input {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-lazy-search .c-search-icon { font-size: 16px; width: 16px; height: 16px; color: #7a7a7a; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-lazy-search .c-search-input {
+   flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+   font-family: var(--sd-font-family); font-size: 13px; color: var(--sd-black500);
+ }
+-sd-query-bar .qb-lazy-search .c-search-input::placeholder { color: #7a7a7a; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-lazy-search .c-search-input::placeholder { color: #7a7a7a; }
+ 
+-sd-query-bar .qb-lazy-search:focus-within {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-lazy-search:focus-within {
+   border-color: var(--sd-primary);
+   box-shadow: 0 0 0 1px var(--sd-primary);
+ }
+-sd-query-bar .qb-lazy-list {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .qb-lazy-list {
+   display: flex;
+   flex-direction: column;
+   gap: 2px;
+@@ -5433,7 +5565,7 @@
+    ──────────────────────────────────────────────────────────── */
+ 
+ /* ---- Hình 1: chip-là-ô-nhập (.c-seamless) ---- */
+-sd-query-bar .c-seamless {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless {
+   display: inline-flex;
+   align-items: stretch;
+   border-radius: 999px;
+@@ -5448,28 +5580,28 @@
+   transition: border-color .12s ease, background-color .12s ease,
+               box-shadow .12s ease, color .12s ease;
+ }
+-sd-query-bar .c-seamless--compact { height: 28px; }
+-sd-query-bar .c-seamless:hover:not([data-state=focus]):not([data-state=error]) {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless--compact { height: 28px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless:hover:not([data-state=focus]):not([data-state=error]) {
+   border-color: var(--sd-primary);
+ }
+-sd-query-bar .c-seamless[data-state=pending] {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless[data-state=pending] {
+   border-style: dashed;
+   border-color: #d6d8db;
+   background: #fff;
+   color: #5f6368;
+ }
+-sd-query-bar .c-seamless[data-state=active] {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless[data-state=active] {
+   border-color: var(--sd-primary-light);
+   background: var(--sd-primary-light);
+ }
+-sd-query-bar .c-seamless[data-state=focus] {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless[data-state=focus] {
+   background-color: #0000000f;
+   box-shadow: inset 0 0 0 1px var(--sd-primary);
+ }
+-sd-query-bar .c-seamless[data-state=error] {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless[data-state=error] {
+   box-shadow: inset 0 0 0 1px var(--sd-error);
+ }
+-sd-query-bar .c-seamless__label {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless__label {
+   display: inline-flex;
+   align-items: center;
+   gap: 4px;
+@@ -5478,13 +5610,13 @@
+   cursor: text;
+   color: inherit;
+ }
+-sd-query-bar .c-seamless--compact .c-seamless__label { padding: 0 0 0 12px; }
+-sd-query-bar .c-seamless__icon { font-size: 14px; width: 14px; height: 14px; color: inherit; }
+-sd-query-bar .c-seamless__field { color: inherit; }
+-sd-query-bar .c-seamless__sep { color: #7a7a7a; }
+-sd-query-bar .c-seamless__input { display: inline-flex; align-items: center; gap: 4px; }
+-sd-query-bar .c-seamless--compact .c-seamless__input { padding: 0 8px 0 4px; }
+-sd-query-bar .c-seamless__x {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless--compact .c-seamless__label { padding: 0 0 0 12px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless__icon { font-size: 14px; width: 14px; height: 14px; color: inherit; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless__field { color: inherit; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless__sep { color: #7a7a7a; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless__input { display: inline-flex; align-items: center; gap: 4px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless--compact .c-seamless__input { padding: 0 8px 0 4px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless__x {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+@@ -5494,10 +5626,10 @@
+   cursor: pointer;
+   color: inherit;
+ }
+-sd-query-bar .c-seamless--compact .c-seamless__x { width: 26px; }
+-sd-query-bar .c-seamless__x .material-icons-outlined ,
+-sd-query-bar .c-seamless__x .mat-icon { font-size: 14px; width: 14px; height: 14px; }
+-sd-query-bar .c-seamless__x:hover { background: #0000000d; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless--compact .c-seamless__x { width: 26px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless__x .material-icons-outlined ,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless__x .mat-icon { font-size: 14px; width: 14px; height: 14px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-seamless__x:hover { background: #0000000d; }
+ 
+ /* `sd-inline-text` — 2026-10-11 ĐÃ DỰNG thành component dùng chung; CSS chuyển
+    xuống khối "sd-inline-text" ở cuối file, bỏ phạm vi `sd-query-bar`. Chip
+@@ -5506,7 +5638,7 @@
+    sd-input-number khi viewed='inline' và cho chip của query-bar". */
+ 
+ /* ---- Hình 2: chip có ô chọn nhúng (.c-token) ---- */
+-sd-query-bar .c-token {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token {
+   display: inline-flex;
+   align-items: center;
+   gap: 4px;
+@@ -5519,14 +5651,14 @@
+   white-space: nowrap;
+   overflow: hidden;
+ }
+-sd-query-bar .c-density-compact .c-token { height: 28px; }
+-sd-query-bar .c-density-comfortable .c-token { height: 32px; }
+-sd-query-bar .c-token-icon { font-size: 14px; width: 14px; height: 14px; line-height: 14px; color: inherit; }
+-sd-query-bar .c-token-field { font-weight: 500; line-height: 1; }
+-sd-query-bar .c-token-sep { color: #7a7a7a; }
+-sd-query-bar .c-token-op { display: inline-flex; align-items: center; color: inherit; }
+-sd-query-bar .c-token-op .c-op-trigger { padding: 0; color: inherit; }
+-sd-query-bar .c-token-value {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-compact .c-token { height: 28px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-comfortable .c-token { height: 32px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-icon { font-size: 14px; width: 14px; height: 14px; line-height: 14px; color: inherit; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-field { font-weight: 500; line-height: 1; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-sep { color: #7a7a7a; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-op { display: inline-flex; align-items: center; color: inherit; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-op .c-op-trigger { padding: 0; color: inherit; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value {
+   border: none;
+   background: transparent;
+   padding: 0;
+@@ -5535,10 +5667,10 @@
+   color: var(--sd-primary);
+   cursor: pointer;
+ }
+-sd-query-bar .c-token-value-edit { display: inline-flex; align-items: center; gap: 4px; max-width: 240px; }
+-sd-query-bar sd-select.sd-bare { display: inline-flex; align-items: center; }
+-sd-query-bar .c-token-value-edit sd-select { display: inline-flex; align-items: center; line-height: 1; }
+-sd-query-bar .c-token-multi-head {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit { display: inline-flex; align-items: center; gap: 4px; max-width: 240px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) sd-select.sd-bare { display: inline-flex; align-items: center; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-select { display: inline-flex; align-items: center; line-height: 1; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-multi-head {
+   display: inline-block;
+   max-width: 140px;
+   overflow: hidden;
+@@ -5546,7 +5678,7 @@
+   white-space: nowrap;
+   vertical-align: bottom;
+ }
+-sd-query-bar .c-token-remove {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-remove {
+   align-self: stretch;
+   display: inline-flex;
+   align-items: center;
+@@ -5558,15 +5690,15 @@
+   cursor: pointer;
+   color: inherit;
+ }
+-sd-query-bar .c-density-compact .c-token-remove { width: 26px; }
+-sd-query-bar .c-density-comfortable .c-token-remove { width: 28px; }
+-sd-query-bar .c-token-remove .material-icons-outlined ,
+-sd-query-bar .c-token-remove .mat-icon { font-size: 14px; width: 14px; height: 14px; }
+-sd-query-bar .c-token-remove:hover { background: #0000000d; }
+-sd-query-bar .c-token-building { border-style: dashed; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-compact .c-token-remove { width: 26px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-comfortable .c-token-remove { width: 28px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-remove .material-icons-outlined ,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-remove .mat-icon { font-size: 14px; width: 14px; height: 14px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-remove:hover { background: #0000000d; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-building { border-style: dashed; }
+ 
+ /* `sd-inline-view` — vỏ chỉ-đọc của ô chọn trong chip token. */
+-sd-query-bar .sd-inline-view {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .sd-inline-view {
+   cursor: pointer;
+   display: inline-flex;
+   align-items: center;
+@@ -5576,11 +5708,11 @@
+   background-color: #0000000a;
+   transition: background-color .15s ease;
+ }
+-sd-query-bar .sd-inline-view:hover { background-color: #00000014; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .sd-inline-view:hover { background-color: #00000014; }
+ 
+ /* ---- Hình 3: cặp nút boolean (.c-bool-toggle) ---- */
+-sd-query-bar .c-bool-toggle { display: inline-flex; align-items: center; gap: 4px; }
+-sd-query-bar .c-bool-btn {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-bool-toggle { display: inline-flex; align-items: center; gap: 4px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-bool-btn {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+@@ -5600,16 +5732,16 @@
+   user-select: none;
+   transition: background .12s ease, color .12s ease;
+ }
+-sd-query-bar .c-density-comfortable .c-bool-btn { height: 20px; padding: 0 10px; font-size: 12px; }
+-sd-query-bar .c-bool-true { color: var(--sd-success); }
+-sd-query-bar .c-bool-false { color: var(--sd-warning); }
+-sd-query-bar .c-bool-active.c-bool-true { background: var(--sd-success); color: #fff; border-color: var(--sd-success); }
+-sd-query-bar .c-bool-active.c-bool-false { background: var(--sd-warning); color: #fff; border-color: var(--sd-warning); }
+-sd-query-bar .c-bool-btn:hover:not(.c-bool-active).c-bool-true { background: var(--sd-success-light); }
+-sd-query-bar .c-bool-btn:hover:not(.c-bool-active).c-bool-false { background: var(--sd-warning-light); }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-density-comfortable .c-bool-btn { height: 20px; padding: 0 10px; font-size: 12px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-bool-true { color: var(--sd-success); }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-bool-false { color: var(--sd-warning); }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-bool-active.c-bool-true { background: var(--sd-success); color: #fff; border-color: var(--sd-success); }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-bool-active.c-bool-false { background: var(--sd-warning); color: #fff; border-color: var(--sd-warning); }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-bool-btn:hover:not(.c-bool-active).c-bool-true { background: var(--sd-success-light); }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-bool-btn:hover:not(.c-bool-active).c-bool-false { background: var(--sd-warning-light); }
+ 
+ /* ---- Toán tử trên chip (.c-op-*) ---- */
+-sd-query-bar .c-op-trigger {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-op-trigger {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+@@ -5620,13 +5752,13 @@
+   cursor: pointer;
+   border-radius: 4px;
+ }
+-sd-query-bar .c-op-trigger:hover:not([disabled]) { background: #0000000a; }
+-sd-query-bar .c-op-trigger[disabled] { color: #00000042; cursor: default; }
+-sd-query-bar .c-op-icon { display: inline-flex; align-items: center; }
+-sd-query-bar .c-chip-operator .c-op-trigger { padding: 0; color: inherit; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-op-trigger:hover:not([disabled]) { background: #0000000a; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-op-trigger[disabled] { color: #00000042; cursor: default; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-op-icon { display: inline-flex; align-items: center; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-chip-operator .c-op-trigger { padding: 0; color: inherit; }
+ 
+ /* ---- Dấu nối OR giữa hai chip cùng field ---- */
+-sd-query-bar .c-or-connector {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-or-connector {
+   font-family: 'Roboto Mono', monospace;
+   font-size: 10px;
+   font-weight: 700;
+@@ -5636,11 +5768,10 @@
+ }
+ 
+ /* Ô nhập/ô chọn nhúng trong chip phải bỏ khung của chính nó — chip đã là khung. */
+-sd-query-bar .c-token-value-edit sd-input .sd-form-field,
+-sd-query-bar .c-token-value-edit sd-input-number .sd-form-field,
+-sd-query-bar .c-token-value-edit sd-select .sd-form-field,
+-sd-query-bar .c-token-value-edit sd-date .sd-form-field,
+-sd-query-bar .c-token-value-edit sd-datetime .sd-form-field {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-input .sd-form-field,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-select .sd-form-field,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-date .sd-form-field,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-datetime .sd-form-field {
+   min-height: 20px;
+   height: 20px;
+   padding: 0;
+@@ -5648,12 +5779,19 @@
+   background: transparent;
+   box-shadow: none;
+ }
+-sd-query-bar .c-token-value-edit sd-input,
+-sd-query-bar .c-token-value-edit sd-input-number,
+-sd-query-bar .c-token-value-edit sd-select,
+-sd-query-bar .c-token-value-edit sd-date,
+-sd-query-bar .c-token-value-edit sd-datetime { padding-top: 0; }
+-sd-query-bar .c-token-value-edit .sd-input {
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-input,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-input-number,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-select,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-date,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-datetime { padding-top: 0; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-input-number .mdc-notched-outline,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-input-number .mat-mdc-form-field-subscript-wrapper { display: none; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-input-number .mdc-text-field--outlined { height: 20px; padding: 0; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-input-number .mat-mdc-form-field-infix { min-height: 20px; padding: 0 !important; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-input-number .mat-mdc-form-field-icon-suffix { padding: 0 0 0 4px; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-input-number input.mat-mdc-input-element { margin-top: 0 !important; font-size: 13px !important; }
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit sd-input-number input.mat-mdc-input-element,
++:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"])) .c-token-value-edit .sd-input {
+   height: 20px;
+   line-height: 20px;
+   font-size: 13px;
+--- a/design-system/preview/components/input-number.html
++++ b/design-system/preview/components/input-number.html
+@@ -170,7 +170,7 @@
+           <div class="grid grid-cols-3 gap-6">
+             <sd-input-number label="Size sm" size="sm" value="1000"></sd-input-number>
+             <sd-input-number label="Size md (mặc định)" value="1000"></sd-input-number>
+-            <sd-input-number label="Size lg" size="lg" value="1000"></sd-input-number>
++            <sd-input-number label="Size sm — trống" size="sm"></sd-input-number>
+           </div>
+           <div class="grid grid-cols-3 gap-6 mt-6">
+             <sd-input-number label="Disabled — trống" disabled></sd-input-number>
+@@ -257,9 +257,9 @@
+                   <tr><td>disabled</td><td>boolean</td><td>false</td><td>Vô hiệu hoá input</td></tr>
+                   <tr><td>readonly</td><td>boolean</td><td>false</td><td>Chỉ đọc — vẫn focus/copy được, không sửa</td></tr>
+                   <tr><td>viewed</td><td>boolean | <code>inline</code></td><td>false</td><td>Chế độ xem — text tĩnh, format đầy đủ. <code>viewed="inline"</code>: text tĩnh, bấm vào để sửa tại chỗ (<code>sd-inline-text</code>), blur thì lưu</td></tr>
+-                  <tr><td>size</td><td><code>sm</code>, <code>md</code>, <code>lg</code></td><td>md</td><td>Chiều cao field</td></tr>
++                  <tr><td>size</td><td><code>sm</code>, <code>md</code></td><td>md</td><td>Chiều cao field: md 43.5px, sm 32px (catalog chỉ có hai cỡ; <code>lg</code> cũ quy về md)</td></tr>
+                   <tr><td>clearable</td><td>—</td><td>—</td><td><b>Không có trong catalog.</b> Nút × luôn có ở ô có giá trị, hiện khi rê chuột/focus (ẩn nếu disabled/readonly). Markup cũ có <code>clearable</code> vẫn chạy — thuộc tính bị bỏ qua</td></tr>
+-                  <tr><td>helperText</td><td>string</td><td>-</td><td>Dòng chú thích dưới field khi không có lỗi</td></tr>
++                  <tr><td>helperText</td><td>string</td><td>-</td><td>Icon <code>info_outline</code> sau chữ nhãn, gợi ý hiện ở <code>title</code> (đúng catalog #c-input)</td></tr>
+                   <tr><td>hideInlineError</td><td>boolean</td><td>false</td><td>Ẩn dòng lỗi chữ, thay bằng icon đỏ + tooltip</td></tr>
+                   <tr><td>suffix</td><td>string</td><td>-</td><td>Text hiện cuối field (đơn vị: "VNĐ", "%"...) — mirror <code>&lt;ng-template sdSuffixDef&gt;</code></td></tr>
+                   <tr><td>suffixIcon</td><td>string</td><td>-</td><td>Icon hiện cuối field thay cho <code>suffix</code> text (vd "payments")</td></tr>
+--- a/design-system/components/sd-data.md
++++ b/design-system/components/sd-data.md
+@@ -335,7 +335,7 @@
+   │   │   sd-query-inline-value-chip / sd-query-inline-chip / sd-query-build-chip (mode inline)
+   │   ├ span.c-or-connector "OR"         ← giữa 2 chip khi logic = OR
+   │   └ button.c-add-filter
+-  ├ sd-query-field-picker                ← chứa .c-field-picker-menu khi mở
++  ├ sd-query-field-picker                ← vỏ rỗng (menu nằm ở overlay, xem dưới)
+   └ sd-query-actions-bar
+       ├ span.c-bar-divider
+       └ .c-query-bar__actions ← .c-logic-toggle · .c-clear-all
+@@ -350,8 +350,10 @@
+ inactive không có nút xoá** (đúng catalog). Giá trị trên chip: values = nhãn mục
+ đầu + " +N"; number in **thô** (`1000000000 — 5000000000`), BETWEEN nối bằng " — ".
+ 
+-**Ba popup** (mat-menu, `.mat-mdc-menu-panel` + `mat-menu-below`; kit đặt bằng
+-`position:fixed` sát mép dưới nút kích hoạt, chỗ catalog dùng overlay CDK):
++**Ba popup** (mat-menu, `.mat-mdc-menu-panel` + `mat-menu-below`) nằm **ngoài thẻ host**,
++trong overlay dùng chung như CDK: `body > div.cdk-overlay-container > div.cdk-overlay-pane >
++.mat-mdc-menu-panel` (pane mang `data-sd-overlay="query-bar"` làm móc CSS), đặt sát mép dưới
++nút kích hoạt. Muốn tìm panel bằng JS thì tìm ở `document`, không phải trong thẻ `sd-query-bar`:
+ 
+ | Popup | Mở bằng | Cấu trúc |
+ |---|---|---|
+--- a/design-system/components/sd-form.md
++++ b/design-system/components/sd-form.md
+@@ -403,6 +403,31 @@
+ 
+ Nhập số có phân cách hàng nghìn khi gõ, giới hạn số chữ số thập phân được gõ, kiểm min/max. Model luôn là số thô (dấu chấm cho thập phân), không phụ thuộc `format` hiển thị. Mirror `SdInputNumber` của `@sdcorejs/angular`. Portal: `/form/input-number`.
+ 
++**DOM — Material y hệt catalog `#c-input-number` (đồng bộ 2026-10-13).** Khác các ô nhập
++khác của kit (vẫn dùng khung `.sd-form-field`), `sd-input-number` nay in đúng cây
++`mat-form-field` của thư viện:
++
++```
++sd-input-number[.sd-has-label]
++└ div.d-flex.align-items-center[.c-focused|.c-disabled]
++  └ mat-form-field.mat-mdc-form-field.sd-{md|sm}[.hide-inline-error][.mat-form-field-hide-placeholder]
++      .mat-primary[.mat-mdc-form-field-has-icon-suffix][.mat-form-field-invalid|-disabled][.mat-focused] ng-*
++    ├ .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined[--no-label|--focused|--invalid|--disabled]
++    │ └ .mat-mdc-form-field-flex
++    │   ├ .mdc-notched-outline(--upgraded[--notched] | --no-label)
++    │   │   leading · notch (label.mdc-floating-label[--float-above] > mat-label …) · trailing
++    │   ├ .mat-mdc-form-field-infix > input.mat-mdc-input-element.mdc-text-field__input
++    │   └ .mat-mdc-form-field-icon-suffix  ← icon lỗi · button.sd-clear-btn.sd-hover · hậu tố
++    └ .mat-mdc-form-field-subscript-wrapper ← hint (rỗng) | mat-error
++```
++
++Nhãn nổi khi có giá trị hoặc đang focus; khe viền rộng `calc(<bề ngang nhãn>px × 0.75 + 9px)`
++(đo lại khi font tải xong / ô hết bị ẩn). Lớp `ng-touched|untouched`, `ng-dirty|pristine`,
++`ng-valid|invalid` theo trạng thái. CSS là bản chép nguyên văn `input-number.css` của
++catalog (phạm vi `sd-input-number`) + cỡ `sd-sm`. Trang nào trước đây chọc vào
++`.sd-form-field` / `.sd-input` bên trong `sd-input-number` phải đổi sang
++`.mat-mdc-text-field-wrapper` / `input.mat-mdc-input-element`.
++
+ **Điểm dễ hiểu sai:** `precision` chỉ giới hạn **số chữ số thập phân được phép gõ thêm** qua bàn phím (chặn ký tự ở tầng `keydown`) — nó **không** làm tròn hay đệm số 0 vào một giá trị đã được set sẵn qua `value`. Một `<sd-input-number value="3.14159">` (không set `precision`) vẫn hiển thị đủ `3,14159` dù mặc định `precision` là `3`. `format` mặc định `1.234.567,89` (chấm nghìn, phẩy thập phân) mirror đúng cấu hình thật của Core UI demo app, không phải fallback quốc tế của bản thư viện trần.
+ 
+ | Attribute | Values | Default | Mô tả |
+@@ -418,10 +443,10 @@
+ | `required` | boolean | `false` | Hiện dấu `*` + báo lỗi "Vui lòng nhập thông tin" khi trống lúc blur |
+ | `disabled` | boolean | `false` | Vô hiệu hoá input |
+ | `readonly` | boolean | `false` | Chỉ đọc — vẫn focus/copy được, không sửa |
+-| `viewed` | boolean | `false` | Chế độ xem — text tĩnh, format đầy đủ |
+-| `size` | `sm`, `md`, `lg` | `md` | Chiều cao field |
+-| `clearable` | boolean | `false` | Hiện nút xoá khi có giá trị (ẩn nếu `required`/`disabled`/`readonly`) |
+-| `helperText` | string | — | Dòng chú thích dưới field khi không có lỗi |
++| `viewed` | `true` \| `'inline'` | `false` | `true`: `sd-view` (nhãn + giá trị đã format). `'inline'`: `sd-inline-text` standalone (nền xám, × khi rê chuột) |
++| `size` | `sm`, `md` | `md` | `sd-md` khung 43.5px, `sd-sm` 32px (catalog chỉ có hai cỡ; `lg` cũ của kit quy về `md` — bí danh) |
++| `clearable` | — | luôn có | Nút × (`sd-clear-btn sd-hover`) có ở mọi ô có giá trị, hiện khi rê chuột / focus; không có ở ô `disabled`/`readonly`. Thuộc tính cũ được bỏ qua |
++| `helperText` | string | — | Icon `info_outline` ngay sau chữ nhãn, gợi ý ở `title` — đúng catalog `#c-input` |
+ | `hideInlineError` | boolean | `false` | Ẩn dòng lỗi chữ, thay bằng icon đỏ + tooltip (`data-sd-tooltip`) |
+ | `suffix` | string | — | Text hiện cuối field (đơn vị: "VNĐ", "%"...) — mirror `<ng-template sdSuffixDef>`, đứng sau cùng (bên phải nhất, sau cả nút xoá/icon lỗi) |
+ | `suffixIcon` | string | — | Icon hiện cuối field thay cho `suffix` text (vd `payments`) |
+@@ -445,9 +470,9 @@
+ 
+ | Chỗ lệch | Lý do |
+ |---|---|
+-| `helperText` hiện thành dòng chữ dưới field như input khác của kit | Thư viện thật đặt icon info + `matTooltip` cạnh label khi `appearance` được set — kit không mirror `appearance` |
++| Gợi ý của `helperText` ở `title` | Thư viện dùng `matTooltip`; catalog `#c-input` in `title` |
+ | `hideInlineError` dùng `data-sd-tooltip` chung của kit | Thư viện dùng `matTooltip` của Angular Material — kit không có |
+-| Không mirror `appearance`, `floatLabel`, `form`, `validator` (custom async validator), `inlineError`, `viewed="inline"`, `blurOnEnter`, `sdFocusForceBlur` | Chi tiết tích hợp Angular Material/Reactive Forms, không có ý nghĩa trong prototype HTML tĩnh |
++| Không mirror `appearance`, `floatLabel`, `form`, `validator` (custom async validator) | Chi tiết tích hợp Angular Material/Reactive Forms, không có ý nghĩa trong prototype HTML tĩnh |
+ | `format` mặc định `1.234.567,89` | Không phải "lệch mặc định" — mirror đúng cấu hình thật của Core UI demo app (`portal-config.ts`: `numberFormat: '1.234.567,89'`), không dùng fallback quốc tế của bản thư viện trần |
+ | Suffix chỉ nhận qua 2 attribute tĩnh `suffix` (text) / `suffixIcon` (icon) | Thư viện thật dùng content projection `<ng-template sdSuffixDef>` — chèn được bất kỳ markup nào. Web component vanilla JS không có cơ chế tương đương; 2 attribute này khớp đúng 2 kiểu duy nhất trang demo chính thức của Core UI minh hoạ (text đơn vị hoặc icon) |
+ 
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -8,6 +8,29 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — Đồng bộ thêm theo catalog: `sd-input-number` dùng DOM Material, popup `sd-query-bar` ra overlay
++
++Builder: *„Đồng bộ giống Catalog đi“* → chọn **Query Bar + sd-input-number**.
++
++- **`sd-input-number` in đúng cây `mat-form-field` của catalog** (`d-flex` › `mat-form-field.sd-md|sd-sm`
++  › `mdc-text-field--outlined` › notched outline + nhãn nổi › `input.mat-mdc-input-element` › hàng
++  `icon-suffix` › `subscript-wrapper` với `mat-error`), thay khung `.sd-form-field` chung. CSS chép
++  nguyên văn `input-number.css` của catalog (phạm vi `sd-input-number`) + cỡ `sd-sm`. Đo 13 mẫu
++  `#c-input-number`: tên lớp từng thẻ trùng cả thứ tự, toạ độ / màu / chữ trùng; ô `<input>` nay cao
++  24px như catalog (trước 21px), nền ô trong suốt (trước trắng). Nhãn nổi + khe viền tính như Angular
++  (`calc(Wpx × 0.75 + 9px)`), lớp `ng-touched/dirty/invalid` theo trạng thái. `helperText` → icon
++  `info_outline` trong nhãn (như `#c-input`); `size="lg"` cũ quy về md.
++- **Popup `sd-query-bar` nằm ngoài thẻ host** như overlay CDK: `body > .cdk-overlay-container >
++  .cdk-overlay-pane > .mat-mdc-menu-panel`. CSS của thanh đổi phạm vi sang
++  `:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"]))` — giữ nguyên độ ưu
++  tiên. Cuộn bên trong panel không còn đóng panel.
++- Ô lọc số của `sd-table` thêm `hideInlineError` (đúng `#c-table`), cao 36px như cũ.
++
++Kiểm: 97 trang, 0 lỗi JS; 26 bộ so catalog không đổi (trừ `numc` nay 13/13 ✓); query-bar 6 thanh
+++ 3 popup và query-builder 7 mẫu vẫn khớp. Trang nào tự chọc vào `.sd-form-field` / `.sd-input`
++bên trong `sd-input-number` phải đổi sang `.mat-mdc-text-field-wrapper` / `input.mat-mdc-input-element`
++(trong kit đã đổi hết).
++
+ ### Changed — `#c-query-bar`: `sd-query-bar` khớp catalog — 6 thanh + 3 popup, toán tử theo bảng `OPERATORS`
+ 
+ Builder: *„Tiếp tục phần Query Bar“*. Đo 6 thanh của catalog và 3 popup đang mở. Sau khi sửa:
+--- a/_memory/known-gaps.md
++++ b/_memory/known-gaps.md
+@@ -140,6 +140,31 @@
+ Đã gỡ (Rule 18): `autoId`, `expand()`, `collapse()`, `clearSelection()`, `selectedIds`, tooltip „Bỏ chọn“.
+ Đã thêm theo bảng API catalog: setter `selectedItems`, `tree`.
+ 
++## `sd-input-number` — ĐỒNG BỘ DOM Material 2026-10-13 (Builder: *„Đồng bộ giống Catalog đi“*)
++
++Builder chọn: Query Bar + **sd-input-number** đổi sang DOM `mat-form-field` y hệt catalog (các ô
++nhập khác vẫn khung `.sd-form-field` — chờ đợt riêng). Đo 13 mẫu `#c-input-number` (mặc định ·
++có giá trị · thập phân · hậu tố đang focus ×2 · bắt buộc · min · max · disabled · readonly ·
++hideInlineError · viewed · viewed='inline'): **tên lớp từng thẻ trùng hệt cả THỨ TỰ** (bỏ nhóm
++`ng-*`), toạ độ / màu / viền / chữ của mọi thẻ trùng — 13/13 ✓ ở bộ so cũ `numc`.
++
++| Chỗ | Catalog | Kit | Vì sao |
++|---|---|---|---|
++| `ng-dirty` ở hai mẫu lỗi min/max | `ng-dirty` (người chụp đã gõ) | `ng-pristine` khi giá trị đến từ `value` | Đúng ngữ nghĩa Angular: chỉ gõ tay mới "dirty". Gõ xong kit cũng ra `ng-dirty` |
++| `placeholder` trên thẻ `<sd-inline-text>` (viewed='inline') | không có | có | Thuộc tính HTML truyền vào web component (ngoại lệ 1); ô `<input>` bên trong trùng |
++| `id` của label / input / mat-error | `c-input-number-l2`… (catalog tự đặt) | `mat-mdc-form-field-label-N` / `mat-input-N` / `mat-mdc-error-N` | Tên Angular Material thật; catalog đổi tên theo mục |
++| `aria-hidden="true"` trên khung và ô nhập | có | có | Chép đúng catalog. Lưu ý: trình đọc màn hình bỏ qua ô — y như thư viện |
++| Gợi ý `helperText` | `matTooltip` (catalog `#c-input` in `title`) | `title` trên `info_outline` | Như `sd-input` |
++| Icon lỗi `hideInlineError` | `matTooltip` | `data-sd-tooltip` của kit | Kit không có matTooltip |
++| `size="lg"` | không có | quy về `sd-md` | Bí danh tương thích ngược; preview đổi sang mẫu sm |
++| Token `--mat-sys-body-*`, `--mat-sys-on-surface*` | khai ở `html` (material-tokens.css) | khai trong phạm vi `sd-input-number` | Không đụng ô nhập khác của kit |
++| Nền ô | trong suốt (lấy nền trang) | trong suốt | Trước đây kit tô trắng `.sd-form-field`. Ô lọc trong bảng vẫn trắng (`#c-table column-filter … {background-color:#fff}`) |
++
++Đã đổi kèm: ô lọc số của `sd-table` nay `hideInlineError` (catalog: ô lọc `sd-sm.hide-inline-error`,
++không subscript) và ô nhập cao 28px như `#c-table` → đầu bảng vẫn 92px; `sd-query-bar` inline
++(token số BETWEEN) làm phẳng khung Material. Nhãn nổi đo lại bằng `ResizeObserver` (font tải xong,
++ô hết bị ẩn) — trước khi có layout thì đo tạm bằng canvas.
++
+ ## `sd-query-bar` — rà soát `#c-query-bar` 2026-10-13
+ 
+ Đo 6 thanh của catalog (popover mặc định · chip popover mở · field picker mở · inline · comfortable +
+@@ -150,8 +175,8 @@
+ 
+ | Chỗ | Catalog | Kit | Vì sao |
+ |---|---|---|---|
+-| Vị trí 3 popup | Overlay CDK trong `cdk-overlay-container` | `.mat-mdc-menu-panel` là con của thẻ vỏ (`sd-query-chip-popover` / `sd-query-field-picker` / `sd-query-saved-filters-menu`), đặt `position:fixed` sát mép dưới nút (`mat-menu-below`; saved canh phải = `mat-menu-before`) | Cùng kiểu lệch đã ghi cho `sd-tree` / `sd-operator`. Đo: lệch so với nút 0px cả 3 |
+-| `sd-input-number` trong popover BETWEEN | `mat-form-field` đầy đủ (notched outline, infix, icon-suffix) | `.sd-form-field` + `input.sd-input` + `button.sd-clear-btn` của kit | Cấu trúc chung của `sd-input-number` kit — tới đợt component đó. Ô nhập trong popover đã ép **24px / line-height 24 / Roboto**, mép trên cách khung 5px như catalog → toạ độ trùng |
++| ~~Vị trí 3 popup~~ **ĐÃ SỬA 2026-10-13 (lượt 2)** | Overlay CDK trong `cdk-overlay-container` | Kit nay dựng `body > div.cdk-overlay-container > div.cdk-overlay-pane > .mat-mdc-menu-panel` — panel nằm NGOÀI thẻ host như catalog; pane mang thêm `data-sd-overlay="query-bar"` làm móc CSS | Rule 18 ngoại lệ 1 (thuộc tính HTML). Mọi rule của thanh viết `:is(sd-query-bar, :where(.cdk-overlay-pane[data-sd-overlay="query-bar"]))` — giữ nguyên độ ưu tiên cũ |
++| ~~`sd-input-number` trong popover BETWEEN~~ **ĐÃ SỬA 2026-10-13 (lượt 2)** | `mat-form-field` đầy đủ | Kit nay in đúng DOM Material — xem mục `sd-input-number` đồng bộ 2026-10-13. Còn khác: catalog bản popover có lớp `mat-form-field-animations-enabled`, KHÔNG có lớp `ng-*` và KHÔNG có `subscript-wrapper`; bản `#c-input-number` thì ngược lại (có `ng-*`, có subscript, không animations) | Hai mục catalog chụp DOM khác nhau; kit theo mục gốc `#c-input-number`. Nút × trong popover cỡ chữ 13.33px (UA) ở catalog, 16px ở kit (reboot của `#c-input-number`) — icon 16px cố định nên không đổi hình |
+ | Thân popover của string / values / boolean / date / lazy-values, toán tử NULL | catalog CHỈ vẽ popover cho number BETWEEN | kit tự dựng: `sd-input`, danh sách `sd-checkbox`, `sd-radio`, `sd-date` / `sd-datetime`, ô tìm + danh sách (lazy) | Không có hình để đối chiếu; dùng component kit sẵn có. Header (icon · tên · `sd-operator`) dùng chung đúng mẫu catalog |
+ | `disabled` trên thẻ `sd-operator` | Angular truyền input, thẻ host không mang attribute | host mang `disabled` | Cách kit nhận input của Web Component (Rule 18 ngoại lệ 1 — thuộc tính HTML). Nút bên trong `c-op-trigger[disabled]` giống hệt |
+ | `aria-label` tiếng Việt ("Gỡ bộ lọc …", "Chỉnh bộ lọc …") | `aria-label="Remove filter"` / không có | tiếng Việt | Rule 9 |
+@@ -375,7 +400,7 @@
+ | Bộ đếm `maxlength` | dưới khung 4px (vùng subscript 20px) | đè vào góc dưới phải TRONG khung | Hệ quả của mục "chừa 20px" đang chờ Builder quyết; theo chiều ngang thì khớp |
+ | `appearance` · `sdViewDef` · `[form]` | có trong API | không dựng | `appearance` chỉ có tên; `sdViewDef` là template |
+ | `autoId` · `inlineError` | không có trong API catalog | có | Cùng nhóm "chờ Builder quyết" (sd-select / sd-radio / sd-input-number). `sd-input-color` đang dùng `inlineError` để báo mã màu sai |
+-| `helperText` ở các ô form KHÁC | catalog chỉ minh hoạ ở `#c-input` (+ `sd-label`): icon trong nhãn | `sd-select`, `sd-date`, `sd-datetime`, `sd-textarea`, `sd-input-number`, `sd-autocomplete`… vẫn in dòng chữ dưới ô | Các mục đó catalog chỉ liệt kê tên `helperText`, không có ví dụ. **`sd-input-number` vừa rà xong mà sót** — nhiều khả năng cùng cơ chế với sd-input; chờ Builder xác nhận rồi đổi cả nhóm một lượt |
++| `helperText` ở các ô form KHÁC | catalog chỉ minh hoạ ở `#c-input` (+ `sd-label`): icon trong nhãn | `sd-select`, `sd-date`, `sd-datetime`, `sd-textarea`, `sd-autocomplete` (riêng `sd-input-number` ĐÃ đổi sang icon trong nhãn 2026-10-13)… vẫn in dòng chữ dưới ô | Các mục đó catalog chỉ liệt kê tên `helperText`, không có ví dụ. **`sd-input-number` vừa rà xong mà sót** — nhiều khả năng cùng cơ chế với sd-input; chờ Builder xác nhận rồi đổi cả nhóm một lượt |
+ | `focusForceBlur` của `sd-input-number` | không có | còn | Ngoài phạm vi đợt này — gỡ ở lượt rà lại sd-input-number |
+ 
+ ## `sd-input-number` — rà soát `#c-input-number` 2026-10-12
+@@ -384,8 +409,8 @@
+ |---|---|---|---|
+ | Hậu tố | `<ng-template sdSuffixDef>` (nội dung tuỳ ý) | thuộc tính `suffix` (chữ) / `suffixIcon` (icon) | Rule 18, ngoại lệ 2: HTML tĩnh không truyền được template. Kết quả dựng ra cùng markup `T14R text-black400` |
+ | `placeholder` của ô ĐANG có giá trị | bản chụp DOM ghi `placeholder` = nhãn | giữ `placeholder` đã khai | Không nhìn thấy được (có giá trị thì placeholder không hiện); ô trống thì hai bên trùng nhau. Không chép |
+-| Icon × của `viewed="inline"` | `<mat-icon class="material-icons">` | `<span class="material-icons-outlined">` | Rule 4 (icon outlined). Glyph `close` hai bộ giống hệt, cùng toạ độ |
+-| Ô `<input>` bên trong | cao 24px, line-height 24px | cao 21px | Khung form dùng chung của mọi ô nhập; tâm chữ lệch 0.25px — không thấy được |
++| ~~Icon × của `viewed="inline"`~~ **ĐÃ THEO CATALOG** | `<mat-icon class="material-icons">` | `<mat-icon class="material-icons">` (đợt icon 2026-10-13) | — |
++| ~~Ô `<input>` bên trong~~ **ĐÃ SỬA 2026-10-13** | cao 24px, line-height 24px | nay 24px — DOM + CSS Material của catalog | — |
+ | `autoId` · `inlineError` | không có trong API catalog | có | Cùng nhóm "chờ Builder quyết" với sd-select / sd-radio |
+ | `suffixIcon` | không có (icon thì đặt trong template `sdSuffixDef`) | có | Trải phẳng template (ngoại lệ 2) như `suffix`; chưa trang nào dùng. Muốn gỡ thì báo |
+ | `clearable` | không có — nút × luôn có | thuộc tính bị bỏ qua | Đã gỡ khả năng tắt nút (2026-10-12); markup cũ vẫn chạy |

@@ -1,0 +1,27 @@
+--- /tmp/fb.bak.ef	2026-10-12 10:43:29.032757504 +0000
++++ design-system/patterns/filter-bar.js	2026-10-12 10:48:46.908397948 +0000
+@@ -28,10 +28,22 @@
+  *   3. Chevron bọc trong <button> để điều hướng bàn phím được (Rule 9 của
+  *      AGENTS.md); catalog để `mat-icon` trần vì cả header là vùng bấm.
+  *
++ * Ô lọc — viết giống `externalFilters: [{ field, title, type }]` của thư viện:
++ * `title` hiện làm placeholder, không nhãn nổi, cỡ md, `hide-inline-error`.
++ * `pattern-loader.js` (normalizeFilterField) tự chuẩn hoá các con trực tiếp
++ * là ô nhập sd-*: `label` → placeholder, bỏ `size`, thêm `hideInlineError` —
++ * để trang cũ viết `label="…" size="sm"` vẫn ra đúng kiểu catalog.
++ *
++ * Rà soát lần 2 (2026-10-12), đo cùng bốn ô với catalog ở bề ngang 1242px:
++ *   · lưới thiếu lề ngoài 8px của `.px-8` → ô đầu ở x=16 thay vì 24;
++ *   · body có `max-height:500px` + hiệu ứng trượt — catalog không có, gỡ;
++ *   · mũi tên sd-select: keyboard_arrow_down 20px, cách mép phải 12px;
++ *   · placeholder trong mục bảng rgba(0,0,0,.6); chữ trong khung form giãn 0.496px.
++ *
+  * Cách dùng:
+  *   <div data-pattern="filter-bar" data-id="filter-main">
+- *     <sd-input label="Mã hồ sơ"></sd-input>
+- *     <sd-select label="Trạng thái" ...></sd-select>
++ *     <sd-input placeholder="Mã hồ sơ"></sd-input>
++ *     <sd-select placeholder="Trạng thái" items='[...]'></sd-select>
+  *   </div>
+  */
+ 

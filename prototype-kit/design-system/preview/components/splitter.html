@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-splitter - Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-splitter"
+         data-subtitle="Panel co dãn - horizontal/vertical, mix px + flex, nested, collapsible, lưu layout"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <sd-inform color="warning" title="sd-splitter cần chiều cao cụ thể">
+          Mỗi demo dưới đây được bọc trong div có height rõ ràng (200-300px). Trong prototype cũng phải đặt
+          sd-splitter trong parent có chiều cao cụ thể (height: 200px, 100%, ...) thì mới hiển thị đúng.
+        </sd-inform>
+
+        <sd-section title="1. Cơ bản - horizontal, 2 panel flex 1:1">
+          <p class="fs-12 text-black400 mb-12">Kéo divider để đổi cỡ. Panel flex chia theo tỉ lệ size (1 : 1).</p>
+          <div style="height:220px">
+            <sd-splitter orientation="horizontal">
+              <sd-splitter-panel size="1">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-100);color:var(--text-secondary)">Left (flex 1)</div>
+              </sd-splitter-panel>
+              <sd-splitter-panel size="1">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-50);color:var(--text-secondary)">Right (flex 1)</div>
+              </sd-splitter-panel>
+            </sd-splitter>
+          </div>
+        </sd-section>
+
+        <sd-section title="2. Mix px + flex - sidebar 250px cố định + main flex">
+          <p class="fs-12 text-black400 mb-12">Sidebar 250px (min 100, max 400); main nhận phần còn lại.</p>
+          <div style="height:220px">
+            <sd-splitter orientation="horizontal">
+              <sd-splitter-panel panelId="sidebar" size="250" unit="px" minSize="100" maxSize="400">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-100);color:var(--text-secondary)">Sidebar 250px (100-400)</div>
+              </sd-splitter-panel>
+              <sd-splitter-panel size="1">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-50);color:var(--text-secondary)">Main (flex)</div>
+              </sd-splitter-panel>
+            </sd-splitter>
+          </div>
+        </sd-section>
+
+        <sd-section title="3. Vertical - top 2 / bottom 1">
+          <p class="fs-12 text-black400 mb-12">Kéo divider ngang để thay đổi chiều cao 2 vùng.</p>
+          <div style="height:240px">
+            <sd-splitter orientation="vertical">
+              <sd-splitter-panel size="2">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-100);color:var(--text-secondary)">Top (flex 2)</div>
+              </sd-splitter-panel>
+              <sd-splitter-panel size="1">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-50);color:var(--text-secondary)">Bottom (flex 1)</div>
+              </sd-splitter-panel>
+            </sd-splitter>
+          </div>
+        </sd-section>
+
+        <sd-section title="4. Lồng nhau - splitter trong panel của splitter khác">
+          <p class="fs-12 text-black400 mb-12">Sidebar + (editor / terminal) - panel flex bên trong tự là một splitter vertical.</p>
+          <div style="height:260px">
+            <sd-splitter orientation="horizontal">
+              <sd-splitter-panel panelId="ide-sidebar" size="200" unit="px" minSize="100" collapsible>
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-100);color:var(--text-secondary)">File Explorer</div>
+              </sd-splitter-panel>
+              <sd-splitter-panel size="1">
+                <sd-splitter orientation="vertical">
+                  <sd-splitter-panel size="2">
+                    <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-50);color:var(--text-secondary)">Editor</div>
+                  </sd-splitter-panel>
+                  <sd-splitter-panel panelId="ide-output" size="1" minSize="0.2" collapsible>
+                    <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-100);color:var(--text-secondary)">Output / Terminal</div>
+                  </sd-splitter-panel>
+                </sd-splitter>
+              </sd-splitter-panel>
+            </sd-splitter>
+          </div>
+        </sd-section>
+
+        <sd-section title="5. API imperative">
+          <p class="fs-12 text-black400 mb-12">Toggle Sidebar / Resize 320px / Expand all / Reset layout. Kéo Sidebar hoặc Detail xuống dưới 40% min thì snap collapse.</p>
+          <div class="flex gap-4 align-items-center flex-wrap mb-16">
+            <sd-button id="btn-api-toggle" type="light" color="primary" size="sm" title="Toggle Sidebar"></sd-button>
+            <sd-button id="btn-api-resize" type="light" color="primary" size="sm" title="Resize Sidebar 320px"></sd-button>
+            <sd-button id="btn-api-expand" type="light" color="primary" size="sm" title="Expand all"></sd-button>
+            <sd-button id="btn-api-reset" type="light" color="primary" size="sm" title="Reset layout"></sd-button>
+          </div>
+          <div style="height:220px">
+            <sd-splitter id="api-splitter" orientation="horizontal" snapThreshold="0.4">
+              <sd-splitter-panel panelId="sidebar" size="220" unit="px" minSize="80" maxSize="500" collapsible>
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-100);color:var(--text-secondary)">Sidebar 220px</div>
+              </sd-splitter-panel>
+              <sd-splitter-panel size="2">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-50);color:var(--text-secondary)">Main (flex 2)</div>
+              </sd-splitter-panel>
+              <sd-splitter-panel panelId="detail" size="1" minSize="0.3" collapsible>
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-100);color:var(--text-secondary)">Detail (flex 1)</div>
+              </sd-splitter-panel>
+            </sd-splitter>
+          </div>
+        </sd-section>
+
+        <sd-section title="6. storageKey - lưu layout vào localStorage">
+          <p class="fs-12 text-black400 mb-12">Kéo xong rồi refresh trang - layout được khôi phục. Bấm "Xoá layout" để về mặc định theo size đã khai.</p>
+          <div class="flex gap-4 align-items-center flex-wrap mb-16">
+            <sd-button id="btn-storage-reset" type="light" color="primary" size="sm" title="Xoá layout"></sd-button>
+            <span class="fs-12 text-black400" id="storage-layout-label">Layout hiện tại: </span>
+            <code class="fs-12 text-mono" id="storage-layout"></code>
+          </div>
+          <div style="height:220px">
+            <sd-splitter id="storage-splitter" orientation="horizontal" storageKey="portal-template-splitter-demo">
+              <sd-splitter-panel panelId="a" size="1">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-100);color:var(--text-secondary)">A (flex 1)</div>
+              </sd-splitter-panel>
+              <sd-splitter-panel panelId="b" size="2">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-50);color:var(--text-secondary)">B (flex 2)</div>
+              </sd-splitter-panel>
+              <sd-splitter-panel panelId="c" size="1">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-100);color:var(--text-secondary)">C (flex 1)</div>
+              </sd-splitter-panel>
+            </sd-splitter>
+          </div>
+        </sd-section>
+
+        <sd-section title="7. disabled - không kéo được">
+          <p class="fs-12 text-black400 mb-12">Toàn bộ divider bị vô hiệu; bấm nút để bật/tắt trạng thái.</p>
+          <div class="flex gap-4 align-items-center flex-wrap mb-16">
+            <sd-button id="btn-disabled-toggle" type="light" color="primary" size="sm" title="Bật/tắt disabled"></sd-button>
+          </div>
+          <div style="height:200px">
+            <sd-splitter id="disabled-splitter" orientation="horizontal" disabled>
+              <sd-splitter-panel size="1">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-100);color:var(--text-secondary)">Panel A</div>
+              </sd-splitter-panel>
+              <sd-splitter-panel size="1">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-50);color:var(--text-secondary)">Panel B</div>
+              </sd-splitter-panel>
+            </sd-splitter>
+          </div>
+        </sd-section>
+
+        <sd-section title="8. resizable=&quot;false&quot; - panel giữa không cho resize">
+          <p class="fs-12 text-black400 mb-12">Panel giữa khai resizable="false" nên 2 divider kề nó đều bị vô hiệu - không kéo được divider nào trong demo này.</p>
+          <div style="height:200px">
+            <sd-splitter orientation="horizontal">
+              <sd-splitter-panel size="1">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-100);color:var(--text-secondary)">A</div>
+              </sd-splitter-panel>
+              <sd-splitter-panel size="1" unit="" resizable="false">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-50);color:var(--text-secondary)">B (không kéo được)</div>
+              </sd-splitter-panel>
+              <sd-splitter-panel size="1">
+                <div class="flex align-items-center justify-center fs-12" style="height:100%;background:var(--color-neutral-100);color:var(--text-secondary)">C</div>
+              </sd-splitter-panel>
+            </sd-splitter>
+          </div>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Màn hình chia vùng cần co giãn được theo nhu cầu (workspace, sidebar, editor + terminal...)</li>
+                  <li>Cần gập/mở nhanh một panel để nhường chỗ cho vùng đang thao tác</li>
+                  <li>Bố cục người dùng tự chỉnh phải giữ nguyên khi refresh (kèm storageKey)</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list">
+                  <li>Layout tĩnh, không cần kéo - dùng grid/flex CSS cho đơn giản</li>
+                  <li>Màn hình form thường - các vùng nên xếp theo flow cố định</li>
+                  <li>Chỉ muốn chia tỉ lệ theo nội dung, không cần can thiệp của người dùng</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Màn hình xử lý: bên trái danh sách tác vụ 280px (co được 200-400px, gập được bằng double-click), bên phải chi tiết căn theo phần còn lại. Kéo divider để đổi cỡ, bố cục lưu theo tài khoản."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-splitter orientation="horizontal"&gt;
+  &lt;sd-splitter-panel panelId="sidebar" size="250" unit="px" minSize="100" maxSize="400" collapsible&gt;...&lt;/sd-splitter-panel&gt;
+  &lt;sd-splitter-panel size="1"&gt;...&lt;/sd-splitter-panel&gt;
+&lt;/sd-splitter&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes - sd-splitter</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>orientation</td><td>horizontal, vertical</td><td>horizontal</td><td>Hướng chia panel</td></tr>
+                  <tr><td>snapThreshold</td><td>number - ví dụ 0.4</td><td>-</td><td>Kéo panel collapsible xuống dưới 40% min thì snap collapse</td></tr>
+                  <tr><td>storageKey</td><td>string</td><td>-</td><td>Khoá localStorage - refresh giữ nguyên layout; panel phải có panelId mới được lưu</td></tr>
+                  <tr><td>disabled</td><td>boolean</td><td>false</td><td>Vô hiệu hoá toàn bộ thao tác kéo/gập</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes - sd-splitter-panel</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>panelId</td><td>string</td><td>-</td><td>Định danh panel - dùng cho method và localStorage</td></tr>
+                  <tr><td>size</td><td>number</td><td>-</td><td>Kích thước - nghĩa phụ thuộc unit</td></tr>
+                  <tr><td>unit</td><td>px hoặc bỏ trống</td><td>bỏ trống (flex)</td><td>px = kích thước cố định; bỏ trống = phần flex theo size</td></tr>
+                  <tr><td>minSize</td><td>number</td><td>-</td><td>Nhỏ nhất - flex là tỉ lệ (0.2, 0.3), px là số px</td></tr>
+                  <tr><td>maxSize</td><td>number</td><td>-</td><td>Lớn nhất - cùng quy ước minSize</td></tr>
+                  <tr><td>collapsible</td><td>boolean</td><td>false</td><td>Cho gập; double-click handle để bật/tắt</td></tr>
+                  <tr><td>resizable</td><td>boolean</td><td>true</td><td>resizable="false" (chuỗi) thì 2 handle kề bị vô hiệu</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Events</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Event</th><th>detail</th><th>Khi nào fire</th></tr></thead>
+                <tbody>
+                  <tr><td>sd-layout-change</td><td>{ layout: [{ panelId, size, unit, collapsed }] }</td><td>Layout thay đổi - bên Angular là (layoutChange)</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Methods (trên phần tử sd-splitter)</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Method</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>toggle(panelId)</td><td>Gập/mở panel collapsible</td></tr>
+                  <tr><td>resizePanel(panelId, px)</td><td>Đặt kích thước panel theo px</td></tr>
+                  <tr><td>expand(panelId)</td><td>Mở panel đang gập</td></tr>
+                  <tr><td>resetLayout()</td><td>Khôi phục layout theo size đã khai, xoá dữ liệu đã lưu</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Ghi chú</p>
+              <sd-inform color="info">sd-splitter cần được bọc trong parent có chiều cao cụ thể. Nội dung panel giữ nguyên node DOM - event listener gắn bên trong panel vẫn sống, splitter lồng nhau chạy bình thường.</sd-inform>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      showPanel(0);
+    }
+    initPreviewTabs();
+  })();
+
+  // Demo 5 - API imperative
+  (function () {
+    var splitter = document.getElementById('api-splitter');
+    if (!splitter) return;
+    document.getElementById('btn-api-toggle').addEventListener('click', function () {
+      splitter.toggle('sidebar');
+    });
+    document.getElementById('btn-api-resize').addEventListener('click', function () {
+      splitter.resizePanel('sidebar', 320);
+    });
+    document.getElementById('btn-api-expand').addEventListener('click', function () {
+      splitter.expand('sidebar');
+      splitter.expand('detail');
+    });
+    document.getElementById('btn-api-reset').addEventListener('click', function () {
+      splitter.resetLayout();
+    });
+  })();
+
+  // Demo 6 - storageKey
+  (function () {
+    var splitter = document.getElementById('storage-splitter');
+    if (!splitter) return;
+    function renderLayout() {
+      var out = document.getElementById('storage-layout');
+      if (!out) return;
+      var summary = splitter._models && splitter._models.length
+        ? splitter._models.map(function (m) {
+            return m.id + ':' + Math.round(m.pxSize) + (m.collapsed ? ' (gập)' : '');
+          }).join(' | ')
+        : '';
+      out.textContent = summary;
+    }
+    splitter.addEventListener('sd-layout-change', renderLayout);
+    renderLayout();
+    document.getElementById('btn-storage-reset').addEventListener('click', function () {
+      splitter.resetLayout();
+      renderLayout();
+    });
+  })();
+
+  // Demo 7 - disabled toggle
+  (function () {
+    var splitter = document.getElementById('disabled-splitter');
+    if (!splitter) return;
+    document.getElementById('btn-disabled-toggle').addEventListener('click', function () {
+      if (splitter.hasAttribute('disabled')) {
+        splitter.removeAttribute('disabled');
+      } else {
+        splitter.setAttribute('disabled', '');
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>

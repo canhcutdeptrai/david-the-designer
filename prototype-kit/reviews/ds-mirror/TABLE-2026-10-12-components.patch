@@ -1,0 +1,216 @@
+--- /tmp/components.bak	2026-10-12 09:09:11.830408302 +0000
++++ prototype-kit-CATALOG-1012m/design-system/core/styles/components.css	2026-10-12 09:11:18.331649003 +0000
+@@ -2539,92 +2539,75 @@
+ 
+ /* ── Filter Bar (External Filter Panel) ───────────────────── */
+ 
++/* ════════════════════════════════════════════════════════════════
++   FILTER BAR (outgrid filter) — mirror `external-filter` của catalog #c-table
++   Rà soát toàn mục 2026-10-12. Bảy chỗ đã sửa, ghi ngay tại chỗ.
++   ════════════════════════════════════════════════════════════════ */
+ .filter-bar {
+-  display: flex;
+-  flex-direction: column;
+-  border-radius: var(--radius-md);
+-  overflow: hidden;
+-  background: var(--surface-primary);
++  display: block;
+   position: relative;
+   z-index: calc(var(--z-sticky) + 1);
+ }
+ 
+-.filter-bar:has(.form-field-dropdown, .form-field-datepicker-wrapper, .form-field-datetime, sd-select) {
++/* Vỏ: catalog dùng `.rounded-8.bg-white.c-shadow-section` — tức nền trắng, bo 8px
++   và BỐN đường inset 1px #f2f2f2 làm viền + một bóng đổ nhẹ, KHÔNG phải
++   `border: 1px solid #e6e6e6` như bản trước của kit. `.c-shadow-section` đã có
++   sẵn công thức đúng (dùng chung với sd-section). */
++.filter-bar-shell {
++  border-radius: 8px;
++  background: #fff;
+   overflow: visible;
+-  background: transparent;
+-  border: 1px solid var(--border-primary);
+-}
+-
+-.filter-bar:has(.form-field-dropdown, .form-field-datepicker-wrapper, .form-field-datetime, sd-select) > .filter-bar-header {
+-  border-radius: var(--radius-md) var(--radius-md) 0 0;
+ }
+ 
+-.filter-bar:has(.form-field-dropdown, .form-field-datepicker-wrapper, .form-field-datetime, sd-select) > .filter-bar-body {
+-  border-radius: 0 0 var(--radius-md) var(--radius-md);
+-}
+-
+-/* ─ Filter Header: icon + title + action icons */
++/* ─ Header: catalog `px-16 py-8` → cao 48px, KHÔNG phải 36px.
++     Đường kẻ ngăn cách nằm ở `border-top` của BODY, không phải inset-shadow
++     dưới header, và màu là #e6e6e6 chứ không phải #f2f2f2. */
+ .filter-bar-header {
+   display: flex;
+   align-items: center;
+-  height: 36px;
+-  padding: 0 var(--space-4);
+-  gap: var(--space-2);
+-  background: var(--surface-primary);
+-  box-shadow: inset 0 -1px 0 0 var(--color-neutral-150);
+-  position: relative;
++  justify-content: space-between;
++  width: 100%;
++  padding: 8px 16px;
++  cursor: pointer;
++  background: transparent;
+ }
+ 
+-.filter-bar-header .filter-bar-toggle {
++.filter-bar-header-left {
+   display: flex;
+   align-items: center;
+-  gap: var(--space-2);
+-  flex: 1;
+-  cursor: pointer;
+-  background: none;
+-  border: none;
+-  padding: 0;
+-  font: inherit;
+-  text-align: left;
++  min-width: 0;
+ }
+ 
+-.filter-bar-header .filter-bar-icon {
+-  display: inline-flex;
+-  color: var(--icon-default);
++/* Icon filter_alt: catalog 24px (`.mi-xl`) màu `text-secondary`, cách nhãn 8px
++   bằng `.mr-8`. Bản trước là 16px màu --icon-default. */
++.filter-bar-header-left .material-icons-outlined {
+   flex-shrink: 0;
+ }
+ 
+-.filter-bar-header .filter-bar-title {
+-  font-size: var(--text-base);
+-  font-weight: var(--font-medium);
+-  color: var(--text-primary);
+-  flex: 1;
++/* Tiêu đề "Bộ lọc": catalog `.T16M` = 16px/500/24px. Bản trước 14px/500/21px. */
++.filter-bar-header-left .T16M {
++  overflow: hidden;
++  text-overflow: ellipsis;
++  white-space: nowrap;
+ }
+ 
+-.filter-bar-header .filter-bar-collapse {
+-  display: inline-flex;
++.filter-bar-header-right {
++  display: flex;
+   align-items: center;
+-  justify-content: center;
+-  background: none;
+-  border: none;
+-  padding: 0;
+-  cursor: pointer;
+-  color: var(--icon-placeholder);
+   flex-shrink: 0;
+-  transition: color var(--duration-fast);
+-}
+-
+-.filter-bar-header .filter-bar-collapse:hover {
+-  color: var(--icon-default);
+ }
+ 
+-.filter-bar-header .filter-bar-actions {
++/* Hai nút trong header: catalog là `sd-button` type=link, square, size=sm
++   (`c-button c-link c-square c-sm`), icon 16px — bản trước kit dựng bằng
++   `<button>` thuần + icon 14px, vi phạm Rule 0b của AGENTS.md ("component cơ
++   bản KHÔNG BAO GIỜ được custom"). Khoảng cách tới chevron là `.mr-4`. */
++.filter-bar-actions {
+   display: flex;
+   align-items: center;
+-  gap: var(--space-2);
++  margin-right: 4px;
+ }
+ 
+-.filter-bar-header .filter-bar-actions button {
++.filter-bar-collapse {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+@@ -2632,22 +2615,17 @@
+   border: none;
+   padding: 0;
+   cursor: pointer;
+-  color: var(--icon-placeholder);
+-  transition: color var(--duration-fast);
+-}
+-
+-.filter-bar-header .filter-bar-actions button:hover {
+-  color: var(--icon-default);
++  color: var(--sd-secondary);
++  flex-shrink: 0;
+ }
+ 
+-/* ─ Filter Body: grid of input fields */
++/* ─ Body: catalog `p-16` + `border-top: 1px solid #e6e6e6`.
++     Bản trước còn `align-items: flex-end` để xếp nút "Tìm kiếm" — nút đó đã gỡ
++     (catalog không có), nên body nay chỉ còn đúng cái lưới. */
+ .filter-bar-body {
+-  display: flex;
+-  flex-direction: column;
+-  align-items: flex-end;
+-  padding: var(--space-4);
+-  gap: var(--space-4);
+-  background: var(--surface-primary);
++  padding: 16px;
++  border-top: 1px solid var(--sd-black200);
++  background: transparent;
+   overflow: hidden;
+   max-height: 500px;
+   opacity: 1;
+@@ -2656,13 +2634,28 @@
+               padding var(--duration-slow) var(--ease-default);
+ }
+ 
++/* ─ Lưới ô lọc: catalog dùng `.row.mx-0 { row-gap:16px }` với cột
++     `col-lg-3 col-md-3 col-sm-6 px-8` → 4 cột từ 768px, 2 cột từ 576px,
++     1 cột dưới đó. `px-8` hai bên cộng lại thành khe ngang 16px.
++     Bản trước kit cố định `repeat(6, 1fr)` ở MỌI bề ngang — sáu cột là số kit
++     tự đặt, catalog không có breakpoint nào ra 6 cột. */
+ .filter-bar-grid {
+   display: grid;
+-  grid-template-columns: repeat(6, 1fr);
+-  gap: var(--space-4);
++  grid-template-columns: 1fr;
++  gap: 16px;
+   width: 100%;
+ }
+ 
++@media (min-width: 576px) {
++  .filter-bar-grid { grid-template-columns: repeat(2, 1fr); }
++}
++
++@media (min-width: 768px) {
++  .filter-bar-grid { grid-template-columns: repeat(4, 1fr); }
++}
++
++.filter-bar-grid > * { min-width: 0; }
++
+ .filter-bar-grid .form-input,
+ .filter-bar-grid .form-select {
+   height: var(--input-height);
+@@ -2679,16 +2672,18 @@
+   width: 100%;
+ }
+ 
+-/* ─ Filter minimized state */
++/* Panel của sd-select / lịch phải thoát ra ngoài khung body */
+ .filter-bar-body:has(.form-field-dropdown, .form-field-datepicker-wrapper, .form-field-datetime, sd-select) {
+   overflow: visible;
+ }
+ 
++/* ─ Trạng thái thu gọn */
+ .filter-bar.minimized .filter-bar-body {
+   max-height: 0;
+   opacity: 0;
+   padding-top: 0;
+   padding-bottom: 0;
++  border-top-width: 0;
+   overflow: hidden;
+ }
+ 

@@ -1,0 +1,1585 @@
+# CALENDAR-MAT-CALENDAR-SELECT-ARROW 2026-10-14 — ruột lịch sd-date / sd-date-range / sd-datetime / sd-chip-calendar là DOM mat-calendar của catalog (sdMatCalendarHtml) + CSS mirror date/date-range/datetime/chip-calendar.css; gỡ CSS lịch cũ; sd-select vẽ mat-mdc-select-arrow theo ngữ cảnh
+# Quyết định Builder: 'Cần bạn quyết -> tiếp tục làm cả 3 mục' (mục 1 + mục 3)
+# 6 file: sd-components.js, sd-tokens.css, sd-form.md, CHANGELOG, known-gaps, lessons
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/CALENDAR-MAT-CALENDAR-SELECT-ARROW-2026-10-14.patch
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-14 09:55:28.939040149 +0000
++++ b/CHANGELOG.md	2026-10-14 10:22:05.008335535 +0000
+@@ -8,6 +8,29 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — ruột lịch là `mat-calendar` như catalog; mũi tên `sd-select` theo ngữ cảnh (Builder 2026-10-14: *„Cần bạn quyết -> tiếp tục làm cả 3 mục“*)
++
++- **`sd-date` · `sd-date-range` · `sd-datetime` · `sd-chip-calendar`**: lịch trước là lưới div `.form-field-datepicker-*` tự dựng;
++  nay là DOM Material của catalog — `mat-datepicker-content > .mat-datepicker-content-container > mat-calendar.mat-calendar`
++  (`mat-calendar-header` · nút kỳ / ‹ › `mat-mdc-button` · `mat-month-view > table.mat-calendar-table` · `tbody.mat-calendar-body`
++  · `button.mat-calendar-body-cell` + `-content` / `-focus-indicator`, ô nhãn tháng `colspan` như catalog). `sd-datetime` là
++  `sd-datetime-picker > .sd-datetime-picker > .picker-calendar / .picker-divider / .picker-time / .picker-footer`;
++  `sd-chip-calendar` là `.mat-mdc-menu-panel > .mat-mdc-menu-content > div[280px]`. Một hàm dựng chung `sdMatCalendarHtml`
++  (ngày chọn, hôm nay, khoảng start / end / in-range, ô khoá `aria-disabled`, `dateClass` `sd-chip-calendar-selected-date`,
++  `aria-label` kiểu catalog). Pane overlay mang lớp catalog (`mat-datepicker-popup`, `sd-datetime-overlay-panel`).
++- **CSS**: chép nguyên `date.css` · `date-range.css` · `datetime.css` · `chip-calendar.css` của catalog, chỉ phần áp lên DOM popup
++  (87 · 87 · 115 · 84 luật, phạm vi `.cdk-overlay-pane.sd-<x>-pane`; `reviews/ds-mirror/calendar/gencss.py`) + token `--mat-sys-*`
++  cần dùng. Gỡ luật cũ không còn phần tử: `.sd-date-popup` / `.sd-range-popup` / `.sd-cc-popup` / `.sd-cc-days`, ô
++  `.form-field-datepicker-day` trong bốn thẻ, dải `sd-range-*`, lớp bọc `.form-field-datetime-popup` của `sd-datetime`.
++  Giữ nguyên `.form-field-datepicker*` của `components.css` và `shell.js` (markup viết tay, không phải `sd-*`).
++- **Hành vi giữ như cũ**: chọn ngày, ‹ ›, min / max (ô khoá không bấm được), khoảng hai lần bấm, `sd-datetime` chọn tạm rồi
++  Áp dụng / Bỏ qua, `sd-chip-calendar` bấm lại để bỏ, bấm ra ngoài / Esc đóng. Nút huỷ vẫn "Bỏ qua" (catalog "Hủy" — Rule 16).
++- **`sd-select` — `div.mat-mdc-select-arrow`**: vẽ theo ngữ cảnh như chính catalog — có khi nằm trong `sd-table` /
++  `sd-query-builder` / `sd-form-render` / `sd-form-builder`, không có ở chỗ khác (mục #c-select). Thẻ vẫn ẩn, không đổi hình.
++- **Kiểm**: so pane catalog ↔ kit (cùng ngày 08/10/2026) — số nút 185/185 · 185/185 · 212/212 · 186/186, style trùng (chỉ còn
++  `text-align start/left` và toạ độ touch-target ẩn); kịch bản bấm thật 26 + 16 bước qua; đối chiếu ô đóng không đổi; 94 trang
++  không lỗi JS; bộ kịch bản prototype qua hết. Bản vá: `reviews/ds-mirror/CALENDAR-MAT-CALENDAR-SELECT-ARROW-2026-10-14.patch`.
++
+ ### Fixed — các lệch nhỏ còn nhìn thấy (Builder 2026-10-14: *„Các lệch nhỏ còn nhìn thấy được“*)
+ 
+ - **Cỡ chữ nút / ô nhập của `sd-query-bar` · `sd-operator` · `sd-inform` · `sd-query-builder`**: catalog không có reboot
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-14 09:55:28.940494845 +0000
++++ b/_memory/known-gaps.md	2026-10-14 10:21:27.711113450 +0000
+@@ -22,9 +22,10 @@
+ | 2026-10-11 | **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]** `sd-stepper` — nhãn bước đang làm | Catalog **có** rule tô nhãn bước đang làm màu brand + 600, nhưng rule `.mat-step-label-active` đứng trước lại nhiều class hơn nên luôn thắng → nhãn bước đang làm KHÔNG khác các bước khác. Kit chép lại đúng tương quan điểm đó. **Builder nên xem lại:** bước đang làm giờ chỉ phân biệt bằng vòng tròn (số, nền đặc), nhãn thì giống hệt bước khác | Đây là hành vi THẬT của catalog (nhiều khả năng là lỗi thứ tự rule của thư viện). Muốn trả lại: nâng điểm rule `sd-stepper .sd-stepper__label--selected` |
+ | 2026-10-14 | Kit có, `.d.ts` 19.0.10 không có (phát hiện khi sinh `html-to-angular-api.md`) | `sd-select showSelectAll` / `hideReadError` · `sd-input-number clearable` · `sd-radio helperText` · `sd-date-range inlineError` · `autoId` trên `sd-label` / `sd-view` / `sd-history` / `sd-import-excel` / `sd-form-builder` / `sd-document-builder` / `sd-header-footer-builder` · `sd-table addable` / `filterRequired` / cột number `option.precision`. Ngược lại `.d.ts` CÓ mà kit đã gỡ theo bảng API catalog: `sd-tab-group disableRipple` / `autoId`; `sd-side-drawer` 19.0.10 chỉ có `[sdFooter]` (không `sdFooterLeft/Right`) | Rule 18 đo theo **bảng API catalog**, còn `.d.ts` là mã thật — hai nguồn lệch nhau. Chờ Builder chọn nguồn khi rà Rule 18. Bảng dịch đã ghi "Kit-only — bỏ khi dịch" |
+ | 2026-10-14 | **Đối chiếu tổng kit ↔ catalog** — `reviews/ds-mirror/DOI-CHIEU-TONG-2026-10-14.md` | Khớp hẳn: button, badge, avatar, radio, anchor, history, org-chart, preview-image, inform, tooltip, tab-group, kpi-card, filter-scorecard. **Lệch cấu trúc thật:** ~~`sd-checkbox` / `sd-switch`~~ (**ĐÃ SỬA 2026-10-14** — DOM Material, 13/13 + 13/13 khớp), ~~`sd-tree` (ô chọn / nút lệnh / spinner)~~ (**ĐÃ SỬA 2026-10-14**), ~~khối popup ẩn trong thẻ của select / autocomplete / date / date-range / datetime / chip-calendar~~ (**ĐÃ SỬA 2026-10-14** — ra overlay), ~~`sd-upload-file` thiếu `<preview>`~~ (**ĐÃ SỬA**), ~~`sd-chip` viewed~~ (ghép nhầm mẫu — trang preview thiếu mẫu "Đang nhập thêm", đã thêm), ~~`sd-query-builder`~~ (**ĐÃ SỬA** mũi tên select + mẫu menu "+" mở; dòng dưới ô là bản dựng giản lược của catalog — xem dòng `data-ff`). Lệch nhỏ: `sd-label` cao 22 thay 20px, dòng lỗi form-generic, lớp `<table>` của sd-table. Chưa so được: modal / drawer / confirm (overlay), stepper, splitter, chart, import-excel | **Đã sửa 4 nhóm 2026-10-14** (checkbox/switch · popup overlay · tree/upload/chip/qb · lệch nhỏ): khớp hẳn 146 → 232 / 360 mẫu ghép được. Phần còn lại đã phân loại ở mục "Cập nhật sau vòng sửa" cuối báo cáo |
+-| 2026-10-14 | **Popup nổi** (`sd-date` / `sd-date-range` / `sd-datetime` / `sd-chip-calendar` / `sd-autocomplete`, + `sd-select` khi đóng) — sau khi ra overlay | Thẻ host nay trùng catalog (chỉ có ô; `position` static). Còn khác: (1) **ruột lịch vẫn là bộ `.form-field-datepicker-*` tự dựng** (lưới div), catalog là `mat-datepicker-content > mat-calendar` (bảng `table.mat-calendar-table`) — hình đã đo khớp từ trước, DOM thì chưa; (2) pane là `cdk-overlay-pane sd-float-pane sd-<tên>-pane` (catalog: `mat-datepicker-popup` / `mat-mdc-autocomplete-panel`…); (3) `sd-select` / `sd-autocomplete` còn lớp trạng thái `sd-open` trên host khi mở (catalog không có); (4) mẫu "đang mở" của trang preview nay nổi theo màn hình (trước nằm trong khung demo) | (1) là việc lớn riêng (dựng lại lịch theo `mat-calendar` cho 4 component) — chờ Builder quyết; (2)(3) đổi cùng (1) |
++| 2026-10-14 | **Popup nổi** (`sd-date` / `sd-date-range` / `sd-datetime` / `sd-chip-calendar` / `sd-autocomplete`, + `sd-select` khi đóng) — sau khi ra overlay | Thẻ host nay trùng catalog (chỉ có ô; `position` static). Còn khác: (1) ~~ruột lịch là bộ `.form-field-datepicker-*` tự dựng~~ **ĐÃ SỬA 2026-10-14** — nay `mat-datepicker-content > mat-calendar` (`table.mat-calendar-table`) / `sd-datetime-picker` / `mat-mdc-menu-panel` như catalog, so pane 4/4 mục trùng 100% số nút (185 · 185 · 212 · 186); (2) pane là `cdk-overlay-pane sd-float-pane sd-<tên>-pane` (catalog: `mat-datepicker-popup` / `mat-mdc-autocomplete-panel`…); (3) `sd-select` / `sd-autocomplete` còn lớp trạng thái `sd-open` trên host khi mở (catalog không có); (4) mẫu "đang mở" của trang preview nay nổi theo màn hình (trước nằm trong khung demo) | (1) xong. (2) pane nay mang lớp của catalog (`mat-datepicker-popup` · `sd-datetime-overlay-panel`) kèm lớp kit `sd-float-pane sd-<tên>-pane` (JS / CSS tìm theo); (3) còn — lớp trạng thái kit, không có hình |
++| 2026-10-14 | **Lịch `mat-calendar`** (`sd-date` / `sd-date-range` / `sd-datetime` / `sd-chip-calendar`) — sau khi dựng lại | Còn khác catalog: (1) nút kỳ `[OCT 2026 ▾]` không mở bảng năm / tháng (catalog tĩnh cũng chỉ có `mat-month-view`); (2) nút huỷ của `sd-datetime` là "Bỏ qua" (catalog "Hủy" — Rule 16); (3) ô giờ của `sd-datetime` mở ra với giờ hiện tại (bản chụp catalog: `00`) — dữ liệu, không phải DOM; (4) không có ripple / focus-indicator động, không điều hướng bàn phím trong lưới ngày (Material có ← → ↑ ↓ / PageUp). `shell.js` (markup `.form-field-datepicker-wrapper` viết tay) và luật `.form-field-datepicker*` của `components.css` **giữ nguyên** — không phải `sd-*` | (1)(4) catalog không có căn cứ; (2) Rule 16; (3) không đổi |
+ | 2026-10-14 | **Catalog tự dựng khung ô bằng JS ở `#c-form-generic` / `#c-query-builder` / `#c-form-builder`** (`mat-form-field[data-ff]`, `js/components/form-generic.js`) | Ở ba mục đó dòng dưới ô là `subscript-wrapper` RỖNG hoặc `mat-error.mat-mdc-form-field-bare-error`; ở mục của từng component (`#c-input`, `#c-select`…) là `hint-wrapper` / `error-wrapper` như Material thật. Bộ so tự động báo "lệch cấu trúc" ở ba mục kia | **Kit theo mục của component** (= Material thật) — KHÔNG sửa theo bản dựng giản lược. Đối chiếu ba mục kia bỏ qua phần dòng dưới ô |
+-| 2026-10-14 | `sd-select` — `div.mat-mdc-select-arrow` | Catalog có thẻ này (rỗng, ẩn bằng `sd-select .mat-mdc-select-arrow{display:none!important}`) ở 24 mẫu (#c-query-builder · #c-form-generic · #c-form-builder · #c-table), riêng mục #c-select bản chụp bỏ (7 mẫu) | Kit nay vẽ thẻ (theo đa số + Material thật) → mục #c-select báo lệch 1 nút ở 7 mẫu. Builder thấy cần theo mục #c-select thì gỡ (một dòng trong `SdSelect._renderInner`) |
++| 2026-10-14 | `sd-select` — `div.mat-mdc-select-arrow` | Catalog có thẻ này (rỗng, ẩn bằng `sd-select .mat-mdc-select-arrow{display:none!important}`) ở 24 mẫu (#c-query-builder · #c-form-generic · #c-form-builder · #c-table), riêng mục #c-select bản chụp bỏ (7 mẫu) | **ĐÃ QUYẾT 2026-10-14** (Builder: *„Cần bạn quyết“*): vẽ thẻ **theo ngữ cảnh** như chính catalog — có khi `sd-select` nằm trong `sd-table` / `sd-query-builder` / `sd-form-render` / `sd-form-builder`, không có ở chỗ khác (mục #c-select). Cả hai phía khớp; thẻ vẫn ẩn nên không đổi hình |
+ | 2026-10-14 | Biểu tượng gợi ý của `sd-label` (`info_outline`) | Catalog không thống nhất: mục #c-label có lớp `mat-mdc-tooltip-trigger`, các mục #c-input / #c-upload-file / #c-editor không | Kit giữ lớp đó (directive `matTooltip` thật luôn gắn) |
+ | 2026-10-14 | **`sd-table` — DOM bên trong chưa theo mat-table** (phát hiện khi sửa lớp `<table>`) | Thẻ `<table>` nay đủ lớp catalog (`mat-mdc-table mdc-data-table__table cdk-table mat-sort`). Còn khác: dòng / ô dùng lớp kit (`tr.c-first-header`, `th.c-th` / `td.c-td`, `c-sticky-col`, `c-command-btn`, menu lệnh `c-table-menu-dropdown` trong ô) thay cho Material (`mat-mdc-header-row mdc-data-table__header-row`, `mat-mdc-header-cell mdc-data-table__header-cell mat-column-<key> px-8 py-8`, `mat-mdc-table-sticky`, nút `mat-mdc-icon-button`…); ô chọn còn bọc `<sd-checkbox>`. Hình đã khớp từ các vòng trước | Việc lớn (sd-table ~1.500 dòng, mọi prototype dùng) — **chờ Builder quyết** có dựng lại DOM bảng theo mat-table không |
+ | 2026-10-14 | Lệch còn lại của báo cáo đối chiếu là **của trang preview, không phải component** | `sd-label` cao 22 (ô lưới của trang kéo giãn; component không có CSS) · `sd-inline-text` `flex` (ô flex của trang) và mẫu "đang focus" của catalog kit chưa có · độ cao thân `sd-tab-group` (nội dung demo) · bề ngang ô 316 vs 280 (khung demo) · trạng thái "đang focus" (`c-focused` / `mat-focused`) của vài mẫu input / input-number / datetime / date-range · lớp demo `ui-demo__row`, `uf-i-*` của catalog | Không sửa component. Muốn bộ so ra 0 lệch thì dựng lại mẫu preview theo đúng khung `.stage` của catalog |
+@@ -1123,7 +1124,7 @@
+ |---|---|---|---|
+ | Nút huỷ trong popup | "Hủy" | "Bỏ qua" | Rule 16 |
+ | Icon đuôi | `span` không vào được bằng Tab | `span[role=button][tabindex=0]` + Enter/Space | Rule 9 — bản trước kit là `<button>`; không đổi hình |
+-| Lịch | `mat-calendar` dán sẵn DOM | lịch tự dựng `.form-field-datepicker-*` | Đã ghi từ trước; nay trùng toạ độ từng mốc |
++| ~~Lịch~~ **ĐÃ SỬA 2026-10-14** | `mat-calendar` dán sẵn DOM | nay cũng DOM `mat-calendar` (sinh bằng `sdMatCalendarHtml`) | — |
+ | Mở popup khi focus ô chữ | catalog chỉ chụp trạng thái đang mở, không nói cách mở | chỉ mở bằng icon đuôi (hoặc `open()`) | Không có căn cứ để đoán |
+ | `autoId` · `name` | không có trong API catalog | có | `autoId` chung nhóm "chờ Builder quyết"; `name` là ngoại lệ 1 |
+ | `sd-date` (anh em) | — | vẫn dùng `sd-date-clear-btn` + `sd-date-suffix-btn` cũ | Ngoài phạm vi đợt này — tới vòng `#c-date` thì đo và đổi |
+@@ -1323,7 +1324,7 @@
+ | `appearance` · `floatLabel` (sd-date-range) | Bảng API có khai | **Không dựng** | Giống `sd-input`/`sd-select`: toàn catalog **0 lần** xuất hiện `appearance=`, `floatLabel` chỉ có trong bảng API. Dựng là đoán (2026-10-11) |
+ | Hiệu ứng preview khoảng ngày khi rê chuột (sd-date-range) | `.mat-calendar-body-cell-preview` | **Không dựng** | Chính catalog ghi "Hiệu ứng kéo/preview khoảng ngày khi rê chuột không được dựng" (2026-10-11) |
+ | ~~`padding-top:12px` trên `mat-date-range-input` (sd-date-range)~~ **ĐÃ SỬA 2026-10-12** | `sd-date-range .sd-md mat-date-range-input{padding-top:12px}` + infix `padding-bottom:8px` → khung 44px, dòng chữ thấp hơn tâm 2px | Kit nay: khung 44 (sm 34), dòng 24px, đệm trên 4px | Lý do cũ ("12px đẩy chữ lệch xuống") đúng một nửa: chữ catalog **thật sự** thấp hơn tâm 2px. Đo lại thì kit cao hơn catalog 2.2px |
+-| Lịch `mat-calendar` đầy đủ (sd-date-range) | Catalog dựng bằng `mat-calendar` (`.mat-calendar-body-cell-container`, `.mat-calendar-period-button`, nút đổi năm…) | Dùng lại `.form-field-datepicker` của kit + ba lớp khoảng `sd-range-start` / `sd-range-in` / `sd-range-end` | Kit chưa mirror `mat-calendar` cho `sd-date` / `sd-chip-calendar` từ trước; dựng riêng cho date-range sẽ làm hai lịch khác nhau trong cùng app. Màu dải giữa lấy đúng catalog (`--sd-primary` 20%) (2026-10-11) |
++| ~~Lịch `mat-calendar` đầy đủ (sd-date-range)~~ **ĐÃ SỬA 2026-10-14** — cả 4 component dùng DOM `mat-calendar` + CSS mirror catalog | Catalog dựng bằng `mat-calendar` (`.mat-calendar-body-cell-container`, `.mat-calendar-period-button`, nút đổi năm…) | (cũ) Dùng lại `.form-field-datepicker` của kit + ba lớp khoảng `sd-range-start` / `sd-range-in` / `sd-range-end` | Kit chưa mirror `mat-calendar` cho `sd-date` / `sd-chip-calendar` từ trước; dựng riêng cho date-range sẽ làm hai lịch khác nhau trong cùng app. Màu dải giữa lấy đúng catalog (`--sd-primary` 20%) (2026-10-11) |
+ | `.mb-2` = 2px (sd-label) | Catalog: `.mb-2{margin-bottom:2px!important}` | Khai **thu hẹp** `sd-label .mb-2{margin-bottom:2px}` | `utilities.css` của kit đã khai `.mb-2 = var(--space-2)` = 8px và **14 trang preview** đang dùng theo nghĩa 8px. Đổi toàn cục là vỡ 14 trang (2026-10-11) |
+ | `<a target="_blank">` cho link http (sd-view) | DOM catalog **0 lần** có `target=` trong cả section `#c-view` | Kit thêm `target="_blank" rel="noopener"` cho link `http(s)://` | Trang catalog là bản dựng TĨNH, link không bấm được nên không có target. Phần mô tả biến thể thì ghi rõ *"link nội bộ đi qua Router, link http mở tab mới"* — kit theo câu mô tả, không theo markup tĩnh (2026-10-11) |
+ | **Màu checkbox của `sd-tree` là indigo `#3f51b5`** | Catalog ghi nguyên văn: *"Checkbox hiện màu accent indigo (#3f51b5) của theme M2 trong portal: `sd-tree` chỉ đặt biến cũ `--mdc-checkbox-*`, Material 20 không đọc các biến này"* | Kit **mirror kết quả thật**: checkbox trong `sd-tree` là indigo, khác `sd-checkbox` thường (nâu `--sd-primary`) | Gần như chắc chắn là **lỗi còn sót của thư viện** (khai sai tên biến). Nhưng sửa nó = cố ý lệch catalog, mà catalog đang là mốc chuẩn. **Chờ Builder quyết**: giữ indigo cho đúng catalog, hay đổi về `--sd-primary` cho đồng bộ với checkbox ở nơi khác trong kit (2026-10-11) |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-14 09:55:28.940784436 +0000
++++ b/_memory/lessons.md	2026-10-14 10:22:05.011021487 +0000
+@@ -1482,3 +1482,16 @@
+   component đó mang reboot trong style riêng; mục KHÔNG có (query-bar, operator, inform, query-builder) thì nút ra cỡ mặc định
+   trình duyệt (13.333px). Reboot toàn cục của kit (`layout.css`) làm các nút đó 14px. Sửa có phạm vi bằng `revert` (độ ưu tiên
+   vừa trên reboot, thấp hơn mọi luật có class của component), loại trừ `sd-*` lồng bên trong — đừng gỡ reboot toàn cục.
++
++## Dựng lại DOM lịch theo bản chụp catalog (2026-10-14, `mat-calendar`)
++
++- Tbody lịch của catalog do **JS trang catalog** sinh (`js/components/date.js`): ô nhãn tháng `colspan` = số ô trống đầu tuần,
++  ô `active` = ngày chọn nhỏ nhất hoặc hôm nay, thứ tự lớp `dateClass → range-start/end/in-range → active`, `aria-label`
++  dạng `Oct 5, 2026` (date-fns) hoặc `October 5, 2026` (native, chip-calendar). Chép đúng logic đó chứ không đoán từ một ảnh.
++- So pane phải **đóng băng ngày** (`Date` = ngày bản chụp) ở cả hai phía, nếu không ô hôm nay / active lệch giả.
++- Pane CDK là `display:flex` hướng **row** mặc định; `.sd-float-pane` của kit đặt `column` cho autocomplete → lịch cần luật riêng
++  `row` (so style tìm ra, mắt thường không thấy).
++- Lọc CSS mirror theo lớp / thẻ có trong DOM pane của catalog, giữ `@keyframes` và `@media` đang dùng — chép cả tệp là kéo theo
++  luật của mẫu demo (`fx-` / `demo-`).
++- Đổi DOM thì rà **kịch bản kiểm** (selector cũ `.form-field-datepicker-day`, `.sd-date-popup`) trước khi tin kết quả "qua".
++
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-form.md b/design-system/components/sd-form.md
+--- a/design-system/components/sd-form.md	2026-10-14 09:16:28.331514922 +0000
++++ b/design-system/components/sd-form.md	2026-10-14 10:22:18.520905784 +0000
+@@ -53,13 +53,15 @@
+    đó không còn. Dùng `.mat-mdc-text-field-wrapper`, `input.mat-mdc-input-element`,
+    `.mdc-floating-label`. Lớp `.sd-form-field` vẫn còn CSS cho markup viết tay (không phải `sd-*`).
+ 
+-Bảng chọn / lịch (`.sd-dropdown-menu`, `.sd-date-popup`, `.sd-dt-popup`, `.sd-range-popup`,
+-`.sd-cc-popup`, `.sd-autocomplete-panel`) **nằm ở overlay** như catalog (2026-10-14):
++Bảng chọn / lịch (`.sd-dropdown-menu`, `mat-datepicker-content` của `sd-date` / `sd-date-range`, `sd-datetime-picker`,
++`.mat-mdc-menu-panel` của `sd-chip-calendar`, `.sd-autocomplete-panel`) **nằm ở overlay** như catalog (2026-10-14):
+ `body > .cdk-overlay-container > .cdk-overlay-pane.sd-<tên>-pane` khi mở, đóng thì không còn — thẻ host chỉ chứa ô.
+ Mở ngay dưới khung ô, lật lên khi dưới thiếu chỗ, dời sang trái khi tràn mép phải; không bị bảng / khung cuộn cắt.
+-JS trang tìm popup thì gọi trên **chính thẻ**: `el.querySelector('.sd-date-popup')` vẫn trả về khối (thẻ tự tìm cả
+-trong overlay); `document.querySelector('sd-date .sd-date-popup')` thì KHÔNG còn thấy. CSS viết cho phần trong popup
++JS trang tìm popup thì gọi trên **chính thẻ**: `el.querySelector('mat-datepicker-content')` vẫn trả về khối (thẻ tự tìm cả
++trong overlay); `document.querySelector('sd-date mat-datepicker-content')` thì KHÔNG còn thấy. CSS viết cho phần trong popup
+ phải là `:is(sd-date, :where(.sd-date-pane)) …` (xem `sdFloatInstall` trong sd-components.js).
++Ruột lịch (2026-10-14) là DOM `mat-calendar` của catalog: ô ngày `button.mat-calendar-body-cell[data-day]` (khoá:
++`.mat-calendar-body-disabled[aria-disabled=true]`), nút ‹ › `.mat-calendar-previous-button` / `.mat-calendar-next-button`.
+ 
+ ---
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-14 09:55:28.941667868 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-14 10:14:29.680592460 +0000
+@@ -1293,62 +1293,9 @@
+    gần đầu file. Bộ luật `.sd-chip-list` / `.sd-chip` / `.sd-cc-*` cũ đã gỡ. --- */
+ sd-chip-calendar { display: block; }   /* (2026-10-14) bỏ `position:relative` — lịch đã ra overlay, như catalog */
+ 
+-/* Ngày ĐÃ CHỌN trong lịch của `sd-chip-calendar` khác hẳn `sd-date`.
+-   Catalog có hẳn một rule riêng trong `css/components/chip-calendar.css`:
+-     #c-chip-calendar .sd-chip-calendar-selected-date .mat-calendar-body-cell-content
+-     { border-radius:50%; background: var(--sd-primary-light) !important;
+-       color: var(--sd-primary) !important }
+-   tức viên TRÒN nền nâu NHẠT + chữ nâu — không phải nền nâu ĐẶC + chữ trắng của
+-   `.mat-calendar-body-selected` mà `sd-date` / `sd-date-range` dùng.
+-   `_memory/known-gaps.md` từng ghi lớp này là "do script của trang catalog gắn,
+-   không phải của thư viện" — SAI: nó có luật CSS thật trong chính tệp CSS của
+-   component, và nhãn biến thể của catalog cũng ghi "ngày đã chọn tô
+-   --sd-primary-light". Đã sửa lại ghi chú đó (rà soát 2026-10-12). */
+-/* `sd-date` và `sd-date-range` mở lịch trong `mat-datepicker-content`, mà catalog
+-   GHIM cỡ lịch: `.mat-datepicker-content .mat-calendar{width:296px;height:354px}`
+-   (date.css, date-range.css). Tháng chỉ có 5 hàng thì phần dưới để trống — đúng
+-   hành vi thật. `sd-chip-calendar` (mat-menu) và `sd-datetime` KHÔNG có luật này. */
+-:is(sd-date, :where(.sd-date-pane)) .sd-date-popup,
+-:is(sd-date-range, :where(.sd-date-range-pane)) .sd-range-popup {
+-  height: 354px;
+-  /* `mat-datepicker-content` nằm SÁT mép dưới khung (khe 0, không phải 4px như
+-     mat-select / mat-menu) và đổ bóng mức 4 của Material — đo ở cả #c-date và
+-     #c-date-range (rà soát #c-date-range 2026-10-12). Bản trước: khe 4px, bóng mức 8. */
+-  top: calc(100% - var(--sd-field-sub, 0px));
+-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, .2), 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12);
+-}
+-/* Cũng chỉ trong `mat-datepicker-content`: catalog tô nút ‹ › màu nhạt
+-   `.mat-datepicker-content .mat-calendar-previous-button:not(.mat-mdc-button-disabled)
+-   { color: rgba(0,0,0,.54) }`. Lịch trong `mat-menu` của chip-calendar KHÔNG có
+-   luật này nên nút ra màu chữ đậm — đúng như đo được trên catalog. */
+-:is(sd-date, :where(.sd-date-pane)) .sd-date-popup .form-field-datepicker-nav,
+-:is(sd-date-range, :where(.sd-date-range-pane)) .sd-range-popup .form-field-datepicker-nav {
+-  color: rgba(0, 0, 0, .54);
+-}
+-/* Khung lịch của chip-calendar là `mat-menu` (280px, `.mat-mdc-menu-content
+-   { padding: 8px 0 }`), không phải `mat-datepicker-content` 296px như sd-date. */
+-:is(sd-chip-calendar, :where(.sd-chip-calendar-pane)) .sd-cc-popup {
+-  --sd-cal-w: 280px;
+-  padding: 8px 0;
+-}
+-:is(sd-chip-calendar, :where(.sd-chip-calendar-pane)) .sd-cc-days .form-field-datepicker-day.selected {
+-  border-radius: 50%;
+-  background: var(--sd-primary-light);
+-  color: var(--sd-primary);
+-}
+-:is(sd-chip-calendar, :where(.sd-chip-calendar-pane)) .sd-cc-days .form-field-datepicker-day.selected.today {
+-  border-color: rgba(0, 0, 0, .54);
+-  box-shadow: none;
+-}
+-/* `.sd-field-suffix` (icon `today` cũ) đã gỡ khỏi JS từ trước — bỏ luật CSS mồ côi
+-   (rà soát #c-chip-calendar 2026-10-12). Icon lỗi giữ căn giữa khung vì khung nay
+-   căn đầu (align-items:flex-start). */
+-:is(sd-chip-calendar, :where(.sd-chip-calendar-pane)) .sd-cc-popup {
+-  z-index: calc(var(--z-dropdown) + 1);
+-  /* mat-menu của catalog nằm SÁT mép dưới khung (đo #c-chip-calendar: khe 0). Bản
+-     trước kế thừa khe 4px của `.form-field-datepicker`. Rà soát 2026-10-12. */
+-  top: calc(100% - var(--sd-field-sub, 0px));
+-}
++/* Lịch trong popup của sd-date / sd-date-range / sd-chip-calendar (ngày chọn, cỡ 296×354, màu nút ‹ ›, khe 0 dưới
++   khung…) — từ 2026-10-14 là bản mirror CSS catalog trên DOM `mat-calendar`, khối "mat-calendar trong popup". Bộ luật
++   `.sd-date-popup` / `.sd-range-popup` / `.sd-cc-popup` / `.sd-cc-days` cũ đã gỡ. */
+ 
+ /* --- sd-data-state — chép đúng data-state.component.scss đã biên dịch của thư viện
+    (rà soát 2026-10-10). Giữ thêm các tên class cũ .sd-data-state-title/-message/-retry
+@@ -1585,8 +1532,8 @@
+ /* --- Nút `sd-date-suffix-btn` / `sd-date-clear-btn` cũ ĐÃ GỠ 2026-10-12 —
+    sd-date, sd-datetime, sd-input-number nay dùng đúng markup catalog:
+    `button.sd-clear-btn.sd-hover` + `.sd-suffix-icon` trong hàng suffix
+-   (xem luật "hàng suffix" bên dưới). Lịch chọn ngày/giờ vẫn dùng bộ
+-   .form-field-datepicker* có sẵn trong components.css. --- */
++   (xem luật "hàng suffix" bên dưới). Lịch chọn ngày/giờ: DOM `mat-calendar` của catalog
++   (2026-10-14, khối "mat-calendar trong popup"). --- */
+ sd-date .sd-date-error-icon,
+ sd-datetime .sd-date-error-icon,
+ sd-chip .sd-date-error-icon,
+@@ -1602,10 +1549,6 @@
+   margin-left: 4px;
+   cursor: default;
+ }
+-:is(sd-date, :where(.sd-date-pane)) .form-field-datepicker-day:disabled,
+-:is(sd-datetime, :where(.sd-datetime-pane)) .form-field-datepicker-day:disabled {
+-  cursor: not-allowed;
+-}
+ /* Suffix cuối field (mirror <ng-template sdSuffixDef> — vd đơn vị "VNĐ", "%", icon)
+    của sd-input-number. Đặt tên chung "sd-input-suffix-*" (không phải "sd-date-*") vì
+    component này không có nút suffix mở picker — để input khác sau này tái dùng được. */
+@@ -3122,8 +3065,394 @@
+ }
+ /* bản cũ: `sd-autocomplete.sd-open .sd-dropdown-menu { display:block }` — pane chỉ tồn tại khi đang mở */
+ .sd-autocomplete-pane > .sd-dropdown-menu { display: block; }
++/* pane lịch: CDK `.cdk-overlay-pane{display:flex}` hướng mặc định (row) như catalog */
++.cdk-overlay-pane.sd-float-pane:is(.sd-date-pane, .sd-date-range-pane, .sd-datetime-pane, .sd-chip-calendar-pane) { flex-direction: row; }
+ .sd-autocomplete-pane.sd-float-above > .sd-dropdown-menu { border-radius: 4px 4px 0 0; }
+ 
++/* ══ mat-calendar trong popup (2026-10-14, Builder: „tiếp tục làm cả 3 mục“ — ruột lịch theo catalog) ══
++   CSS NGUYÊN VĂN các mục catalog `date.css` · `date-range.css` · `datetime.css` · `chip-calendar.css`, CHỈ phần áp được lên
++   DOM popup (lọc theo lớp / thẻ có trong bản chụp popup của catalog), phạm vi `#c-x …` → `.cdk-overlay-pane.sd-<x>-pane …`
++   (pane ở overlay; tiền tố 2 lớp giữ chúng thắng luật nền của kit như id của catalog). `[_ngcontent/_nghost]` → `:not(._ng)`.
++   Sinh bằng reviews/ds-mirror/calendar/gencss.py. Token M3 `--mat-sys-*` lấy từ material-tokens.css + `.sd-scope`. */
++:is(.sd-date-pane, .sd-date-range-pane, .sd-datetime-pane, .sd-chip-calendar-pane){--mat-sys-body-medium-font:Roboto, sans-serif;--mat-sys-body-medium-size:0.875rem;--mat-sys-focus-state-layer-opacity:0.12;--mat-sys-label-large-font:Roboto;--mat-sys-label-large-line-height:1.25rem;--mat-sys-label-large-size:0.875rem;--mat-sys-label-large-tracking:0.006rem;--mat-sys-label-large-weight:500;--mat-sys-on-surface:#1a1b1f;--mat-sys-pressed-state-layer-opacity:0.12;--mat-sys-title-small-size:0.875rem;--mat-sys-title-small-weight:500}
++/* — c-date — */
++.cdk-overlay-pane.sd-date-pane{--mat-form-field-container-height:44px;--mat-form-field-container-vertical-padding:10px;--mat-button-text-label-text-color:rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-date-pane button{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
++.cdk-overlay-pane.sd-date-pane button{overflow:visible}
++.cdk-overlay-pane.sd-date-pane button{text-transform:none}
++.cdk-overlay-pane.sd-date-pane button{border-radius:0}
++.cdk-overlay-pane.sd-date-pane button,.cdk-overlay-pane.sd-date-pane [type=button]{-webkit-appearance:button}
++.cdk-overlay-pane.sd-date-pane button:not(:disabled),.cdk-overlay-pane.sd-date-pane [type=button]:not(:disabled){cursor:pointer}
++.cdk-overlay-pane.sd-date-pane svg{overflow:hidden;vertical-align:middle}
++.cdk-overlay-pane.sd-date-pane table{border-collapse:collapse}
++.cdk-overlay-pane.sd-date-pane th{text-align:inherit}
++.cdk-overlay-pane.sd-date-pane .cdk-visually-hidden{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;outline:0;-webkit-appearance:none;-moz-appearance:none;left:0}
++.cdk-overlay-pane.sd-date-pane .mat-focus-indicator{position:relative}
++.cdk-overlay-pane.sd-date-pane .mat-focus-indicator::before{top:0;left:0;right:0;bottom:0;position:absolute;box-sizing:border-box;pointer-events:none;display:var(--mat-focus-indicator-display, none);border-width:var(--mat-focus-indicator-border-width, 3px);border-style:var(--mat-focus-indicator-border-style, solid);border-color:var(--mat-focus-indicator-border-color, transparent);border-radius:var(--mat-focus-indicator-border-radius, 4px)}
++.cdk-overlay-pane.sd-date-pane .mat-focus-indicator:focus::before{content:""}
++.cdk-overlay-pane.sd-date-pane{position:absolute;pointer-events:auto;box-sizing:border-box;display:flex;max-width:100%;max-height:100%;z-index:1000}
++.cdk-overlay-pane.sd-date-pane .mat-datepicker-content{display:block;background-color:#fff;color:rgba(0,0,0,.87);box-shadow:0px 2px 4px -1px rgba(0,0,0,.2),0px 4px 5px 0px rgba(0,0,0,.14),0px 1px 10px 0px rgba(0,0,0,.12);border-radius:4px}
++.cdk-overlay-pane.sd-date-pane .mat-datepicker-content.mat-datepicker-content-animations-enabled{animation:_mat-datepicker-content-dropdown-enter 120ms cubic-bezier(0, 0, 0.2, 1)}
++.cdk-overlay-pane.sd-date-pane .mat-datepicker-content .mat-calendar{width:296px;height:354px}
++.cdk-overlay-pane.sd-date-pane .mat-datepicker-content-container{display:flex;flex-direction:column;justify-content:space-between}
++.cdk-overlay-pane.sd-date-pane .mat-calendar{display:block;line-height:normal;font-family:var(--mat-datepicker-calendar-text-font, var(--mat-sys-body-medium-font));font-size:var(--mat-datepicker-calendar-text-size, var(--mat-sys-body-medium-size))}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-header{padding:8px 8px 0 8px}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-content{padding:0 8px 8px 8px;outline:none}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-controls{display:flex;align-items:center;margin:5% calc(4.7142857143% - 16px)}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-spacer{flex:1 1 auto}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-period-button{min-width:0;margin:0 8px;font-size:var(--mat-datepicker-calendar-period-button-text-size, var(--mat-sys-title-small-size));font-weight:var(--mat-datepicker-calendar-period-button-text-weight, var(--mat-sys-title-small-weight));--mat-button-text-label-text-color: rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-arrow{display:inline-block;width:10px;height:5px;margin:0 0 0 5px;vertical-align:middle;fill:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-date-pane .mat-datepicker-content .mat-calendar-previous-button:not(.mat-mdc-button-disabled),.cdk-overlay-pane.sd-date-pane .mat-datepicker-content .mat-calendar-next-button:not(.mat-mdc-button-disabled){color:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-table{border-spacing:0;border-collapse:collapse;width:100%}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-table-header th{text-align:center;padding:0 0 8px 0;color:rgba(0,0,0,.54);font-size:var(--mat-datepicker-calendar-header-text-size, var(--mat-sys-title-small-size));font-weight:var(--mat-datepicker-calendar-header-text-weight, var(--mat-sys-title-small-weight))}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-table-header-divider{position:relative;height:1px}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-table-header-divider::after{content:"";position:absolute;top:0;left:-8px;right:-8px;height:1px;background:rgba(0,0,0,.12)}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-cell-content::before{margin:calc(calc(var(--mat-focus-indicator-border-width, 3px) + 3px)*-1)}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-cell:focus .mat-focus-indicator::before{content:""}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body{min-width:224px}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-today:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical){border-color:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-label{height:0;line-height:0;text-align:start;padding-left:4.7142857143%;padding-right:4.7142857143%;font-size:var(--mat-datepicker-calendar-body-label-text-size, var(--mat-sys-title-small-size));font-weight:var(--mat-datepicker-calendar-body-label-text-weight, var(--mat-sys-title-small-weight));color:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-cell-container{position:relative;height:0;line-height:0}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-cell{position:absolute;top:0;left:0;width:100%;height:100%;background:none;text-align:center;outline:none;margin:0;font-family:var(--mat-datepicker-calendar-text-font, var(--mat-sys-body-medium-font));font-size:var(--mat-datepicker-calendar-text-size, var(--mat-sys-body-medium-size));-webkit-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-cell::before,.cdk-overlay-pane.sd-date-pane .mat-calendar-body-cell::after,.cdk-overlay-pane.sd-date-pane .mat-calendar-body-cell-preview{content:"";position:absolute;top:5%;left:0;z-index:0;box-sizing:border-box;display:block;height:90%;width:100%}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-range-start:not(.mat-calendar-body-in-comparison-range)::before,.cdk-overlay-pane.sd-date-pane .mat-calendar-body-range-start::after{left:5%;width:95%;border-top-left-radius:999px;border-bottom-left-radius:999px}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-range-end:not(.mat-calendar-body-in-comparison-range)::before,.cdk-overlay-pane.sd-date-pane .mat-calendar-body-range-end::after{width:95%;border-top-right-radius:999px;border-bottom-right-radius:999px}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-cell-content{top:5%;left:5%;z-index:1;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:90%;height:90%;line-height:1;border-width:1px;border-style:solid;border-radius:999px;color:rgba(0,0,0,.87);border-color:transparent}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-cell-content.mat-focus-indicator{position:absolute}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-selected{background-color:#ae7129;color:#fff}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-selected.mat-calendar-body-today{box-shadow:inset 0 0 0 1px #fff}
++.cdk-overlay-pane.sd-date-pane .mat-calendar-body-in-range::before{background:color-mix(in srgb, #ae7129 20%, transparent)}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button-base{text-decoration:none}
++.cdk-overlay-pane.sd-date-pane .mdc-button{-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:64px;border:none;outline:none;line-height:inherit;-webkit-appearance:none;overflow:visible;vertical-align:middle;background:rgba(0,0,0,0);padding:0 8px}
++.cdk-overlay-pane.sd-date-pane .mdc-button:active{outline:none}
++.cdk-overlay-pane.sd-date-pane .mdc-button:hover{cursor:pointer}
++.cdk-overlay-pane.sd-date-pane .mdc-button:disabled{cursor:default;pointer-events:none}
++.cdk-overlay-pane.sd-date-pane .mdc-button .mdc-button__label{position:relative}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button{padding:0 8px;height:24px;font-family:var(--mat-button-text-label-text-font, var(--mat-sys-label-large-font));font-size:var(--mat-button-text-label-text-size, var(--mat-sys-label-large-size));letter-spacing:var(--mat-button-text-label-text-tracking, var(--mat-sys-label-large-tracking));text-transform:none;font-weight:var(--mat-button-text-label-text-weight, var(--mat-sys-label-large-weight))}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button,.cdk-overlay-pane.sd-date-pane .mat-mdc-button .mdc-button__ripple{border-radius:4px}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button:not(:disabled){color:var(--mat-button-text-label-text-color)}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button[disabled]{cursor:default;pointer-events:none;color:var(--mat-button-text-disabled-label-text-color, color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent))}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button.mat-mdc-button-disabled-interactive{pointer-events:auto}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button:has(.material-icons,mat-icon,[matButtonIcon]){padding:0 var(--mat-button-text-with-icon-horizontal-padding, 16px)}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button .mat-mdc-button-persistent-ripple::before{background-color:rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button:hover>.mat-mdc-button-persistent-ripple::before{opacity:.04}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button.mat-mdc-button-disabled-interactive:focus>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-button-text-focus-state-layer-opacity, var(--mat-sys-focus-state-layer-opacity))}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button:active>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-button-text-pressed-state-layer-opacity, var(--mat-sys-pressed-state-layer-opacity))}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:var(--mat-button-text-touch-target-size, 48px);display:none;left:0;right:0;transform:translateY(-50%)}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button .mat-mdc-button-persistent-ripple,.cdk-overlay-pane.sd-date-pane .mat-mdc-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button .mdc-button__label{z-index:1;position:relative}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button .mat-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-button:focus>.mat-focus-indicator::before{content:"";border-radius:inherit}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:50%;flex-shrink:0;text-align:center;width:36px;height:36px;padding:calc(calc(36px - 24px) / 2);font-size:24px;color:inherit;-webkit-tap-highlight-color:rgba(0,0,0,0)}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple,.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button .mdc-button__label{z-index:1;position:relative}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button .mat-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button:focus>.mat-focus-indicator::before{content:"";border-radius:inherit}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button:hover>.mat-mdc-button-persistent-ripple::before{opacity:.04}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button.mat-mdc-button-disabled-interactive:focus>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-focus-state-layer-opacity, var(--mat-sys-focus-state-layer-opacity))}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button:active>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-pressed-state-layer-opacity, var(--mat-sys-pressed-state-layer-opacity))}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:var(--mat-icon-button-touch-target-size, 48px);display:none;left:50%;width:var(--mat-icon-button-touch-target-size, 48px);transform:translate(-50%, -50%)}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button[disabled]{cursor:default;pointer-events:none;color:color-mix(in srgb, rgba(0,0,0,.87) 38%, transparent)}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button svg{width:24px;height:24px;vertical-align:baseline}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:50%}
++.cdk-overlay-pane.sd-date-pane .mat-mdc-icon-button.mat-unthemed:not(.mdc-ripple-upgraded):focus::before{background:rgba(0,0,0,0);opacity:1}
++@media(hover: hover){.cdk-overlay-pane.sd-date-pane .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover>.mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical){background-color:color-mix(in srgb, #ae7129 4%, transparent)}}
++@keyframes _mat-datepicker-content-dropdown-enter{from{opacity:0;transform:scaleY(0.8)}to{opacity:1;transform:none}}
++/* — c-date-range — */
++.cdk-overlay-pane.sd-date-range-pane{--mat-form-field-container-height:44px;--mat-form-field-container-vertical-padding:10px;--mat-button-text-label-text-color:rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-date-range-pane button{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
++.cdk-overlay-pane.sd-date-range-pane button{overflow:visible}
++.cdk-overlay-pane.sd-date-range-pane button{text-transform:none}
++.cdk-overlay-pane.sd-date-range-pane button{border-radius:0}
++.cdk-overlay-pane.sd-date-range-pane button,.cdk-overlay-pane.sd-date-range-pane [type=button]{-webkit-appearance:button}
++.cdk-overlay-pane.sd-date-range-pane button:not(:disabled),.cdk-overlay-pane.sd-date-range-pane [type=button]:not(:disabled){cursor:pointer}
++.cdk-overlay-pane.sd-date-range-pane svg{overflow:hidden;vertical-align:middle}
++.cdk-overlay-pane.sd-date-range-pane table{border-collapse:collapse}
++.cdk-overlay-pane.sd-date-range-pane th{text-align:inherit}
++.cdk-overlay-pane.sd-date-range-pane .cdk-visually-hidden{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;outline:0;-webkit-appearance:none;-moz-appearance:none;left:0}
++.cdk-overlay-pane.sd-date-range-pane .mat-focus-indicator{position:relative}
++.cdk-overlay-pane.sd-date-range-pane .mat-focus-indicator::before{top:0;left:0;right:0;bottom:0;position:absolute;box-sizing:border-box;pointer-events:none;display:var(--mat-focus-indicator-display, none);border-width:var(--mat-focus-indicator-border-width, 3px);border-style:var(--mat-focus-indicator-border-style, solid);border-color:var(--mat-focus-indicator-border-color, transparent);border-radius:var(--mat-focus-indicator-border-radius, 4px)}
++.cdk-overlay-pane.sd-date-range-pane .mat-focus-indicator:focus::before{content:""}
++.cdk-overlay-pane.sd-date-range-pane{position:absolute;pointer-events:auto;box-sizing:border-box;display:flex;max-width:100%;max-height:100%;z-index:1000}
++.cdk-overlay-pane.sd-date-range-pane .mat-datepicker-content{display:block;background-color:#fff;color:rgba(0,0,0,.87);box-shadow:0px 2px 4px -1px rgba(0,0,0,.2),0px 4px 5px 0px rgba(0,0,0,.14),0px 1px 10px 0px rgba(0,0,0,.12);border-radius:4px}
++.cdk-overlay-pane.sd-date-range-pane .mat-datepicker-content.mat-datepicker-content-animations-enabled{animation:_mat-datepicker-content-dropdown-enter 120ms cubic-bezier(0, 0, 0.2, 1)}
++.cdk-overlay-pane.sd-date-range-pane .mat-datepicker-content .mat-calendar{width:296px;height:354px}
++.cdk-overlay-pane.sd-date-range-pane .mat-datepicker-content-container{display:flex;flex-direction:column;justify-content:space-between}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar{display:block;line-height:normal;font-family:var(--mat-datepicker-calendar-text-font, var(--mat-sys-body-medium-font));font-size:var(--mat-datepicker-calendar-text-size, var(--mat-sys-body-medium-size))}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-header{padding:8px 8px 0 8px}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-content{padding:0 8px 8px 8px;outline:none}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-controls{display:flex;align-items:center;margin:5% calc(4.7142857143% - 16px)}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-spacer{flex:1 1 auto}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-period-button{min-width:0;margin:0 8px;font-size:var(--mat-datepicker-calendar-period-button-text-size, var(--mat-sys-title-small-size));font-weight:var(--mat-datepicker-calendar-period-button-text-weight, var(--mat-sys-title-small-weight));--mat-button-text-label-text-color: rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-arrow{display:inline-block;width:10px;height:5px;margin:0 0 0 5px;vertical-align:middle;fill:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-date-range-pane .mat-datepicker-content .mat-calendar-previous-button:not(.mat-mdc-button-disabled),.cdk-overlay-pane.sd-date-range-pane .mat-datepicker-content .mat-calendar-next-button:not(.mat-mdc-button-disabled){color:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-table{border-spacing:0;border-collapse:collapse;width:100%}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-table-header th{text-align:center;padding:0 0 8px 0;color:rgba(0,0,0,.54);font-size:var(--mat-datepicker-calendar-header-text-size, var(--mat-sys-title-small-size));font-weight:var(--mat-datepicker-calendar-header-text-weight, var(--mat-sys-title-small-weight))}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-table-header-divider{position:relative;height:1px}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-table-header-divider::after{content:"";position:absolute;top:0;left:-8px;right:-8px;height:1px;background:rgba(0,0,0,.12)}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-cell-content::before{margin:calc(calc(var(--mat-focus-indicator-border-width, 3px) + 3px)*-1)}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-cell:focus .mat-focus-indicator::before{content:""}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body{min-width:224px}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-today:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical){border-color:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-label{height:0;line-height:0;text-align:start;padding-left:4.7142857143%;padding-right:4.7142857143%;font-size:var(--mat-datepicker-calendar-body-label-text-size, var(--mat-sys-title-small-size));font-weight:var(--mat-datepicker-calendar-body-label-text-weight, var(--mat-sys-title-small-weight));color:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-cell-container{position:relative;height:0;line-height:0}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-cell{position:absolute;top:0;left:0;width:100%;height:100%;background:none;text-align:center;outline:none;margin:0;font-family:var(--mat-datepicker-calendar-text-font, var(--mat-sys-body-medium-font));font-size:var(--mat-datepicker-calendar-text-size, var(--mat-sys-body-medium-size));-webkit-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-cell::before,.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-cell::after,.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-cell-preview{content:"";position:absolute;top:5%;left:0;z-index:0;box-sizing:border-box;display:block;height:90%;width:100%}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-range-start:not(.mat-calendar-body-in-comparison-range)::before,.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-range-start::after{left:5%;width:95%;border-top-left-radius:999px;border-bottom-left-radius:999px}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-range-end:not(.mat-calendar-body-in-comparison-range)::before,.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-range-end::after{width:95%;border-top-right-radius:999px;border-bottom-right-radius:999px}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-cell-content{top:5%;left:5%;z-index:1;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:90%;height:90%;line-height:1;border-width:1px;border-style:solid;border-radius:999px;color:rgba(0,0,0,.87);border-color:transparent}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-cell-content.mat-focus-indicator{position:absolute}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-selected{background-color:#ae7129;color:#fff}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-selected.mat-calendar-body-today{box-shadow:inset 0 0 0 1px #fff}
++.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-in-range::before{background:color-mix(in srgb, #ae7129 20%, transparent)}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button-base{text-decoration:none}
++.cdk-overlay-pane.sd-date-range-pane .mdc-button{-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:64px;border:none;outline:none;line-height:inherit;-webkit-appearance:none;overflow:visible;vertical-align:middle;background:rgba(0,0,0,0);padding:0 8px}
++.cdk-overlay-pane.sd-date-range-pane .mdc-button:active{outline:none}
++.cdk-overlay-pane.sd-date-range-pane .mdc-button:hover{cursor:pointer}
++.cdk-overlay-pane.sd-date-range-pane .mdc-button:disabled{cursor:default;pointer-events:none}
++.cdk-overlay-pane.sd-date-range-pane .mdc-button .mdc-button__label{position:relative}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button{padding:0 8px;height:24px;font-family:var(--mat-button-text-label-text-font, var(--mat-sys-label-large-font));font-size:var(--mat-button-text-label-text-size, var(--mat-sys-label-large-size));letter-spacing:var(--mat-button-text-label-text-tracking, var(--mat-sys-label-large-tracking));text-transform:none;font-weight:var(--mat-button-text-label-text-weight, var(--mat-sys-label-large-weight))}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button,.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button .mdc-button__ripple{border-radius:4px}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button:not(:disabled){color:var(--mat-button-text-label-text-color)}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button[disabled]{cursor:default;pointer-events:none;color:var(--mat-button-text-disabled-label-text-color, color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent))}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button.mat-mdc-button-disabled-interactive{pointer-events:auto}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button:has(.material-icons,mat-icon,[matButtonIcon]){padding:0 var(--mat-button-text-with-icon-horizontal-padding, 16px)}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button .mat-mdc-button-persistent-ripple::before{background-color:rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button:hover>.mat-mdc-button-persistent-ripple::before{opacity:.04}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button.mat-mdc-button-disabled-interactive:focus>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-button-text-focus-state-layer-opacity, var(--mat-sys-focus-state-layer-opacity))}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button:active>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-button-text-pressed-state-layer-opacity, var(--mat-sys-pressed-state-layer-opacity))}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:var(--mat-button-text-touch-target-size, 48px);display:none;left:0;right:0;transform:translateY(-50%)}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button .mat-mdc-button-persistent-ripple,.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button .mdc-button__label{z-index:1;position:relative}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button .mat-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-button:focus>.mat-focus-indicator::before{content:"";border-radius:inherit}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:50%;flex-shrink:0;text-align:center;width:36px;height:36px;padding:calc(calc(36px - 24px) / 2);font-size:24px;color:inherit;-webkit-tap-highlight-color:rgba(0,0,0,0)}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple,.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button .mdc-button__label{z-index:1;position:relative}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button .mat-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button:focus>.mat-focus-indicator::before{content:"";border-radius:inherit}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button:hover>.mat-mdc-button-persistent-ripple::before{opacity:.04}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button.mat-mdc-button-disabled-interactive:focus>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-focus-state-layer-opacity, var(--mat-sys-focus-state-layer-opacity))}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button:active>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-pressed-state-layer-opacity, var(--mat-sys-pressed-state-layer-opacity))}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:var(--mat-icon-button-touch-target-size, 48px);display:none;left:50%;width:var(--mat-icon-button-touch-target-size, 48px);transform:translate(-50%, -50%)}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button[disabled]{cursor:default;pointer-events:none;color:color-mix(in srgb, rgba(0,0,0,.87) 38%, transparent)}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button svg{width:24px;height:24px;vertical-align:baseline}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:50%}
++.cdk-overlay-pane.sd-date-range-pane .mat-mdc-icon-button.mat-unthemed:not(.mdc-ripple-upgraded):focus::before{background:rgba(0,0,0,0);opacity:1}
++@media(hover: hover){.cdk-overlay-pane.sd-date-range-pane .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover>.mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical){background-color:color-mix(in srgb, #ae7129 4%, transparent)}}
++@keyframes _mat-datepicker-content-dropdown-enter{from{opacity:0;transform:scaleY(0.8)}to{opacity:1;transform:none}}
++/* — c-datetime — */
++.cdk-overlay-pane.sd-datetime-pane{--mat-form-field-container-height:44px;--mat-form-field-container-vertical-padding:10px;--mat-button-text-label-text-color:rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-datetime-pane input,.cdk-overlay-pane.sd-datetime-pane button{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
++.cdk-overlay-pane.sd-datetime-pane button,.cdk-overlay-pane.sd-datetime-pane input{overflow:visible}
++.cdk-overlay-pane.sd-datetime-pane button{text-transform:none}
++.cdk-overlay-pane.sd-datetime-pane button{border-radius:0}
++.cdk-overlay-pane.sd-datetime-pane button,.cdk-overlay-pane.sd-datetime-pane [type=button]{-webkit-appearance:button}
++.cdk-overlay-pane.sd-datetime-pane button:not(:disabled),.cdk-overlay-pane.sd-datetime-pane [type=button]:not(:disabled){cursor:pointer}
++.cdk-overlay-pane.sd-datetime-pane svg{overflow:hidden;vertical-align:middle}
++.cdk-overlay-pane.sd-datetime-pane table{border-collapse:collapse}
++.cdk-overlay-pane.sd-datetime-pane th{text-align:inherit}
++.cdk-overlay-pane.sd-datetime-pane .cdk-visually-hidden{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;outline:0;-webkit-appearance:none;-moz-appearance:none;left:0}
++.cdk-overlay-pane.sd-datetime-pane .mat-focus-indicator{position:relative}
++.cdk-overlay-pane.sd-datetime-pane .mat-focus-indicator::before{top:0;left:0;right:0;bottom:0;position:absolute;box-sizing:border-box;pointer-events:none;display:var(--mat-focus-indicator-display, none);border-width:var(--mat-focus-indicator-border-width, 3px);border-style:var(--mat-focus-indicator-border-style, solid);border-color:var(--mat-focus-indicator-border-color, transparent);border-radius:var(--mat-focus-indicator-border-radius, 4px)}
++.cdk-overlay-pane.sd-datetime-pane .mat-focus-indicator:focus::before{content:""}
++.cdk-overlay-pane.sd-datetime-pane{position:absolute;pointer-events:auto;box-sizing:border-box;display:flex;max-width:100%;max-height:100%;z-index:1000}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar{display:block;line-height:normal;font-family:var(--mat-datepicker-calendar-text-font, var(--mat-sys-body-medium-font));font-size:var(--mat-datepicker-calendar-text-size, var(--mat-sys-body-medium-size))}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-header{padding:8px 8px 0 8px}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-content{padding:0 8px 8px 8px;outline:none}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-controls{display:flex;align-items:center;margin:5% calc(4.7142857143% - 16px)}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-spacer{flex:1 1 auto}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-period-button{min-width:0;margin:0 8px;font-size:var(--mat-datepicker-calendar-period-button-text-size, var(--mat-sys-title-small-size));font-weight:var(--mat-datepicker-calendar-period-button-text-weight, var(--mat-sys-title-small-weight));--mat-button-text-label-text-color: rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-arrow{display:inline-block;width:10px;height:5px;margin:0 0 0 5px;vertical-align:middle;fill:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-table{border-spacing:0;border-collapse:collapse;width:100%}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-table-header th{text-align:center;padding:0 0 8px 0;color:rgba(0,0,0,.54);font-size:var(--mat-datepicker-calendar-header-text-size, var(--mat-sys-title-small-size));font-weight:var(--mat-datepicker-calendar-header-text-weight, var(--mat-sys-title-small-weight))}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-table-header-divider{position:relative;height:1px}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-table-header-divider::after{content:"";position:absolute;top:0;left:-8px;right:-8px;height:1px;background:rgba(0,0,0,.12)}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-cell-content::before{margin:calc(calc(var(--mat-focus-indicator-border-width, 3px) + 3px)*-1)}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-cell:focus .mat-focus-indicator::before{content:""}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body{min-width:224px}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-today:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical){border-color:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-label{height:0;line-height:0;text-align:start;padding-left:4.7142857143%;padding-right:4.7142857143%;font-size:var(--mat-datepicker-calendar-body-label-text-size, var(--mat-sys-title-small-size));font-weight:var(--mat-datepicker-calendar-body-label-text-weight, var(--mat-sys-title-small-weight));color:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-cell-container{position:relative;height:0;line-height:0}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-cell{position:absolute;top:0;left:0;width:100%;height:100%;background:none;text-align:center;outline:none;margin:0;font-family:var(--mat-datepicker-calendar-text-font, var(--mat-sys-body-medium-font));font-size:var(--mat-datepicker-calendar-text-size, var(--mat-sys-body-medium-size));-webkit-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-cell::before,.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-cell::after,.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-cell-preview{content:"";position:absolute;top:5%;left:0;z-index:0;box-sizing:border-box;display:block;height:90%;width:100%}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-range-start:not(.mat-calendar-body-in-comparison-range)::before,.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-range-start::after{left:5%;width:95%;border-top-left-radius:999px;border-bottom-left-radius:999px}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-range-end:not(.mat-calendar-body-in-comparison-range)::before,.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-range-end::after{width:95%;border-top-right-radius:999px;border-bottom-right-radius:999px}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-cell-content{top:5%;left:5%;z-index:1;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:90%;height:90%;line-height:1;border-width:1px;border-style:solid;border-radius:999px;color:rgba(0,0,0,.87);border-color:transparent}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-cell-content.mat-focus-indicator{position:absolute}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-selected{background-color:#ae7129;color:#fff}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-selected.mat-calendar-body-today{box-shadow:inset 0 0 0 1px #fff}
++.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-in-range::before{background:color-mix(in srgb, #ae7129 20%, transparent)}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button-base{text-decoration:none}
++.cdk-overlay-pane.sd-datetime-pane .mdc-button{-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:64px;border:none;outline:none;line-height:inherit;-webkit-appearance:none;overflow:visible;vertical-align:middle;background:rgba(0,0,0,0);padding:0 8px}
++.cdk-overlay-pane.sd-datetime-pane .mdc-button:active{outline:none}
++.cdk-overlay-pane.sd-datetime-pane .mdc-button:hover{cursor:pointer}
++.cdk-overlay-pane.sd-datetime-pane .mdc-button:disabled{cursor:default;pointer-events:none}
++.cdk-overlay-pane.sd-datetime-pane .mdc-button .mdc-button__label{position:relative}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button{padding:0 8px;height:24px;font-family:var(--mat-button-text-label-text-font, var(--mat-sys-label-large-font));font-size:var(--mat-button-text-label-text-size, var(--mat-sys-label-large-size));letter-spacing:var(--mat-button-text-label-text-tracking, var(--mat-sys-label-large-tracking));text-transform:none;font-weight:var(--mat-button-text-label-text-weight, var(--mat-sys-label-large-weight))}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button,.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button .mdc-button__ripple{border-radius:4px}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button:not(:disabled){color:var(--mat-button-text-label-text-color)}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button[disabled]{cursor:default;pointer-events:none;color:var(--mat-button-text-disabled-label-text-color, color-mix(in srgb, var(--mat-sys-on-surface) 38%, transparent))}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button.mat-mdc-button-disabled-interactive{pointer-events:auto}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button:has(.material-icons,mat-icon,[matButtonIcon]){padding:0 var(--mat-button-text-with-icon-horizontal-padding, 16px)}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button .mat-mdc-button-persistent-ripple::before{background-color:rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button:hover>.mat-mdc-button-persistent-ripple::before{opacity:.04}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button.mat-mdc-button-disabled-interactive:focus>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-button-text-focus-state-layer-opacity, var(--mat-sys-focus-state-layer-opacity))}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button:active>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-button-text-pressed-state-layer-opacity, var(--mat-sys-pressed-state-layer-opacity))}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:var(--mat-button-text-touch-target-size, 48px);display:none;left:0;right:0;transform:translateY(-50%)}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button .mat-mdc-button-persistent-ripple,.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button .mdc-button__label{z-index:1;position:relative}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button .mat-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-button:focus>.mat-focus-indicator::before{content:"";border-radius:inherit}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:50%;flex-shrink:0;text-align:center;width:36px;height:36px;padding:calc(calc(36px - 24px) / 2);font-size:24px;color:inherit;-webkit-tap-highlight-color:rgba(0,0,0,0)}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple,.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button .mdc-button__label{z-index:1;position:relative}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button .mat-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button:focus>.mat-focus-indicator::before{content:"";border-radius:inherit}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button:hover>.mat-mdc-button-persistent-ripple::before{opacity:.04}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button.mat-mdc-button-disabled-interactive:focus>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-focus-state-layer-opacity, var(--mat-sys-focus-state-layer-opacity))}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button:active>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-pressed-state-layer-opacity, var(--mat-sys-pressed-state-layer-opacity))}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:var(--mat-icon-button-touch-target-size, 48px);display:none;left:50%;width:var(--mat-icon-button-touch-target-size, 48px);transform:translate(-50%, -50%)}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button[disabled]{cursor:default;pointer-events:none;color:color-mix(in srgb, rgba(0,0,0,.87) 38%, transparent)}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button svg{width:24px;height:24px;vertical-align:baseline}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:50%}
++.cdk-overlay-pane.sd-datetime-pane .mat-mdc-icon-button.mat-unthemed:not(.mdc-ripple-upgraded):focus::before{background:rgba(0,0,0,0);opacity:1}
++.cdk-overlay-pane.sd-datetime-pane sd-time-spinner:not(._ng){display:block}
++.cdk-overlay-pane.sd-datetime-pane .sd-time-spinner:not(._ng){display:flex;align-items:center;justify-content:center;gap:4px;padding:6px 12px}
++.cdk-overlay-pane.sd-datetime-pane .sd-time-spinner:not(._ng) .unit:not(._ng){display:flex;flex-direction:column;align-items:center;gap:2px}
++.cdk-overlay-pane.sd-datetime-pane .sd-time-spinner:not(._ng) .unit:not(._ng) .step:not(._ng){width:32px;height:20px;padding:0;border:0;background:transparent;color:var(--sd-black300);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background-color .15s ease,color .15s ease,transform .1s ease}
++.cdk-overlay-pane.sd-datetime-pane .sd-time-spinner:not(._ng) .unit:not(._ng) .step:not(._ng) svg:not(._ng){width:14px;height:14px;display:block}
++.cdk-overlay-pane.sd-datetime-pane .sd-time-spinner:not(._ng) .unit:not(._ng) .step:not(._ng):hover{background:var(--sd-primary-light);color:var(--sd-primary)}
++.cdk-overlay-pane.sd-datetime-pane .sd-time-spinner:not(._ng) .unit:not(._ng) .step:not(._ng):active{transform:scale(.92)}
++.cdk-overlay-pane.sd-datetime-pane .sd-time-spinner:not(._ng) .unit:not(._ng) .value:not(._ng){width:44px;height:36px;padding:0;text-align:center;font-size:20px;font-weight:600;line-height:1;color:var(--sd-black500);font-variant-numeric:tabular-nums;background:transparent;border:1.5px solid transparent;border-radius:6px;outline:none;cursor:text;transition:border-color .15s ease,background-color .15s ease}
++.cdk-overlay-pane.sd-datetime-pane .sd-time-spinner:not(._ng) .unit:not(._ng) .value:not(._ng):hover:not(:focus){background:var(--sd-black100)}
++.cdk-overlay-pane.sd-datetime-pane .sd-time-spinner:not(._ng) .unit:not(._ng) .value:not(._ng):focus{border-color:var(--sd-primary);background:#fff}
++.cdk-overlay-pane.sd-datetime-pane .sd-time-spinner:not(._ng) .unit:not(._ng) .value:not(._ng):disabled{color:var(--sd-black400);cursor:not-allowed}
++.cdk-overlay-pane.sd-datetime-pane .sd-time-spinner:not(._ng) .unit:not(._ng):hover .step:not(._ng){color:var(--sd-black400)}
++.cdk-overlay-pane.sd-datetime-pane .sd-time-spinner:not(._ng) .sep:not(._ng){font-size:20px;font-weight:600;color:var(--sd-black400);padding-bottom:2px;-webkit-user-select:none;user-select:none}
++.cdk-overlay-pane.sd-datetime-pane sd-datetime-picker:not(._ng){display:block;background:#fff;border-radius:12px;box-shadow:0 10px 24px #0000001f,0 2px 6px #0000000f;overflow:hidden;font-family:inherit}
++.cdk-overlay-pane.sd-datetime-pane .sd-datetime-picker:not(._ng){display:flex;flex-direction:column;width:320px;animation:sd-picker-enter .18s ease-out}
++.cdk-overlay-pane.sd-datetime-pane .picker-calendar:not(._ng){padding:4px 8px 0}
++.cdk-overlay-pane.sd-datetime-pane .picker-calendar:not(._ng) .mat-calendar{height:auto;width:100%}
++.cdk-overlay-pane.sd-datetime-pane .picker-calendar:not(._ng) .mat-calendar-header{padding:4px 4px 0}
++.cdk-overlay-pane.sd-datetime-pane .picker-calendar:not(._ng) .mat-calendar-content{padding:0 8px 8px}
++.cdk-overlay-pane.sd-datetime-pane .picker-divider:not(._ng){height:1px;background:var(--sd-black200);margin:0 16px}
++.cdk-overlay-pane.sd-datetime-pane .picker-time:not(._ng){padding:8px 0}
++.cdk-overlay-pane.sd-datetime-pane .picker-footer:not(._ng){display:flex;align-items:center;justify-content:space-between;padding:8px 12px 12px;gap:8px;border-top:1px solid var(--sd-black100)}
++.cdk-overlay-pane.sd-datetime-pane .picker-footer:not(._ng) .footer-actions:not(._ng){display:flex;align-items:center;gap:6px}
++.cdk-overlay-pane.sd-datetime-pane .btn:not(._ng){display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 12px;border:0;border-radius:6px;font-size:13px;font-weight:500;line-height:1;cursor:pointer;transition:background-color .15s ease,color .15s ease,transform .1s ease;white-space:nowrap}
++.cdk-overlay-pane.sd-datetime-pane .btn:not(._ng) svg:not(._ng){width:14px;height:14px;flex-shrink:0}
++.cdk-overlay-pane.sd-datetime-pane .btn:not(._ng):active:not(:disabled){transform:scale(.97)}
++.cdk-overlay-pane.sd-datetime-pane .btn:not(._ng):disabled{opacity:.5;cursor:not-allowed}
++.cdk-overlay-pane.sd-datetime-pane .btn.btn-ghost:not(._ng){background:transparent;color:var(--sd-black400)}
++.cdk-overlay-pane.sd-datetime-pane .btn.btn-ghost:not(._ng):hover:not(:disabled){background:var(--sd-black100);color:var(--sd-primary)}
++.cdk-overlay-pane.sd-datetime-pane .btn.btn-text:not(._ng){background:transparent;color:var(--sd-black500)}
++.cdk-overlay-pane.sd-datetime-pane .btn.btn-text:not(._ng):hover:not(:disabled){background:var(--sd-black100)}
++.cdk-overlay-pane.sd-datetime-pane .btn.btn-primary:not(._ng){background:var(--sd-primary);color:#fff;box-shadow:0 1px 2px #0000000d}
++.cdk-overlay-pane.sd-datetime-pane .btn.btn-primary:not(._ng):hover:not(:disabled){background:var(--sd-primary-dark)}
++@media(hover: hover){.cdk-overlay-pane.sd-datetime-pane .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover>.mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical){background-color:color-mix(in srgb, #ae7129 4%, transparent)}}
++@keyframes sd-picker-enter{0%{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
++/* — c-chip-calendar — */
++.cdk-overlay-pane.sd-chip-calendar-pane{--mat-form-field-container-height:44px;--mat-form-field-container-vertical-padding:10px;--mat-button-text-label-text-color:rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-chip-calendar-pane button{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
++.cdk-overlay-pane.sd-chip-calendar-pane button{overflow:visible}
++.cdk-overlay-pane.sd-chip-calendar-pane button{text-transform:none}
++.cdk-overlay-pane.sd-chip-calendar-pane button{border-radius:0}
++.cdk-overlay-pane.sd-chip-calendar-pane button,.cdk-overlay-pane.sd-chip-calendar-pane [type=button]{-webkit-appearance:button}
++.cdk-overlay-pane.sd-chip-calendar-pane button:not(:disabled),.cdk-overlay-pane.sd-chip-calendar-pane [type=button]:not(:disabled){cursor:pointer}
++.cdk-overlay-pane.sd-chip-calendar-pane svg{overflow:hidden;vertical-align:middle}
++.cdk-overlay-pane.sd-chip-calendar-pane table{border-collapse:collapse}
++.cdk-overlay-pane.sd-chip-calendar-pane th{text-align:inherit}
++.cdk-overlay-pane.sd-chip-calendar-pane .cdk-visually-hidden{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;outline:0;-webkit-appearance:none;-moz-appearance:none;left:0}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-focus-indicator{position:relative}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-focus-indicator::before{top:0;left:0;right:0;bottom:0;position:absolute;box-sizing:border-box;pointer-events:none;display:var(--mat-focus-indicator-display, none);border-width:var(--mat-focus-indicator-border-width, 3px);border-style:var(--mat-focus-indicator-border-style, solid);border-color:var(--mat-focus-indicator-border-color, transparent);border-radius:var(--mat-focus-indicator-border-radius, 4px)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-focus-indicator:focus::before{content:""}
++.cdk-overlay-pane.sd-chip-calendar-pane{position:absolute;pointer-events:auto;box-sizing:border-box;display:flex;max-width:100%;max-height:100%;z-index:1000}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-menu-content{margin:0;padding:8px 0;outline:0}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-menu-content{flex:1;white-space:normal;font-family:var(--mat-menu-item-label-text-font, var(--mat-sys-label-large-font));line-height:var(--mat-menu-item-label-text-line-height, var(--mat-sys-label-large-line-height));font-size:var(--mat-menu-item-label-text-size, var(--mat-sys-label-large-size));letter-spacing:var(--mat-menu-item-label-text-tracking, var(--mat-sys-label-large-tracking));font-weight:var(--mat-menu-item-label-text-weight, var(--mat-sys-label-large-weight))}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-menu-panel{min-width:112px;max-width:280px;overflow:auto;box-sizing:border-box;outline:0;animation:_mat-menu-enter 120ms cubic-bezier(0, 0, 0.2, 1);border-radius:4px;background-color:#fff;box-shadow:0px 5px 5px -3px rgba(0,0,0,.2),0px 8px 10px 1px rgba(0,0,0,.14),0px 3px 14px 2px rgba(0,0,0,.12);will-change:transform,opacity}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar{display:block;line-height:normal;font-family:var(--mat-datepicker-calendar-text-font, var(--mat-sys-body-medium-font));font-size:var(--mat-datepicker-calendar-text-size, var(--mat-sys-body-medium-size))}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-header{padding:8px 8px 0 8px}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-content{padding:0 8px 8px 8px;outline:none}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-controls{display:flex;align-items:center;margin:5% calc(4.7142857143% - 16px)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-spacer{flex:1 1 auto}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-period-button{min-width:0;margin:0 8px;font-size:var(--mat-datepicker-calendar-period-button-text-size, var(--mat-sys-title-small-size));font-weight:var(--mat-datepicker-calendar-period-button-text-weight, var(--mat-sys-title-small-weight));--mat-button-text-label-text-color: rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-arrow{display:inline-block;width:10px;height:5px;margin:0 0 0 5px;vertical-align:middle;fill:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-table{border-spacing:0;border-collapse:collapse;width:100%}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-table-header th{text-align:center;padding:0 0 8px 0;color:rgba(0,0,0,.54);font-size:var(--mat-datepicker-calendar-header-text-size, var(--mat-sys-title-small-size));font-weight:var(--mat-datepicker-calendar-header-text-weight, var(--mat-sys-title-small-weight))}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-table-header-divider{position:relative;height:1px}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-table-header-divider::after{content:"";position:absolute;top:0;left:-8px;right:-8px;height:1px;background:rgba(0,0,0,.12)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-cell-content::before{margin:calc(calc(var(--mat-focus-indicator-border-width, 3px) + 3px)*-1)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-cell:focus .mat-focus-indicator::before{content:""}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body{min-width:224px}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-today:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical){border-color:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-label{height:0;line-height:0;text-align:start;padding-left:4.7142857143%;padding-right:4.7142857143%;font-size:var(--mat-datepicker-calendar-body-label-text-size, var(--mat-sys-title-small-size));font-weight:var(--mat-datepicker-calendar-body-label-text-weight, var(--mat-sys-title-small-weight));color:rgba(0,0,0,.54)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-cell-container{position:relative;height:0;line-height:0}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-cell{position:absolute;top:0;left:0;width:100%;height:100%;background:none;text-align:center;outline:none;margin:0;font-family:var(--mat-datepicker-calendar-text-font, var(--mat-sys-body-medium-font));font-size:var(--mat-datepicker-calendar-text-size, var(--mat-sys-body-medium-size));-webkit-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-cell::before,.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-cell::after,.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-cell-preview{content:"";position:absolute;top:5%;left:0;z-index:0;box-sizing:border-box;display:block;height:90%;width:100%}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-range-start:not(.mat-calendar-body-in-comparison-range)::before,.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-range-start::after{left:5%;width:95%;border-top-left-radius:999px;border-bottom-left-radius:999px}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-range-end:not(.mat-calendar-body-in-comparison-range)::before,.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-range-end::after{width:95%;border-top-right-radius:999px;border-bottom-right-radius:999px}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-cell-content{top:5%;left:5%;z-index:1;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:90%;height:90%;line-height:1;border-width:1px;border-style:solid;border-radius:999px;color:rgba(0,0,0,.87);border-color:transparent}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-cell-content.mat-focus-indicator{position:absolute}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-selected{background-color:#ae7129;color:#fff}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-selected.mat-calendar-body-today{box-shadow:inset 0 0 0 1px #fff}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-in-range::before{background:color-mix(in srgb, #ae7129 20%, transparent)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button-base{text-decoration:none}
++.cdk-overlay-pane.sd-chip-calendar-pane .mdc-button{-webkit-user-select:none;user-select:none;position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:64px;border:none;outline:none;line-height:inherit;-webkit-appearance:none;overflow:visible;vertical-align:middle;background:rgba(0,0,0,0);padding:0 8px}
++.cdk-overlay-pane.sd-chip-calendar-pane .mdc-button:active{outline:none}
++.cdk-overlay-pane.sd-chip-calendar-pane .mdc-button:hover{cursor:pointer}
++.cdk-overlay-pane.sd-chip-calendar-pane .mdc-button:disabled{cursor:default;pointer-events:none}
++.cdk-overlay-pane.sd-chip-calendar-pane .mdc-button .mdc-button__label{position:relative}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button{padding:0 8px;height:24px;font-family:var(--mat-button-text-label-text-font, var(--mat-sys-label-large-font));font-size:var(--mat-button-text-label-text-size, var(--mat-sys-label-large-size));letter-spacing:var(--mat-button-text-label-text-tracking, var(--mat-sys-label-large-tracking));text-transform:none;font-weight:var(--mat-button-text-label-text-weight, var(--mat-sys-label-large-weight))}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button,.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button .mdc-button__ripple{border-radius:4px}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button:not(:disabled){color:var(--mat-button-text-label-text-color)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button.mat-mdc-button-disabled-interactive{pointer-events:auto}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button:has(.material-icons,mat-icon,[matButtonIcon]){padding:0 var(--mat-button-text-with-icon-horizontal-padding, 16px)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button .mat-mdc-button-persistent-ripple::before{background-color:rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button:hover>.mat-mdc-button-persistent-ripple::before{opacity:.04}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button.mat-mdc-button-disabled-interactive:focus>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-button-text-focus-state-layer-opacity, var(--mat-sys-focus-state-layer-opacity))}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button:active>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-button-text-pressed-state-layer-opacity, var(--mat-sys-pressed-state-layer-opacity))}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:var(--mat-button-text-touch-target-size, 48px);display:none;left:0;right:0;transform:translateY(-50%)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button{-webkit-tap-highlight-color:rgba(0,0,0,0)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button .mat-mdc-button-persistent-ripple,.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button .mdc-button__label{z-index:1;position:relative}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button .mat-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-button:focus>.mat-focus-indicator::before{content:"";border-radius:inherit}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button{-webkit-user-select:none;user-select:none;display:inline-block;position:relative;box-sizing:border-box;border:none;outline:none;background-color:rgba(0,0,0,0);fill:currentColor;text-decoration:none;cursor:pointer;z-index:0;overflow:visible;border-radius:50%;flex-shrink:0;text-align:center;width:36px;height:36px;padding:calc(calc(36px - 24px) / 2);font-size:24px;color:inherit;-webkit-tap-highlight-color:rgba(0,0,0,0)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple,.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{content:"";opacity:0}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button .mdc-button__label{z-index:1;position:relative}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button .mat-focus-indicator{top:0;left:0;right:0;bottom:0;position:absolute;border-radius:inherit}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button:focus>.mat-focus-indicator::before{content:"";border-radius:inherit}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple::before{background-color:rgba(0,0,0,.87)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button:hover>.mat-mdc-button-persistent-ripple::before{opacity:.04}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button.mat-mdc-button-disabled-interactive:focus>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-focus-state-layer-opacity, var(--mat-sys-focus-state-layer-opacity))}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button:active>.mat-mdc-button-persistent-ripple::before{opacity:var(--mat-icon-button-pressed-state-layer-opacity, var(--mat-sys-pressed-state-layer-opacity))}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button .mat-mdc-button-touch-target{position:absolute;top:50%;height:var(--mat-icon-button-touch-target-size, 48px);display:none;left:50%;width:var(--mat-icon-button-touch-target-size, 48px);transform:translate(-50%, -50%)}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button.mat-mdc-button-disabled-interactive{pointer-events:auto}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button svg{width:24px;height:24px;vertical-align:baseline}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button .mat-mdc-button-persistent-ripple{border-radius:50%}
++.cdk-overlay-pane.sd-chip-calendar-pane .mat-mdc-icon-button.mat-unthemed:not(.mdc-ripple-upgraded):focus::before{background:rgba(0,0,0,0);opacity:1}
++.cdk-overlay-pane.sd-chip-calendar-pane .sd-chip-calendar-selected-date .mat-calendar-body-cell-content{background-color:var(--sd-primary-light)!important;color:var(--sd-primary)!important;border-radius:50%}
++@media(hover: hover){.cdk-overlay-pane.sd-chip-calendar-pane .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover>.mat-calendar-body-cell-content:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical){background-color:color-mix(in srgb, #ae7129 4%, transparent)}}
++@keyframes _mat-menu-enter{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:none}}
++
+ /* Ô tìm kiếm trong panel — catalog `#c-select`:
+    "tự hiện ô tìm kiếm khi danh sách > 10 phần tử hoặc items là hàm tải từ
+    server". Số đo đo thẳng trên trang catalog: khung 8px, hộp cao 38px viền
+@@ -6364,49 +6693,8 @@
+ /* Khung ô "Từ – đến" — từ 2026-10-13 là DOM Material y hệt catalog; luật nằm ở khối
+    `catalog #c-date-range` gần đầu file. */
+ 
+-/* Lịch: dùng lại `.form-field-datepicker` của kit; chỉ thêm ba trạng thái của
+-   KHOẢNG. Màu nền dải giữa lấy nguyên văn catalog:
+-     `.mat-calendar-body-in-range::before{background:color-mix(in srgb, #ae7129 20%, transparent)}`
+-   → #ae7129 chính là `--sd-primary`. */
+-/* Rà soát 2026-10-12 — đo `#c-date-range`: dải KHÔNG nằm trên ô ngày mà trên
+-   `button.mat-calendar-body-cell::before` — phủ CẢ Ô (rộng 100%, cao 90%,
+-   cách trên 5%); ô đầu dải `left:5%; width:95%` bo trái 999px, ô cuối ngược lại.
+-   Hai đầu là hình TRÒN nâu đặc (`.mat-calendar-body-selected`) đè lên dải.
+-   Bản trước của kit tô thẳng nền ô và BẸT góc hai đầu — catalog không bẹt.
+-
+-   Ô ngày của kit rộng 90% ô lưới (lề 5% mỗi bên), nên dải phải tràn ra
+-   (100% + 2px viền) / 18 = đúng 5% bề ngang ô ở mỗi phía. `z-index:-1` đưa
+-   dải xuống dưới nền tròn của ô đầu/cuối — lưới ngày là stacking context
+-   (`container-type`), nên dải vẫn nằm TRÊN nền trắng của khung. */
+-:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day.sd-range-in::before,
+-:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day.sd-range-start::before,
+-:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day.sd-range-end::before {
+-  content: '';
+-  position: absolute;
+-  top: -1px;
+-  bottom: -1px;
+-  left: calc(-1px - (100% + 2px) / 18);
+-  right: calc(-1px - (100% + 2px) / 18);
+-  z-index: -1;
+-  background: color-mix(in srgb, var(--sd-primary) 20%, transparent);
+-}
+-:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day.sd-range-start::before {
+-  left: -1px;
+-  border-radius: 999px 0 0 999px;
+-}
+-:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day.sd-range-end::before {
+-  right: -1px;
+-  border-radius: 0 999px 999px 0;
+-}
+-/* Chỉ chọn MỘT đầu (đang chờ bấm đầu kia): không có dải. */
+-:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day.sd-range-start.sd-range-end::before {
+-  content: none;
+-}
+-:is(sd-date-range, :where(.sd-date-range-pane)) .form-field-datepicker-day:disabled {
+-  color: var(--text-disabled);
+-  cursor: not-allowed;
+-  pointer-events: none;
+-}
++/* Lịch khoảng (dải in-range, hai đầu, ô khoá) — từ 2026-10-14 là mirror `date-range.css` của catalog trên DOM
++   `mat-calendar`, khối "mat-calendar trong popup". Luật `.form-field-datepicker-day.sd-range-*` cũ đã gỡ. */
+ 
+ 
+ /* ══════════════════════════════════════════════════════════
+@@ -7868,44 +8156,16 @@
+    Chép NGUYÊN VĂN khối CSS của catalog, chỉ đổi prefix `#c-datetime ` →
+    `sd-datetime ` để giới hạn trong component.
+ 
+-   Ba điểm lệch có chủ đích, đã ghi ở `known-gaps.md`:
+-   1. Catalog bung picker bằng CDK overlay (thẻ `sd-datetime-picker` nổi ở
+-      `body`). Kit vẫn dùng `.form-field-datetime-popup` định vị tuyệt đối như
+-      mọi popup khác của kit — nên ba rule đầu tiên dưới đây gỡ hết nền/viền/
+-      bóng của lớp bọc đó, trả vai trò tạo hình cho `sd-datetime-picker` đúng
+-      như catalog.
+-   2. Catalog dán DOM `mat-calendar` đã render (trang catalog không chạy được
+-      Angular); kit dựng lịch thật bằng bộ `.form-field-datepicker-*`. Ba rule
+-      `.picker-calendar .mat-calendar*` của catalog vì thế không có phần tử —
+-      bỏ, và thêm rule tương đương cho lịch của kit.
+-   3. `animation: sd-picker-enter` — catalog ghi rõ trong phần "Lược bỏ" là
+-      KHÔNG dùng, nên kit cũng không khai keyframes này. */
+-:is(sd-datetime, :where(.sd-datetime-pane)) .form-field-datetime-popup {
+-  top: calc(100% + 4px - var(--sd-field-sub, 0px));
+-  background: none;
+-  border: 0;
+-  border-radius: 0;
+-  box-shadow: none;
+-  overflow: visible;
+-  padding: 0;
+-}
+-:is(sd-datetime, :where(.sd-datetime-pane)) .form-field-datetime-popup.open { display: block; }
++   Cập nhật 2026-10-14: picker đã nổi ở overlay (`.cdk-overlay-pane.sd-datetime-pane`) và lịch là DOM `mat-calendar`
++   như catalog — hai điểm lệch cũ (lớp bọc `.form-field-datetime-popup`, lưới `.form-field-datepicker-*`) đã hết, luật
++   của chúng đã gỡ. Khối mirror đầy đủ (kể cả `@keyframes sd-picker-enter` có trong CSS catalog) nằm ở
++   "mat-calendar trong popup"; các luật dưới đây trùng giá trị với khối đó, giữ lại để không đổi thứ tự thắng. */
+ 
+ :is(sd-datetime, :where(.sd-datetime-pane)) sd-datetime-picker{display:block;background:#fff;border-radius:12px;box-shadow:0 10px 24px #0000001f,0 2px 6px #0000000f;overflow:hidden;font-family:inherit}
+ :is(sd-datetime, :where(.sd-datetime-pane)) .sd-datetime-picker{display:flex;flex-direction:column;width:320px}
+ :is(sd-datetime, :where(.sd-datetime-pane)) .picker-calendar{padding:4px 8px 0}
+-/* Thay cho `.picker-calendar .mat-calendar*` của catalog — xem điểm 2 ở trên. */
+-/* Thanh tiêu đề lịch: catalog `.picker-calendar .mat-calendar-header{padding:4px 4px 0}`
+-   bọc `.mat-calendar-controls{margin:5% calc(4.7142857143% - 16px)}` — % tính trên
+-   bề ngang nội dung 304 − 8 = 296px. Kit gộp hai lớp làm một nên cộng sẵn 4px
+-   đệm vào lề: trên 18.8 · hai bên 1.95 · dưới 14.8. Bản trước chỉ có đệm 4px, thiếu
+-   phần lề % → mọi thứ bên dưới thanh tiêu đề cao hơn catalog 33.6px. (2026-10-12) */
+-:is(sd-datetime, :where(.sd-datetime-pane)) .picker-calendar .form-field-datepicker-header{padding:0;margin:calc(4px + 296px * .05) calc(4px + 296px * .047142857 - 16px) calc(296px * .05)}
+-/* Hàng thứ không cần đệm dưới nữa: ô thứ đã có `padding-bottom:8px` và đường kẻ
+-   `.form-field-datepicker-divider` riêng — đúng cấu trúc thead của catalog
+-   (rà soát 2026-10-12). */
+-:is(sd-datetime, :where(.sd-datetime-pane)) .picker-calendar .form-field-datepicker-weekdays{padding:0 8px}
+-:is(sd-datetime, :where(.sd-datetime-pane)) .picker-calendar .form-field-datepicker-days{padding:0 8px 8px}
++/* `.picker-calendar .mat-calendar*` của catalog: nay có phần tử thật — xem khối "mat-calendar trong popup" (2026-10-14);
++   luật thay thế cho lưới `.form-field-datepicker-*` cũ đã gỡ. */
+ :is(sd-datetime, :where(.sd-datetime-pane)) .picker-divider{height:1px;background:var(--sd-black200);margin:0 16px}
+ :is(sd-datetime, :where(.sd-datetime-pane)) .picker-time{padding:8px 0}
+ :is(sd-datetime, :where(.sd-datetime-pane)) .picker-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 12px 12px;gap:8px;border-top:1px solid var(--sd-black100)}
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-14 09:55:28.944077364 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-14 10:13:53.608831721 +0000
+@@ -300,48 +300,119 @@
+   /* MatMonthView: `_firstRowOffset < labelMinRequiredCells (3)` → nhãn ra hàng riêng */
+   var SD_CAL_LABEL_MIN_CELLS = 3;
+ 
+-  /* `cls` = { prev, title, next } — lớp riêng của từng component, giữ nguyên để
+-     code gắn sự kiện / đặt tiêu đề cũ của component vẫn tìm thấy phần tử. */
+-  function sdCalHeaderHtml(cls) {
+-    return '<div class="form-field-datepicker-header">' +
+-      '<button class="form-field-datepicker-period" type="button" aria-label="Choose month and year">' +
+-        '<span class="form-field-datepicker-title ' + cls.title + '"></span>' +
+-        '<span class="form-field-datepicker-caret" aria-hidden="true"></span>' +
+-      '</button>' +
+-      '<div class="form-field-datepicker-spacer"></div>' +
+-      '<button class="form-field-datepicker-nav ' + cls.prev + '" type="button" aria-label="Previous month">' +
+-        '<span class="material-icons-outlined">chevron_left</span></button>' +
+-      '<button class="form-field-datepicker-nav ' + cls.next + '" type="button" aria-label="Next month">' +
+-        '<span class="material-icons-outlined">chevron_right</span></button>' +
+-    '</div>';
+-  }
+-
+-  /* Nhãn thứ + đường kẻ ngăn (catalog: `th.mat-calendar-table-header-divider`,
+-     vẽ bằng ::after cao 1px `rgba(0,0,0,.12)` tràn ra hai bên 8px). */
+-  function sdCalWeekdaysHtml() {
+-    var h = '<div class="form-field-datepicker-weekdays">';
+-    for (var i = 0; i < 7; i++) {
+-      h += '<div class="form-field-datepicker-weekday">' +
+-        '<span class="sr-only">' + SD_CAL_DOW_LONG[i] + '</span>' +
+-        '<span aria-hidden="true">' + SD_CAL_DOW_NARROW[i] + '</span></div>';
+-    }
+-    return h + '</div><div class="form-field-datepicker-divider"></div>';
+-  }
+-
+-  function sdCalPeriodLabel(year, month) {
+-    return SD_CAL_MONTHS_SHORT[month] + ' ' + year;
+-  }
+-
+-  /* Phần ĐẦU lưới ngày: nhãn tháng + ô trống, đúng luật MatMonthView. */
+-  function sdCalLeadHtml(year, month) {
+-    var offset = new Date(year, month, 1).getDay();   // tuần bắt đầu Chủ nhật
+-    var label = SD_CAL_MONTHS_SHORT[month];
+-    if (offset >= SD_CAL_LABEL_MIN_CELLS) {
+-      return '<div class="form-field-datepicker-label sd-cal-span-' + offset + '" aria-hidden="true">' + label + '</div>';
++  /* ══ mat-calendar — DOM nguyên văn catalog (#c-date · #c-date-range · #c-datetime · #c-chip-calendar), 2026-10-14 ══
++     Builder: „Cần bạn quyết -> tiếp tục làm cả 3 mục“ (mục 1: ruột lịch theo mat-calendar). Thay bộ lưới div
++     `.form-field-datepicker-*` tự dựng trước đây. Cấu trúc:
++       mat-calendar.mat-calendar > mat-calendar-header > .mat-calendar-header > .mat-calendar-controls
++         (span.cdk-visually-hidden "October 2026" · button.mat-calendar-period-button "OCT 2026" ▾ · spacer · ‹ ›)
++       + div.mat-calendar-content > mat-month-view > table.mat-calendar-table
++         (thead: 7 × th[span.cdk-visually-hidden + span] + hàng kẻ · tbody.mat-calendar-body: td.mat-calendar-body-label
++          + td.mat-calendar-body-cell-container > button.mat-calendar-body-cell[data-day] > span.mat-calendar-body-cell-content)
++     Lớp ô (thứ tự như catalog): dateClass · disabled · range-start · range-end · in-range · active; nội dung: selected · today.
++     Ô ngày mang `data-day` như bản chụp catalog. Nhãn tháng: offset ≥ 3 ô thì nằm đầu hàng 1, ít hơn thì ra hàng riêng (MatMonthView). */
++  var SD_CAL_MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
++  var SD_CAL_SEQ = 0;
++  var SD_CAL_PAD = 'padding-top: 7.14286%; padding-bottom: 7.14286%;';
++  function sdCalKey(y, m, d) { return y + '/' + (m + 1 < 10 ? '0' : '') + (m + 1) + '/' + (d < 10 ? '0' : '') + d; }
++  /* o: { id, year, month (0-11), today: Date, selected: {canonical:true}, range: {from, to} (canonical),
++          isDisabled(Date) → bool, dateClass(canonical) → lớp, a11y: 'fns' (Oct 5, 2026) | 'native' (October 5, 2026) } */
++  function sdMatCalendarHtml(o) {
++    var y = o.year, m = o.month, id = o.id;
++    var off = new Date(y, m, 1).getDay(), n = new Date(y, m + 1, 0).getDate();
++    var today = o.today || new Date();
++    var todayD = (today.getFullYear() === y && today.getMonth() === m) ? today.getDate() : 0;
++    var sel = o.selected || {};
++    var selDays = [];
++    for (var k = 1; k <= n; k++) if (sel[sdCalKey(y, m, k)]) selDays.push(k);
++    var rg = null;
++    if (o.range && (o.range.from || o.range.to)) rg = [o.range.from || o.range.to, o.range.to || o.range.from];
++    var active = selDays.length ? selDays[0] : (todayD || 1);
++    var name = SD_CAL_MONTHS_LONG[m], shortName = SD_CAL_MONTHS_SHORT[m];
++    var rows = '', cells = '';
++    if (off >= SD_CAL_LABEL_MIN_CELLS) {
++      cells = '<td class="mat-calendar-body-label" colspan="' + off + '" style="' + SD_CAL_PAD + '">' + shortName + '</td>';
++    } else {
++      rows = '<tr aria-hidden="true"><td class="mat-calendar-body-label" colspan="7" style="' + SD_CAL_PAD + '">' + shortName + '</td></tr>';
++      if (off) cells = '<td aria-hidden="true" class="mat-calendar-body-label" colspan="' + off + '" style="' + SD_CAL_PAD + '"></td>';
+     }
+-    return '<div class="form-field-datepicker-label sd-cal-span-7" aria-hidden="true">' + label + '</div>' +
+-      (offset ? '<div class="form-field-datepicker-blank sd-cal-span-' + offset + '"></div>' : '');
++    for (var d = 1; d <= n; d++) {
++      var col = (off + d - 1) % 7, row = Math.floor((off + d - 1) / 7);
++      var key = sdCalKey(y, m, d), dt = new Date(y, m, d);
++      var b = ['mat-calendar-body-cell'];
++      var dc = o.dateClass ? o.dateClass(key) : '';
++      if (dc) b.push(dc);
++      var dis = !!(o.isDisabled && o.isDisabled(dt));
++      if (dis) b.push('mat-calendar-body-disabled');
++      if (rg) {
++        if (key === rg[0]) b.push('mat-calendar-body-range-start');
++        if (key === rg[1]) b.push('mat-calendar-body-range-end');
++        if (key >= rg[0] && key <= rg[1]) b.push('mat-calendar-body-in-range');
++      }
++      if (d === active) b.push('mat-calendar-body-active');
++      var c = ['mat-calendar-body-cell-content', 'mat-focus-indicator'];
++      var isSel = !!sel[key];
++      if (isSel) c.push('mat-calendar-body-selected');
++      if (d === todayD) c.push('mat-calendar-body-today');
++      var aria = (o.a11y === 'native' ? name : name.slice(0, 3)) + ' ' + d + ', ' + y;
++      cells += '<td role="gridcell" class="mat-calendar-body-cell-container" style="width: 14.2857%; ' + SD_CAL_PAD + '" data-mat-row="' + row + '" data-mat-col="' + (row ? col : col - off) + '">' +
++        '<button type="button" class="' + b.join(' ') + '" tabindex="' + (d === active ? 0 : -1) + '" aria-label="' + aria + '" aria-pressed="' + isSel + '"' +
++          (dis ? ' aria-disabled="true"' : '') + (d === todayD ? ' aria-current="date"' : '') + ' data-day="' + d + '">' +
++        '<span class="' + c.join(' ') + '"> ' + d + ' </span><span class="mat-calendar-body-cell-preview" aria-hidden="true"></span></button></td>';
++      if (col === 6 || d === n) { rows += '<tr role="row">' + cells + '</tr>'; cells = ''; }
++    }
++    var head = '';
++    for (var i = 0; i < 7; i++) head += '<th><span class="cdk-visually-hidden">' + SD_CAL_DOW_LONG[i] + '</span><span>' + SD_CAL_DOW_NARROW[i] + '</span></th>';
++    return '<mat-calendar class="mat-calendar" id="' + id + '"><mat-calendar-header><div class="mat-calendar-header"><div class="mat-calendar-controls">' +
++        '<span id="' + id + '-period" class="cdk-visually-hidden">' + name + ' ' + y + '</span>' +
++        '<button matbutton="" type="button" class="mat-calendar-period-button mdc-button mat-mdc-button-base mat-mdc-button mat-unthemed" aria-label="Choose month and year" aria-describedby="' + id + '-period">' +
++          '<span class="mat-mdc-button-persistent-ripple mdc-button__ripple"></span><span class="mdc-button__label"><span>' + shortName + ' ' + y + '</span>' +
++          '<svg class="mat-calendar-arrow" viewBox="0 0 10 5"><polygon points="0,0 5,5 10,0"></polygon></svg></span>' +
++          '<span class="mat-focus-indicator"></span><span class="mat-mdc-button-touch-target"></span></button>' +
++        '<div class="mat-calendar-spacer"></div>' +
++        '<button maticonbutton="" type="button" class="mat-calendar-previous-button mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-button-disabled-interactive mat-unthemed" aria-label="Previous month">' +
++          '<span class="mat-mdc-button-persistent-ripple mdc-icon-button__ripple"></span><svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>' +
++          '<span class="mat-focus-indicator"></span><span class="mat-mdc-button-touch-target"></span></button>' +
++        '<button maticonbutton="" type="button" class="mat-calendar-next-button mdc-icon-button mat-mdc-icon-button mat-mdc-button-base mat-mdc-button-disabled-interactive mat-unthemed" aria-label="Next month">' +
++          '<span class="mat-mdc-button-persistent-ripple mdc-icon-button__ripple"></span><svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>' +
++          '<span class="mat-focus-indicator"></span><span class="mat-mdc-button-touch-target"></span></button>' +
++      '</div></div></mat-calendar-header>' +
++      '<div tabindex="-1" class="mat-calendar-content"><mat-month-view><table class="mat-calendar-table" role="grid">' +
++        '<thead class="mat-calendar-table-header"><tr>' + head + '</tr><tr><th class="mat-calendar-table-header-divider" colspan="7"></th></tr></thead>' +
++        '<tbody mat-calendar-body="" class="mat-calendar-body">' + rows + '</tbody>' +
++      '</table></mat-month-view></div></mat-calendar>';
++  }
++  /* Vẽ lịch vào `holder` (thay cả mat-calendar) và gắn MỘT lần bộ nghe uỷ quyền:
++     h.onPrev() · h.onNext() · h.onPick(canonical, Date) — gán lại mỗi lần vẽ để luôn trỏ trạng thái mới. */
++  function sdCalRender(holder, o, handlers) {
++    if (!holder) return;
++    if (!holder._sdCalId) holder._sdCalId = 'sd-calendar-' + (++SD_CAL_SEQ);
++    o.id = holder._sdCalId;
++    holder.innerHTML = sdMatCalendarHtml(o);
++    holder._sdCalH = handlers;
++    holder._sdCalView = [o.year, o.month];
++    if (holder._sdCalBound) return;
++    holder._sdCalBound = true;
++    holder.addEventListener('click', function (e) {
++      var t = e.target.closest ? e.target : null;
++      if (!t) return;
++      var h = holder._sdCalH || {};
++      if (t.closest('.mat-calendar-previous-button')) { e.stopPropagation(); if (h.onPrev) h.onPrev(); return; }
++      if (t.closest('.mat-calendar-next-button')) { e.stopPropagation(); if (h.onNext) h.onNext(); return; }
++      if (t.closest('.mat-calendar-period-button')) { e.stopPropagation(); return; }
++      var cell = t.closest('.mat-calendar-body-cell');
++      if (cell) {
++        e.stopPropagation();
++        if (cell.classList.contains('mat-calendar-body-disabled')) return;
++        var v = holder._sdCalView, day = +cell.getAttribute('data-day');
++        if (h.onPick) h.onPick(sdCalKey(v[0], v[1], day), new Date(v[0], v[1], day));
++      }
++    });
+   }
++  var SD_FLOAT_CAL_OPEN = function (host) { return !!host._calOpen; };
++
++  /* (2026-10-14) sdCalHeaderHtml / sdCalWeekdaysHtml / sdCalLeadHtml — lưới `.form-field-datepicker-*` tự dựng — đã gỡ,
++     thay bằng sdMatCalendarHtml / sdCalRender (mat-calendar của catalog) ở trên. */
++
+ 
+   /* ══════════════════════════════════════════════════════════
+      sd-button — ĐỒNG BỘ 2026-10-13 theo catalog `#c-button` + MÃ THƯ VIỆN
+@@ -753,7 +824,6 @@
+     else if (getComputedStyle(host).visibility === 'hidden') clipped = true;
+     pane.style.visibility = clipped ? 'hidden' : '';
+   }
+-  var SD_FLOAT_OPEN_CLS = function (host, el) { return el.classList.contains('open'); };
+ 
+   /* ── mat-checkbox của Angular Material — DOM nguyên văn catalog (#c-checkbox, 2026-10-14).
+      Dùng chung cho sd-checkbox; sd-table / sd-tree (catalog vẽ mat-checkbox thuần) sẽ dùng ở vòng sau. ── */
+@@ -1841,8 +1911,8 @@
+ 
+      Portal /form/chip-calendar: pick a list of dates from a calendar popup,
+      value stored as yyyy/MM/dd, each chip displays as dd/MM/yyyy.
+-     Chips render with the same markup/CSS as sd-chip; the popup reuses the
+-     kit's existing .form-field-datepicker calendar styles (no new calendar).
++     Chips render with the same markup/CSS as sd-chip; the popup is a mat-menu panel holding the
++     catalog `mat-calendar` DOM (sdMatCalendarHtml, 2026-10-14) in the overlay pane `.sd-chip-calendar-pane`.
+ 
+      Attribute `value` | Property .value (string[]) | Event sd-change { value: Array }
+      Mirrors [(model)] two-way of Angular's SdChipCalendar.
+@@ -1860,7 +1930,7 @@
+     }
+     constructor() {
+       super();
+-      sdFloatInstall(this, { root: ':scope > .sd-cc-popup', pane: 'sd-chip-calendar-pane', gap: 0, isOpen: SD_FLOAT_OPEN_CLS });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */
++      sdFloatInstall(this, { root: ':scope > .mat-mdc-menu-panel', pane: 'sd-chip-calendar-pane', gap: 0, isOpen: SD_FLOAT_CAL_OPEN });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */
+       this._values = [];
+       this._userChange = false;
+       this._touched = false;
+@@ -1985,18 +2055,17 @@
+         }),
+         errorIcon: showError && hideIE ? errorMsg : '', errorText: showError && !hideIE ? errorMsg : ''
+       });
+-      if (this.querySelector('mat-form-field') && this.querySelector('.sd-cc-popup')) {
++      if (this.querySelector('mat-form-field') && this.querySelector('.mat-mdc-menu-panel')) {
+         var t = document.createElement('template');
+         t.innerHTML = html;
+         sdMatMorph(this.firstElementChild, t.content.firstElementChild);
+         sdMatSyncAttrs(this.firstElementChild, t.content.firstElementChild);
+       } else {
+         this.innerHTML = html +
+-          '<div class="form-field-datepicker sd-cc-popup" role="dialog" aria-label="Chọn ngày">' +
+-            sdCalHeaderHtml({ prev: 'sd-cc-prev', title: 'sd-cc-title', next: 'sd-cc-next' }) +
+-            sdCalWeekdaysHtml() +
+-            '<div class="form-field-datepicker-days sd-cc-days"></div>' +
+-          '</div>';
++          /* catalog #c-chip-calendar: `.cdk-overlay-pane > .mat-mdc-menu-panel.mat-menu-after.mat-menu-below > .mat-mdc-menu-content
++             > div[style=width:280px] > mat-calendar` (2026-10-14) */
++          '<div class="mat-mdc-menu-panel mat-menu-after mat-menu-below" role="menu" tabindex="-1"><div class="mat-mdc-menu-content">' +
++            '<div style="width: 280px"></div></div></div>';
+       }
+       sdMatNotch(this);
+     }
+@@ -2068,9 +2137,8 @@
+           self._focusInput();
+           return;
+         }
+-        // why: shell.js có listener toàn cục "đóng mọi .form-field-datepicker.open khi
+-        // click bất kỳ đâu" (bubble phase) - không chặn nổi bọt thì popup vừa mở bị đóng
+-        // lại ngay trong cùng một click.
++        // why: shell.js có listener toàn cục đóng popup lịch kiểu cũ khi click bất kỳ đâu
++        // (bubble phase) - không chặn nổi bọt thì popup vừa mở bị đóng lại ngay trong cùng một click.
+         e.stopPropagation();
+         if (self._popupOpen()) self._closePopup();
+         else { self._openPopup(); self._focusInput(); }
+@@ -2109,104 +2177,45 @@
+       });
+     }
+ 
+-    _bindPopup() {
+-      var self = this;
+-      var popup = this.querySelector('.sd-cc-popup');
+-      if (!popup) return;
+-      var prev = popup.querySelector('.sd-cc-prev');
+-      var next = popup.querySelector('.sd-cc-next');
+-      if (prev && !prev._bound) {
+-        prev._bound = true;
+-        prev.addEventListener('click', function (e) {
+-          e.stopPropagation();
+-          self._viewMonth--;
+-          if (self._viewMonth < 0) {
+-            self._viewMonth = 11;
+-            self._viewYear--;
+-          }
+-          if (!self._viewYear) self._viewYear = new Date().getFullYear();
+-          self._renderCalendar();
+-        });
+-      }
+-      if (next && !next._bound) {
+-        next._bound = true;
+-        next.addEventListener('click', function (e) {
+-          e.stopPropagation();
+-          self._viewMonth++;
+-          if (self._viewMonth > 11) {
+-            self._viewMonth = 0;
+-            self._viewYear++;
+-          }
+-          if (!self._viewYear) self._viewYear = new Date().getFullYear();
+-          self._renderCalendar();
+-        });
+-      }
+-    }
++    _bindPopup() { /* ‹ › / ngày: `sdCalRender` nghe trên khung lịch (2026-10-14) */ }
+ 
+     _renderCalendar() {
+-      var popup = this.querySelector('.sd-cc-popup');
+-      var titleEl = this.querySelector('.sd-cc-title');
+-      var daysEl = this.querySelector('.sd-cc-days');
+-      if (!popup || !titleEl || !daysEl) return;
+-
+-      var now = new Date();
++      var holder = this.querySelector('.mat-mdc-menu-panel > .mat-mdc-menu-content > div');
++      if (!holder) return;
++      var now = new Date(), self = this, picked = {};
+       if (this._viewYear === null) {
+         this._viewYear = now.getFullYear();
+         this._viewMonth = now.getMonth();
+       }
+-
+-      titleEl.textContent = sdCalPeriodLabel(this._viewYear, this._viewMonth);
+-
+-      var firstDay = new Date(this._viewYear, this._viewMonth, 1);
+-      var lastDay = new Date(this._viewYear, this._viewMonth + 1, 0);
+-      var startDow = firstDay.getDay();   /* en-US: tuần bắt đầu Chủ nhật (catalog) */
+-      var daysInMonth = lastDay.getDate();
+-      var prevLast = new Date(this._viewYear, this._viewMonth, 0).getDate();
+-      var selectedSet = {};
+-      var self = this;
+-      this._values.forEach(function (v) { selectedSet[v] = true; });
+-
+-      function pad(n) { return n < 10 ? '0' + n : String(n); }
+-
+-      var html = '';
+-      /* Catalog không hiện ngày của tháng trước: đầu lưới là nhãn tháng + ô trống. */
+-      html += sdCalLeadHtml(this._viewYear, this._viewMonth);
+-      for (var d = 1; d <= daysInMonth; d++) {
+-        var val = self._viewYear + '/' + pad(self._viewMonth + 1) + '/' + pad(d);
+-        var cls = 'form-field-datepicker-day';
+-        if (d === now.getDate() && self._viewMonth === now.getMonth() && self._viewYear === now.getFullYear()) {
+-          cls += ' today';
+-        }
+-        if (selectedSet[val]) cls += ' selected';
+-        html += '<button class="' + cls + '" type="button" data-value="' + val + '">' + d + '</button>';
+-      }
+-      /* Catalog không hiện ngày của tháng sau — hàng cuối dừng ở ngày cuối tháng. */
+-      daysEl.innerHTML = html;
+-
+-      daysEl.querySelectorAll('.form-field-datepicker-day:not(.other-month)').forEach(function (btn) {
+-        btn.addEventListener('click', function (e) {
+-          e.stopPropagation();
+-          self._selectDate(btn.getAttribute('data-value'));
+-        });
++      this._values.forEach(function (v) { picked[v] = true; });
++      /* catalog: ngày đã chọn KHÔNG mang `mat-calendar-body-selected` mà là dateClass `sd-chip-calendar-selected-date`;
++         nhãn đọc màn hình dạng "October 5, 2026" */
++      sdCalRender(holder, {
++        year: this._viewYear, month: this._viewMonth, today: now, selected: {}, a11y: 'native',
++        dateClass: function (key) { return picked[key] ? 'sd-chip-calendar-selected-date' : ''; }
++      }, {
++        onPrev: function () { self._viewMonth--; if (self._viewMonth < 0) { self._viewMonth = 11; self._viewYear--; } self._renderCalendar(); },
++        onNext: function () { self._viewMonth++; if (self._viewMonth > 11) { self._viewMonth = 0; self._viewYear++; } self._renderCalendar(); },
++        onPick: function (key) { self._selectDate(key); }
+       });
+     }
+ 
+     _openPopup() {
+-      var popup = this.querySelector('.sd-cc-popup');
+-      if (!popup) return;
++      if (!this.querySelector('.mat-mdc-menu-panel')) return;
+       if (this._viewYear === null) {
+         var now = new Date();
+         this._viewYear = now.getFullYear();
+         this._viewMonth = now.getMonth();
+       }
+       this._renderCalendar();
+-      popup.classList.add('open');
++      this._calOpen = true;
++      sdFloatSync(this);
+       this._renderField();
+     }
+     _closePopup() {
+-      var popup = this.querySelector('.sd-cc-popup');
+-      var wasOpen = !!(popup && popup.classList.contains('open'));
+-      if (popup) popup.classList.remove('open');
++      var wasOpen = !!this._calOpen;
++      this._calOpen = false;
++      sdFloatSync(this);
+       /* Đóng lịch = mirror #closeCalendar thật (blur input khiến formControl.touched bật) -
+          chỉ bật touched khi lịch THỰC SỰ đang mở trước đó (tránh Escape lang thang bên ngoài
+          bật nhầm touched), rồi vẽ lại phần lỗi mà không đụng gì khác. */
+@@ -2215,10 +2224,7 @@
+         this._renderField();
+       }
+     }
+-    _popupOpen() {
+-      var popup = this.querySelector('.sd-cc-popup');
+-      return !!(popup && popup.classList.contains('open'));
+-    }
++    _popupOpen() { return !!this._calOpen; }
+ 
+     _bindGlobal() {
+       var self = this;
+@@ -3408,9 +3414,12 @@
+           ' aria-expanded="' + (open ? 'true' : 'false') + '" class="' + selCls + '"' +
+           (nameAttr ? ' data-name="' + escAttr(nameAttr) + '"' : '') + '>' +
+           '<div class="mat-mdc-select-trigger"><div class="mat-mdc-select-value">' + valueInner + '</div>' +
+-          /* `div.mat-mdc-select-arrow` rỗng (mũi tên Material, sd-select ẩn bằng CSS, dùng icon đuôi) — catalog có ở
+-             #c-query-builder · #c-form-generic · #c-form-builder · #c-table (24 mẫu); riêng mục #c-select bản chụp bỏ (7 mẫu). 2026-10-14 */
+-          '<div class="mat-mdc-select-arrow-wrapper"><div class="mat-mdc-select-arrow"></div></div></div>' +
++          /* `div.mat-mdc-select-arrow` rỗng (mũi tên Material, sd-select ẩn bằng CSS, dùng icon đuôi). Catalog CÓ khi ô nằm trong
++             sd-table / sd-query-builder / sd-form-render / sd-form-builder (24 mẫu), KHÔNG có ở ô đứng riêng (#c-select, 7 mẫu)
++             → vẽ theo đúng ngữ cảnh đó (Builder 2026-10-14: „tiếp tục làm cả 3 mục“). */
++          '<div class="mat-mdc-select-arrow-wrapper">' +
++            (this.closest('sd-table, sd-query-builder, sd-form-render, sd-form-builder') ? '<div class="mat-mdc-select-arrow"></div>' : '') +
++          '</div></div>' +
+         '</mat-select>';
+ 
+       var arrow = '<mat-icon class="mat-icon cursor-pointer sd-suffix-icon material-icons" aria-hidden="true" matsuffix>keyboard_arrow_down</mat-icon>';
+@@ -3868,10 +3877,9 @@
+      `model`) giữ canonical yyyy/MM/dd — đúng quy ước
+      `normalizeDateModel`/`dateControlToModel` của thư viện thật.
+ 
+-     Lịch chọn ngày dùng lại đúng bộ class `.form-field-datepicker*`
+-     đã có sẵn trong `components.css` (cùng bộ mà `sd-chip-calendar`
+-     dùng) — không viết CSS lịch mới, chỉ thêm phần riêng cho input
+-     đơn (suffix/clear/error icon).
++     Lịch chọn ngày: DOM `mat-calendar` của catalog (sdMatCalendarHtml, 2026-10-14) trong
++     `mat-datepicker-content`, nổi ở overlay pane `.sd-date-pane`; CSS là bản mirror `date.css`
++     của catalog trong sd-tokens.css.
+ 
+      Khác biệt có chủ ý so với thư viện (ghi trong sd-form.md):
+      - `helperText` hiện thành dòng chữ dưới field như mọi input
+@@ -3983,7 +3991,7 @@
+     }
+     constructor() {
+       super();
+-      sdFloatInstall(this, { root: ':scope > .sd-date-popup', pane: 'sd-date-pane', gap: 0, isOpen: SD_FLOAT_OPEN_CLS });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */
++      sdFloatInstall(this, { root: ':scope > mat-datepicker-content', pane: 'mat-datepicker-popup sd-date-pane', gap: 0, isOpen: SD_FLOAT_CAL_OPEN });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */
+       this._touched = false;
+       this._viewYear = null;
+       this._viewMonth = null;
+@@ -4144,7 +4152,7 @@
+           }) +
+         '</div>';
+ 
+-      var popup = this.querySelector('.sd-date-popup');
++      var popup = this.querySelector('mat-datepicker-content');
+       if (this.querySelector('mat-form-field') && popup) {
+         /* vẽ lại tại chỗ: chỉ so khớp phần khung, giữ nguyên lịch đang mở */
+         var t = document.createElement('template');
+@@ -4153,12 +4161,10 @@
+         sdMatSyncAttrs(this.firstElementChild, t.content.firstElementChild);
+       } else {
+         this.innerHTML = fieldHtml +
+-          '<div class="form-field-datepicker sd-date-popup" role="dialog" aria-label="Chọn ngày">' +
+-            sdCalHeaderHtml({ prev: 'sd-date-cal-prev', title: 'sd-date-cal-title', next: 'sd-date-cal-next' }) +
+-            sdCalWeekdaysHtml() +
+-            '<div class="form-field-datepicker-days sd-date-cal-days"></div>' +
+-          '</div>';
+-        this._bindPopup();
++          /* catalog #c-date: `.cdk-overlay-pane.mat-datepicker-popup > mat-datepicker-content > .mat-datepicker-content-container
++             > mat-calendar` (2026-10-14 — trước là lưới `.form-field-datepicker` tự dựng) */
++          '<mat-datepicker-content class="mat-datepicker-content mat-datepicker-content-animations-enabled">' +
++            '<div role="dialog" aria-modal="true" class="mat-datepicker-content-container"></div></mat-datepicker-content>';
+       }
+       sdMatNotch(this);
+       this._bind();
+@@ -4204,14 +4210,6 @@
+       if (this.disabled) return;
+       if (this._popupOpenState()) this._closePopup(); else this._openPopup();
+     }
+-    _bindPopup() {
+-      var self = this;
+-      var prev = this.querySelector('.sd-date-cal-prev');
+-      var next = this.querySelector('.sd-date-cal-next');
+-      if (prev) prev.addEventListener('click', function (e) { e.stopPropagation(); self._shiftMonth(-1); });
+-      if (next) next.addEventListener('click', function (e) { e.stopPropagation(); self._shiftMonth(1); });
+-    }
+-
+     /* Chỉ tự chèn "/" khi gõ - KHÔNG commit model, KHÔNG _render() (mất
+        focus/con trỏ). Model chỉ chốt lúc blur hoặc chọn lịch, đúng thư
+        viện thật (control chỉ setValue trong onBlur/onChange). */
+@@ -4260,11 +4258,8 @@
+     }
+ 
+     _renderCalendar() {
+-      var popup = this.querySelector('.sd-date-popup');
+-      var titleEl = this.querySelector('.sd-date-cal-title');
+-      var daysEl = this.querySelector('.sd-date-cal-days');
+-      if (!popup || !titleEl || !daysEl) return;
+-
++      var holder = this.querySelector('mat-datepicker-content .mat-datepicker-content-container');
++      if (!holder) return;
+       var now = new Date();
+       var canonical = this.model;
+       var selectedDate = canonical ? sdDateFromCanonical(canonical) : null;
+@@ -4273,57 +4268,31 @@
+         this._viewYear = base.getFullYear();
+         this._viewMonth = base.getMonth();
+       }
+-      titleEl.textContent = sdCalPeriodLabel(this._viewYear, this._viewMonth);
+-
+-      var firstDay = new Date(this._viewYear, this._viewMonth, 1);
+-      var lastDay = new Date(this._viewYear, this._viewMonth + 1, 0);
+-      var startDow = firstDay.getDay();   /* en-US: tuần bắt đầu Chủ nhật (catalog) */
+-      var daysInMonth = lastDay.getDate();
+-      var prevLast = new Date(this._viewYear, this._viewMonth, 0).getDate();
+-      var min = this.min, max = this.max;
+-      var viewYear = this._viewYear, viewMonth = this._viewMonth;
+-
+-      var html = '';
+-      /* Catalog không hiện ngày của tháng trước: đầu lưới là nhãn tháng + ô trống. */
+-      html += sdCalLeadHtml(this._viewYear, this._viewMonth);
+-      for (var d = 1; d <= daysInMonth; d++) {
+-        var dateObj = new Date(viewYear, viewMonth, d);
+-        var val = viewYear + '/' + sdDatePad(viewMonth + 1) + '/' + sdDatePad(d);
+-        var outOfRange = (min && dateObj.getTime() < min.getTime()) || (max && dateObj.getTime() > max.getTime());
+-        var cls = 'form-field-datepicker-day';
+-        if (d === now.getDate() && viewMonth === now.getMonth() && viewYear === now.getFullYear()) cls += ' today';
+-        if (val === canonical) cls += ' selected';
+-        if (outOfRange) cls += ' disabled';
+-        html += '<button class="' + cls + '" type="button"' +
+-          (outOfRange ? ' disabled tabindex="-1"' : ' data-value="' + val + '"') + '>' + d + '</button>';
+-      }
+-      /* Catalog không hiện ngày của tháng sau — hàng cuối dừng ở ngày cuối tháng. */
+-      daysEl.innerHTML = html;
+-
+-      var self = this;
+-      daysEl.querySelectorAll('.form-field-datepicker-day:not(.other-month):not(.disabled)').forEach(function (btn) {
+-        btn.addEventListener('click', function (e) {
+-          e.stopPropagation();
+-          self._pickDate(btn.getAttribute('data-value'));
+-        });
++      var min = this.min, max = this.max, self = this, sel = {};
++      if (canonical) sel[canonical] = true;
++      sdCalRender(holder, {
++        year: this._viewYear, month: this._viewMonth, today: now, selected: sel, a11y: 'fns',
++        isDisabled: function (d) { return !!((min && d.getTime() < min.getTime()) || (max && d.getTime() > max.getTime())); }
++      }, {
++        onPrev: function () { self._shiftMonth(-1); },
++        onNext: function () { self._shiftMonth(1); },
++        onPick: function (key) { self._pickDate(key); }
+       });
+     }
+ 
+     _openPopup() {
+       if (this.disabled) return;
+-      var popup = this.querySelector('.sd-date-popup');
+-      if (!popup) return;
++      if (!this.querySelector('mat-datepicker-content')) return;
+       this._renderCalendar();
+-      popup.classList.add('open');
++      this._calOpen = true;
++      sdFloatSync(this);
+     }
+     _closePopup() {
+-      var popup = this.querySelector('.sd-date-popup');
+-      if (popup) popup.classList.remove('open');
+-    }
+-    _popupOpenState() {
+-      var popup = this.querySelector('.sd-date-popup');
+-      return !!(popup && popup.classList.contains('open'));
++      if (!this._calOpen) return;
++      this._calOpen = false;
++      sdFloatSync(this);
+     }
++    _popupOpenState() { return !!this._calOpen; }
+     _bindGlobal() {
+       var self = this;
+       if (!this._boundOutside) {
+@@ -4365,11 +4334,8 @@
+      yyyy/MM/dd HH:mm:00 (hoặc :ss) — đúng `normalizeDatetimeModel`
+      của thư viện thật.
+ 
+-     Popup chọn ngày+giờ dùng lại nguyên bộ class
+-     `.form-field-datetime*` + `.form-field-timepicker*` +
+-     `.form-field-datepicker*` đã có sẵn trong `components.css` —
+-     không viết CSS lịch/đồng hồ mới, chỉ thêm phần riêng cho input
+-     đơn (suffix/clear/error icon, dùng chung với sd-date).
++     Popup chọn ngày+giờ: `sd-datetime-picker` của catalog (lịch `mat-calendar` + `sd-time-spinner`
++     + footer), nổi ở overlay pane `.sd-datetime-pane` — xem `_popupHtml` (2026-10-14).
+ 
+      Dùng lại helper của sd-date trong cùng IIFE: sdDatePad,
+      sdDateResolveBoundary, SD_DATE_MONTHS_VI.
+@@ -4464,7 +4430,7 @@
+     }
+     constructor() {
+       super();
+-      sdFloatInstall(this, { root: ':scope > .sd-dt-popup', pane: 'sd-datetime-pane', gap: 4, isOpen: SD_FLOAT_OPEN_CLS });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */
++      sdFloatInstall(this, { root: ':scope > sd-datetime-picker', pane: 'sd-datetime-overlay-panel sd-datetime-pane', gap: 4, isOpen: SD_FLOAT_CAL_OPEN });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */
+       this._touched = false;
+       this._invalidFormat = false;
+       this._draft = null;
+@@ -4615,7 +4581,7 @@
+           }) +
+         '</div>';
+ 
+-      if (this.querySelector('mat-form-field') && this.querySelector('.sd-dt-popup')) {
++      if (this.querySelector('mat-form-field') && this.querySelector('sd-datetime-picker')) {
+         var t = document.createElement('template');
+         t.innerHTML = fieldHtml;
+         sdMatMorph(this.firstElementChild, t.content.firstElementChild);
+@@ -4638,33 +4604,28 @@
+ 
+        Bản CŨ của kit là picker hai cột có TAB Ngày/Giờ và mặt đồng hồ —
+        hình dạng của `@sdcorejs/angular`, tức mốc chuẩn CŨ. Quyết định
+-       2026-10-10 lấy catalog làm chuẩn nên đổi lại. Lịch thì dùng lại bộ
+-       `.form-field-datepicker-*` của kit (kit dựng lịch thật, catalog dán
+-       `mat-calendar` đã render — cùng quyết định đã ghi cho `sd-form-render`).
++       2026-10-10 lấy catalog làm chuẩn nên đổi lại. Lịch là DOM `mat-calendar`
++       y như catalog (sdMatCalendarHtml, 2026-10-14 — trước là lưới `.form-field-datepicker-*` tự dựng).
+ 
+        Nhãn "Hủy" của catalog đổi thành "Bỏ qua" — Rule 16 của `AGENTS.md`,
+        lệch đã ghi từ trước. */
+     _popupHtml() {
+-      return '<div class="form-field-datetime-popup sd-dt-popup">' +
+-        '<sd-datetime-picker><div class="sd-datetime-picker" role="dialog" aria-label="Chọn ngày giờ">' +
+-          '<div class="picker-calendar">' +
+-            sdCalHeaderHtml({ prev: 'sd-dt-prev', title: 'sd-dt-cal-title', next: 'sd-dt-next' }) +
+-            sdCalWeekdaysHtml() +
+-            '<div class="form-field-datepicker-days sd-dt-days"></div>' +
+-          '</div>' +
++      /* 2026-10-14: DOM nguyên văn catalog — pane `.cdk-overlay-pane.sd-datetime-overlay-panel > sd-datetime-picker`
++         (bỏ lớp bọc `.form-field-datetime-popup.sd-dt-popup`, bỏ lớp móc `sd-dt-*`), lịch là `mat-calendar` (`_renderCalendar`). */
++      return '<sd-datetime-picker><div class="sd-datetime-picker">' +
++          '<div class="picker-calendar"></div>' +
+           '<div class="picker-divider"></div>' +
+           '<div class="picker-time">' + this._spinnerHtml() + '</div>' +
+           '<div class="picker-footer">' +
+-            '<button type="button" class="btn btn-ghost sd-dt-now">' + SD_DT_ICON_CLOCK +
++            '<button type="button" class="btn btn-ghost">' + SD_DT_ICON_CLOCK +
+               '<span>' + esc(SD_DT_TEXT.now) + '</span></button>' +
+             '<div class="footer-actions">' +
+-              '<button type="button" class="btn btn-text sd-dt-cancel">' + esc(SD_DT_TEXT.cancel) + '</button>' +
+-              '<button type="button" class="btn btn-primary sd-dt-apply">' + SD_DT_ICON_CHECK +
++              '<button type="button" class="btn btn-text">' + esc(SD_DT_TEXT.cancel) + '</button>' +
++              '<button type="button" class="btn btn-primary">' + SD_DT_ICON_CHECK +
+                 '<span>' + esc(SD_DT_TEXT.confirm) + '</span></button>' +
+             '</div>' +
+           '</div>' +
+-        '</div></sd-datetime-picker>' +
+-      '</div>';
++        '</div></sd-datetime-picker>';
+     }
+ 
+     /* `sd-time-spinner` — markup nguyên văn catalog, kể cả `aria-label` tiếng
+@@ -4730,14 +4691,10 @@
+ 
+     _bindPopup() {
+       var self = this;
+-      var prev = this.querySelector('.sd-dt-prev');
+-      var next = this.querySelector('.sd-dt-next');
+-      if (prev) prev.addEventListener('click', function (e) { e.stopPropagation(); self._shiftMonth(-1); });
+-      if (next) next.addEventListener('click', function (e) { e.stopPropagation(); self._shiftMonth(1); });
+-
+-      var now = this.querySelector('.sd-dt-now');
+-      var cancel = this.querySelector('.sd-dt-cancel');
+-      var apply = this.querySelector('.sd-dt-apply');
++      /* ‹ › / ngày: `sdCalRender` nghe trên `.picker-calendar`. Nút chân theo vị trí (catalog không có lớp móc) */
++      var now = this.querySelector('sd-datetime-picker .picker-footer > .btn-ghost');
++      var cancel = this.querySelector('sd-datetime-picker .footer-actions > .btn-text');
++      var apply = this.querySelector('sd-datetime-picker .footer-actions > .btn-primary');
+       if (now) now.addEventListener('click', function (e) { e.stopPropagation(); self._setDraft(new Date()); });
+       if (cancel) cancel.addEventListener('click', function (e) { e.stopPropagation(); self._closePopup(); });
+       if (apply) apply.addEventListener('click', function (e) { e.stopPropagation(); self._applyDraft(); });
+@@ -4827,18 +4784,17 @@
+       if (!this.showSeconds) this._draft.setSeconds(0, 0);
+       this._viewYear = this._draft.getFullYear();
+       this._viewMonth = this._draft.getMonth();
+-      var popup = this.querySelector('.sd-dt-popup');
+-      if (popup) popup.classList.add('open');
++      if (!this.querySelector('sd-datetime-picker')) return;
+       this._renderPopup();
++      this._calOpen = true;
++      sdFloatSync(this);
+     }
+     _closePopup() {
+-      var popup = this.querySelector('.sd-dt-popup');
+-      if (popup) popup.classList.remove('open');
+-    }
+-    _popupOpenState() {
+-      var popup = this.querySelector('.sd-dt-popup');
+-      return !!(popup && popup.classList.contains('open'));
++      if (!this._calOpen) return;
++      this._calOpen = false;
++      sdFloatSync(this);
+     }
++    _popupOpenState() { return !!this._calOpen; }
+     _setDraft(d) {
+       this._draft = new Date(d.getTime());
+       if (!this.showSeconds) this._draft.setSeconds(0, 0);
+@@ -4864,7 +4820,7 @@
+     /* Popup một panel: chỉ còn lịch + spinner. Không còn cột tóm tắt trái,
+        không còn tab, không còn mặt đồng hồ — xem comment ở `_popupHtml`. */
+     _renderPopup() {
+-      var popup = this.querySelector('.sd-dt-popup');
++      var popup = this.querySelector('sd-datetime-picker');
+       if (!popup) return;
+       var d = this._draft || new Date();
+       var self = this;
+@@ -4879,54 +4835,29 @@
+     }
+ 
+     _renderCalendar() {
+-      var titleEl = this.querySelector('.sd-dt-cal-title');
+-      var daysEl = this.querySelector('.sd-dt-days');
+-      if (!titleEl || !daysEl) return;
++      var holder = this.querySelector('sd-datetime-picker .picker-calendar');
++      if (!holder) return;
+       var now = new Date();
+       var draft = this._draft;
+       if (this._viewYear === null) { this._viewYear = (draft || now).getFullYear(); this._viewMonth = (draft || now).getMonth(); }
+-      titleEl.textContent = sdCalPeriodLabel(this._viewYear, this._viewMonth);
+-
+-      var firstDay = new Date(this._viewYear, this._viewMonth, 1);
+-      var lastDay = new Date(this._viewYear, this._viewMonth + 1, 0);
+-      var startDow = firstDay.getDay();   /* en-US: tuần bắt đầu Chủ nhật (catalog) */
+-      var daysInMonth = lastDay.getDate();
+-      var prevLast = new Date(this._viewYear, this._viewMonth, 0).getDate();
+-      var min = this.min, max = this.max;
+-      var viewYear = this._viewYear, viewMonth = this._viewMonth;
+-
+-      function dayOutOfRange(dateObj) {
+-        if (min) { var m0 = new Date(min.getFullYear(), min.getMonth(), min.getDate()); if (dateObj.getTime() < m0.getTime()) return true; }
+-        if (max) { var x0 = new Date(max.getFullYear(), max.getMonth(), max.getDate()); if (dateObj.getTime() > x0.getTime()) return true; }
+-        return false;
+-      }
+-
+-      var html = '';
+-      /* Catalog không hiện ngày của tháng trước: đầu lưới là nhãn tháng + ô trống. */
+-      html += sdCalLeadHtml(this._viewYear, this._viewMonth);
+-      for (var dd = 1; dd <= daysInMonth; dd++) {
+-        var dateObj = new Date(viewYear, viewMonth, dd);
+-        var out = dayOutOfRange(dateObj);
+-        var cls = 'form-field-datepicker-day';
+-        if (dd === now.getDate() && viewMonth === now.getMonth() && viewYear === now.getFullYear()) cls += ' today';
+-        if (draft && sdDtSameDay(dateObj, draft)) cls += ' selected';
+-        if (out) cls += ' disabled';
+-        html += '<button class="' + cls + '" type="button"' +
+-          (out ? ' disabled tabindex="-1"' : ' data-day="' + dd + '"') + '>' + dd + '</button>';
+-      }
+-      /* Catalog không hiện ngày của tháng sau — hàng cuối dừng ở ngày cuối tháng. */
+-      daysEl.innerHTML = html;
+-
+-      var self = this;
+-      daysEl.querySelectorAll('.form-field-datepicker-day:not(.other-month):not(.disabled)').forEach(function (btn) {
+-        btn.addEventListener('click', function (e) {
+-          e.stopPropagation();
+-          var day = +btn.getAttribute('data-day');
++      var min = this.min, max = this.max, self = this, sel = {};
++      if (draft) sel[sdCalKey(draft.getFullYear(), draft.getMonth(), draft.getDate())] = true;
++      sdCalRender(holder, {
++        year: this._viewYear, month: this._viewMonth, today: now, selected: sel, a11y: 'fns',
++        isDisabled: function (dateObj) {
++          if (min) { var m0 = new Date(min.getFullYear(), min.getMonth(), min.getDate()); if (dateObj.getTime() < m0.getTime()) return true; }
++          if (max) { var x0 = new Date(max.getFullYear(), max.getMonth(), max.getDate()); if (dateObj.getTime() > x0.getTime()) return true; }
++          return false;
++        }
++      }, {
++        onPrev: function () { self._shiftMonth(-1); },
++        onNext: function () { self._shiftMonth(1); },
++        onPick: function (key, dt) {
+           var nd = new Date(self._draft || new Date());
+-          nd.setFullYear(self._viewYear, self._viewMonth, day);
++          nd.setFullYear(dt.getFullYear(), dt.getMonth(), dt.getDate());
+           self._draft = nd;
+           self._renderPopup();
+-        });
++        }
+       });
+     }
+ 
+@@ -14849,7 +14780,7 @@
+     }
+     constructor() {
+       super();
+-      sdFloatInstall(this, { root: ':scope > .sd-range-popup', pane: 'sd-date-range-pane', gap: 0, isOpen: SD_FLOAT_OPEN_CLS });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */
++      sdFloatInstall(this, { root: ':scope > mat-datepicker-content', pane: 'mat-datepicker-popup sd-date-range-pane', gap: 0, isOpen: SD_FLOAT_CAL_OPEN });   /* popup nổi ra overlay — cài TRƯỚC lần vẽ đầu (attributeChangedCallback chạy trước connectedCallback khi nâng cấp) */
+       this._touched = false;
+       this._viewYear = null;
+       this._viewMonth = null;
+@@ -15014,35 +14945,28 @@
+           }) +
+         '</div>';
+ 
+-      if (this.querySelector('mat-form-field') && this.querySelector('.sd-range-popup')) {
++      if (this.querySelector('mat-form-field') && this.querySelector('mat-datepicker-content')) {
+         var t = document.createElement('template');
+         t.innerHTML = fieldHtml;
+         sdMatMorph(this.firstElementChild, t.content.firstElementChild);
+         sdMatSyncAttrs(this.firstElementChild, t.content.firstElementChild);
+       } else {
+         this.innerHTML = fieldHtml +
+-          '<div class="form-field-datepicker sd-range-popup" role="dialog" aria-label="Chọn khoảng ngày">' +
+-            sdCalHeaderHtml({ prev: 'sd-range-cal-prev', title: 'sd-range-cal-title', next: 'sd-range-cal-next' }) +
+-            sdCalWeekdaysHtml() +
+-            '<div class="form-field-datepicker-days sd-range-cal-days"></div>' +
+-          '</div>';
++          /* catalog #c-date-range: mat-datepicker-content > .mat-datepicker-content-container > mat-calendar (2026-10-14) */
++          '<mat-datepicker-content class="mat-datepicker-content mat-datepicker-content-animations-enabled">' +
++            '<div role="dialog" aria-modal="true" class="mat-datepicker-content-container"></div></mat-datepicker-content>';
+       }
+       sdMatNotch(this);
+       this._bindLocal();
+       this._renderCalendar();
+       /* Lịch đang mở thì giữ mở (khối lịch có thể vừa được dựng lại từ chế độ xem). */
+-      if (this._openState) {
+-        var pop = this.querySelector('.sd-range-popup');
+-        if (pop) pop.classList.add('open');
+-      }
++      if (this._openState) { this._calOpen = true; sdFloatSync(this); }
+       sdSyncAutoId(this, 'forms-date-range-');
+     }
+ 
+     _renderCalendar() {
+-      var titleEl = this.querySelector('.sd-range-cal-title');
+-      var daysEl = this.querySelector('.sd-range-cal-days');
+-      if (!titleEl || !daysEl) return;
+-
++      var holder = this.querySelector('mat-datepicker-content .mat-datepicker-content-container');
++      if (!holder) return;
+       var now = new Date();
+       var fromC = this.getAttribute('from') || '';
+       var toC = this.getAttribute('to') || '';
+@@ -15051,39 +14975,19 @@
+         this._viewYear = base.getFullYear();
+         this._viewMonth = base.getMonth();
+       }
+-      titleEl.textContent = sdCalPeriodLabel(this._viewYear, this._viewMonth);
+-
+-      var y = this._viewYear, mo = this._viewMonth;
+-      var firstDay = new Date(y, mo, 1);
+-      var daysInMonth = new Date(y, mo + 1, 0).getDate();
+-      var startDow = firstDay.getDay();   /* en-US: tuần bắt đầu Chủ nhật (catalog) */
+-      var prevLast = new Date(y, mo, 0).getDate();
+-      var min = this.min, max = this.max;
+-      var fromT = fromC ? sdDateFromCanonical(fromC).getTime() : null;
+-      var toT = toC ? sdDateFromCanonical(toC).getTime() : null;
+-
+-      var html = '';
+-      /* Catalog không hiện ngày của tháng trước: đầu lưới là nhãn tháng + ô trống. */
+-      html += sdCalLeadHtml(this._viewYear, this._viewMonth);
+-      for (var d = 1; d <= daysInMonth; d++) {
+-        var obj = new Date(y, mo, d);
+-        var t = obj.getTime();
+-        var val = y + '/' + sdDatePad(mo + 1) + '/' + sdDatePad(d);
+-        var out = (min && t < min.getTime()) || (max && t > max.getTime());
+-        var cls = 'form-field-datepicker-day';
+-        if (d === now.getDate() && mo === now.getMonth() && y === now.getFullYear()) cls += ' today';
+-        /* Lớp bẹt-góc chỉ dùng khi ĐÃ CÓ CẢ HAI đầu và chúng khác nhau; chọn
+-           một đầu rồi chờ bấm đầu kia thì ô vẫn bo tròn đủ bốn góc. */
+-        var both = fromT !== null && toT !== null && fromT !== toT;
+-        if (fromT !== null && t === fromT) cls += ' selected' + (both ? ' sd-range-start' : '');
+-        if (toT !== null && t === toT) cls += ' selected' + (both ? ' sd-range-end' : '');
+-        if (both && t > fromT && t < toT) cls += ' sd-range-in';
+-        if (out) cls += ' disabled';
+-        html += '<button class="' + cls + '" type="button"' +
+-          (out ? ' disabled tabindex="-1"' : ' data-value="' + val + '"') + '>' + d + '</button>';
+-      }
+-      /* Catalog không hiện ngày của tháng sau — hàng cuối dừng ở ngày cuối tháng. */
+-      daysEl.innerHTML = html;
++      var min = this.min, max = this.max, self = this, sel = {};
++      if (fromC) sel[fromC] = true;
++      if (toC) sel[toC] = true;
++      /* khoảng (range-start / end / in-range) chỉ khi ĐÃ CÓ CẢ HAI đầu và khác nhau — như MatCalendarBody */
++      var range = (fromC && toC && fromC !== toC) ? { from: fromC, to: toC } : null;
++      sdCalRender(holder, {
++        year: this._viewYear, month: this._viewMonth, today: now, selected: sel, range: range, a11y: 'fns',
++        isDisabled: function (d) { var t = d.getTime(); return !!((min && t < min.getTime()) || (max && t > max.getTime())); }
++      }, {
++        onPrev: function () { self._shift(-1); },
++        onNext: function () { self._shift(1); },
++        onPick: function (key) { self._pick(key); }
++      });
+     }
+ 
+     /* Bấm ngày: lần 1 đặt `from` và xoá `to`; lần 2 đặt `to` (bấm ngày TRƯỚC
+@@ -15106,13 +15010,12 @@
+     _open() {
+       if (this.disabled) return;
+       this._openState = true;
+-      var p = this.querySelector('.sd-range-popup');
+-      if (p) { this._renderCalendar(); p.classList.add('open'); }
++      if (this.querySelector('mat-datepicker-content')) { this._renderCalendar(); this._calOpen = true; sdFloatSync(this); }
+     }
+     _close() {
+       this._openState = false;
+-      var p = this.querySelector('.sd-range-popup');
+-      if (p) p.classList.remove('open');
++      this._calOpen = false;
++      sdFloatSync(this);
+     }
+     _isOpen() { return !!this._openState; }
+ 
+@@ -15151,15 +15054,7 @@
+       sdMatBindContainer(this);
+       this.addEventListener('click', function (e) {
+         if (!e.target.closest) return;
+-        var day = e.target.closest('.sd-range-cal-days .form-field-datepicker-day');
+-        if (day) {
+-          if (day.classList.contains('other-month') || day.disabled) return;
+-          e.stopPropagation();
+-          self._pick(day.getAttribute('data-value'));
+-          return;
+-        }
+-        if (e.target.closest('.sd-range-cal-prev')) { e.stopPropagation(); self._shift(-1); return; }
+-        if (e.target.closest('.sd-range-cal-next')) { e.stopPropagation(); self._shift(1); return; }
++        /* (ngày / ‹ › của lịch do `sdCalRender` nghe trên khung lịch — 2026-10-14) */
+         var ic = suffixIcon(e.target);
+         if (ic) { e.stopPropagation(); act(ic); }
+       });
+@@ -15170,7 +15065,7 @@
+       });
+       /* Bấm icon đuôi không lấy mất focus của ô chữ (blur sẽ chốt model rồi vẽ lại). */
+       this.addEventListener('mousedown', function (e) {
+-        if (suffixIcon(e.target) || (e.target.closest && e.target.closest('.sd-range-popup'))) e.preventDefault();
++        if (suffixIcon(e.target) || (e.target.closest && e.target.closest('mat-datepicker-content'))) e.preventDefault();
+       });
+ 
+       /* Gõ tay: chỉ tự chèn "/" trong lúc gõ, chốt model lúc blur — y hệt

@@ -1,0 +1,220 @@
+# PAGE-HEADER-WIZARD 2026-10-14 — header vỡ khi AI tự viết header: page-header thêm data-cancel-label / data-primary-suffix-icon (trang nhiều bước), pattern-loader quy biến thể lạ về add/read/browse, layout.css lưới an toàn cho header viết tay
+# Builder báo: 'Header page đang bị lỗi khi gen giao diện prototype'
+# 9 file — xem danh sách 'diff' bên dưới
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/PAGE-HEADER-WIZARD-2026-10-14.patch (sau STATUS-BADGE-ICON-2026-10-14.patch)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-14 11:48:23.495440745 +0000
++++ b/CHANGELOG.md	2026-10-14 14:01:11.742323130 +0000
+@@ -8,6 +8,21 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Fixed — header trang vỡ khi AI tự viết header (Builder 2026-10-14: *„Header page đang bị lỗi khi gen giao diện prototype“*)
++
++- **Nguyên nhân** (dựng lại đúng ảnh Builder gửi): trang tạo nhiều bước ("Lập Treasury request" — Thoát · Tiếp tục →) không có biến thể
++  page-header nào diễn đạt được, nên AI tự viết markup kiểu cũ `div.page-header > .page-header-content > h1.page-title + .page-header-actions`.
++  Từ khi header theo `sd-page` (2026-10-14) các lớp móc đó không còn CSS → tiêu đề là `h1` 40px của reboot, nút rơi xuống dòng, mất nền trắng.
++  Thêm một đường vỡ thứ hai: `data-variant` gõ sai (`wizard`, `stepper`…) làm pattern-loader bỏ qua → trang **mất hẳn** header.
++- **Sửa**:
++  - Pattern `page-header` (edit / add) thêm `data-cancel-label` (chỉ Bỏ qua · Thoát · Quay lại — Rule 16) và `data-primary-suffix-icon` (icon đuôi nút
++    chính) — trang nhiều bước viết được bằng pattern, không cần tự viết header.
++  - pattern-loader: biến thể lạ quy về `add` / `read` / `browse` (bảng bí danh) + cảnh báo console, không còn bỏ trống.
++  - layout.css: lưới an toàn cho header viết tay (chỉ khi KHÔNG có `.c-page-header`) — vẽ lại đúng hình `sd-page` (nền trắng + bóng, hàng p-16
++    giãn hai đầu, tiêu đề T20M, mã T20M primary, mô tả T14R). Header do pattern dựng không đổi (ảnh 96 trang so trước / sau: không lệch).
++  - `generate-components.md`: ví dụ trang tạo nhiều bước + nhắc lại Rule 10; preview page-header + `html-to-angular.md`: hai thuộc tính mới.
++- Bản vá: `reviews/ds-mirror/PAGE-HEADER-WIZARD-2026-10-14.patch`.
++
+ ### Changed — badge trạng thái lifecycle đồng bộ kiểu `icon` (Builder 2026-10-14: *„Tôi muốn các trạng thái đồng bộ lại dạng UI dạng icon“*)
+ 
+ - **STATUS_MAP +5 khoá (PD duyệt)**: `draft` Nháp (`secondary`, `edit_note`) · `upcoming` Sắp hiệu lực (`info`, `update`) · `expired` Hết hiệu lực
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-14 11:48:23.496436343 +0000
++++ b/_memory/known-gaps.md	2026-10-14 14:01:11.753243750 +0000
+@@ -24,6 +24,7 @@
+ | 2026-10-14 | **Đối chiếu tổng kit ↔ catalog** — `reviews/ds-mirror/DOI-CHIEU-TONG-2026-10-14.md` | Khớp hẳn: button, badge, avatar, radio, anchor, history, org-chart, preview-image, inform, tooltip, tab-group, kpi-card, filter-scorecard. **Lệch cấu trúc thật:** ~~`sd-checkbox` / `sd-switch`~~ (**ĐÃ SỬA 2026-10-14** — DOM Material, 13/13 + 13/13 khớp), ~~`sd-tree` (ô chọn / nút lệnh / spinner)~~ (**ĐÃ SỬA 2026-10-14**), ~~khối popup ẩn trong thẻ của select / autocomplete / date / date-range / datetime / chip-calendar~~ (**ĐÃ SỬA 2026-10-14** — ra overlay), ~~`sd-upload-file` thiếu `<preview>`~~ (**ĐÃ SỬA**), ~~`sd-chip` viewed~~ (ghép nhầm mẫu — trang preview thiếu mẫu "Đang nhập thêm", đã thêm), ~~`sd-query-builder`~~ (**ĐÃ SỬA** mũi tên select + mẫu menu "+" mở; dòng dưới ô là bản dựng giản lược của catalog — xem dòng `data-ff`). Lệch nhỏ: `sd-label` cao 22 thay 20px, dòng lỗi form-generic, lớp `<table>` của sd-table. Chưa so được: modal / drawer / confirm (overlay), stepper, splitter, chart, import-excel | **Đã sửa 4 nhóm 2026-10-14** (checkbox/switch · popup overlay · tree/upload/chip/qb · lệch nhỏ): khớp hẳn 146 → 232 / 360 mẫu ghép được. Phần còn lại đã phân loại ở mục "Cập nhật sau vòng sửa" cuối báo cáo |
+ | 2026-10-14 | **Popup nổi** (`sd-date` / `sd-date-range` / `sd-datetime` / `sd-chip-calendar` / `sd-autocomplete`, + `sd-select` khi đóng) — sau khi ra overlay | Thẻ host nay trùng catalog (chỉ có ô; `position` static). Còn khác: (1) ~~ruột lịch là bộ `.form-field-datepicker-*` tự dựng~~ **ĐÃ SỬA 2026-10-14** — nay `mat-datepicker-content > mat-calendar` (`table.mat-calendar-table`) / `sd-datetime-picker` / `mat-mdc-menu-panel` như catalog, so pane 4/4 mục trùng 100% số nút (185 · 185 · 212 · 186); (2) pane là `cdk-overlay-pane sd-float-pane sd-<tên>-pane` (catalog: `mat-datepicker-popup` / `mat-mdc-autocomplete-panel`…); (3) `sd-select` / `sd-autocomplete` còn lớp trạng thái `sd-open` trên host khi mở (catalog không có); (4) mẫu "đang mở" của trang preview nay nổi theo màn hình (trước nằm trong khung demo) | (1) xong. (2) pane nay mang lớp của catalog (`mat-datepicker-popup` · `sd-datetime-overlay-panel`) kèm lớp kit `sd-float-pane sd-<tên>-pane` (JS / CSS tìm theo); (3) còn — lớp trạng thái kit, không có hình |
+ | 2026-10-14 | **Lịch `mat-calendar`** (`sd-date` / `sd-date-range` / `sd-datetime` / `sd-chip-calendar`) — sau khi dựng lại | Còn khác catalog: (1) nút kỳ `[OCT 2026 ▾]` không mở bảng năm / tháng (catalog tĩnh cũng chỉ có `mat-month-view`); (2) nút huỷ của `sd-datetime` là "Bỏ qua" (catalog "Hủy" — Rule 16); (3) ô giờ của `sd-datetime` mở ra với giờ hiện tại (bản chụp catalog: `00`) — dữ liệu, không phải DOM; (4) không có ripple / focus-indicator động, không điều hướng bàn phím trong lưới ngày (Material có ← → ↑ ↓ / PageUp). `shell.js` (markup `.form-field-datepicker-wrapper` viết tay) và luật `.form-field-datepicker*` của `components.css` **giữ nguyên** — không phải `sd-*` | (1)(4) catalog không có căn cứ; (2) Rule 16; (3) không đổi |
++| 2026-10-14 | **page-header: `data-cancel-label` · `data-primary-suffix-icon` + lưới an toàn cho header viết tay** | Hai thuộc tính của PATTERN kit (không phải `sd-*`) để trang tạo nhiều bước khỏi tự viết header; portal-template không có trang mẫu nhiều bước. Lưới CSS cho `.page-header` không có `.c-page-header` chỉ để đỡ trang sinh trước / AI viết sai — không phải cách được phép (Rule 10) | Builder báo header vỡ khi gen prototype (2026-10-14) |
+ | 2026-10-14 | **Badge trạng thái lifecycle = kiểu `icon` toàn kit** (Builder: *„đồng bộ lại dạng UI dạng icon“*, PD duyệt bảng tra) | Lệch CÓ CHỦ Ý so với hai nguồn mẫu: (1) **page-header** — portal-template vẽ `statusBadge(status, 'round')`, kit vẽ kiểu icon (Builder: *„Page-header: đổi theo“*); (2) **`useBadge` của bảng** — thư viện mặc định `badge.type ?? 'round'` và ví dụ `#c-table` của catalog là `round`; kit / prototype ghi rõ `type: 'icon'` (Angular phải ghi giống). Không đổi: cột `boolean` (thư viện cố định `round`), nhãn phân loại (nguồn, cấp, vai trò, có / không, số đếm) vẫn `round`, ví dụ `#c-table` trên trang preview giữ `round` như catalog. **Icon trong ô bảng luôn bộ đặc**: template ô của thư viện không truyền `fontSet` → kit bỏ `fontSet` ở cột `status` / `useBadge` cho giống (pending, access_time, task_alt… trong bảng ra bản đặc, ngoài bảng vẫn viền) | Quyết định Builder 2026-10-14. STATUS_MAP thêm `draft` · `upcoming` (info) · `expired` (secondary) · `unpublished` · `partial` — PD duyệt |
+ | 2026-10-14 | **Catalog tự dựng khung ô bằng JS ở `#c-form-generic` / `#c-query-builder` / `#c-form-builder`** (`mat-form-field[data-ff]`, `js/components/form-generic.js`) | Ở ba mục đó dòng dưới ô là `subscript-wrapper` RỖNG hoặc `mat-error.mat-mdc-form-field-bare-error`; ở mục của từng component (`#c-input`, `#c-select`…) là `hint-wrapper` / `error-wrapper` như Material thật. Bộ so tự động báo "lệch cấu trúc" ở ba mục kia | **Kit theo mục của component** (= Material thật) — KHÔNG sửa theo bản dựng giản lược. Đối chiếu ba mục kia bỏ qua phần dòng dưới ô |
+ | 2026-10-14 | `sd-select` — `div.mat-mdc-select-arrow` | Catalog có thẻ này (rỗng, ẩn bằng `sd-select .mat-mdc-select-arrow{display:none!important}`) ở 24 mẫu (#c-query-builder · #c-form-generic · #c-form-builder · #c-table), riêng mục #c-select bản chụp bỏ (7 mẫu) | **ĐÃ QUYẾT 2026-10-14** (Builder: *„Cần bạn quyết“*): vẽ thẻ **theo ngữ cảnh** như chính catalog — có khi `sd-select` nằm trong `sd-table` / `sd-query-builder` / `sd-form-render` / `sd-form-builder`, không có ở chỗ khác (mục #c-select). Cả hai phía khớp; thẻ vẫn ẩn nên không đổi hình |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-14 11:48:23.496759261 +0000
++++ b/_memory/lessons.md	2026-10-14 14:01:11.754653288 +0000
+@@ -1515,3 +1515,11 @@
+ - Gom màu theo bảng tra trước khi sửa trang: hai màn cùng feature từng tô "Sắp hiệu lực" / "Hết hiệu lực" khác nhau — PD quyết một lần.
+ - Kiểu icon thêm chữ ligature vào `innerText` của ô — kịch bản kiểm đọc chữ badge phải đọc `.c-badge-title`.
+ 
++## Gỡ CSS của "lớp móc" làm vỡ trang AI tự viết (2026-10-14, page-header)
++
++- Gỡ CSS khỏi một lớp mà tài liệu cũ / trang cũ / trí nhớ của AI còn dùng để VIẾT TAY (không chỉ để JS tìm) thì trang sinh sau vẫn có thể ra
++  markup đó. Trước khi gỡ: tìm cả ví dụ markup trong `ai-instructions/`, và để lại lưới an toàn có phạm vi (`:not(:has(> .c-page-header))`).
++- AI tự viết header khi KHÔNG biến thể nào diễn đạt được yêu cầu (vd nút "Thoát" + "Tiếp tục →"). Cấm (Rule 10) chưa đủ — phải cho pattern
++  diễn đạt được ca đó và ghi ví dụ.
++- Pattern không được im lặng bỏ qua khi cấu hình sai (`data-variant` lạ): quy về biến thể gần nhất + cảnh báo, đừng để trang trống.
++
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/generate-components.md b/ai-instructions/generate-components.md
+--- a/ai-instructions/generate-components.md	2026-10-14 11:48:23.496987335 +0000
++++ b/ai-instructions/generate-components.md	2026-10-14 13:51:59.112098051 +0000
+@@ -206,8 +206,24 @@
+      data-record-id="#SP-00123"
+      data-badge="Đang bán" data-badge-status="active"
+      data-primary-action="Lưu thay đổi"></div>
++
++<!-- Tạo NHIỀU BƯỚC (trang có sd-stepper) — vẫn là add, KHÔNG tự viết header -->
++<div data-pattern="page-header" data-variant="add"
++     data-title="Lập Treasury request"
++     data-back-href="danh-sach.html"
++     data-cancel-label="Thoát"
++     data-primary-action="Tiếp tục"
++     data-primary-suffix-icon="arrow_forward"></div>
+ ```
+ 
++> **Header KHÔNG BAO GIỜ viết tay** (Rule 10) — kể cả khi biến thể "có vẻ không vừa". Chỉ có 5 biến thể: `browse` · `read` ·
++> `read-approval` · `edit` · `add`. Trang tạo / sửa nhiều bước dùng `add` / `edit` + `data-cancel-label` (chỉ **Bỏ qua** · **Thoát** ·
++> **Quay lại** — Rule 16) + `data-primary-suffix-icon` (icon đuôi nút chính). Nút "Quay lại bước trước" / "Tiếp tục" giữa các bước thì
++> đặt trong thân bước của `sd-stepper`, không đặt thêm vào header. Markup tay kiểu cũ (`div.page-header > h1.page-title +
++> .page-header-actions`) từng làm header vỡ (tiêu đề h1 40px, nút rơi xuống dòng, mất nền trắng) — nay layout.css có lưới an toàn
++> vẽ lại theo hình `sd-page`, nhưng đó chỉ là chỗ đỡ cho trang cũ. Biến thể gõ sai (`wizard`, `stepper`, `create`…) được
++> pattern-loader quy về `add` / `read` / `browse` kèm cảnh báo trên console.
++
+ ### filter-bar — "outgrid filter" — 2 variants
+ 
+ > ⚠️ **Không phải mặc định cho Browse page.** Người dùng thường gọi 2 kiểu filter là: **"ingrid filter"** = ô filter dưới tiêu đề mỗi cột (mặc định, sd-table tự render — xem `sd-data.md`), và **"outgrid filter"** = filter-bar riêng phía trên bảng (2 variants dưới đây). **Mặc định luôn dùng ingrid filter. Chỉ thêm outgrid filter/filter-bar khi Builder/PO yêu cầu tường minh** bằng tên ("filter-bar", "outgrid filter", "thanh lọc riêng ngoài bảng") — không tự suy luận thêm chỉ vì bảng nhiều cột hoặc filter phức tạp. Xem preview `design-system/preview/patterns/browse-page-outgrid.html`.
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/html-to-angular.md b/ai-instructions/html-to-angular.md
+--- a/ai-instructions/html-to-angular.md	2026-10-14 11:48:23.497250689 +0000
++++ b/ai-instructions/html-to-angular.md	2026-10-14 13:51:59.112631368 +0000
+@@ -163,6 +163,7 @@
+ | ← Quay lại (read / edit) | `<sd-button prefixIcon="arrow_back" tooltip="Quay lại" type="link" (click)="back()" />` trong `headerLeft` |
+ | `data-record-id` · `data-badge` + `data-badge-status` | `<span class="T20M text-primary">#…</span>` · `<sd-badge [color] [icon] [fontSet] [title]>` (kiểu `icon` mặc định — không vẽ `round` như portal, 2026-10-14) |
+ | `data-primary-action` (+ icon) · tác vụ phụ · `data-actions` | các `sd-button` trong `<div headerRight class="d-flex align-items-center flex-wrap gap-8 justify-content-end">` |
++| `data-cancel-label` (Bỏ qua / Thoát / Quay lại) · `data-primary-suffix-icon` | `<sd-button type="link" color="primary" title="Thoát" />` · nút chính `suffixIcon="arrow_forward"` trong `headerRight` |
+ | `data-page-tabs` | `<div class="bg-white"><sd-tab-group [stretchTabs]="false" [(selectedIndex)]="tab">…</sd-tab-group></div>` ngay sau header |
+ | `.content-zone` | nội dung mặc định của `<sd-page>` |
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/js/pattern-loader.js b/design-system/core/js/pattern-loader.js
+--- a/design-system/core/js/pattern-loader.js	2026-10-14 11:48:23.440246135 +0000
++++ b/design-system/core/js/pattern-loader.js	2026-10-14 13:51:13.013843121 +0000
+@@ -161,13 +161,30 @@
+     };
+   }
+ 
++  /* Biến thể AI hay đoán mà pattern không có → quy về biến thể gần nghĩa nhất (2026-10-14). Trước: bỏ qua cả
++     phần tử → trang mất hẳn header (hoặc lộ HTML thô viết bên trong). */
++  var PH_VARIANT_ALIAS = {
++    create: 'add', 'new': 'add', wizard: 'add', stepper: 'add', step: 'add', form: 'add', update: 'edit',
++    detail: 'read', view: 'read', approval: 'read-approval', list: 'browse', index: 'browse'
++  };
++  var PH_CANCEL_LABELS = ['Bỏ qua', 'Thoát', 'Quay lại'];   /* Rule 16 */
++
+   function processPageHeader(el, pattern, attrs) {
+     var variant = el.getAttribute('data-variant') || 'browse';
+     var tpl = pattern.variants[variant];
+     if (!tpl) {
+-      console.warn('[OMEU] page-header: unknown variant "' + variant + '"');
+-      return;
++      var fb = PH_VARIANT_ALIAS[String(variant).toLowerCase()] ||
++        (attrs['back-href'] || attrs['primary-action'] ? 'add' : 'browse');
++      console.warn('[OMEU] page-header: biến thể "' + variant + '" không có → dùng "' + fb + '" (có: browse · read · read-approval · edit · add)');
++      variant = fb;
++      tpl = pattern.variants[variant];
++    }
++    /* nhãn nút thoát của edit / add — chỉ nhận 3 nhãn của Rule 16 */
++    if (attrs['cancel-label'] && PH_CANCEL_LABELS.indexOf(attrs['cancel-label'].trim()) === -1) {
++      console.warn('[OMEU] page-header: data-cancel-label "' + attrs['cancel-label'] + '" không thuộc Rule 16 → "Bỏ qua"');
++      attrs['cancel-label'] = 'Bỏ qua';
+     }
++    attrs['primary-suffix-attr'] = attrs['primary-suffix-icon'] ? 'suffixIcon="' + attrs['primary-suffix-icon'] + '" ' : '';
+ 
+     // read-approval: tác vụ từ data-actions ("icon:nhãn,…" hoặc "nhãn,…"), nút chính dời ra ngoài cùng bên phải
+     if (variant === 'read-approval') {
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/layout.css b/design-system/core/styles/layout.css
+--- a/design-system/core/styles/layout.css	2026-10-14 11:48:23.440293059 +0000
++++ b/design-system/core/styles/layout.css	2026-10-14 13:51:31.749351571 +0000
+@@ -744,6 +744,37 @@
+   margin: 0;
+ }
+ 
++/* ── Header VIẾT TAY (không qua data-pattern) — lưới an toàn 2026-10-14 ─────────────────────
++   Rule 10 cấm tự viết header, nhưng trang sinh trước bản sd-page (hoặc AI chép markup cũ) còn
++   `div.page-header > div.page-header-content > h1.page-title + div.page-header-actions`. Khi lớp móc thôi
++   có CSS (2026-10-14) khung đó vỡ: tiêu đề h1 40px của reboot, nút rơi xuống dòng dưới, mất nền trắng.
++   Khối dưới CHỈ áp khi `.page-header` KHÔNG có `.c-page-header` (tức không do pattern dựng) và vẽ lại đúng
++   hình header của `sd-page`: nền trắng + bóng của SdPageComponent, hàng `p-16 d-flex align-items-center
++   justify-content-between`, tiêu đề `T20M`, mã bản ghi `T20M text-primary`, mô tả `T14R text-secondary mt-4`.
++   Header do pattern dựng không bị ảnh hưởng. Trang mới vẫn PHẢI dùng data-pattern="page-header". */
++.page-header:not(:has(> .c-page-header)) {
++  background: #fff;
++  box-shadow: 0 1px 2px #2f31361a;
++  position: relative;
++  z-index: 1;
++}
++.page-header:not(:has(> .c-page-header)):not(:has(> .page-header-content)),
++.page-header:not(:has(> .c-page-header)) > .page-header-content {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 8px;
++  padding: 16px;
++  width: 100%;
++}
++.page-header:not(:has(> .c-page-header)) .page-header-left { display: flex; flex-direction: column; min-width: 0; }
++.page-header:not(:has(> .c-page-header)) .page-title-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
++.page-header:not(:has(> .c-page-header)) .page-title,
++.page-header:not(:has(> .c-page-header)) .record-id { font-size: 20px; font-weight: 500; line-height: 28px; margin: 0; }
++.page-header:not(:has(> .c-page-header)) .record-id { color: var(--sd-primary); }
++.page-header:not(:has(> .c-page-header)) .page-subtitle { font-size: 14px; font-weight: 400; line-height: 20px; color: var(--sd-secondary); margin: 4px 0 0; }
++.page-header:not(:has(> .c-page-header)) .page-header-actions { flex-wrap: wrap; justify-content: flex-end; }
++
+ /* Giữ: vài trang tự tạo div.page-header-actions bằng JS (không có lớp tiện ích) */
+ .page-header-actions {
+   display: flex;
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/patterns/page-header.js b/design-system/patterns/page-header.js
+--- a/design-system/patterns/page-header.js	2026-10-14 11:48:23.497869798 +0000
++++ b/design-system/patterns/page-header.js	2026-10-14 13:51:13.013091052 +0000
+@@ -39,6 +39,11 @@
+  *   data-back-href       — đích của ← Quay lại và "Bỏ qua" (19 trang đã khai từ trước nhưng pattern cũ bỏ qua);
+  *                          không khai thì history.back().
+  *
++ * edit / add — thêm 2026-10-14 cho trang tạo NHIỀU BƯỚC (sd-stepper), để AI không phải tự viết header:
++ *   data-cancel-label    — nhãn nút thoát: CHỈ "Bỏ qua" (mặc định) · "Thoát" · "Quay lại" (Rule 16); nhãn khác → "Bỏ qua".
++ *   data-primary-suffix-icon — icon ĐUÔI của nút chính (`suffixIcon` của sd-button), vd "arrow_forward" cho "Tiếp tục".
++ *   Biến thể lạ (wizard, stepper, create, form…) không còn làm mất header: pattern-loader quy về add / read / browse.
++ *
+  * data-badge-status — khoá STATUS_MAP (active, pending, waiting, approved…). pattern-loader tra ra color / icon / fontSet
+  *                     rồi vẽ `<sd-badge>` kiểu `icon` (mặc định của sd-badge — icon + chữ, không nền).
+  *                     2026-10-14 (Builder: „Page-header: đổi theo“ — trạng thái lifecycle toàn kit dùng kiểu icon):
+@@ -76,9 +81,9 @@
+ 
+   var EDIT_TPL = DETAIL_LEFT + `
+ ` + RIGHT_OPEN + `
+-  <sd-button type="link" color="primary" size="sm" title="Bỏ qua" onclick="var h='{{back-href}}';if(h)location.href=h;else history.back();"></sd-button>
++  <sd-button type="link" color="primary" size="sm" title="{{cancel-label}}" onclick="var h='{{back-href}}';if(h)location.href=h;else history.back();"></sd-button>
+   {{#if has-draft}}<sd-button type="light" color="primary" size="sm" title="Lưu nháp"></sd-button>{{/if}}
+-  <sd-button type="fill" color="primary" size="sm" {{primary-icon-attr}}title="{{primary-action}}"></sd-button>
++  <sd-button type="fill" color="primary" size="sm" {{primary-icon-attr}}{{primary-suffix-attr}}title="{{primary-action}}"></sd-button>
+ </div>`;
+ 
+   OMEU_PATTERNS['page-header'] = {
+@@ -126,7 +131,8 @@
+       'back-href': '',
+       'actions': '',
+       'subtitle': '',
+-      'page-tabs': ''
++      'page-tabs': '',
++      'cancel-label': 'Bỏ qua'
+     }
+   };
+ })();
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/patterns/page-header.html b/design-system/preview/patterns/page-header.html
+--- a/design-system/preview/patterns/page-header.html	2026-10-14 11:48:23.498783698 +0000
++++ b/design-system/preview/patterns/page-header.html	2026-10-14 13:52:14.399144436 +0000
+@@ -240,6 +240,8 @@
+                   <tr><td>data-primary-href</td><td>URL</td><td>-</td><td>Link cho primary button</td></tr>
+                   <tr><td>data-back-href</td><td>URL</td><td>history.back()</td><td>Đích của ← Quay lại và "Bỏ qua" (read / read-approval / edit)</td></tr>
+                   <tr><td>data-has-draft</td><td>true</td><td>-</td><td>Hiện nút Lưu nháp (edit)</td></tr>
++                  <tr><td>data-cancel-label</td><td>Bỏ qua | Thoát | Quay lại</td><td>Bỏ qua</td><td>Nhãn nút thoát (edit / add) — chỉ 3 nhãn của Rule 16, nhãn khác quy về "Bỏ qua". Trang tạo nhiều bước (sd-stepper) dùng "Thoát" (2026-10-14)</td></tr>
++                  <tr><td>data-primary-suffix-icon</td><td>material icon name</td><td>-</td><td>Icon ĐUÔI nút chính (edit / add) = <code>suffixIcon</code> của sd-button, vd <code>arrow_forward</code> cho "Tiếp tục" (2026-10-14)</td></tr>
+                   <tr><td>data-show-history</td><td>true | false</td><td>true</td><td>Nút "Lịch sử thay đổi" (read / read-approval) — light secondary, chỉ icon + tooltip</td></tr>
+                   <tr><td>data-actions</td><td>CSV hoặc "icon:label,…"</td><td>-</td><td>Tác vụ (read-approval) theo luật portal: Từ chối → light warning · Duyệt / Phê duyệt → light success · Chỉnh sửa → fill primary ngoài cùng phải · nhãn khác → light secondary</td></tr>
+                   <tr><td>data-page-tabs</td><td>CSV: "Tab 1,Tab 2,Tab 3"</td><td>-</td><td>Tab trong trang = <code>sd-tab-group stretchTabs="false"</code>, nằm DƯỚI khung header như portal. Prefix * để chọn active: "*Tab 2". JS: nghe <code>sd-tab-change</code>; lớp móc cũ <code>.page-tab-zone .tab</code> vẫn chạy</td></tr>

@@ -1,0 +1,2155 @@
+# PREVIEWIMAGE-2026-10-13 — sd-preview-image khớp catalog #c-preview-image + mã thư viện @sd-angular/core 19.0.10
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/PREVIEWIMAGE-2026-10-13.patch
+# 6 file: sd-components.js · sd-tokens.css · preview-image.html · sd-overlay.md · known-gaps.md · CHANGELOG.md
+
+diff -ruN a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-13 05:10:00.030978814 +0000
++++ b/CHANGELOG.md	2026-10-13 05:10:00.049876443 +0000
+@@ -8,6 +8,32 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `sd-preview-image` khớp catalog `#c-preview-image` + mã thư viện
++
++Builder: *„Tiếp tục phần Preview image `sd-preview-image`…“*
++
++- **Viết lại component theo mã thật của thư viện** (`@sd-angular/core` 19.0.10, cùng file với
++  preview-pdf): template, mặc định (`showToolbar` / `zoomable` / `downloadable` / `loop` = true), chuỗi
++  tiếng Việt, phím tắt, tên phương thức (`updateCurrentImage`, `zoomIn`, `fitToScreen`, `rotate`,
++  `retryActive`, `requestClose`…). Mới chạy được: `thumbnailPosition` **top · left · dots · none**
++  (trước quy về bottom), trạng thái **"Đang tải ảnh..."**, header ẩn khi rỗng (`title` chỉ hiện khi
++  không có ảnh), dung lượng lấy từ file thật khi không khai `size`, ảnh hỏng ở thumbnail
++  (`__broken`), lăn chuột / nhấp đúp zoom, kéo di ảnh, vuốt chuyển ảnh, pinch, phím `+ - 0 r R f d`.
++- Sửa cho đúng thư viện: zoom bước **10%** (trước 25%); **Esc không còn phát `sd-close`**; nút
++  "Vừa khung" luôn còn khi `zoomable="false"` và không có `title`; nhãn toàn màn hình không đổi.
++- Theo catalog chỗ catalog khác thư viện: ảnh lỗi **không vẽ toolbar** và vẫn hiện `size` khai sẵn;
++  thumbnail mang `data-i` (không có `id`).
++- CSS chép nguyên thứ tự `preview-image.css` của catalog + 16 luật thư viện cho phần catalog không
++  minh hoạ (fullscreen, header đơn giản, 4 vị trí thumbnail, chấm, spinner, thumbnail lỗi); thêm
++  padding UA cho nút điều hướng (reset `*{padding:0}` của kit làm lệch 6px).
++- So DOM + số đo 4/4 ví dụ catalog: **0 lệch**. Trang preview dựng lại theo catalog (4 bản scan
++  hồ sơ giả lập lấy nguyên từ catalog) + ví dụ top / left / dots / none / tắt cờ / modal; docs
++  `sd-overlay.md`. Gỡ helper `sdHasFlag` / `sdIconBtn` không còn ai dùng.
++
++Kiểm: 30 phép thử tương tác PASS (chuyển ảnh · loop · thumbnail · chấm · zoom · xoay · vừa khung ·
++phím · lăn · nhấp đúp · kéo · vuốt · thử lại · File · lỗi vẽ · sự kiện). Chi tiết lệch có chủ ý:
++`_memory/known-gaps.md`. Bản vá: `reviews/ds-mirror/PREVIEWIMAGE-2026-10-13.patch`.
++
+ ### Changed — `sd-preview-pdf` chạy pdf.js thật, khớp catalog `#c-preview-pdf` + mã thư viện
+ 
+ Builder: *„Tiếp tục phần Preview PDF `sd-preview-pdf`…“* → chọn **„Nhúng pdf.js vào kit“**.
+diff -ruN a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-13 05:10:00.034683787 +0000
++++ b/_memory/known-gaps.md	2026-10-13 05:10:00.052127323 +0000
+@@ -216,6 +216,33 @@
+ | `src` | không có | bí danh của `source` | Ngoại lệ 3 Rule 18 (markup cũ) |
+ | Export prototype (1 file HTML) | — | trang có `sd-preview-pdf` phải nhúng thêm `vendor/pdfjs/*.js` (~1,7 MB) | Ghi ở `ai-instructions/export.md` |
+ 
++## `sd-preview-image` — ĐỒNG BỘ 2026-10-13 theo catalog + mã thư viện
++
++Nguồn đối chiếu: catalog `#c-preview-image` + **mã thật của thư viện** (`fesm2022/sd-angular-core-components-preview.mjs`
++dòng 13–660: template, logic, mặc định; chuỗi VI `core.component.preview-image.*`). So 4 ví dụ catalog
++(mặc định dark · light + thumbnail phải · rỗng · lỗi tải ảnh): **DOM (bỏ `src` ảnh) trùng 100%, tên lớp
++từng thẻ trùng thứ tự, toạ độ / màu / chữ trùng — 0 dòng lệch.**
++
++| Chỗ | Catalog / thư viện | Kit | Vì sao |
++|---|---|---|---|
++| Toolbar khi ảnh đang xem bị lỗi | thư viện VẪN vẽ (chỉ xét `stage === 'ready'`); catalog KHÔNG vẽ | **không vẽ** | Theo catalog |
++| Dung lượng ở header khi ảnh lỗi | thư viện `size: 0` (ẩn dòng phụ); catalog hiện `844.0 KB` | hiện `size` khai sẵn | Theo catalog. Kiểu item catalog ghi `{ url, name, size?, caption? }`; thư viện bỏ `size` của object |
++| `id="sd-preview-thumb-N"` trên thumbnail | thư viện có (trùng id khi nhiều viewer / trang); catalog thay bằng `data-i="N"` | `data-i="N"` | Theo DOM catalog; cuộn tới thumbnail tìm theo `data-i` |
++| `fetch` URL ảnh | `fetch` → blob → `size` thật; hỏng → bản ghi lỗi | y hệt + **bước dự phòng**: `fetch` hỏng thì thử `<img>`; hiện được thì dùng URL gốc (không có dung lượng) | Trang mở bằng `file://` bị Chrome chặn `fetch` ảnh cục bộ — không có bước này mọi ảnh demo đều "Không tải được ảnh" |
++| Esc | thư viện không bắt Esc | y hệt — **bản cũ của kit phát `sd-close` khi Esc** | Trang nào dựa vào Esc để đóng modal phải tự lo; `requestClose()` là cách phát `sd-close` |
++| Zoom | bước 0.1 (25%–400%), lăn ×1.1/×0.9, nhấp đúp 200% ↔ vừa khung | y hệt — **bản cũ: bước 25%** | |
++| `zoomable="false"` | chỉ ẩn cụm − % +; nút "Vừa khung" (không có `title`) và vạch ngăn trước "Tải xuống" luôn còn | y hệt — bản cũ ẩn cả "Vừa khung" | |
++| Nút toàn màn hình | nhãn luôn "Toàn màn hình", chỉ đổi icon `fullscreen_exit` | y hệt — bản cũ đổi nhãn "Thoát toàn màn hình" | |
++| `dots` | chấm và toolbar cùng `bottom:24px`, toolbar vẽ sau nên **đè lên chấm** | y hệt | Hành vi thư viện; trang preview tắt toolbar ở ví dụ `dots` |
++| aria-label của chấm | "Ảnh tiếp theo" trên MỌI chấm | y hệt | Nguyên văn template thư viện |
++| `title` | chỉ hiện khi KHÔNG có ảnh (header `--simple`) | y hệt — bản cũ hiện cả khi có ảnh | |
++| Trạng thái "Đang tải ảnh..." | stage `loading` lúc đang `fetch` | y hệt | |
++| Host tự focus sau lần vẽ đầu | `afterNextRender → focus({ preventScroll: true })` | y hệt | Nhiều viewer / trang: viewer sau cùng giữ focus |
++| `detail` của `sd-active-index-change` | Angular phát số trần | `{ activeIndex }` | Giữ dạng cũ của kit |
++| Setter `activeIndex` | không có (chỉ `startIndex`) | có — kẹp biên, không phát sự kiện | Tiện ích cũ của kit (2026-10-08), giữ để không vỡ trang |
++| `src` | không có | bí danh một URL | Ngoại lệ 3 Rule 18 |
++| `data-autoid` trên host | không có | có | Quy ước kit-wide của `sd-autoid-inspector` |
++
+ ## `sd-query-bar` — rà soát `#c-query-bar` 2026-10-13
+ 
+ Đo 6 thanh của catalog (popover mặc định · chip popover mở · field picker mở · inline · comfortable +
+@@ -608,7 +635,7 @@
+ | `option.filter.externalFilters` (sd-table) | Khai bộ lọc ngoài ngay trong `option` của bảng | **Kit CÓ năng lực này**, nhưng khai ở chỗ khác: pattern `filter-bar` (hoặc `sd-query-bar`) đặt phía trên bảng | Rà lại 2026-10-11 — lý do cũ ("gộp hai cơ chế đẻ ra hai nguồn sự thật") **so sai đối tượng**: nó so với hàng lọc theo cột, trong khi catalog dựng lọc ngoài thành `<external-filter>` bọc một `sd-section` tiêu đề **"Bộ lọc"** (icon `filter_alt`, cụm nút bên phải, lưới ô lọc bên trong) — **đúng y pattern `filter-bar` của kit**. Khác đúng CHỖ KHAI: catalog khai trong `option` của bảng, kit để trang tự đặt pattern. Rule 10 của AGENTS.md vốn đã bắt dùng pattern cho vùng này |
+ | `option.commands` (sd-table) | Mảng lệnh theo dòng ở cấp `option` | Kit dựng bằng **cột** `type:"action"` / `type:"menu"` | Attribute JSON không mang được `click: row => …`; kit bắn `sd-table-menu-click` để trang tự nối. Khác chỗ KHAI, không khác năng lực (2026-10-11) |
+ | `filterRequired` (sd-table) | Catalog có khối rỗng thứ ba *"Vui lòng chọn bộ lọc để bắt đầu"* (`sd-image-filter-required`) | Dựng ảnh + câu chữ **đúng catalog**, nhưng bật bằng attribute `filterRequired` do kit đặt tên | Catalog chỉ có **nút bật/tắt trong trang demo**, bảng API KHÔNG khai tên input nào cho trạng thái này. Không đoán tên của thư viện; đặt tên riêng và ghi rõ ở đây (2026-10-11) |
+-| `thumbnailPosition` = `top` · `left` · `dots` · `none` (sd-preview-image) | Catalog nhắc bốn tên này trong ghi chú cuối mục | **Quy hết về `bottom`** | CSS catalog chỉ có `--pos-bottom` và `--pos-right`; bốn giá trị kia không có lớp, không có ví dụ. Dựng là đoán (2026-10-11) |
++| ~~`thumbnailPosition` = `top` · `left` · `dots` · `none` (sd-preview-image)~~ **ĐÃ DỰNG 2026-10-13** theo mã thư viện (`--pos-top` column-reverse · `--pos-left` row-reverse + dải dọc có tên · `dots` chấm chỉ số · `none`); ghi chú cũ giữ dưới đây | Catalog nhắc bốn tên này trong ghi chú cuối mục | **Quy hết về `bottom`** | CSS catalog chỉ có `--pos-bottom` và `--pos-right`; bốn giá trị kia không có lớp, không có ví dụ. Dựng là đoán (2026-10-11) |
+ | `.c-sd-tooltip-panel.pos-{top,bottom,left,right}` | Lớp ĐỊNH VỊ của Angular CDK, đặt tooltip tương đối so với phần tử kích hoạt | Kit định vị bằng JS trên một node `position:fixed` dùng chung | Node dùng chung tránh bị `overflow:hidden` của khung cha cắt mất. Bong bóng vẫn mang tên `.c-sd-tooltip-container` của catalog nên CSS viết theo catalog khớp; chỉ lớp định vị là không có (2026-10-11) |
+ | `sd-splitter` — `flex-direction` trên thẻ host | `sd-splitter.sd-splitter--horizontal{flex-direction:row}` | Kit để `flex-direction` trên khung bọc bên trong (`[data-orientation]`) | Thẻ host của kit là `display:block` bọc một khung flex; `flex-direction` đặt lên block không có tác dụng. Lớp `--horizontal`/`--vertical` của catalog **vẫn được gắn** lên host để CSS ngoài nhận ra hướng (2026-10-11) |
+ | `.sd-image-*` của sd-table | Catalog nhúng ảnh bằng `content:url("data:image/svg+xml,…")` ngay trong CSS | Kit tách ra **ba file SVG** trong `design-system/core/assets/` và đặt vào `<img src>` | Rule 12 của AGENTS.md: ảnh trạng thái rỗng lấy từ thư mục assets. Nội dung SVG trích **nguyên văn** từ catalog, chỉ đổi cách nạp (2026-10-11) |
+diff -ruN a/design-system/components/sd-overlay.md b/design-system/components/sd-overlay.md
+--- a/design-system/components/sd-overlay.md	2026-10-13 05:10:00.038167027 +0000
++++ b/design-system/components/sd-overlay.md	2026-10-13 05:10:00.053726664 +0000
+@@ -198,73 +198,77 @@
+ 
+ ## sd-preview-image
+ 
+-Viewer ảnh inline - không tự bọc modal, consumer chủ động đặt vào `sd-modal` nếu cần lightbox.
++Khung xem nhiều ảnh tự co theo phần tử cha (đặt trong khung có chiều cao: `<div style="height:540px">`,
++`sd-modal`, `sd-side-drawer`…). **Đồng bộ 2026-10-13** theo Core UI Catalog `#c-preview-image` **và mã
++thật của thư viện** `@sd-angular/core` 19.0.10 (`fesm2022/sd-angular-core-components-preview.mjs` —
++template, logic, mặc định, chuỗi tiếng Việt `core.component.preview-image.*`). So DOM + số đo với
++catalog: 4/4 ví dụ khớp 100%.
+ 
+ | Attribute | Values | Default |
+ |-----------|--------|---------|
+-| `items` | JSON PreviewItem[] hoặc property JS `.items` | - |
+-| `src` | string - một URL ảnh (mirror thêm, Portal không có input này) | - |
+-| `thumbnailPosition` | `bottom`, `top`, `left`, `right` | `bottom` |
++| `items` | property JS `.items` (hoặc JSON qua attribute) | `[]` |
++| `thumbnailPosition` | `bottom`, `top`, `left`, `right`, `dots`, `none` | `bottom` |
+ | `startIndex` | number - mở sẵn ở ảnh thứ mấy (0-based) | `0` |
+-| `autoId` | string | - |
+-| `theme` | `dark`, `light` | `dark` |
+-| `loop` | boolean | **`true`** |
+ | `showToolbar` | boolean | **`true`** |
+-| `zoomable` | boolean | `true` |
+-| `downloadable` | boolean | `true` |
+-| `title` | string - tên tài liệu | - |
+-
+-`PreviewItem = string | File | { url?, file?, name?, caption?, alt?, mime?, size? }`.
+-`items` dạng File không truyền qua attribute được - dùng property JS `.items`; dạng string URL có thể truyền qua attribute `items='["url"]'` hoặc `src`.
+-`size` (2026-10-11) là **dòng phụ dưới tên file** ở thanh tiêu đề, đúng chỗ catalog hiện ` 2.4 MB `. Nhận chuỗi sẵn (`"2.4 MB"`) hoặc số byte — số byte được đổi sang `KB`/`MB`/`GB` một chữ số thập phân; `File` thì tự lấy `file.size`.
++| `zoomable` | boolean | **`true`** |
++| `downloadable` | boolean | **`true`** |
++| `loop` | boolean | **`true`** |
++| `theme` | `dark`, `light` → host `data-theme` | `dark` |
++| `title` | string - **chỉ hiện khi không có ảnh** (header đơn giản) | - |
++| `autoId` | string → `data-autoId="components-preview-image-{autoId}-{prev, next, zoom-in, zoom-out, fit, rotate, download, fullscreen, retry, thumb-N, dot-N}"` | - |
++| `src` | một URL ảnh - bí danh cũ của kit (ngoại lệ 3 Rule 18) | - |
++
++Bốn cờ boolean mặc định **true** (`input(true, { transform: booleanAttribute })`): không khai = bật, khai `="false"` = tắt.
++
++`items: (string | File | { url?, file?, name?, caption?, alt?, size? })[]`
++- string / `url` → `fetch` thành blob (như thư viện). `size` khai sẵn thì dùng (chuỗi `"2.4 MB"` hoặc số byte), không thì lấy cỡ blob thật. Tên mặc định = đoạn cuối đường dẫn.
++- Trang mở bằng `file://` chặn `fetch` → kit thử nạp thẳng bằng `<img>` (ảnh hiện được thì dùng URL gốc); hỏng hẳn → bản ghi lỗi: "Không tải được ảnh" + **Thử lại**.
++- `File` / `{ file }` không phải `image/*` bị bỏ qua yên lặng.
+ 
+-**Cấu trúc DOM (2026-10-11 dựng lại theo Core UI Catalog `#c-preview-image`):**
++**Cấu trúc DOM** (y hệt template thư viện):
+ 
+ ```
+ sd-preview-image.sd-preview-image-host[tabindex=0][data-theme]
+-└ .sd-preview-shell.sd-preview-shell--pos-{bottom|right}
+-  ├ .sd-preview-header                 (cao 68px)
+-  │ ├ .sd-preview-header__left > icon + .sd-preview-header__meta
+-  │ │                                   (__name + __sub = dung lượng)
+-  │ └ .sd-preview-header__counter      (viên thuốc canh giữa tuyệt đối)
++└ .sd-preview-shell.sd-preview-shell--pos-{bottom|top|left|right|dots|none}[.--fullscreen]
++  ├ .sd-preview-header                 (cao 68px; ẩn khi không có ảnh, hoặc --simple chỉ có title)
++  │ ├ .sd-preview-header__left > icon + .sd-preview-header__meta (__name.T14M + __sub = dung lượng)
++  │ └ .sd-preview-header__counter      (chỉ khi > 1 ảnh)
+   └ .sd-preview-body
+-    ├ .sd-preview-stage                (nền ca-rô 24px)
+-    │ ├ img.sd-preview-image           (transform scale+rotate)
+-    │ ├ .sd-preview-caption
+-    │ ├ .sd-preview-kbd-hint           (← → chuyển ảnh)
+-    │ ├ .sd-preview-nav--prev / --next (tròn 48px, hai bên)
+-    │ └ .sd-preview-toolbar            (NỔI ở đáy khung ảnh)
+-    └ .sd-preview-thumbs[--vertical]   (cao 116px; thumb 120×76, dọc 128px)
++    ├ .sd-preview-stage[--dragging khi zoom > 1]
++    │ ├ .sd-preview-status (rỗng / đang tải) | .sd-preview-image-broken | img.sd-preview-image + .sd-preview-caption
++    │ ├ .sd-preview-kbd-hint · .sd-preview-nav--prev / --next     (chỉ khi > 1 ảnh)
++    │ ├ .sd-preview-dots                                          (thumbnailPosition="dots")
++    │ └ .sd-preview-toolbar  − % + │ Vừa khung · Xoay │ Tải xuống · Toàn màn hình
++    └ .sd-preview-thumbs[--vertical]   (left/right: dọc + tên file; ẩn với dots/none)
++      └ button.sd-preview-thumb[data-i] > img | .sd-preview-thumb__broken, __badge, __name
+ ```
+ 
+-Trạng thái rỗng và ảnh lỗi dùng `.sd-preview-status__tile--muted` / `--danger`
+-kèm nút `.sd-preview-btn-primary` **Thử lại**, chép nguyên chữ của catalog.
+-Toàn màn hình gắn lớp `sd-preview-image-host--fullscreen` (100vw/100vh).
+-
+-`thumbnailPosition`: catalog **chỉ minh hoạ** `bottom` (`--pos-bottom`) và cột dọc
+-(`--pos-right`); `top`, `left`, `dots`, `none` được catalog nhắc tên nhưng không có
+-ví dụ → kit quy về `bottom`, xem `_memory/known-gaps.md`.
++Thao tác: zoom bước 10% (25%–400%), lăn chuột ×1.1/×0.9, nhấp đúp 200% ↔ vừa khung, kéo để di ảnh khi
++zoom > 1, vuốt ngang ≥ 40px để chuyển ảnh, pinch 2 ngón. Phím (khi viewer đang focus — viewer tự focus lúc
++dựng): ← → · `+` `=` `-` · `0` vừa khung · `r` / `R` xoay phải / trái · `f` toàn màn hình · `d` tải xuống.
++**Esc không làm gì** (thư viện không bắt Esc).
++
++**Method:** `updateCurrentImage(±1)`, `onClickThumbnailImage(i)`, `zoomIn()`, `zoomOut()`, `fitToScreen()`,
++`rotate('right'|'left')`, `downloadCurrent()`, `toggleFullscreen()`, `retryActive()`, `requestClose()`;
++thuộc tính `activeIndex` (đọc; gán được là tiện ích riêng của kit — kẹp biên, không phát sự kiện).
+ 
+ **Events - ánh xạ kebab sang Angular:**
+ 
+ | Mirror (kebab) | Angular | detail | Khi nào fire |
+ |----------------|---------|--------|--------------|
+-| `sd-active-index-change` | `activeIndexChange` | `{ activeIndex }` | Đổi ảnh đang xem |
+-| `sd-download` | `download` | `{ index, item }` | Bấm nút tải xuống |
+-| `sd-image-error` | `imageError` | `{ index, reason }` | Ảnh tải lỗi |
+-| `sd-close` | `close` | `{}` | Bấm Escape trong viewer - consumer tự đóng modal/drawer |
+-
+-Phím mũi tên ← → chuyển ảnh khi viewer đang focus; khi `loop` tắt, nút chuyển bị disabled ở 2 đầu dải.
++| `sd-active-index-change` | `activeIndexChange` | `{ activeIndex }` (Angular emit thẳng số) | Đổi ảnh đang xem |
++| `sd-download` | `download` | `{ index, item }` | Nút tải xuống / phím `d` |
++| `sd-image-error` | `imageError` | `{ index, reason: 'render-failed' }` | Thẻ `<img>` không vẽ được |
++| `sd-close` | `close` | `{}` | **Chỉ** khi gọi `requestClose()` |
+ 
+ ```html
+-<sd-preview-image thumbnailPosition="bottom" theme="dark" loop
+-  showToolbar zoomable downloadable
+-  title="Bộ ảnh sản phẩm"></sd-preview-image>
+-
++<div style="height: 560px">
++  <sd-preview-image id="ho-so" startIndex="1" thumbnailPosition="bottom" autoId="ho-so-khach-hang"></sd-preview-image>
++</div>
+ <script>
+-  viewer.items = [
+-    'https://cdn.example.vn/1.jpg',
+-    { url: 'https://cdn.example.vn/3.jpg', name: 'banner.jpg', caption: 'Khuyến mãi' }
++  document.getElementById('ho-so').items = [
++    { url: 'https://cdn.example.vn/cccd.jpg', name: 'CCCD_mat_truoc.jpg' },
++    { url: 'https://cdn.example.vn/dkkd.png', name: 'Giay_DKKD_trang_1.png', caption: 'Bản scan có dấu đỏ – nhận ngày 02/10/2026' }
+   ];
+ </script>
+ ```
+diff -ruN a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-13 05:10:00.036532493 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-13 05:10:00.053071488 +0000
+@@ -6571,477 +6571,97 @@
+ }
+ 
+ /* ── sd-preview-image ────────────────────────────────────────
+-   Rà soát 2026-10-11: dựng LẠI theo Core UI Catalog `#c-preview-image`.
+-   Bản trước kit tự đặt một bộ tên riêng (`.sd-preview-image-main`,
+-   `-toolbar-group`, `-thumb-num`…) và một bố cục khác hẳn: lưới 3 hàng,
+-   thanh công cụ nằm trên cùng. Catalog dùng bộ tên BEM `.sd-preview-shell`,
+-   `.sd-preview-header__*`, `.sd-preview-stage`, `.sd-preview-toolbar__*`,
+-   `.sd-preview-thumb__*`, với thanh công cụ NỔI ở đáy khung ảnh, hai mũi tên
+-   hai bên, tiêu đề cao 68px có tên file + dung lượng và bộ đếm canh giữa.
+-   Toàn bộ giá trị dưới đây chép nguyên văn từ CSS của catalog.
+-   ──────────────────────────────────────────────────────────── */
+-sd-preview-image {
+-  --sd-preview-shell-bg: #0d0e10;
+-  --sd-preview-shell-bg-2: #17191c;
+-  --sd-preview-panel-bg: rgba(15, 17, 20, .92);
+-  --sd-preview-divider: rgba(255, 255, 255, .08);
+-  --sd-preview-fg: #f5f6f7;
+-  --sd-preview-fg-muted: rgba(255, 255, 255, .6);
+-  --sd-preview-fg-subtle: rgba(255, 255, 255, .4);
+-  --sd-preview-accent: var(--sd-primary, #3b82f6);
+-  --sd-preview-accent-soft: rgba(59, 130, 246, .2);
+-  --sd-preview-danger: var(--sd-error, #ef4444);
+-  --sd-preview-success: var(--sd-success, #22c55e);
+-  --sd-preview-danger-soft: rgba(239, 68, 68, .1);
+-  --sd-preview-danger-border: rgba(239, 68, 68, .3);
+-  --sd-preview-hover-bg: rgba(255, 255, 255, .1);
+-  display: block;
+-  width: 100%;
+-  height: 100%;
+-  min-height: 320px;
+-  outline: none;
+-}
+-sd-preview-image * { box-sizing: border-box; }
+-sd-preview-image[data-theme="light"] {
+-  --sd-preview-shell-bg: #f7f8fa;
+-  --sd-preview-shell-bg-2: #ffffff;
+-  --sd-preview-panel-bg: rgba(255, 255, 255, .94);
+-  --sd-preview-divider: rgba(0, 0, 0, .08);
+-  --sd-preview-fg: #1a1c1f;
+-  --sd-preview-fg-muted: rgba(0, 0, 0, .62);
+-  --sd-preview-fg-subtle: rgba(0, 0, 0, .42);
+-  --sd-preview-accent: var(--sd-primary, #1f49bf);
+-  --sd-preview-accent-soft: rgba(31, 73, 191, .18);
+-  --sd-preview-danger: var(--sd-error, #ef4444);
+-  --sd-preview-success: var(--sd-success, #22c55e);
+-  --sd-preview-danger-soft: rgba(239, 68, 68, .08);
+-  --sd-preview-danger-border: rgba(239, 68, 68, .25);
+-  --sd-preview-hover-bg: rgba(0, 0, 0, .06);
+-}
+-sd-preview-image.sd-preview-image-host--fullscreen {
+-  width: 100vw;
+-  height: 100vh;
+-  min-height: 0;
+-}
+-sd-preview-image .sd-preview-shell {
+-  position: relative;
+-  display: flex;
+-  flex-direction: column;
+-  width: 100%;
+-  height: 100%;
+-  background: var(--sd-preview-shell-bg);
+-  color: var(--sd-preview-fg);
+-  border-radius: 12px;
+-  overflow: hidden;
+-  box-shadow: 0 30px 80px #0000008c, 0 0 0 1px #ffffff0a;
+-  font-family: inherit;
+-}
+-sd-preview-image .sd-preview-header {
+-  position: relative;
+-  display: flex;
+-  align-items: center;
+-  height: 68px;
+-  padding: 0 16px;
+-  background: var(--sd-preview-panel-bg);
+-  backdrop-filter: blur(12px);
+-  -webkit-backdrop-filter: blur(12px);
+-  border-bottom: 1px solid var(--sd-preview-divider);
+-  flex: 0 0 auto;
+-  z-index: 2;
+-}
+-sd-preview-image .sd-preview-header__left {
+-  display: flex;
+-  align-items: center;
+-  gap: 12px;
+-  min-width: 0;
+-  flex: 1 1 auto;
+-}
+-sd-preview-image .sd-preview-header__icon {
+-  color: var(--sd-preview-fg-muted);
+-  font-size: 20px;
+-  width: 20px;
+-  height: 20px;
+-}
+-sd-preview-image .sd-preview-header__meta {
+-  display: flex;
+-  flex-direction: column;
+-  min-width: 0;
+-}
+-/* `.T14M` của catalog = 14px/20px/500 — kit không nạp bộ tiện ích đó nên
+-   viết thẳng ba giá trị vào đây. */
+-sd-preview-image .sd-preview-header__name {
+-  color: var(--sd-preview-fg);
+-  max-width: 360px;
+-  overflow: hidden;
+-  text-overflow: ellipsis;
+-  white-space: nowrap;
+-  font-size: 14px;
+-  font-weight: 500;
+-  line-height: 20px;
+-}
+-sd-preview-image .sd-preview-header__sub {
+-  font-size: 12px;
+-  color: var(--sd-preview-fg-muted);
+-  margin-top: 2px;
+-}
+-sd-preview-image .sd-preview-header__counter {
+-  position: absolute;
+-  left: 50%;
+-  top: 50%;
+-  transform: translate(-50%, -50%);
+-  font-size: 13px;
+-  font-weight: 500;
+-  color: var(--sd-preview-fg-muted);
+-  background: #ffffff14;
+-  padding: 4px 12px;
+-  border-radius: 999px;
+-  font-variant-numeric: tabular-nums;
+-}
+-sd-preview-image .sd-preview-body {
+-  flex: 1 1 auto;
+-  min-height: 0;
+-  display: flex;
+-  flex-direction: column;
+-  overflow: hidden;
+-}
+-sd-preview-image .sd-preview-shell--pos-bottom .sd-preview-body { flex-direction: column; }
+-sd-preview-image .sd-preview-shell--pos-right .sd-preview-body { flex-direction: row; }
+-sd-preview-image .sd-preview-stage {
+-  position: relative;
+-  flex: 1 1 auto;
+-  min-height: 0;
+-  min-width: 0;
+-  background: var(--sd-preview-shell-bg);
+-  background-image:
+-    linear-gradient(45deg, rgba(255, 255, 255, .02) 25%, transparent 25%),
+-    linear-gradient(-45deg, rgba(255, 255, 255, .02) 25%, transparent 25%),
+-    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, .02) 75%),
+-    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, .02) 75%);
+-  background-size: 24px 24px;
+-  background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  overflow: hidden;
+-  touch-action: none;
+-  -webkit-user-select: none;
+-  user-select: none;
+-}
+-sd-preview-image[data-theme="light"] .sd-preview-stage {
+-  background-image:
+-    linear-gradient(45deg, rgba(0, 0, 0, .015) 25%, transparent 25%),
+-    linear-gradient(-45deg, rgba(0, 0, 0, .015) 25%, transparent 25%),
+-    linear-gradient(45deg, transparent 75%, rgba(0, 0, 0, .015) 75%),
+-    linear-gradient(-45deg, transparent 75%, rgba(0, 0, 0, .015) 75%);
+-}
+-sd-preview-image .sd-preview-image {
+-  max-width: 100%;
+-  max-height: 100%;
+-  object-fit: contain;
+-  transform-origin: center center;
+-  transition: transform .2s ease;
+-  will-change: transform;
+-  pointer-events: none;
+-}
+-sd-preview-image .sd-preview-caption {
+-  position: absolute;
+-  bottom: 96px;
+-  left: 50%;
+-  transform: translate(-50%);
+-  max-width: 70%;
+-  padding: 6px 12px;
+-  background: #0f1114b3;
+-  color: var(--sd-preview-fg);
+-  border-radius: 8px;
+-  font-size: 13px;
+-  text-align: center;
+-}
+-sd-preview-image .sd-preview-image-broken,
+-sd-preview-image .sd-preview-image-loading {
+-  display: flex;
+-  flex-direction: column;
+-  align-items: center;
+-  justify-content: center;
+-  gap: 16px;
+-  width: 100%;
+-  max-width: 480px;
+-  padding: 24px;
+-  text-align: center;
+-}
+-sd-preview-image .sd-preview-nav {
+-  position: absolute;
+-  top: 50%;
+-  transform: translateY(-50%);
+-  width: 48px;
+-  height: 48px;
+-  border-radius: 999px;
+-  border: none;
+-  background: #14141699;
+-  backdrop-filter: blur(10px);
+-  -webkit-backdrop-filter: blur(10px);
+-  color: var(--sd-preview-fg);
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  cursor: pointer;
+-  box-shadow: 0 4px 16px #0000004d;
+-  transition: background .12s;
+-  z-index: 3;
+-}
+-sd-preview-image .sd-preview-nav .material-icons-outlined ,
+-sd-preview-image .sd-preview-nav .mat-icon {
+-  font-size: 28px;
+-  width: 28px;
+-  height: 28px;
+-}
+-sd-preview-image .sd-preview-nav:hover:not(:disabled) { background: #ffffff2e; }
+-sd-preview-image .sd-preview-nav:focus-visible {
+-  outline: 2px solid var(--sd-preview-accent);
+-  outline-offset: 2px;
+-}
+-sd-preview-image .sd-preview-nav:disabled {
+-  background: #ffffff0a;
+-  opacity: .35;
+-  cursor: not-allowed;
+-}
+-sd-preview-image .sd-preview-nav--prev { left: 16px; }
+-sd-preview-image .sd-preview-nav--next { right: 16px; }
+-sd-preview-image .sd-preview-toolbar {
+-  position: absolute;
+-  bottom: 24px;
+-  left: 50%;
+-  transform: translate(-50%);
+-  display: flex;
+-  align-items: center;
+-  gap: 4px;
+-  padding: 6px 8px;
+-  background: var(--sd-preview-panel-bg);
+-  backdrop-filter: blur(14px);
+-  -webkit-backdrop-filter: blur(14px);
+-  border: 1px solid var(--sd-preview-divider);
+-  border-radius: 12px;
+-  box-shadow: 0 8px 30px #0006;
+-  z-index: 3;
+-}
+-sd-preview-image .sd-preview-toolbar__btn {
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  gap: 6px;
+-  min-width: 36px;
+-  height: 36px;
+-  padding: 0 8px;
+-  background: transparent;
+-  border: none;
+-  color: var(--sd-preview-fg);
+-  border-radius: 8px;
+-  cursor: pointer;
+-  transition: background .12s;
+-}
+-sd-preview-image .sd-preview-toolbar__btn .material-icons-outlined ,
+-sd-preview-image .sd-preview-toolbar__btn .mat-icon {
+-  font-size: 20px;
+-  width: 20px;
+-  height: 20px;
+-}
+-sd-preview-image .sd-preview-toolbar__btn--with-label { padding: 0 12px; }
+-sd-preview-image .sd-preview-toolbar__btn:hover:not(:disabled) { background: var(--sd-preview-hover-bg); }
+-sd-preview-image .sd-preview-toolbar__btn:focus-visible {
+-  outline: 2px solid var(--sd-preview-accent);
+-  outline-offset: 2px;
+-}
+-sd-preview-image .sd-preview-toolbar__btn:disabled { opacity: .35; cursor: not-allowed; }
+-sd-preview-image .sd-preview-toolbar__btn-label { font-size: 13px; font-weight: 500; }
+-sd-preview-image .sd-preview-toolbar__readout {
+-  min-width: 56px;
+-  text-align: center;
+-  color: var(--sd-preview-fg);
+-  font-size: 13px;
+-  font-weight: 500;
+-  font-variant-numeric: tabular-nums;
+-}
+-sd-preview-image .sd-preview-toolbar__divider {
+-  width: 1px;
+-  height: 20px;
+-  background: var(--sd-preview-divider);
+-  margin: 0 4px;
+-}
+-sd-preview-image .sd-preview-thumbs {
+-  display: flex;
+-  gap: 8px;
+-  padding: 12px;
+-  background: var(--sd-preview-shell-bg-2);
+-  overflow: auto;
+-  flex: 0 0 auto;
+-  flex-direction: row;
+-  height: 116px;
+-}
+-sd-preview-image .sd-preview-thumbs--vertical {
+-  flex-direction: column;
+-  width: 152px;
+-  height: 100%;
+-}
+-sd-preview-image .sd-preview-thumb {
+-  position: relative;
+-  flex: 0 0 auto;
+-  width: 120px;
+-  height: 76px;
+-  padding: 0;
+-  border: none;
+-  background: transparent;
+-  border-radius: 8px;
+-  outline: 1px solid var(--sd-preview-divider);
+-  outline-offset: -1px;
+-  opacity: .7;
+-  overflow: hidden;
+-  cursor: pointer;
+-  transition: opacity .12s, outline-color .12s;
+-}
+-sd-preview-image .sd-preview-thumb:hover { opacity: 1; }
+-sd-preview-image .sd-preview-thumb--active {
+-  opacity: 1;
+-  outline: 2px solid var(--sd-preview-accent);
+-  outline-offset: -2px;
+-  box-shadow: inset 0 0 0 2px var(--sd-preview-accent);
+-}
+-sd-preview-image .sd-preview-thumb:focus-visible {
+-  outline: 2px solid var(--sd-preview-accent);
+-  outline-offset: 2px;
+-}
+-sd-preview-image .sd-preview-thumb__img {
+-  width: 100%;
+-  height: 100%;
+-  object-fit: cover;
+-  display: block;
+-  pointer-events: none;
+-}
+-sd-preview-image .sd-preview-thumb__badge {
+-  position: absolute;
+-  top: 4px;
+-  right: 4px;
+-  background: #000000b3;
+-  color: #fff;
+-  font-size: 10px;
+-  font-weight: 600;
+-  padding: 1px 5px;
+-  border-radius: 4px;
+-  pointer-events: none;
+-}
+-sd-preview-image .sd-preview-thumb__name {
+-  position: absolute;
+-  left: 0;
+-  right: 0;
+-  bottom: 0;
+-  padding: 14px 6px 4px;
+-  color: var(--sd-preview-fg);
+-  font-size: 11px;
+-  line-height: 1.3;
+-  background: linear-gradient(to top, rgba(0, 0, 0, .85), transparent);
+-  overflow: hidden;
+-  text-overflow: ellipsis;
+-  white-space: nowrap;
+-  pointer-events: none;
+-}
+-sd-preview-image .sd-preview-thumbs--vertical .sd-preview-thumb { width: 128px; }
+-sd-preview-image .sd-preview-status {
+-  display: flex;
+-  flex-direction: column;
+-  align-items: center;
+-  justify-content: center;
+-  gap: 16px;
+-  text-align: center;
+-  padding: 24px;
+-}
+-sd-preview-image .sd-preview-status__tile {
+-  width: 96px;
+-  height: 96px;
+-  border-radius: 24px;
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  border: 1px solid var(--sd-preview-divider);
+-  background: #ffffff0d;
+-}
+-sd-preview-image .sd-preview-status__tile .material-icons-outlined ,
+-sd-preview-image .sd-preview-status__tile .mat-icon {
+-  font-size: 48px;
+-  width: 48px;
+-  height: 48px;
+-  color: var(--sd-preview-fg-subtle);
+-}
+-sd-preview-image .sd-preview-status__tile--muted {
+-  background: #ffffff0d;
+-  border-color: var(--sd-preview-divider);
+-}
+-sd-preview-image .sd-preview-status__tile--danger {
+-  background: var(--sd-preview-danger-soft);
+-  border-color: var(--sd-preview-danger-border);
+-}
+-sd-preview-image .sd-preview-status__tile--danger .material-icons-outlined ,
+-sd-preview-image .sd-preview-status__tile--danger .mat-icon { color: var(--sd-preview-danger); }
+-sd-preview-image .sd-preview-status__title {
+-  font-size: 16px;
+-  font-weight: 500;
+-  color: var(--sd-preview-fg);
+-}
+-sd-preview-image .sd-preview-status__hint {
+-  font-size: 13px;
+-  color: var(--sd-preview-fg-muted);
+-  max-width: 320px;
+-}
+-sd-preview-image .sd-preview-btn-primary {
+-  display: inline-flex;
+-  align-items: center;
+-  gap: 6px;
+-  height: 36px;
+-  padding: 0 16px;
+-  background: var(--sd-preview-accent);
+-  color: #fff;
+-  border: none;
+-  border-radius: 8px;
+-  cursor: pointer;
+-  font-size: 13px;
+-  font-weight: 500;
+-  transition: filter .12s;
+-}
+-sd-preview-image .sd-preview-btn-primary .material-icons-outlined ,
+-sd-preview-image .sd-preview-btn-primary .mat-icon {
+-  font-size: 18px;
+-  width: 18px;
+-  height: 18px;
+-}
+-sd-preview-image .sd-preview-btn-primary:hover { filter: brightness(1.1); }
+-sd-preview-image .sd-preview-btn-primary:focus-visible {
+-  outline: 2px solid #fff;
+-  outline-offset: 2px;
+-}
+-sd-preview-image .sd-preview-kbd-hint {
+-  position: absolute;
+-  top: 16px;
+-  left: 16px;
+-  display: flex;
+-  align-items: center;
+-  gap: 6px;
+-  z-index: 2;
+-  pointer-events: none;
+-}
+-sd-preview-image .sd-preview-kbd {
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  min-width: 20px;
+-  height: 20px;
+-  padding: 0 5px;
+-  border: 1px solid var(--sd-preview-divider);
+-  background: #ffffff0a;
+-  color: var(--sd-preview-fg-muted);
+-  border-radius: 4px;
+-  font: 500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+-}
+-sd-preview-image .sd-preview-kbd-text {
+-  font-size: 11px;
+-  color: var(--sd-preview-fg-subtle);
+-}
++   ĐỒNG BỘ 2026-10-13 theo Core UI Catalog `#c-preview-image` (`css/components/preview-image.css`):
++   chép NGUYÊN THỨ TỰ mọi luật của component, phạm vi `#c-preview-image` → `sd-preview-image`
++   (luật bắt đầu bằng thẻ → `sd-preview-image:is(sd-preview-image)…`; reboot `.sd-scope` →
++   `sd-preview-image:not(._ng)` — giữ thứ hạng ưu tiên như catalog). Bỏ phần khung demo (`.pv-frame`).
++   ────────────────────────────────────────────────────────── */
++sd-preview-image:is(sd-preview-image){--sd-preview-shell-bg: #0d0e10;--sd-preview-shell-bg-2: #17191c;--sd-preview-panel-bg: rgba(15, 17, 20, .92);--sd-preview-divider: rgba(255, 255, 255, .08);--sd-preview-fg: #f5f6f7;--sd-preview-fg-muted: rgba(255, 255, 255, .6);--sd-preview-fg-subtle: rgba(255, 255, 255, .4);--sd-preview-accent: var(--sd-primary, #3b82f6);--sd-preview-accent-soft: rgba(59, 130, 246, .2);--sd-preview-danger: var(--sd-error, #ef4444);--sd-preview-success: var(--sd-success, #22c55e);--sd-preview-danger-soft: rgba(239, 68, 68, .1);--sd-preview-danger-border: rgba(239, 68, 68, .3);--sd-preview-hover-bg: rgba(255, 255, 255, .1);display:block;width:100%;height:100%;min-height:320px;outline:none}
++sd-preview-image:is(sd-preview-image)[data-theme=light]{--sd-preview-shell-bg: #f7f8fa;--sd-preview-shell-bg-2: #ffffff;--sd-preview-panel-bg: rgba(255, 255, 255, .94);--sd-preview-divider: rgba(0, 0, 0, .08);--sd-preview-fg: #1a1c1f;--sd-preview-fg-muted: rgba(0, 0, 0, .62);--sd-preview-fg-subtle: rgba(0, 0, 0, .42);--sd-preview-accent: var(--sd-primary, #1f49bf);--sd-preview-accent-soft: rgba(31, 73, 191, .18);--sd-preview-danger: var(--sd-error, #ef4444);--sd-preview-success: var(--sd-success, #22c55e);--sd-preview-danger-soft: rgba(239, 68, 68, .08);--sd-preview-danger-border: rgba(239, 68, 68, .25);--sd-preview-hover-bg: rgba(0, 0, 0, .06)}
++sd-preview-image .sd-preview-shell{position:relative;display:flex;flex-direction:column;width:100%;height:100%;background:var(--sd-preview-shell-bg);color:var(--sd-preview-fg);border-radius:12px;overflow:hidden;box-shadow:0 30px 80px #0000008c,0 0 0 1px #ffffff0a;font-family:inherit}
++sd-preview-image:is(sd-preview-image).sd-preview-image-host--fullscreen{width:100vw;height:100vh;min-height:0}
++sd-preview-image .sd-preview-header{position:relative;display:flex;align-items:center;height:68px;padding:0 16px;background:var(--sd-preview-panel-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--sd-preview-divider);flex:0 0 auto;z-index:2}
++sd-preview-image .sd-preview-header__left{display:flex;align-items:center;gap:12px;min-width:0;flex:1 1 auto}
++sd-preview-image .sd-preview-header__icon{color:var(--sd-preview-fg-muted);font-size:20px;width:20px;height:20px}
++sd-preview-image .sd-preview-header__meta{display:flex;flex-direction:column;min-width:0}
++sd-preview-image .sd-preview-header__name{color:var(--sd-preview-fg);max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
++sd-preview-image .sd-preview-header__sub{font-size:12px;color:var(--sd-preview-fg-muted);margin-top:2px}
++sd-preview-image .sd-preview-header__counter{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:13px;font-weight:500;color:var(--sd-preview-fg-muted);background:#ffffff14;padding:4px 12px;border-radius:999px;font-variant-numeric:tabular-nums}
++sd-preview-image .sd-preview-body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden}
++sd-preview-image .sd-preview-shell--pos-bottom .sd-preview-body{flex-direction:column}
++sd-preview-image .sd-preview-shell--pos-right .sd-preview-body{flex-direction:row}
++sd-preview-image .sd-preview-stage{position:relative;flex:1 1 auto;min-height:0;min-width:0;background:var(--sd-preview-shell-bg);background-image:linear-gradient(45deg,rgba(255,255,255,.02) 25%,transparent 25%),linear-gradient(-45deg,rgba(255,255,255,.02) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(255,255,255,.02) 75%),linear-gradient(-45deg,transparent 75%,rgba(255,255,255,.02) 75%);background-size:24px 24px;background-position:0 0,0 12px,12px -12px,-12px 0;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
++sd-preview-image:is(sd-preview-image)[data-theme=light] .sd-preview-stage{background-image:linear-gradient(45deg,rgba(0,0,0,.015) 25%,transparent 25%),linear-gradient(-45deg,rgba(0,0,0,.015) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,rgba(0,0,0,.015) 75%),linear-gradient(-45deg,transparent 75%,rgba(0,0,0,.015) 75%)}
++sd-preview-image .sd-preview-image{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center center;transition:transform .2s ease;will-change:transform;pointer-events:none}
++sd-preview-image .sd-preview-caption{position:absolute;bottom:96px;left:50%;transform:translate(-50%);max-width:70%;padding:6px 12px;background:#0f1114b3;color:var(--sd-preview-fg);border-radius:8px;font-size:13px;text-align:center}
++sd-preview-image .sd-preview-image-broken,sd-preview-image .sd-preview-image-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;max-width:480px;padding:24px;text-align:center}
++sd-preview-image .sd-preview-nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:999px;border:none;background:#14141699;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:var(--sd-preview-fg);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px #0000004d;transition:background .12s;z-index:3}
++sd-preview-image .sd-preview-nav mat-icon{font-size:28px;width:28px;height:28px}
++sd-preview-image .sd-preview-nav:hover:not(:disabled){background:#ffffff2e}
++sd-preview-image .sd-preview-nav:focus-visible{outline:2px solid var(--sd-preview-accent);outline-offset:2px}
++sd-preview-image .sd-preview-nav:disabled{background:#ffffff0a;opacity:.35;cursor:not-allowed}
++sd-preview-image .sd-preview-nav--prev{left:16px}
++sd-preview-image .sd-preview-nav--next{right:16px}
++sd-preview-image .sd-preview-toolbar{position:absolute;bottom:24px;left:50%;transform:translate(-50%);display:flex;align-items:center;gap:4px;padding:6px 8px;background:var(--sd-preview-panel-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--sd-preview-divider);border-radius:12px;box-shadow:0 8px 30px #0006;z-index:3}
++sd-preview-image .sd-preview-toolbar__btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:36px;height:36px;padding:0 8px;background:transparent;border:none;color:var(--sd-preview-fg);border-radius:8px;cursor:pointer;transition:background .12s}
++sd-preview-image .sd-preview-toolbar__btn mat-icon{font-size:20px;width:20px;height:20px}
++sd-preview-image .sd-preview-toolbar__btn--with-label{padding:0 12px}
++sd-preview-image .sd-preview-toolbar__btn:hover:not(:disabled){background:var(--sd-preview-hover-bg)}
++sd-preview-image .sd-preview-toolbar__btn:focus-visible{outline:2px solid var(--sd-preview-accent);outline-offset:2px}
++sd-preview-image .sd-preview-toolbar__btn-label{font-size:13px;font-weight:500}
++sd-preview-image .sd-preview-toolbar__readout{min-width:56px;text-align:center;color:var(--sd-preview-fg);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums}
++sd-preview-image .sd-preview-toolbar__divider{width:1px;height:20px;background:var(--sd-preview-divider);margin:0 4px}
++sd-preview-image .sd-preview-thumbs{display:flex;gap:8px;padding:12px;background:var(--sd-preview-shell-bg-2);overflow:auto;flex:0 0 auto;flex-direction:row;height:116px}
++sd-preview-image .sd-preview-thumbs--vertical{flex-direction:column;width:152px;height:100%}
++sd-preview-image .sd-preview-thumb{position:relative;flex:0 0 auto;width:120px;height:76px;padding:0;border:none;background:transparent;border-radius:8px;outline:1px solid var(--sd-preview-divider);outline-offset:-1px;opacity:.7;overflow:hidden;cursor:pointer;transition:opacity .12s,outline-color .12s}
++sd-preview-image .sd-preview-thumb:hover{opacity:1}
++sd-preview-image .sd-preview-thumb--active{opacity:1;outline:2px solid var(--sd-preview-accent);outline-offset:-2px;box-shadow:inset 0 0 0 2px var(--sd-preview-accent)}
++sd-preview-image .sd-preview-thumb:focus-visible{outline:2px solid var(--sd-preview-accent);outline-offset:2px}
++sd-preview-image .sd-preview-thumb__img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
++sd-preview-image .sd-preview-thumb__badge{position:absolute;top:4px;right:4px;background:#000000b3;color:#fff;font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;pointer-events:none}
++sd-preview-image .sd-preview-thumb__name{position:absolute;left:0;right:0;bottom:0;padding:14px 6px 4px;color:var(--sd-preview-fg);font-size:11px;line-height:1.3;background:linear-gradient(to top,rgba(0,0,0,.85),transparent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none}
++sd-preview-image .sd-preview-thumbs--vertical .sd-preview-thumb{width:128px}
++sd-preview-image .sd-preview-status{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px}
++sd-preview-image .sd-preview-status__tile{width:96px;height:96px;border-radius:24px;display:flex;align-items:center;justify-content:center;border:1px solid var(--sd-preview-divider);background:#ffffff0d}
++sd-preview-image .sd-preview-status__tile mat-icon{font-size:48px;width:48px;height:48px;color:var(--sd-preview-fg-subtle)}
++sd-preview-image .sd-preview-status__tile--muted{background:#ffffff0d;border-color:var(--sd-preview-divider)}
++sd-preview-image .sd-preview-status__tile--danger{background:var(--sd-preview-danger-soft);border-color:var(--sd-preview-danger-border)}
++sd-preview-image .sd-preview-status__tile--danger mat-icon{color:var(--sd-preview-danger)}
++sd-preview-image .sd-preview-status__title{font-size:16px;font-weight:500;color:var(--sd-preview-fg)}
++sd-preview-image .sd-preview-status__hint{font-size:13px;color:var(--sd-preview-fg-muted);max-width:320px}
++sd-preview-image .sd-preview-btn-primary{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 16px;background:var(--sd-preview-accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:filter .12s}
++sd-preview-image .sd-preview-btn-primary mat-icon{font-size:18px;width:18px;height:18px}
++sd-preview-image .sd-preview-btn-primary:hover{filter:brightness(1.1)}
++sd-preview-image .sd-preview-btn-primary:focus-visible{outline:2px solid #fff;outline-offset:2px}
++sd-preview-image .sd-preview-kbd-hint{position:absolute;top:16px;left:16px;display:flex;align-items:center;gap:6px;z-index:2;pointer-events:none}
++sd-preview-image .sd-preview-kbd{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border:1px solid var(--sd-preview-divider);background:#ffffff0a;color:var(--sd-preview-fg-muted);border-radius:4px;font:500 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
++sd-preview-image .sd-preview-kbd-text{font-size:11px;color:var(--sd-preview-fg-subtle)}
++sd-preview-image:not(._ng) .T14M{font-size:14px;font-weight:500;line-height:20px}
++sd-preview-image:not(._ng) img{vertical-align:middle;border-style:none}
++sd-preview-image:not(._ng) button{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}
++/* Luật catalog KHÔNG chụp (biến thể catalog không minh hoạ: thumbnailPosition top / left / dots /
++   none, đang kéo, thumbnail lỗi, chấm chỉ số, spinner đang tải, header đơn giản) — chép từ style
++   của chính thư viện `@sd-angular/core` 19.0.10 (`:host` → `sd-preview-image`). */
++sd-preview-image .sd-preview-shell--fullscreen{height:100vh;width:100vw;border-radius:0}
++sd-preview-image .sd-preview-header--simple{justify-content:space-between}
++sd-preview-image .sd-preview-shell--pos-top .sd-preview-body{flex-direction:column-reverse}
++sd-preview-image .sd-preview-shell--pos-left .sd-preview-body{flex-direction:row-reverse}
++sd-preview-image .sd-preview-shell--pos-dots .sd-preview-body,sd-preview-image .sd-preview-shell--pos-none .sd-preview-body{flex-direction:column}
++sd-preview-image .sd-preview-stage--dragging{cursor:grab}
++sd-preview-image .sd-preview-thumb__broken{display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:var(--sd-preview-danger-soft);color:var(--sd-preview-danger);pointer-events:none}
++sd-preview-image .sd-preview-thumb__broken mat-icon{font-size:24px;width:24px;height:24px}
++sd-preview-image .sd-preview-dots{position:absolute;bottom:24px;left:50%;transform:translate(-50%);display:flex;align-items:center;gap:6px;z-index:3}
++sd-preview-image .sd-preview-dot{width:8px;height:8px;border:none;background:#ffffff4d;border-radius:999px;padding:0;cursor:pointer;transition:width .18s,background .18s}
++sd-preview-image .sd-preview-dot--active{width:24px;background:#f5f6f7}
++sd-preview-image .sd-preview-dot:focus-visible{outline:2px solid var(--sd-preview-accent);outline-offset:2px}
++sd-preview-image .sd-preview-spinner{width:56px;height:56px;border-radius:999px;border:3px solid rgba(255,255,255,.08);border-top-color:var(--sd-preview-accent);animation:sd-preview-spin .9s linear infinite}
++@keyframes sd-preview-spin{to{transform:rotate(360deg)}}
++sd-preview-image .sd-preview-kbd-text,sd-preview-image .sd-preview-kbd-dot{font-size:11px;color:var(--sd-preview-fg-subtle)}
++sd-preview-image .sd-preview-kbd-dot{margin:0 2px}
++/* UA padding của <button> (1px 6px) mà catalog còn giữ — reset `*{padding:0}` của kit xoá mất,
++   nên nút điều hướng `.sd-preview-nav` (không khai padding) lệch 6px/1px so với catalog. */
++:where(sd-preview-image) button{padding:1px 6px}
++/* /sd-preview-image */
+ 
+ /* ── sd-preview-pdf ────────────────────────────────────
+    ĐỒNG BỘ 2026-10-13 theo Core UI Catalog `#c-preview-pdf` (`css/components/preview-pdf.css`):
+diff -ruN a/design-system/preview/components/preview-image.html b/design-system/preview/components/preview-image.html
+--- a/design-system/preview/components/preview-image.html	2026-10-13 05:10:00.040143886 +0000
++++ b/design-system/preview/components/preview-image.html	2026-10-13 05:10:00.055019581 +0000
+@@ -28,7 +28,7 @@
+ 
+     <div data-pattern="page-header" data-variant="browse"
+          data-title="sd-preview-image"
+-         data-subtitle="Inline image viewer - zoom, xoay, fullscreen, download, thumbnail (không tự bọc modal)"
++         data-subtitle="Khung xem nhiều ảnh tự co theo phần tử cha — đồng bộ Core UI #c-preview-image"
+          data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+ 
+     <div class="content-zone">
+@@ -36,73 +36,55 @@
+       <!-- ── Tab: Preview ──────────────────────────────────── -->
+       <div class="tab-panel" data-tab-panel="0">
+ 
+-        <sd-section title="Nhiều ảnh - thumbnail + toolbar (theme dark, mặc định)">
+-          <p class="text-sm text-secondary mb-3">items gán qua property JS; showToolbar + zoomable + downloadable + loop. Phím mũi tên ← → chuyển ảnh khi viewer đang focus, Escape phát sd-close.</p>
+-          <sd-preview-image id="img-demo-multi" theme="dark" thumbnailPosition="bottom" showToolbar zoomable downloadable loop title="Bộ sưu tập banner"></sd-preview-image>
+-        </sd-section>
+-
+-        <sd-section title="Một ảnh đơn - attribute src">
+-          <p class="text-sm text-secondary mb-3">Convenience cho prototype: attribute <code>src</code> nhận một URL ảnh (mirror thêm, Portal không có input này). Gán src bằng JS phía dưới để demo.</p>
+-          <sd-preview-image id="img-demo-single"></sd-preview-image>
++        <sd-section title="Mặc định — theme dark, thumbnail dưới, có caption">
++          <p class="text-sm text-secondary mb-3">Bấm thumbnail / mũi tên để chuyển ảnh. Phím tắt khi viewer đang focus: ← → · + − 0 (zoom 10% / vừa khung) · r / R (xoay) · f (toàn màn hình) · d (tải xuống). Lăn chuột = zoom, nhấp đúp = 200% ↔ vừa khung, kéo để di ảnh khi đã phóng to, vuốt ngang để chuyển ảnh.</p>
++          <div style="height:540px">
++            <sd-preview-image id="img-demo-multi" startIndex="1" thumbnailPosition="bottom" autoId="ho-so-khach-hang"></sd-preview-image>
++          </div>
+         </sd-section>
+ 
+-        <sd-section title="showToolbar tắt / bật">
+-          <div class="flex gap-4 flex-wrap">
+-            <div class="flex-1">
+-              <p class="text-sm text-secondary mb-3">Không showToolbar - chỉ xem ảnh + thumbnail</p>
+-              <sd-preview-image id="img-demo-notoolbar" showToolbar="false" zoomable downloadable loop></sd-preview-image>
+-            </div>
+-            <div class="flex-1">
+-              <p class="text-sm text-secondary mb-3">Có showToolbar - đủ nút zoom / xoay / tải / fullscreen</p>
+-              <sd-preview-image id="img-demo-toolbar" showToolbar zoomable downloadable loop></sd-preview-image>
+-            </div>
++        <sd-section title="Thumbnail bên phải — theme=&quot;light&quot;, thumbnailPosition=&quot;right&quot; (kèm tên file)">
++          <div style="height:540px">
++            <sd-preview-image id="img-demo-right" theme="light" thumbnailPosition="right" startIndex="3"></sd-preview-image>
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="Tắt zoomable / downloadable / loop">
+-          <div class="flex gap-4 flex-wrap">
+-            <div class="flex-1">
+-              <p class="text-sm text-secondary mb-3">Không zoomable, không downloadable, không loop - nút chuyển ảnh bị disabled ở 2 đầu</p>
+-              <sd-preview-image id="img-demo-limited" showToolbar></sd-preview-image>
+-            </div>
+-            <div class="flex-1">
+-              <p class="text-sm text-secondary mb-3">Đầy đủ nhưng không loop - cuối dải không vòng lại</p>
+-              <sd-preview-image id="img-demo-noloop" showToolbar zoomable downloadable></sd-preview-image>
+-            </div>
++        <sd-section title="Trạng thái — rỗng · lỗi tải ảnh">
++          <p class="text-sm text-secondary mb-3">Không có ảnh: không có header (trừ khi khai <code>title</code>). Ảnh lỗi: header vẫn hiện tên / dung lượng, nút "Thử lại" tải lại đúng ảnh đó.</p>
++          <div class="flex gap-6 flex-wrap" style="padding:24px">
++            <div style="flex:1 1 320px;height:340px;display:flex"><sd-preview-image id="img-demo-empty"></sd-preview-image></div>
++            <div style="flex:1 1 320px;height:340px;display:flex"><sd-preview-image id="img-demo-broken"></sd-preview-image></div>
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="Theme sáng + thumbnailPosition (dark là mặc định của Portal)">
++        <sd-section title="thumbnailPosition còn lại — top · left · dots · none">
++          <p class="text-sm text-secondary mb-3">Catalog chỉ minh hoạ bottom / right; bốn giá trị này dựng theo mã thư viện. <code>dots</code>: chấm chỉ số nằm cùng chỗ với toolbar nổi (thư viện để toolbar đè lên chấm) — ví dụ dưới tắt toolbar để bấm được chấm.</p>
+           <div class="flex gap-4 flex-wrap">
+-            <div class="flex-1">
+-              <p class="text-sm text-secondary mb-3">theme light, thumbnailPosition bottom</p>
+-              <sd-preview-image id="img-demo-light" theme="light" thumbnailPosition="bottom" showToolbar zoomable downloadable loop></sd-preview-image>
+-            </div>
+-            <div class="flex-1">
+-              <p class="text-sm text-secondary mb-3">thumbnailPosition top (suy ra, Portal chưa đọc được danh sách đầy đủ)</p>
+-              <sd-preview-image id="img-demo-top" thumbnailPosition="top" showToolbar zoomable downloadable loop></sd-preview-image>
+-            </div>
++            <div style="flex:1 1 420px;height:420px"><sd-preview-image id="img-demo-top" thumbnailPosition="top"></sd-preview-image></div>
++            <div style="flex:1 1 420px;height:420px"><sd-preview-image id="img-demo-left" thumbnailPosition="left"></sd-preview-image></div>
+           </div>
+           <div class="flex gap-4 flex-wrap mt-3">
+-            <div class="flex-1">
+-              <p class="text-sm text-secondary mb-3">thumbnailPosition left</p>
+-              <sd-preview-image id="img-demo-left" thumbnailPosition="left" showToolbar zoomable downloadable loop></sd-preview-image>
+-            </div>
+-            <div class="flex-1">
+-              <p class="text-sm text-secondary mb-3">thumbnailPosition right</p>
+-              <sd-preview-image id="img-demo-right" thumbnailPosition="right" showToolbar zoomable downloadable loop></sd-preview-image>
+-            </div>
++            <div style="flex:1 1 420px;height:420px"><sd-preview-image id="img-demo-dots" thumbnailPosition="dots" showToolbar="false"></sd-preview-image></div>
++            <div style="flex:1 1 420px;height:420px"><sd-preview-image id="img-demo-none" thumbnailPosition="none"></sd-preview-image></div>
+           </div>
+         </sd-section>
+ 
+-        <sd-section title="Bọc trong sd-modal - lightbox">
+-          <p class="text-sm text-secondary mb-3">Component không tự bọc modal - consumer chủ động đặt viewer vào <code>sd-modal</code>. Bấm nút mở lightbox; bấm Escape trong viewer sẽ phát sd-close và đóng modal.</p>
++        <sd-section title="Tắt zoomable / downloadable / loop">
++          <p class="text-sm text-secondary mb-3"><code>zoomable="false"</code> ẩn cụm − % + (nút Vừa khung vẫn còn) · <code>downloadable="false"</code> ẩn nút tải · <code>loop="false"</code> khoá mũi tên ở hai đầu dải.</p>
++          <div style="height:420px">
++            <sd-preview-image id="img-demo-limited" zoomable="false" downloadable="false" loop="false"></sd-preview-image>
++          </div>
++        </sd-section>
++
++        <sd-section title="Trong sd-modal">
++          <p class="text-sm text-secondary mb-3">Component tự co theo phần tử cha, không tự bọc modal. Esc KHÔNG phát <code>sd-close</code> (giống thư viện) — trang tự đóng modal bằng nút Thoát; muốn phát <code>sd-close</code> thì gọi <code>requestClose()</code>.</p>
+           <sd-button id="btn-img-lightbox" title="Mở lightbox" type="fill" color="primary" prefixIcon="open_in_full"></sd-button>
+ 
+-          <!-- lazyLoadContent mặc định TRUE (đúng thư viện): nội dung chỉ dựng ở lần open() đầu.
+-               Trang này gán items TRƯỚC khi mở nên phải tắt tường minh — bên Angular cũng vậy. -->
+-          <sd-modal id="modal-img-lightbox" title="Xem ảnh" width="720px" lazyLoadContent="false">
+-            <sd-preview-image id="img-demo-modal" theme="dark" showToolbar zoomable downloadable loop thumbnailPosition="bottom" title="Ảnh trong lightbox"></sd-preview-image>
++          <!-- lazyLoadContent mặc định TRUE (đúng thư viện); trang gán items trước khi mở nên tắt tường minh. -->
++          <sd-modal id="modal-img-lightbox" title="Xem ảnh" width="960px" lazyLoadContent="false">
++            <div style="height:560px">
++              <sd-preview-image id="img-demo-modal" startIndex="1" thumbnailPosition="bottom" autoId="ho-so-khach-hang"></sd-preview-image>
++            </div>
+             <div sdFooterRight>
+               <sd-button id="btn-img-lightbox-close" title="Thoát" type="link" color="primary"></sd-button>
+             </div>
+@@ -110,7 +92,7 @@
+         </sd-section>
+ 
+         <sd-section title="Event log">
+-          <p class="text-sm text-secondary mb-3">Các event kebab của viewer: sd-active-index-change, sd-download, sd-image-error, sd-close. Tương tác với viewer phía trên để xem log.</p>
++          <p class="text-sm text-secondary mb-3">sd-active-index-change · sd-download · sd-image-error · sd-close.</p>
+           <pre class="ds-guide-code" id="img-event-log">Chưa có sự kiện nào.</pre>
+         </sd-section>
+ 
+@@ -169,17 +151,20 @@
+                   <span class="ds-guide-code-lang">HTML</span>
+                   <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                 </div>
+-                <pre class="ds-guide-code">&lt;sd-preview-image
+-  thumbnailPosition="bottom" theme="dark" loop
+-  showToolbar zoomable downloadable
+-  title="Bộ ảnh sản phẩm"&gt;&lt;/sd-preview-image&gt;
+-
+-&lt;!-- Gán items bằng property JS (string | File | object) --&gt;
+-const viewer = document.querySelector('sd-preview-image');
+-viewer.items = [
+-  'https://cdn.example.vn/1.jpg',
+-  { url: 'https://cdn.example.vn/3.jpg', name: 'banner.jpg', caption: 'Khuyến mãi' }
+-];</pre>
++                <pre class="ds-guide-code">&lt;!-- Viewer tự co theo phần tử cha: đặt trong khung có chiều cao --&gt;
++&lt;div style="height: 560px"&gt;
++  &lt;sd-preview-image id="ho-so" startIndex="1"
++    thumbnailPosition="bottom" autoId="ho-so-khach-hang"&gt;&lt;/sd-preview-image&gt;
++&lt;/div&gt;
++
++&lt;script&gt;
++  // items: (string | File | { url?, file?, name?, caption?, alt?, size? })[]
++  document.getElementById('ho-so').items = [
++    { url: 'https://cdn.example.vn/cccd.jpg', name: 'CCCD_mat_truoc.jpg' },
++    { url: 'https://cdn.example.vn/dkkd.png', name: 'Giay_DKKD_trang_1.png',
++      caption: 'Bản scan có dấu đỏ – nhận ngày 02/10/2026' }
++  ];
++&lt;/script&gt;</pre>
+               </div>
+             </div>
+ 
+@@ -188,15 +173,29 @@
+               <table class="ds-guide-table">
+                 <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                 <tbody>
+-                  <tr><td>items</td><td>JSON PreviewItem[] hoặc property JS</td><td>-</td><td>Mảng ảnh: string | File | { url?, file?, name?, caption?, alt?, mime? }</td></tr>
+-                  <tr><td>src</td><td>string</td><td>-</td><td>Mirror thêm - một URL ảnh (thuận tiện cho prototype)</td></tr>
+-                  <tr><td>thumbnailPosition</td><td>bottom | top | left | right</td><td>bottom</td><td>Vị trí dải thumbnail (top/left/right suy ra từ Portal)</td></tr>
+-                  <tr><td>theme</td><td>dark | light</td><td>dark</td><td>Nền tối/sáng (light suy ra từ Portal)</td></tr>
+-                  <tr><td>loop</td><td>boolean</td><td>false</td><td>Vòng quanh khi đi hết dải ảnh</td></tr>
+-                  <tr><td>showToolbar</td><td>boolean</td><td>false</td><td>Hiện thanh công cụ zoom/xoay/tải/fullscreen</td></tr>
+-                  <tr><td>zoomable</td><td>boolean</td><td>true</td><td>Bật nút zoom in/out + fit_screen</td></tr>
+-                  <tr><td>downloadable</td><td>boolean</td><td>true</td><td>Bật nút tải xuống + event sd-download</td></tr>
+-                  <tr><td>title</td><td>string</td><td>-</td><td>Tên tài liệu hiển thị</td></tr>
++                  <tr><td>items</td><td>property JS (hoặc JSON)</td><td>[]</td><td>string (URL) | File | { url?, file?, name?, caption?, alt?, size? }. URL được fetch thành blob (dung lượng lấy từ file thật nếu không khai <code>size</code>); File không phải ảnh bị bỏ qua.</td></tr>
++                  <tr><td>thumbnailPosition</td><td>bottom | top | left | right | dots | none</td><td>bottom</td><td>left / right: dải dọc kèm tên file · dots: chấm chỉ số · none: không có dải</td></tr>
++                  <tr><td>startIndex</td><td>number (0-based)</td><td>0</td><td>Ảnh mở đầu tiên</td></tr>
++                  <tr><td>showToolbar</td><td>boolean</td><td>true</td><td>Toolbar nổi: − % + · Vừa khung · Xoay · Tải xuống · Toàn màn hình</td></tr>
++                  <tr><td>zoomable</td><td>boolean</td><td>true</td><td>Cụm zoom (bước 10%, 25%–400%), lăn chuột, nhấp đúp, pinch</td></tr>
++                  <tr><td>downloadable</td><td>boolean</td><td>true</td><td>Nút tải xuống + phím d</td></tr>
++                  <tr><td>loop</td><td>boolean</td><td>true</td><td>Chuyển vòng ở hai đầu dải</td></tr>
++                  <tr><td>theme</td><td>dark | light</td><td>dark</td><td>Ghi ra host <code>data-theme</code></td></tr>
++                  <tr><td>title</td><td>string</td><td>-</td><td>Chỉ hiện khi KHÔNG có ảnh (header đơn giản)</td></tr>
++                  <tr><td>autoId</td><td>string</td><td>-</td><td><code>data-autoId="components-preview-image-{autoId}-prev | next | zoom-in | zoom-out | fit | rotate | download | fullscreen | retry | thumb-N | dot-N"</code></td></tr>
++                </tbody>
++              </table>
++            </div>
++
++            <div class="ds-guide-col ds-guide-col--full">
++              <p class="ds-guide-label">Method</p>
++              <table class="ds-guide-table">
++                <thead><tr><th>Method</th><th>Mô tả</th></tr></thead>
++                <tbody>
++                  <tr><td>updateCurrentImage(±1) · onClickThumbnailImage(i)</td><td>Chuyển ảnh</td></tr>
++                  <tr><td>zoomIn() · zoomOut() · fitToScreen() · rotate('right' | 'left')</td><td>Thao tác trên ảnh</td></tr>
++                  <tr><td>downloadCurrent() · toggleFullscreen() · retryActive()</td><td>Tải / toàn màn hình / tải lại ảnh lỗi</td></tr>
++                  <tr><td>requestClose()</td><td>Phát <code>sd-close</code> (cách duy nhất — Esc không đóng)</td></tr>
+                 </tbody>
+               </table>
+             </div>
+@@ -206,10 +205,10 @@
+               <table class="ds-guide-table">
+                 <thead><tr><th>Kebab (mirror)</th><th>Angular</th><th>detail</th><th>Khi nào fire</th></tr></thead>
+                 <tbody>
+-                  <tr><td>sd-active-index-change</td><td>activeIndexChange</td><td>{ activeIndex }</td><td>Đổi ảnh đang xem</td></tr>
+-                  <tr><td>sd-download</td><td>download</td><td>{ index, item }</td><td>Bấm nút tải xuống</td></tr>
+-                  <tr><td>sd-image-error</td><td>imageError</td><td>{ index, reason }</td><td>Ảnh tải lỗi</td></tr>
+-                  <tr><td>sd-close</td><td>close</td><td>{}</td><td>Bấm Escape trong viewer - consumer tự đóng modal/drawer</td></tr>
++                  <tr><td>sd-active-index-change</td><td>activeIndexChange</td><td>{ activeIndex }</td><td>Đổi ảnh đang xem (Angular emit thẳng số index)</td></tr>
++                  <tr><td>sd-download</td><td>download</td><td>{ index, item }</td><td>Bấm nút tải xuống / phím d</td></tr>
++                  <tr><td>sd-image-error</td><td>imageError</td><td>{ index, reason: 'render-failed' }</td><td>Thẻ &lt;img&gt; không vẽ được ảnh</td></tr>
++                  <tr><td>sd-close</td><td>close</td><td>{}</td><td>Chỉ khi gọi requestClose()</td></tr>
+                 </tbody>
+               </table>
+             </div>
+@@ -260,40 +259,14 @@
+     initPreviewTabs();
+   })();
+ 
+-  // Demos sd-preview-image
++  // Demos sd-preview-image — 4 bản scan giả lập lấy nguyên từ Core UI Catalog #c-preview-image
+   (function () {
+-    function svgImg(fill, text, sub) {
+-      var s = '<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320">' +
+-        '<rect width="480" height="320" fill="' + fill + '"/>' +
+-        '<text x="24" y="60" font-family="Arial, sans-serif" font-size="26" fill="#ffffff">' + text + '</text>' +
+-        (sub ? '<text x="24" y="92" font-family="Arial, sans-serif" font-size="16" fill="#f2ece4">' + sub + '</text>' : '') +
+-        '</svg>';
+-      return 'data:image/svg+xml;charset=utf8,' + encodeURIComponent(s);
+-    }
+-
+-    var multi = [
+-      svgImg('#AE7129', 'Ảnh 1 - Banner Tết', 'Khuyến mãi Tết'),
+-      svgImg('#3062EB', 'Ảnh 2 - Sản phẩm', 'Mặt hàng chủ lực'),
+-      svgImg('#4CAF50', 'Ảnh 3 - Biên bản', 'Kho hàng nội bộ'),
+-      svgImg('#8C8C8C', 'Ảnh 4 - Tài liệu', 'Scan hợp đồng'),
+-      svgImg('#E73722', 'Ảnh 5 - Cảnh báo', 'Sự cố vận hành')
+-    ];
+-
+-    document.getElementById('img-demo-multi').items = multi.slice();
+-    document.getElementById('img-demo-notoolbar').items = multi.slice(0, 3);
+-    document.getElementById('img-demo-toolbar').items = multi.slice(0, 3);
+-    document.getElementById('img-demo-limited').items = multi.slice(0, 3);
+-    document.getElementById('img-demo-noloop').items = multi.slice(0, 3);
+-    document.getElementById('img-demo-light').items = multi.slice(0, 3);
+-    document.getElementById('img-demo-top').items = multi.slice(0, 3);
+-    document.getElementById('img-demo-left').items = multi.slice(0, 3);
+-    document.getElementById('img-demo-right').items = multi.slice(0, 3);
+-    document.getElementById('img-demo-modal').items = multi.slice();
+-
+-    var single = document.getElementById('img-demo-single');
+-    single.setAttribute('src', svgImg('#AE7129', 'Ảnh đơn - logo One Mount', 'Dùng attribute src'));
++    var HO_SO = [{"url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20320%20200'%20width='320'%20height='200'%3E%3Crect%20width='320'%20height='200'%20rx='14'%20fill='%23e8eef7'/%3E%3Crect%20x='0'%20y='0'%20width='320'%20height='44'%20rx='14'%20fill='%23c0392b'/%3E%3Crect%20x='0'%20y='30'%20width='320'%20height='14'%20fill='%23c0392b'/%3E%3Ctext%20x='16'%20y='28'%20font-family='Arial'%20font-size='13'%20font-weight='700'%20fill='%23fff'%3EC%C4%82N%20C%C6%AF%E1%BB%9AC%20C%C3%94NG%20D%C3%82N%3C/text%3E%3Crect%20x='16'%20y='60'%20width='80'%20height='104'%20rx='6'%20fill='%23c9d3e2'/%3E%3Ccircle%20cx='56'%20cy='98'%20r='20'%20fill='%23aab6c8'/%3E%3Crect%20x='26'%20y='124'%20width='60'%20height='30'%20rx='15'%20fill='%23aab6c8'/%3E%3Crect%20x='112'%20y='66'%20width='170'%20height='8'%20rx='4'%20fill='%239aa7ba'/%3E%3Crect%20x='112'%20y='86'%20width='152'%20height='8'%20rx='4'%20fill='%239aa7ba'/%3E%3Crect%20x='112'%20y='106'%20width='134'%20height='8'%20rx='4'%20fill='%239aa7ba'/%3E%3Crect%20x='112'%20y='126'%20width='116'%20height='8'%20rx='4'%20fill='%239aa7ba'/%3E%3Crect%20x='112'%20y='146'%20width='98'%20height='8'%20rx='4'%20fill='%239aa7ba'/%3E%3C/svg%3E", "name": "CCCD_mat_truoc_Nguyen_Van_An.jpg"}, {"url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20400'%20width='300'%20height='400'%3E%3Crect%20width='300'%20height='400'%20fill='%23fdfdfb'/%3E%3Crect%20x='24'%20y='24'%20width='56'%20height='56'%20rx='28'%20fill='none'%20stroke='%231a5fb4'%20stroke-width='4'/%3E%3Ctext%20x='150'%20y='112'%20text-anchor='middle'%20font-family='Times%20New%20Roman'%20font-size='15'%20font-weight='700'%20fill='%23222'%3EGI%E1%BA%A4Y%20CH%E1%BB%A8NG%20NH%E1%BA%ACN%20%C4%90KKD%3C/text%3E%3Crect%20x='28'%20y='136'%20width='244'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='154'%20width='204'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='172'%20width='164'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='190'%20width='244'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='208'%20width='204'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='226'%20width='164'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='244'%20width='244'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='262'%20width='204'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='280'%20width='164'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='298'%20width='244'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='316'%20width='204'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='180'%20y='340'%20width='90'%20height='34'%20fill='none'%20stroke='%231a5fb4'%20stroke-width='3'%20transform='rotate(-8%20225%20357)'/%3E%3C/svg%3E", "name": "Giay_DKKD_trang_1.png", "size": 2516582, "caption": "Bản scan có dấu đỏ – nhận ngày 02/10/2026"}, {"url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20400'%20width='300'%20height='400'%3E%3Crect%20width='300'%20height='400'%20fill='%23fdfdfb'/%3E%3Crect%20x='24'%20y='24'%20width='56'%20height='56'%20rx='28'%20fill='none'%20stroke='%23b5651d'%20stroke-width='4'/%3E%3Ctext%20x='150'%20y='112'%20text-anchor='middle'%20font-family='Times%20New%20Roman'%20font-size='15'%20font-weight='700'%20fill='%23222'%3EBI%C3%8AN%20B%E1%BA%A2N%20%C4%90%E1%BB%8ANH%20GI%C3%81%3C/text%3E%3Crect%20x='28'%20y='136'%20width='244'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='154'%20width='204'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='172'%20width='164'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='190'%20width='244'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='208'%20width='204'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='226'%20width='164'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='244'%20width='244'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='262'%20width='204'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='280'%20width='164'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='298'%20width='244'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='316'%20width='204'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='180'%20y='340'%20width='90'%20height='34'%20fill='none'%20stroke='%23b5651d'%20stroke-width='3'%20transform='rotate(-8%20225%20357)'/%3E%3C/svg%3E", "name": "Bien_ban_dinh_gia_TSBD.jpg", "size": 864256}, {"url": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20400'%20width='300'%20height='400'%3E%3Crect%20width='300'%20height='400'%20fill='%23fdfdfb'/%3E%3Crect%20x='24'%20y='24'%20width='56'%20height='56'%20rx='28'%20fill='none'%20stroke='%23c0392b'%20stroke-width='4'/%3E%3Ctext%20x='150'%20y='112'%20text-anchor='middle'%20font-family='Times%20New%20Roman'%20font-size='15'%20font-weight='700'%20fill='%23222'%3EGI%E1%BA%A4Y%20CH%E1%BB%A8NG%20NH%E1%BA%ACN%20QSD%C4%90%3C/text%3E%3Crect%20x='28'%20y='136'%20width='244'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='154'%20width='204'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='172'%20width='164'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='190'%20width='244'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='208'%20width='204'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='226'%20width='164'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='244'%20width='244'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='262'%20width='204'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='280'%20width='164'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='298'%20width='244'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='28'%20y='316'%20width='204'%20height='6'%20rx='3'%20fill='%23c7c7c7'/%3E%3Crect%20x='180'%20y='340'%20width='90'%20height='34'%20fill='none'%20stroke='%23c0392b'%20stroke-width='3'%20transform='rotate(-8%20225%20357)'/%3E%3C/svg%3E", "name": "So_do_thua_dat_123.jpg", "size": 3355443}];
++    function ids() { for (var i = 0; i < arguments.length; i++) document.getElementById(arguments[i]).items = HO_SO.slice(); }
++    ids('img-demo-multi', 'img-demo-right', 'img-demo-top', 'img-demo-left', 'img-demo-dots', 'img-demo-none', 'img-demo-limited', 'img-demo-modal');
++    document.getElementById('img-demo-empty').items = [];
++    document.getElementById('img-demo-broken').items = [{ url: 'ho-so/khong-ton-tai/Bien_ban_dinh_gia_TSBD.jpg', name: 'Bien_ban_dinh_gia_TSBD.jpg', size: 864256 }];
+ 
+-    // Lightbox
+     var modal = document.getElementById('modal-img-lightbox');
+     document.getElementById('btn-img-lightbox').addEventListener('click', function () { modal.open(); });
+     document.getElementById('btn-img-lightbox-close').addEventListener('click', function () { modal.close(); });
+@@ -322,8 +295,6 @@
+     document.addEventListener('sd-close', function (e) {
+       if (!e.target.matches || !e.target.matches('sd-preview-image')) return;
+       logEvent('sd-close', {});
+-      var modal = e.target.closest('sd-modal');
+-      if (modal) modal.close();
+     });
+   })();
+ </script>
+diff -ruN a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-13 05:10:00.034853805 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-13 05:10:00.052203458 +0000
+@@ -12264,601 +12264,554 @@
+ 
+ 
+   /* ══════════════════════════════════════════════════════════
+-     Shared helpers cho sd-preview-image / sd-preview-pdf
+-     ══════════════════════════════════════════════════════════ */
+-  function sdHasFlag(el, name, alt) {
+-    var v = el.getAttribute(name);
+-    if (v == null && alt) v = el.getAttribute(alt);
+-    if (v == null) return false;
+-    return String(v) !== 'false';
+-  }
+-
+-  // Nút toolbar chỉ-icon dùng sd-button có sẵn (không custom CSS nút mới).
+-  // data-sd-tooltip cho tooltip chung của kit; aria-label đặt trên host theo
+-  // đúng convention button.html của preview.
+-  function sdIconBtn(action, icon, label, opts) {
+-    opts = opts || {};
+-    var focus = opts.focus || action || '';
+-    return '<sd-button type="light" color="secondary" size="sm" prefixIcon="' + esc(icon) + '"' +
+-      (action ? ' data-sd-preview-action="' + esc(action) + '"' : '') +
+-      (focus ? ' data-sd-preview-focus="' + esc(focus) + '"' : '') +
+-      ' data-sd-tooltip="' + escAttr(label) + '"' +
+-      ' aria-label="' + escAttr(label) + '"' +
+-      (opts.disabled ? ' disabled' : '') +
+-      '></sd-button>';
+-  }
++     sd-preview-image — ĐỒNG BỘ 2026-10-13 theo Core UI Catalog `#c-preview-image`
++     và mã thật của thư viện (`@sd-angular/core` 19.0.10,
++     `fesm2022/sd-angular-core-components-preview.mjs` — template, logic, mặc định,
++     chuỗi tiếng Việt `core.component.preview-image.*`).
+ 
+-  /* ══════════════════════════════════════════════════════════
+-     sd-preview-image
++     Component KHÔNG tự bọc modal — tự co theo phần tử cha (đặt trong khung có chiều cao).
+ 
+-     Portal: /component/preview-image - viewer ảnh inline.
+-     Component KHÔNG tự bọc modal - consumer chủ động đặt vào sd-modal.
++     Inputs (attribute, đọc cả camelCase lẫn chữ thường):
++       items              JSON (attribute) | property JS: (string | File | { url?, file?, name?, caption?, alt?, size? })[]
++       src                bí danh cũ của kit: một URL ảnh — ngoại lệ 3 Rule 18
++       title              chỉ hiện khi KHÔNG có ảnh (header đơn giản), như thư viện
++       thumbnailPosition  bottom (mặc định) | top | left | right | dots | none
++       startIndex         0-based (0)
++       showToolbar · downloadable · zoomable · loop   boolean, mặc định true
++       theme              dark (mặc định) | light
++       autoId             → data-autoId cho nút: components-preview-image-{id}-prev / -next / -zoom-in …
+ 
+-     Attributes (đọc cả camelCase lẫn chữ thường, ghi thiếu hoa vẫn chạy):
+-       items               JSON PreviewItem[] - hoặc property JS .items
+-       src                 convenience cho prototype: một URL ảnh duy nhất
+-                           (mirror thêm, Portal không có input này)
+-       thumbnail-position  bottom (mặc định) | top | left | right |
+-                           (top/left/right suy ra, Portal không đọc được đủ)
+-       theme               dark (mặc định) | light (light suy ra)
+-       loop                boolean - vòng quanh khi hết dải
+-       show-toolbar        boolean - hiện thanh công cụ
+-       zoomable            boolean - bật zoom in/out + fit_screen
+-       downloadable        boolean - bật nút tải xuống
+-       title               string - tên tài liệu (gỡ khỏi host tránh tooltip gốc)
+-
+-     PreviewItem = string | File | { url?, file?, name?, caption?, alt?, mime? }
+-
+-     Events (kebab, bubbles - ánh xạ Angular trong tài liệu):
+-       sd-close               <-> (close)
+-       sd-active-index-change <-> (activeIndexChange) detail { activeIndex }
+-       sd-download            <-> (download) detail { index, item }
+-       sd-image-error         <-> (imageError) detail { index, reason }
++     Events (bubbles) ↔ outputs Angular:
++       sd-active-index-change (activeIndexChange) { activeIndex }
++       sd-download            (download)          { index, item }
++       sd-image-error         (imageError)        { index, reason: 'render-failed' }
++       sd-close               (close)             {} — CHỈ khi gọi requestClose(); Esc KHÔNG đóng
+      ══════════════════════════════════════════════════════════ */
+-  function sdPreviewImageName(url, index) {
+-    if (!url || url.indexOf('data:') === 0) return 'Ảnh ' + (index + 1);
+-    var clean = String(url).split(/[?#]/)[0];
+-    var last = clean.substring(clean.lastIndexOf('/') + 1);
+-    if (last) {
+-      try { return decodeURIComponent(last); } catch (e) { return last; }
+-    }
+-    return 'Ảnh ' + (index + 1);
+-  }
+-
+-  function sdPreviewImageNormalize(raw, index) {
+-    if (raw == null) {
+-      return { index: index, url: '', file: null, name: 'Ảnh ' + (index + 1), caption: '', alt: '', mime: '', size: '' };
+-    }
+-    if (typeof raw === 'string') {
+-      return { index: index, url: raw, file: null, name: sdPreviewImageName(raw, index), caption: '', alt: '', mime: '', size: '' };
+-    }
+-    if (raw instanceof File) {
+-      return { index: index, url: '', file: raw, name: raw.name || ('Ảnh ' + (index + 1)), caption: '', alt: '', mime: raw.type || '', size: raw.size };
+-    }
+-    var item = {
+-      index: index,
+-      url: raw.url || '',
+-      file: raw.file || null,
+-      name: raw.name || '',
+-      caption: raw.caption || '',
+-      alt: raw.alt || '',
+-      mime: raw.mime || '',
+-      /* `size`: dòng phụ dưới tên file ở thanh tiêu đề (catalog hiện
+-         " 2.4 MB ", " 844.0 KB "). Nhận chuỗi sẵn, hoặc số byte. */
+-      size: raw.size != null ? raw.size : ''
+-    };
+-    if (!item.name) item.name = sdPreviewImageName(item.url, index);
+-    return item;
+-  }
+-
+-  /* Đổi byte sang chuỗi như catalog hiển thị: một chữ số thập phân,
+-     đơn vị KB/MB/GB (1024). Chuỗi truyền sẵn thì giữ nguyên. */
+-  function sdPreviewImageSize(v) {
+-    if (v === '' || v == null) return '';
+-    if (typeof v === 'string') return v;
+-    var n = Number(v);
+-    if (!isFinite(n) || n < 0) return '';
+-    var u = ['B', 'KB', 'MB', 'GB', 'TB'], i = 0;
+-    while (n >= 1024 && i < u.length - 1) { n = n / 1024; i++; }
+-    return (i === 0 ? String(Math.round(n)) : n.toFixed(1)) + ' ' + u[i];
+-  }
+-
+-  function sdPreviewImageUrlOf(item) {
+-    if (item.url) return item.url;
+-    if (item.file) {
+-      if (!item._objectUrl) item._objectUrl = URL.createObjectURL(item.file);
+-      return item._objectUrl;
+-    }
+-    return '';
++  var SD_IMG_TEXT = {   // VI_MESSAGES của @sd-angular/core/i18n, nguyên văn
++    noImage: 'Không có thông tin ảnh',
++    noImageHint: 'Chưa có ảnh nào để hiển thị',
++    loadError: 'Không tải được ảnh',
++    loadErrorHint: 'File ảnh có thể đã bị xóa hoặc đường dẫn không hợp lệ',
++    retry: 'Thử lại',
++    prev: 'Ảnh trước',
++    next: 'Ảnh tiếp theo',
++    zoomIn: 'Phóng to',
++    zoomOut: 'Thu nhỏ',
++    fit: 'Vừa khung',
++    rotate: 'Xoay',
++    download: 'Tải xuống',
++    fullscreen: 'Toàn màn hình',
++    loading: 'Đang tải ảnh...',
++    kbdNav: 'chuyển ảnh'
++  };
++  var sdImgSeq = 0;
++  function sdImgFormatBytes(bytes) {     // formatBytes() của thư viện
++    if (!bytes || bytes < 0) return '';
++    if (bytes < 1024) return bytes + ' B';
++    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
++    if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
++    return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+   }
+ 
+   class SdPreviewImage extends HTMLElement {
+     static get observedAttributes() {
+-      return ['items', 'src', 'thumbnail-position', 'thumbnailposition', 'theme',
+-              'loop', 'show-toolbar', 'showtoolbar', 'zoomable', 'downloadable', 'title',
+-              'autoid', 'autoId', 'startindex', 'startIndex'];
++      return ['items', 'src', 'title', 'thumbnailposition', 'thumbnail-position', 'startindex',
++              'showtoolbar', 'show-toolbar', 'downloadable', 'zoomable', 'loop', 'theme', 'autoid'];
+     }
+ 
+     constructor() {
+       super();
+-      this._items = null;
++      this._itemsProp = undefined;
+       this._title = '';
++      this._images = [];
+       this._activeIndex = 0;
+-      this._indexTouched = false;
+-      this._zoom = 100;
+-      this._rotate = 0;
+-      this._thumbPos = 'bottom';
+-      this._theme = 'dark';
+-      this._hasLoop = false;
+-      this._hasToolbar = false;
+-      this._hasZoom = true;
+-      this._hasDownload = true;
+-      this._rendered = false;
+-      this._bound = false;
+-      this._docKeyBound = null;
+-      this._fsBound = null;
+-      this._pendingFocus = null;
+-      this._fullscreen = false;
++      this._zoom = 1;
++      this._rotation = 0;
++      this._pan = { x: 0, y: 0 };
++      this._stage = 'empty';        // empty | loading | ready
++      this._isFullscreen = false;
++      this._ownedUrls = [];
++      this._loadToken = 0;
++      this._pointers = new Map();
++      this._dragStart = null;
++      this._swipeStart = null;
++      this._pinchDist = 0;
++      this._pinchZoom = 1;
+     }
+ 
++    /* ── vòng đời ── */
+     connectedCallback() {
+-
++      this.classList.add('sd-preview-image-host');
++      if (!this.hasAttribute('tabindex')) this.setAttribute('tabindex', '0');
+       sdSyncAutoId(this, 'components-preview-image-');
+-      this._readAttributes();
+-      this._render();
++      this._stripTitle();
+       this._bind();
++      if (!this._connectedOnce) {
++        this._connectedOnce = true;
++        var self = this;
++        requestAnimationFrame(function () { try { self.focus({ preventScroll: true }); } catch (e) { /* ignore */ } });
++        this._load();
++      }
++      this._render();
+     }
+     disconnectedCallback() {
+-      this._unbind();
++      if (this._fsHandler) { document.removeEventListener('fullscreenchange', this._fsHandler); this._fsHandler = null; this._bound = false; }
+     }
+-    attributeChangedCallback(name) {
+-      sdSyncAutoId(this, 'components-preview-image-');
+-      // Chạy TRƯỚC connectedCallback khi attribute có sẵn trong HTML:
+-      // guard _rendered, vì _render đọc DOM do chính nó tạo ra.
+-      if (this._strippingTitle) return;
+-      if (!this._rendered) return;
+-      if (name === 'items' || name === 'src') {
+-        this._activeIndex = 0;
+-        this._zoom = 100;
+-        this._rotate = 0;
+-      }
+-      this._readAttributes();
++    attributeChangedCallback(name, oldV, newV) {
++      if (this._strippingTitle || !this._connectedOnce || oldV === newV) return;
++      var n = name.toLowerCase();
++      if (n === 'title') { this._stripTitle(); this._render(); return; }
++      if (n === 'autoid') sdSyncAutoId(this, 'components-preview-image-');
++      /* effect() của thư viện: items / startIndex đổi → nạp lại danh sách */
++      if (n === 'items' || n === 'src' || n === 'startindex') { this._load(); return; }
+       this._render();
+-      this._bind();
+     }
+ 
+-    get items() { return this._items || []; }
+-    set items(v) {
+-      this._revokeUrls();
+-      this._items = Array.isArray(v) ? v.map(sdPreviewImageNormalize) : [];
+-      this._activeIndex = 0;
+-      this._zoom = 100;
+-      this._rotate = 0;
+-      if (this._rendered) this._render();
++    /* ── inputs ── */
++    _attr() {
++      for (var i = 0; i < arguments.length; i++) { var v = this.getAttribute(arguments[i]); if (v != null) return v; }
++      return null;
+     }
++    _flag(names) { var v = this._attr.apply(this, names); return v == null ? true : String(v) !== 'false'; }
++    get showToolbar() { return this._flag(['showToolbar', 'showtoolbar', 'show-toolbar']); }
++    get downloadable() { return this._flag(['downloadable']); }
++    get zoomable() { return this._flag(['zoomable']); }
++    get loop() { return this._flag(['loop']); }
++    get theme() { return this._attr('theme') || 'dark'; }
++    get thumbnailPosition() { return this._attr('thumbnailPosition', 'thumbnailposition', 'thumbnail-position') || 'bottom'; }
++    get startIndex() { var n = parseInt(this._attr('startIndex', 'startindex') || '0', 10); return isNaN(n) ? 0 : n; }
++    get items() {
++      if (this._itemsProp !== undefined) return this._itemsProp || [];
++      var raw = this._attr('items');
++      if (raw != null) { try { var p = JSON.parse(raw); return Array.isArray(p) ? p : []; } catch (e) { return []; } }
++      var src = this._attr('src');
++      return src ? [src] : [];
++    }
++    set items(v) { this._itemsProp = v; if (this._connectedOnce) this._load(); }
+     get activeIndex() { return this._activeIndex; }
+-    /* Setter đi kèm getter sẵn có: sd-upload-file cần mở gallery đúng
+-       ảnh vừa bấm, giống PreviewComponent.open(files, index) của thư viện. */
++    /* Setter: tiện ích riêng của kit (2026-10-08, mở gallery đúng ảnh vừa bấm) — thư viện chỉ có
++       startIndex. Kẹp biên, không phát sự kiện; danh sách đang nạp thì chờ nạp xong mới áp. */
+     set activeIndex(v) {
+-      var count = (this._items || []).length;
+-      var i = Number(v);
+-      if (isNaN(i) || count === 0) return;
+-      this._activeIndex = Math.max(0, Math.min(count - 1, i));
+-      this._indexTouched = true;
+-      this._zoom = 100;
+-      this._rotate = 0;
+-      if (this._rendered) this._render();
+-    }
+-
+-    _readAttributes() {
+-      var itemsAttr = this.getAttribute('items');
+-      var src = this.getAttribute('src');
+-      if (itemsAttr != null) {
+-        this._revokeUrls();
+-        try {
+-          var parsed = JSON.parse(itemsAttr);
+-          this._items = Array.isArray(parsed) ? parsed.map(sdPreviewImageNormalize) : [];
+-        } catch (e) { this._items = []; }
+-      } else if (src != null) {
+-        this._revokeUrls();
+-        this._items = [sdPreviewImageNormalize(src, 0)];
+-      } else if (this._items === null) {
+-        this._items = [];
+-      }
+-      this._thumbPos = this.getAttribute('thumbnailPosition') ||
+-        this.getAttribute('thumbnail-position') || this.getAttribute('thumbnailposition') || 'bottom';
+-      this._theme = this.getAttribute('theme') || 'dark';
+-      /* Mặc định THẬT của thư viện (preview.component.ts): showToolbar, downloadable,
+-         zoomable, loop đều là input(true) — KHÔNG phải cờ hasAttribute mặc định false
+-         như bản trước. Dùng sdFlagDefaultTrue: không khai = bật, khai ="false" = tắt. */
+-      this._hasLoop = sdFlagDefaultTrue(this, ['loop']);
+-      this._hasToolbar = sdFlagDefaultTrue(this, ['showToolbar', 'show-toolbar', 'showtoolbar']);
+-      this._hasZoom = sdFlagDefaultTrue(this, ['zoomable']);
+-      this._hasDownload = sdFlagDefaultTrue(this, ['downloadable']);
+-      /* startIndex: mở sẵn ở ảnh thứ mấy (0-based). Chỉ áp dụng khi CHƯA từng
+-         chuyển ảnh, để gắn/gỡ attribute khác không nhảy index người dùng đang xem. */
+-      var si = parseInt(this.getAttribute('startIndex') || this.getAttribute('startindex') || '', 10);
+-      if (!isNaN(si) && !this._indexTouched) {
+-        var n = (this._items || []).length;
+-        this._activeIndex = n ? Math.max(0, Math.min(n - 1, si)) : Math.max(0, si);
+-      }
++      var n = parseInt(v, 10);
++      if (isNaN(n)) return;
++      if (this._stage !== 'ready') { this._pendingIndex = n; return; }
++      n = Math.max(0, Math.min(n, this._images.length - 1));
++      if (n === this._activeIndex) return;
++      this._activeIndex = n;
++      this._resetTransform();
++      this._render();
+     }
+-
+-    _readTitle() {
+-      this._title = this.hasAttribute('title') ? (this.getAttribute('title') || '') : (this._title || '');
++    get title() { return this._title; }
++    set title(v) { this._title = v == null ? '' : String(v); if (this._connectedOnce) this._render(); }
++    _stripTitle() {
+       if (this.hasAttribute('title')) {
++        this._title = this.getAttribute('title') || '';
+         this._strippingTitle = true;
+         this.removeAttribute('title');
+         this._strippingTitle = false;
+       }
+-      return this._title;
+     }
+-
+-    _revokeUrls() {
+-      var items = this._items || [];
+-      for (var i = 0; i < items.length; i++) {
+-        if (items[i]._objectUrl) {
+-          URL.revokeObjectURL(items[i]._objectUrl);
+-          items[i]._objectUrl = null;
+-        }
+-      }
+-    }
+-
+-    /* ── Dựng DOM theo Core UI Catalog `#c-preview-image` ──────────────
+-       Khung: .sd-preview-shell > .sd-preview-header + .sd-preview-body
+-              .sd-preview-body > .sd-preview-stage + .sd-preview-thumbs
+-       Thanh công cụ NỔI trong stage (không phải hàng riêng ở trên như bản
+-       trước), hai mũi tên điều hướng nằm hai bên stage.
+-       Giữ nguyên bộ data-attribute điều phối của kit (`data-sd-preview-action`,
+-       `-index`, `-focus`) để _bind không phải đổi. */
+-
+-    _iconHtml(name) {
+-      return '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">' + esc(name) + '</mat-icon>';
+-    }
+-
+-    _tbBtn(action, icon, label, opts) {
+-      opts = opts || {};
+-      return '<button type="button" class="sd-preview-toolbar__btn' +
+-        (opts.label ? ' sd-preview-toolbar__btn--with-label' : '') + '"' +
+-        ' data-sd-preview-action="' + esc(action) + '"' +
+-        ' data-sd-preview-focus="' + esc(opts.focus || action) + '"' +
+-        ' aria-label="' + escAttr(label) + '" title="' + escAttr(label) + '"' +
+-        (opts.disabled ? ' disabled' : '') + '>' +
+-        this._iconHtml(icon) +
+-        (opts.label ? '<span class="sd-preview-toolbar__btn-label">' + esc(opts.label) + '</span>' : '') +
+-        '</button>';
++    _aid(suffix) {
++      var raw = this._attr('autoId', 'autoid');
++      return raw ? ' data-autoId="' + escAttr('components-preview-image-' + raw + '-' + suffix) + '"' : '';
+     }
+-
+-    _toolbarHtml() {
+-      var html = '';
+-      if (this._hasZoom) {
+-        html +=
+-          this._tbBtn('zoom-out', 'zoom_out', 'Thu nhỏ') +
+-          '<span class="sd-preview-toolbar__readout">' + this._zoom + '%</span>' +
+-          this._tbBtn('zoom-in', 'zoom_in', 'Phóng to') +
+-          '<span class="sd-preview-toolbar__divider"></span>' +
+-          this._tbBtn('fit', 'fit_screen', 'Vừa khung', { label: 'Vừa khung' });
++    get _active() { return this._images[this._activeIndex]; }
++    get _hasPrev() { var n = this._images.length; return n > 1 && (this.loop || this._activeIndex > 0); }
++    get _hasNext() { var n = this._images.length; return n > 1 && (this.loop || this._activeIndex < n - 1); }
++    _transform() { return 'translate(' + this._pan.x + 'px, ' + this._pan.y + 'px) scale(' + this._zoom + ') rotate(' + this._rotation + 'deg)'; }
++
++    /* ── nạp danh sách (normalize của thư viện) ── */
++    _revoke() { this._ownedUrls.forEach(function (u) { URL.revokeObjectURL(u); }); this._ownedUrls = []; }
++    _load() {
++      var self = this, token = ++this._loadToken, list = this.items, start = this.startIndex;
++      this._revoke();
++      this._resetTransform();
++      if (!Array.isArray(list) || !list.length) {
++        this._images = [];
++        this._activeIndex = 0;
++        this._stage = 'empty';
++        this._render();
++        return Promise.resolve();
+       }
+-      html += this._tbBtn('rotate', 'rotate_right', 'Xoay');
+-      var tail = (this._hasDownload ? this._tbBtn('download', 'download', 'Tải xuống') : '') +
+-        this._tbBtn('fullscreen', this._fullscreen ? 'fullscreen_exit' : 'fullscreen',
+-          this._fullscreen ? 'Thoát toàn màn hình' : 'Toàn màn hình');
+-      if (tail) html += '<span class="sd-preview-toolbar__divider"></span>' + tail;
+-      return '<div class="sd-preview-toolbar" role="toolbar">' + html + '</div>';
+-    }
+-
+-    _navHtml(count) {
+-      if (count < 2) return '';
+-      var prevOff = this._activeIndex === 0 && !this._hasLoop;
+-      var nextOff = this._activeIndex === count - 1 && !this._hasLoop;
+-      return '<button type="button" class="sd-preview-nav sd-preview-nav--prev"' +
+-          ' data-sd-preview-action="prev" data-sd-preview-focus="prev"' +
+-          ' aria-label="Ảnh trước"' + (prevOff ? ' disabled' : '') + '>' +
+-          this._iconHtml('chevron_left') + '</button>' +
+-        '<button type="button" class="sd-preview-nav sd-preview-nav--next"' +
+-          ' data-sd-preview-action="next" data-sd-preview-focus="next"' +
+-          ' aria-label="Ảnh tiếp theo"' + (nextOff ? ' disabled' : '') + '>' +
+-          this._iconHtml('chevron_right') + '</button>';
+-    }
+-
+-    _headerHtml(items, active) {
+-      var item = items[active] || null;
+-      var name = item ? (item.name || '') : '';
+-      var sub = item ? sdPreviewImageSize(item.size) : '';
+-      var counter = items.length > 1
+-        ? '<div class="sd-preview-header__counter" aria-live="polite"> ' +
+-            (active + 1) + ' / ' + items.length + ' </div>'
+-        : '';
+-      return '<div class="sd-preview-header">' +
+-          '<div class="sd-preview-header__left">' +
+-            '<mat-icon role="img" class="mat-icon notranslate sd-preview-header__icon material-icons mat-ligature-font mat-icon-no-color" aria-hidden="true" data-mat-icon-type="font">image</mat-icon>' +
+-            '<div class="sd-preview-header__meta">' +
+-              '<div class="sd-preview-header__name" title="' + escAttr(name) + '">' + esc(name) + '</div>' +
+-              (sub ? '<div class="sd-preview-header__sub"> ' + esc(sub) + ' </div>' : '') +
+-            '</div>' +
+-          '</div>' + counter +
+-        '</div>';
++      this._activeIndex = Math.max(0, Math.min(start || 0, list.length - 1));
++      this._stage = 'loading';
++      this._render();
++      return Promise.all(list.map(function (it) { return self._normalize(it); })).then(function (norm) {
++        if (token !== self._loadToken) return;
++        var valid = norm.filter(function (x) { return x !== null; });
++        self._images = valid;
++        if (!valid.length) self._stage = 'empty';
++        else {
++          self._activeIndex = Math.min(self._activeIndex, valid.length - 1);
++          if (self._pendingIndex != null) { self._activeIndex = Math.max(0, Math.min(self._pendingIndex, valid.length - 1)); self._pendingIndex = null; }
++          self._stage = 'ready';
++        }
++        self._render();
++      });
+     }
+-
+-    _thumbsHtml(items) {
+-      var vertical = this._thumbPos === 'right';
+-      var html = '<div class="sd-preview-thumbs' + (vertical ? ' sd-preview-thumbs--vertical' : '') + '">';
+-      for (var i = 0; i < items.length; i++) {
+-        var item = items[i];
+-        var url = sdPreviewImageUrlOf(item);
+-        var inner = url
+-          ? '<img class="sd-preview-thumb__img" src="' + escAttr(url) + '" alt="' + escAttr(item.alt || item.name) + '" loading="lazy">'
+-          : this._iconHtml('broken_image');
+-        var on = i === this._activeIndex;
+-        html += '<button type="button" class="sd-preview-thumb' + (on ? ' sd-preview-thumb--active' : '') + '"' +
+-          ' data-sd-preview-index="' + i + '" data-sd-preview-focus="thumb-' + i + '"' +
+-          ' aria-label="' + escAttr(item.name || ('Ảnh ' + (i + 1))) + '"' +
+-          (on ? ' aria-current="true"' : '') + ' data-i="' + i + '">' +
+-          inner + '<span class="sd-preview-thumb__badge">' + (i + 1) + '</span></button>';
+-      }
+-      return html + '</div>';
+-    }
+-
+-    /* Khối trạng thái (rỗng / lỗi) — markup và chữ chép từ catalog. */
+-    _statusHtml(kind) {
+-      if (kind === 'empty') {
+-        return '<div class="sd-preview-status">' +
+-            '<div class="sd-preview-status__tile sd-preview-status__tile--muted">' +
+-              this._iconHtml('image_not_supported') +
+-            '</div>' +
+-            '<div class="sd-preview-status__title"> Không có thông tin ảnh </div>' +
+-            '<div class="sd-preview-status__hint"> Chưa có ảnh nào để hiển thị </div>' +
+-          '</div>';
+-      }
+-      return '<div class="sd-preview-image-broken" role="img" aria-label="Không tải được ảnh">' +
+-          '<div class="sd-preview-status__tile sd-preview-status__tile--danger">' +
+-            this._iconHtml('broken_image') +
+-          '</div>' +
+-          '<div class="sd-preview-status__title"> Không tải được ảnh </div>' +
+-          '<div class="sd-preview-status__hint"> File ảnh có thể đã bị xóa hoặc đường dẫn không hợp lệ </div>' +
+-          '<button type="button" class="sd-preview-btn-primary"' +
+-            ' data-sd-preview-action="retry" data-sd-preview-focus="retry">' +
+-            this._iconHtml('refresh') + '<span>Thử lại</span>' +
+-          '</button>' +
+-        '</div>';
++    _normalize(item, override) {
++      var self = this;
++      return Promise.resolve().then(function () {
++        if (typeof item === 'string') return self._fromUrl(item, override);
++        if (typeof File !== 'undefined' && item instanceof File) return self._fromFile(item, override);
++        if (item && typeof item === 'object') {
++          var ov = { name: item.name, caption: item.caption, alt: item.alt, size: item.size };
++          if (item.file) return self._fromFile(item.file, ov);
++          if (item.url) return self._fromUrl(item.url, ov);
++        }
++        return null;
++      }).catch(function (err) { console.error('[sd-preview-image] normalize failed', err); return null; });
+     }
+-
+-    _shellHtml(bodyHtml) {
+-      /* catalog chỉ minh hoạ hai lớp vị trí: `--pos-bottom` và `--pos-right`. */
+-      var pos = this._thumbPos === 'right' ? 'right' : 'bottom';
+-      this.classList.add('sd-preview-image-host');
+-      if (!this.hasAttribute('tabindex')) this.setAttribute('tabindex', '0');
+-      this.setAttribute('data-theme', this._theme);
+-      return '<div class="sd-preview-shell sd-preview-shell--pos-' + pos + '" role="region">' +
+-        bodyHtml + '</div>';
++    _record(o) {
++      return { id: 'sd-img-' + (++sdImgSeq), url: o.url, blobUrl: o.blobUrl || '', name: o.name, size: o.size || 0,
++        caption: o.caption, alt: o.alt, loading: false, error: !!o.error };
+     }
+-
+-    _render() {
+-      this._rendered = true;
+-      var items = this._items || [];
+-      this._readTitle();
+-
+-      if (!items.length) {
+-        this.innerHTML = this._shellHtml(
+-          this._headerHtml(items, 0) +
+-          '<div class="sd-preview-body"><div class="sd-preview-stage">' +
+-            this._statusHtml('empty') +
+-          '</div></div>');
+-        return;
+-      }
+-
+-      var active = this._activeIndex;
+-      if (active < 0 || active >= items.length) active = 0;
+-      this._activeIndex = active;
+-      var item = items[active];
+-      var url = sdPreviewImageUrlOf(item);
+-
+-      /* catalog đặt transform ngay trên thẻ <img>: translate + scale + rotate */
+-      var style = ' style="transform: translate(0px, 0px) scale(' +
+-        (this._zoom / 100).toFixed(2) + ') rotate(' + this._rotate + 'deg);"';
+-      var imgHtml = url
+-        ? '<img class="sd-preview-image" src="' + escAttr(url) + '" alt="' + escAttr(item.alt || item.name) +
+-          '" draggable="false"' + style + '>'
+-        : this._statusHtml('broken');
+-      var caption = item.caption ? '<div class="sd-preview-caption">' + esc(item.caption) + '</div>' : '';
+-      var kbd = items.length > 1
+-        ? '<div class="sd-preview-kbd-hint" aria-hidden="true">' +
+-            '<span class="sd-preview-kbd">←</span><span class="sd-preview-kbd">→</span>' +
+-            '<span class="sd-preview-kbd-text">chuyển ảnh</span></div>'
+-        : '';
+-      var toolbar = this._hasToolbar ? this._toolbarHtml() : '';
+-      var thumbs = items.length > 1 ? this._thumbsHtml(items) : '';
+-
+-      this.innerHTML = this._shellHtml(
+-        this._headerHtml(items, active) +
+-        '<div class="sd-preview-body">' +
+-          '<div class="sd-preview-stage">' +
+-            imgHtml + caption + kbd + this._navHtml(items.length) + toolbar +
+-          '</div>' +
+-          thumbs +
+-        '</div>');
+-
++    _fromUrl(url, ov) {
+       var self = this;
+-      var img = this.querySelector('img.sd-preview-image');
+-      if (img) {
+-        img.addEventListener('error', function () {
+-          self.dispatchEvent(new CustomEvent('sd-image-error', {
+-            detail: { index: self._activeIndex, reason: 'load' },
+-            bubbles: true
+-          }));
+-          var stage = self.querySelector('.sd-preview-stage');
+-          if (stage && img.parentNode === stage) stage.replaceChild(
+-            (function () { var d = document.createElement('div');
+-              d.innerHTML = self._statusHtml('broken'); return d.firstChild; })(), img);
++      var base = String(url).split('?')[0];
++      var name = (ov && ov.name) || base.substring(base.lastIndexOf('/') + 1) || 'image';
++      /* catalog ghi kiểu item `{ url, name, size?, caption? }`: `size` khai sẵn thì dùng,
++         không thì lấy cỡ thật của file tải về (thư viện). */
++      var given = ov && ov.size != null && ov.size !== '' ? ov.size : null;
++      return fetch(url).then(function (res) {
++        if (!res.ok) throw new Error('HTTP ' + res.status);
++        return res.blob();
++      }).then(function (blob) {
++        var blobUrl = URL.createObjectURL(blob);
++        self._ownedUrls.push(blobUrl);
++        return self._record({ url: url, blobUrl: blobUrl, name: name, size: given != null ? given : blob.size,
++          caption: ov && ov.caption, alt: ov && ov.alt });
++      }, function () {
++        /* Thư viện: fetch hỏng → bản ghi lỗi (hiện "Không tải được ảnh" + Thử lại).
++           Kit thêm một bước: trang mở bằng file:// thì trình duyệt chặn fetch — thử nạp
++           thẳng bằng <img>; ảnh hiện được thì dùng URL gốc (không có cỡ file).
++           Ảnh lỗi vẫn giữ `size` khai sẵn — catalog vẽ header "844.0 KB" ở trạng thái lỗi. */
++        return new Promise(function (resolve) {
++          var probe = new Image();
++          probe.onload = function () { resolve(self._record({ url: url, name: name, size: given, caption: ov && ov.caption, alt: ov && ov.alt })); };
++          probe.onerror = function () { resolve(self._record({ url: url, name: name, size: given, caption: ov && ov.caption, alt: ov && ov.alt, error: true })); };
++          probe.src = url;
+         });
+-      }
+-      this._restoreFocus();
+-    }
+-
+-    _restoreFocus() {
+-      var focus = this._pendingFocus;
+-      this._pendingFocus = null;
+-      if (!focus) return;
+-      var el = this.querySelector('[data-sd-preview-focus="' + focus + '"]');
+-      if (!el) return;
+-      var btn = el.matches('button') ? el : (el.querySelector('button') || el);
+-      // Re-render gỡ nút cũ ngay sau click - focus phải chờ DOM mới ổn định.
+-      var self = this;
+-      requestAnimationFrame(function () {
+-        if (btn.isConnected && btn.focus) btn.focus();
+       });
+     }
++    _fromFile(file, ov) {
++      if (!file.type || file.type.indexOf('image/') !== 0) return null;   // lọc yên lặng như thư viện
++      var blobUrl = URL.createObjectURL(file);
++      this._ownedUrls.push(blobUrl);
++      return this._record({ blobUrl: blobUrl, name: (ov && ov.name) || file.name, size: file.size,
++        caption: ov && ov.caption, alt: ov && ov.alt });
++    }
+ 
+-    _bind() {
+-      var self = this;
+-      if (!this._bound) {
+-        this._bound = true;
+-        this.addEventListener('click', function (e) {
+-          var thumbEl = e.target.closest ? e.target.closest('[data-sd-preview-index]') : null;
+-          if (thumbEl) {
+-            self._pendingFocus = thumbEl.getAttribute('data-sd-preview-focus');
+-            self._navigate(parseInt(thumbEl.getAttribute('data-sd-preview-index'), 10) || 0);
+-            return;
+-          }
+-          var actionEl = e.target.closest ? e.target.closest('[data-sd-preview-action]') : null;
+-          if (!actionEl) return;
+-          var btn = actionEl.closest ? actionEl.closest('sd-button') : null;
+-          if (btn && (btn.hasAttribute('disabled') || btn.getAttribute('disabled') === 'true')) return;
+-          self._pendingFocus = actionEl.getAttribute('data-sd-preview-focus') ||
+-            actionEl.getAttribute('data-sd-preview-action');
+-          self._onAction(actionEl.getAttribute('data-sd-preview-action'));
+-        });
+-      }
+-      if (!this._docKeyBound) {
+-        this._docKeyBound = function (e) {
+-          if (!self.isConnected) return;
+-          if (!self.contains(document.activeElement)) return;
+-          if (e.key === 'ArrowLeft') {
+-            e.preventDefault();
+-            var leftFocus = document.activeElement && document.activeElement.closest ?
+-              document.activeElement.closest('[data-sd-preview-focus]') : null;
+-            if (leftFocus) self._pendingFocus = leftFocus.getAttribute('data-sd-preview-focus');
+-            self._navigate(self._activeIndex - 1);
+-          } else if (e.key === 'ArrowRight') {
+-            e.preventDefault();
+-            var rightFocus = document.activeElement && document.activeElement.closest ?
+-              document.activeElement.closest('[data-sd-preview-focus]') : null;
+-            if (rightFocus) self._pendingFocus = rightFocus.getAttribute('data-sd-preview-focus');
+-            self._navigate(self._activeIndex + 1);
+-          } else if (e.key === 'Escape') {
+-            if (self._fullscreen && document.exitFullscreen) {
+-              document.exitFullscreen();
+-            } else {
+-              self.dispatchEvent(new CustomEvent('sd-close', { bubbles: true }));
+-            }
+-          }
+-        };
+-        // Listener document PHẢI gỡ trong disconnectedCallback.
+-        document.addEventListener('keydown', this._docKeyBound);
++    /* ── HTML — y hệt template của thư viện ── */
++    _icon(name, extra) {
++      return '<mat-icon role="img" class="mat-icon notranslate material-icons mat-ligature-font mat-icon-no-color' +
++        (extra ? ' ' + extra : '') + '" aria-hidden="true">' + esc(name) + '</mat-icon>';
++    }
++    _tb(icon, label, auto, withLabel) {
++      return '<button type="button" class="sd-preview-toolbar__btn' + (withLabel ? ' sd-preview-toolbar__btn--with-label' : '') + '"' +
++        ' aria-label="' + escAttr(label) + '"' + (withLabel ? '' : ' title="' + escAttr(label) + '"') + this._aid(auto) + '>' +
++        this._icon(icon) + (withLabel ? '<span class="sd-preview-toolbar__btn-label">' + esc(label) + '</span>' : '') + '</button>';
++    }
++    _html() {
++      var st = this._stage, imgs = this._images, pos = this.thumbnailPosition, act = this._activeIndex, img = this._active;
++      var multi = imgs.length > 1, ready = st === 'ready';
++      var h = '<div class="sd-preview-shell sd-preview-shell--pos-' + esc(pos) + (this._isFullscreen ? ' sd-preview-shell--fullscreen' : '') + '" role="region">';
++      if (st !== 'empty' && img) {
++        h += '<div class="sd-preview-header"><div class="sd-preview-header__left">' + this._icon('image', 'sd-preview-header__icon') +
++          '<div class="sd-preview-header__meta"><div class="sd-preview-header__name T14M" title="' + escAttr(img.name) + '">' + esc(img.name) + '</div>' +
++          (img.size ? '<div class="sd-preview-header__sub"> ' + esc(typeof img.size === 'number' ? sdImgFormatBytes(img.size) : String(img.size)) + ' </div>' : '') +
++          '</div></div>' +
++          (multi ? '<div class="sd-preview-header__counter" aria-live="polite"> ' + (act + 1) + ' / ' + imgs.length + ' </div>' : '') +
++          '</div>';
++      } else if (this._title) {
++        h += '<div class="sd-preview-header sd-preview-header--simple"><div class="sd-preview-header__name T14M">' + esc(this._title) + '</div></div>';
+       }
+-      if (!this._fsBound) {
+-        this._fsBound = function () {
+-          var active = document.fullscreenElement === self;
+-          if (active !== self._fullscreen) {
+-            self._fullscreen = active;
+-            /* catalog: `sd-preview-image.sd-preview-image-host--fullscreen`
+-               mới là lớp đổi khung sang 100vw/100vh. */
+-            self.classList.toggle('sd-preview-image-host--fullscreen', active);
+-            if (self._rendered) self._render();
+-          }
+-        };
+-        document.addEventListener('fullscreenchange', this._fsBound);
++      h += '<div class="sd-preview-body"><div class="sd-preview-stage' + (this._zoom > 1 ? ' sd-preview-stage--dragging' : '') + '">';
++      if (st === 'empty') {
++        h += '<div class="sd-preview-status"><div class="sd-preview-status__tile sd-preview-status__tile--muted">' + this._icon('image_not_supported') + '</div>' +
++          '<div class="sd-preview-status__title"> ' + esc(SD_IMG_TEXT.noImage) + ' </div>' +
++          '<div class="sd-preview-status__hint"> ' + esc(SD_IMG_TEXT.noImageHint) + ' </div></div>';
++      } else if (st === 'loading') {
++        h += '<div class="sd-preview-status"><div class="sd-preview-spinner" role="progressbar"></div>' +
++          '<div class="sd-preview-status__hint"> ' + esc(SD_IMG_TEXT.loading) + ' </div></div>';
++      } else if (img) {
++        if (img.loading) {
++          h += '<div class="sd-preview-image-loading" role="status" aria-label="' + escAttr(SD_IMG_TEXT.loading) + '"><div class="sd-preview-spinner"></div>' +
++            '<div class="sd-preview-status__hint"> ' + esc(SD_IMG_TEXT.loading) + ' </div></div>';
++        } else if (img.error) {
++          h += '<div class="sd-preview-image-broken" role="img" aria-label="' + escAttr(SD_IMG_TEXT.loadError) + '">' +
++            '<div class="sd-preview-status__tile sd-preview-status__tile--danger">' + this._icon('broken_image') + '</div>' +
++            '<div class="sd-preview-status__title"> ' + esc(SD_IMG_TEXT.loadError) + ' </div>' +
++            '<div class="sd-preview-status__hint"> ' + esc(SD_IMG_TEXT.loadErrorHint) + ' </div>' +
++            '<button type="button" class="sd-preview-btn-primary"' + this._aid('retry') + '>' + this._icon('refresh') + '<span>' + esc(SD_IMG_TEXT.retry) + '</span></button></div>';
++        } else {
++          h += '<img class="sd-preview-image" src="' + escAttr(img.blobUrl || img.url) + '" alt="' + escAttr(img.alt || img.name) + '" draggable="false" style="transform: ' + this._transform() + ';">' +
++            (img.caption ? '<div class="sd-preview-caption">' + esc(img.caption) + '</div>' : '');
++        }
+       }
+-    }
+-
+-    _unbind() {
+-      if (this._docKeyBound) {
+-        document.removeEventListener('keydown', this._docKeyBound);
+-        this._docKeyBound = null;
++      if (ready && multi) {
++        h += '<div class="sd-preview-kbd-hint" aria-hidden="true"><span class="sd-preview-kbd">←</span><span class="sd-preview-kbd">→</span>' +
++          '<span class="sd-preview-kbd-text">' + esc(SD_IMG_TEXT.kbdNav) + '</span></div>';
++        h += '<button type="button" class="sd-preview-nav sd-preview-nav--prev"' + (this._hasPrev ? '' : ' disabled') + ' aria-label="' + escAttr(SD_IMG_TEXT.prev) + '"' + this._aid('prev') + '>' + this._icon('chevron_left') + '</button>' +
++          '<button type="button" class="sd-preview-nav sd-preview-nav--next"' + (this._hasNext ? '' : ' disabled') + ' aria-label="' + escAttr(SD_IMG_TEXT.next) + '"' + this._aid('next') + '>' + this._icon('chevron_right') + '</button>';
++      }
++      if (pos === 'dots' && ready && multi) {
++        h += '<div class="sd-preview-dots" role="tablist">';
++        /* aria-label "Ảnh tiếp theo" trên MỌI chấm — nguyên văn template thư viện */
++        for (var d = 0; d < imgs.length; d++) h += '<button type="button" class="sd-preview-dot' + (d === act ? ' sd-preview-dot--active' : '') + '" aria-label="' + escAttr(SD_IMG_TEXT.next) + '"' + this._aid('dot-' + d) + '></button>';
++        h += '</div>';
++      }
++      /* Catalog (trạng thái "lỗi tải ảnh") KHÔNG vẽ toolbar khi ảnh đang xem bị lỗi —
++         thư viện thì vẫn vẽ (chỉ xét stage 'ready'). Theo catalog. */
++      if (this.showToolbar && ready && !(img && img.error)) {
++        h += '<div class="sd-preview-toolbar" role="toolbar">';
++        if (this.zoomable) {
++          h += this._tb('zoom_out', SD_IMG_TEXT.zoomOut, 'zoom-out') +
++            '<span class="sd-preview-toolbar__readout">' + Math.round(this._zoom * 100) + '%</span>' +
++            this._tb('zoom_in', SD_IMG_TEXT.zoomIn, 'zoom-in') + '<span class="sd-preview-toolbar__divider"></span>';
++        }
++        h += this._tb('fit_screen', SD_IMG_TEXT.fit, 'fit', true) + this._tb('rotate_right', SD_IMG_TEXT.rotate, 'rotate') +
++          '<span class="sd-preview-toolbar__divider"></span>' +
++          (this.downloadable ? this._tb('download', SD_IMG_TEXT.download, 'download') : '') +
++          this._tb(this._isFullscreen ? 'fullscreen_exit' : 'fullscreen', SD_IMG_TEXT.fullscreen, 'fullscreen') + '</div>';
+       }
+-      if (this._fsBound) {
+-        document.removeEventListener('fullscreenchange', this._fsBound);
+-        this._fsBound = null;
++      h += '</div>';
++      if (ready && multi && pos !== 'none' && pos !== 'dots') {
++        var side = pos === 'left' || pos === 'right';
++        h += '<div class="sd-preview-thumbs' + (side ? ' sd-preview-thumbs--vertical' : '') + '">';
++        for (var i = 0; i < imgs.length; i++) {
++          var it = imgs[i];
++          h += '<button type="button" class="sd-preview-thumb' + (i === act ? ' sd-preview-thumb--active' : '') + '"' +
++            ' aria-label="' + escAttr(it.name) + '"' + (i === act ? ' aria-current="true"' : '') + ' data-i="' + i + '"' + this._aid('thumb-' + i) + '>' +
++            (it.error ? '<div class="sd-preview-thumb__broken">' + this._icon('broken_image') + '</div>'
++              : '<img class="sd-preview-thumb__img" src="' + escAttr(it.blobUrl || it.url) + '" alt="' + escAttr(it.alt || it.name) + '">') +
++            '<span class="sd-preview-thumb__badge">' + (i + 1) + '</span>' +
++            (side ? '<span class="sd-preview-thumb__name" title="' + escAttr(it.name) + '">' + esc(it.name) + '</span>' : '') +
++            '</button>';
++        }
++        h += '</div>';
+       }
++      return h + '</div></div>';
+     }
+-
+-    _navigate(index) {
+-      this._indexTouched = true;   /* người dùng đã tự chuyển ảnh → startIndex thôi can thiệp */
+-      var len = (this._items || []).length;
+-      if (!len) return;
+-      var target;
+-      if (this._hasLoop) {
+-        target = ((index % len) + len) % len;
++    _render() {
++      if (!this._connectedOnce) return;
++      this.setAttribute('data-theme', this.theme);
++      var html = this._html(), shell = this.firstElementChild;
++      if (shell && shell.classList.contains('sd-preview-shell') && this.children.length === 1) {
++        var t = document.createElement('template');
++        t.innerHTML = html;
++        sdMatSyncAttrs(shell, t.content.firstElementChild);
++        sdMatMorph(shell, t.content.firstElementChild);
+       } else {
+-        target = Math.max(0, Math.min(len - 1, index));
++        this.innerHTML = html;
++      }
++      var img = this.querySelector('img.sd-preview-image'), self = this;
++      if (img && !img._sdErrBound) {
++        img._sdErrBound = true;
++        img.addEventListener('error', function () { self._onImageError(); });
+       }
+-      if (target === this._activeIndex) return;
+-      this._activeIndex = target;
+-      this._zoom = 100;
+-      this._rotate = 0;
+-      this.dispatchEvent(new CustomEvent('sd-active-index-change', {
+-        detail: { activeIndex: target },
+-        bubbles: true
+-      }));
+-      this._render();
+     }
+-
+-    _setZoom(v) {
+-      this._zoom = Math.max(25, Math.min(400, v));
+-      this._render();
++    /* chỉ cập nhật transform (kéo / pinch) — không vẽ lại cả cây */
++    _applyTransform() {
++      var img = this.querySelector('img.sd-preview-image');
++      if (img) img.style.transform = this._transform();
+     }
+ 
+-    _onAction(action) {
+-      switch (action) {
+-        case 'prev': this._navigate(this._activeIndex - 1); break;
+-        case 'next': this._navigate(this._activeIndex + 1); break;
+-        case 'zoom-in': this._setZoom(this._zoom + 25); break;
+-        case 'zoom-out': this._setZoom(this._zoom - 25); break;
+-        case 'fit':
+-          this._zoom = 100;
+-          this._rotate = 0;
+-          this._render();
+-          break;
+-        case 'rotate':
+-          this._rotate = (this._rotate + 90) % 360;
+-          this._render();
+-          break;
+-        case 'download': this._download(); break;
+-        case 'fullscreen': this._toggleFullscreen(); break;
+-        /* Nút "Thử lại" của khối lỗi (catalog `.sd-preview-btn-primary`):
+-           vẽ lại ảnh hiện tại để trình duyệt tải lần nữa. */
+-        case 'retry': this._render(); break;
+-      }
++    /* ── API công khai (tên y hệt thư viện) ── */
++    onClickThumbnailImage(index) {
++      if (index < 0 || index >= this._images.length || index === this._activeIndex) return;
++      this._setActive(index);
++    }
++    updateCurrentImage(direction) {
++      var len = this._images.length;
++      if (len <= 1) return;
++      var next = this._activeIndex + direction, target;
++      if (this.loop) target = (next + len) % len;
++      else { if (next < 0 || next >= len) return; target = next; }
++      this._setActive(target);
++    }
++    zoomIn() { if (this.zoomable) this._setZoom(this._zoom + 0.1); }
++    zoomOut() { if (this.zoomable) this._setZoom(this._zoom - 0.1); }
++    fitToScreen() { this._resetTransform(); this._render(); }
++    rotate(direction) {
++      var delta = direction === 'right' ? 90 : -90;
++      this._rotation = ((this._rotation + delta) % 360 + 360) % 360;
++      this._render();
+     }
+-
+-    _download() {
+-      var items = this._items || [];
+-      var item = items[this._activeIndex];
+-      if (!item) return;
+-      var url = sdPreviewImageUrlOf(item);
+-      if (!url) return;
++    downloadCurrent() {
++      if (!this.downloadable) return;
++      var img = this._active;
++      if (!img || img.error) return;
+       var a = document.createElement('a');
+-      a.href = url;
+-      a.download = item.name || ('anh-' + (this._activeIndex + 1) + '.jpg');
+-      a.rel = 'noopener';
++      a.href = img.url || img.blobUrl;
++      a.download = img.name || 'image';
+       document.body.appendChild(a);
+       a.click();
+       a.remove();
+-      this.dispatchEvent(new CustomEvent('sd-download', {
+-        detail: { index: this._activeIndex, item: item },
+-        bubbles: true
+-      }));
++      this._emit('sd-download', { index: this._activeIndex, item: img });
++    }
++    toggleFullscreen() {
++      if (!document.fullscreenElement) { var p = this.requestFullscreen && this.requestFullscreen(); if (p && p.catch) p.catch(function () {}); }
++      else if (document.exitFullscreen) { var q = document.exitFullscreen(); if (q && q.catch) q.catch(function () {}); }
++    }
++    retryActive() {
++      var self = this, idx = this._activeIndex, img = this._images[idx];
++      if (!img || !img.url) return Promise.resolve();
++      img.loading = true; img.error = false;
++      this._render();
++      return this._normalize(img.url, { name: img.name, caption: img.caption, alt: img.alt }).then(function (fresh) {
++        var cur = self._images[idx];
++        if (!cur) return;
++        if (fresh) { fresh.id = img.id; fresh.loading = false; self._images[idx] = fresh; }
++        else { cur.loading = false; cur.error = true; }
++        self._render();
++      });
++    }
++    requestClose() { this._emit('sd-close', {}); }
++
++    /* ── nội bộ ── */
++    _emit(n, d) { this.dispatchEvent(new CustomEvent(n, { detail: d, bubbles: true })); }
++    _setActive(index) {
++      this._activeIndex = index;
++      this._resetTransform();
++      this._stage = 'ready';
++      this._emit('sd-active-index-change', { activeIndex: index });
++      this._render();
++      var self = this;
++      queueMicrotask(function () {
++        /* Thư viện tìm `#sd-preview-thumb-N`; catalog không có id (tránh trùng id khi nhiều
++           viewer trên một trang) mà đánh `data-i="N"` — kit theo DOM catalog. */
++        var el = self.querySelector('.sd-preview-thumb[data-i="' + index + '"]');
++        if (el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
++      });
++    }
++    _setZoom(v, noRender) {
++      var c = Math.min(4, Math.max(0.25, v));
++      this._zoom = c;
++      if (c <= 1) this._pan = { x: 0, y: 0 };
++      if (noRender) this._applyTransform(); else this._render();
++    }
++    _resetTransform() { this._zoom = 1; this._rotation = 0; this._pan = { x: 0, y: 0 }; }
++    _onImageError() {
++      var idx = this._activeIndex, img = this._images[idx];
++      if (!img) return;
++      img.error = true; img.loading = false;
++      this._render();
++      this._emit('sd-image-error', { index: idx, reason: 'render-failed' });
+     }
+ 
+-    _toggleFullscreen() {
+-      if (!this._fullscreen) {
+-        if (this.requestFullscreen) {
+-          var p = this.requestFullscreen();
+-          if (p && p.catch) p.catch(function () {});
+-        }
+-      } else if (document.exitFullscreen) {
+-        document.exitFullscreen();
++    _bind() {
++      if (this._bound) return;
++      this._bound = true;
++      var self = this;
++      this._fsHandler = function () {
++        var on = document.fullscreenElement === self;
++        if (on === self._isFullscreen) return;
++        self._isFullscreen = on;
++        self.classList.toggle('sd-preview-image-host--fullscreen', on);
++        self._render();
++      };
++      document.addEventListener('fullscreenchange', this._fsHandler);
++      if (this._listenersBound) return;
++      this._listenersBound = true;
++      this.addEventListener('keydown', function (e) { self._onKeyDown(e); });
++      this.addEventListener('click', function (e) { self._onClick(e); });
++      this.addEventListener('dblclick', function (e) {
++        if (!e.target.closest || !e.target.closest('.sd-preview-stage')) return;
++        if (!self.zoomable) return;
++        if (self._zoom === 1) self._setZoom(2); else { self._resetTransform(); self._render(); }
++      });
++      this.addEventListener('wheel', function (e) {
++        if (!e.target.closest || !e.target.closest('.sd-preview-stage') || !self.zoomable) return;
++        e.preventDefault();
++        self._setZoom(self._zoom * (e.deltaY < 0 ? 1.1 : 0.9));
++      }, { passive: false });
++      this.addEventListener('pointerdown', function (e) { self._onPointerDown(e); });
++      this.addEventListener('pointermove', function (e) { self._onPointerMove(e); });
++      this.addEventListener('pointerup', function (e) { self._onPointerUp(e); });
++      this.addEventListener('pointercancel', function (e) { self._onPointerCancel(e); });
++    }
++    _onClick(e) {
++      var btn = e.target.closest ? e.target.closest('button') : null;
++      if (!btn || !this.contains(btn) || btn.disabled) return;
++      var list;
++      if (btn.classList.contains('sd-preview-thumb')) { this.onClickThumbnailImage(parseInt(btn.getAttribute('data-i'), 10)); return; }
++      if (btn.classList.contains('sd-preview-dot')) { list = Array.prototype.slice.call(this.querySelectorAll('.sd-preview-dot')); this.onClickThumbnailImage(list.indexOf(btn)); return; }
++      if (btn.classList.contains('sd-preview-nav--prev')) { this.updateCurrentImage(-1); return; }
++      if (btn.classList.contains('sd-preview-nav--next')) { this.updateCurrentImage(1); return; }
++      if (btn.classList.contains('sd-preview-btn-primary')) { this.retryActive(); return; }
++      var icon = btn.querySelector('mat-icon'), key = icon ? icon.textContent.trim() : '';
++      switch (key) {
++        case 'zoom_out': this.zoomOut(); break;
++        case 'zoom_in': this.zoomIn(); break;
++        case 'fit_screen': this.fitToScreen(); break;
++        case 'rotate_right': this.rotate('right'); break;
++        case 'download': this.downloadCurrent(); break;
++        case 'fullscreen': case 'fullscreen_exit': this.toggleFullscreen(); break;
++      }
++    }
++    /* Phím tắt — gắn trên HOST như thư viện (bản cũ của kit gắn lên document + Esc phát sd-close) */
++    _onKeyDown(e) {
++      var t = e.target;
++      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
++      switch (e.key) {
++        case 'ArrowLeft': e.preventDefault(); this.updateCurrentImage(-1); break;
++        case 'ArrowRight': e.preventDefault(); this.updateCurrentImage(1); break;
++        case '+': case '=': if (this.zoomable) { e.preventDefault(); this.zoomIn(); } break;
++        case '-': if (this.zoomable) { e.preventDefault(); this.zoomOut(); } break;
++        case '0': e.preventDefault(); this.fitToScreen(); break;
++        case 'r': e.preventDefault(); this.rotate('right'); break;
++        case 'R': e.preventDefault(); this.rotate('left'); break;
++        case 'f': e.preventDefault(); this.toggleFullscreen(); break;
++        case 'd': if (this.downloadable) { e.preventDefault(); this.downloadCurrent(); } break;
++      }
++    }
++    _onPointerDown(e) {
++      if (!e.target.closest || !e.target.closest('.sd-preview-stage')) return;
++      if (e.button !== 0 && e.pointerType === 'mouse') return;
++      if (e.target.closest('button, [role="button"]')) return;
++      if (e.target.setPointerCapture) { try { e.target.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } }
++      this._pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
++      if (this._pointers.size === 2) {
++        var pts = Array.from(this._pointers.values());
++        this._pinchDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
++        this._pinchZoom = this._zoom;
++        this._dragStart = null; this._swipeStart = null;
++        return;
++      }
++      if (this._zoom > 1) this._dragStart = { x: e.clientX, y: e.clientY, panX: this._pan.x, panY: this._pan.y };
++      else this._swipeStart = { x: e.clientX, y: e.clientY };
++    }
++    _onPointerMove(e) {
++      if (!this._pointers.has(e.pointerId)) return;
++      this._pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
++      if (this._pointers.size === 2 && this.zoomable && this._pinchDist > 0) {
++        var pts = Array.from(this._pointers.values());
++        this._setZoom(this._pinchZoom * (Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y) / this._pinchDist), true);
++        return;
+       }
++      if (this._dragStart && this._zoom > 1) {
++        this._pan = { x: this._dragStart.panX + e.clientX - this._dragStart.x, y: this._dragStart.panY + e.clientY - this._dragStart.y };
++        this._applyTransform();
++      }
++    }
++    _onPointerUp(e) {
++      var start = this._swipeStart;
++      var had = this._pointers.has(e.pointerId);
++      this._pointers.delete(e.pointerId);
++      if (this._pointers.size < 2) this._pinchDist = 0;
++      if (this._dragStart) this._dragStart = null;
++      if (had) this._render();    // đồng bộ ô % sau pinch / vị trí sau kéo
++      if (start && this._zoom <= 1) {
++        var dx = e.clientX - start.x, dy = e.clientY - start.y;
++        if (Math.abs(dx) >= 40 && Math.abs(dx) > Math.abs(dy) * 1.5) this.updateCurrentImage(dx < 0 ? 1 : -1);
++      }
++      this._swipeStart = null;
++    }
++    _onPointerCancel(e) {
++      this._pointers.delete(e.pointerId);
++      this._dragStart = null; this._swipeStart = null;
++      if (this._pointers.size < 2) this._pinchDist = 0;
+     }
+   }
+   customElements.define('sd-preview-image', SdPreviewImage);
+@@ -17731,7 +17684,7 @@
+      ══════════════════════════════════════════════════════════ */
+   /* Cờ boolean có mặc định TRUE: thư viện khai input(true, {transform: booleanAttribute}),
+      nên không khai attribute = true, khai ="false" = false (mọi giá trị khác = true).
+-     Khác hẳn sdHasFlag (mặc định false). Rà soát 2026-10-10: 7 cờ của sd-preview-image /
++     Khác cờ mặc định false. Rà soát 2026-10-10: 7 cờ của sd-preview-image /
+      sd-preview-pdf và lazyLoadContent, disableBackdropClose của sd-modal thuộc nhóm này. */
+   /* Thang bề rộng của sd-modal, chép đúng #resolveWidth() trong modal.component.ts.
+      Trên mobile thư viện trả thẳng giá trị thô; mirror cũng vậy. */

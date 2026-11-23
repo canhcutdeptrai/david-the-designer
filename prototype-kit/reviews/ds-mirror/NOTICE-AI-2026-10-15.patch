@@ -1,0 +1,93 @@
+# NOTICE-AI 2026-10-15 — hộp nhắc trang kit cũ chưa nâng: gợi ý dán vào AI 'Nâng cấp toàn bộ prototype theo kit mới' (bỏ câu lệnh từng feature theo yêu cầu Builder); AGENTS Session Commands, README bước 2, generate.md Mode C 1b
+# Builder: 'Ghi rõ dùm tôi lại chạy lệnh trên AI…' · 'Bỏ câu "Dán câu sau vào AI đang mở thư mục kit ... _migrate-report.md"'
+# 5 file — xem danh sách 'diff' bên dưới
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/NOTICE-AI-2026-10-15.patch (sau KIT-HANDOFF-2026-10-15.patch)
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/AGENTS.md b/AGENTS.md
+--- a/AGENTS.md	2026-10-15 01:40:54.678859977 +0000
++++ b/AGENTS.md	2026-10-15 02:17:04.320848110 +0000
+@@ -100,6 +100,7 @@
+ | **"điều phối chéo"** | Nhận vai Orchestrator, Worker là AI **khác hãng** (Codex...) | Skill `orchestration` |
+ | **"tách phiên"** | Phiên quá dài/tốn context, chuyển việc **chưa xong** sang phiên mới | Skill `session-handoff` |
+ | **"kết thúc phiên"** · **"xong phiên"** | Đóng phiên, việc **đã xong** — cập nhật `memory.md` của feature | `ai-instructions/generate.md` — mục Session Commands |
++| **"nâng cấp toàn bộ prototype theo kit mới"** (câu hộp vàng trên trang chưa nâng cấp gợi ý; hoặc *"chạy lệnh node ai-instructions/tools/migrate-prototype.mjs …"*) | Nâng prototype dựng bằng kit cũ lên kit hiện tại. Toàn bộ: chạy `node ai-instructions/tools/migrate-prototype.mjs prototypes/` (quét mọi feature); một feature: `prototypes/<vai>/<feature>/`. Chạy `--dry` trước nếu Builder muốn xem trước. Trang đã nâng bằng công cụ trước 2026-10-15, chưa sửa tay → thêm `--redo`. Xong thì đọc `prototypes/_migrate-report.md`, tóm tắt cho Builder và hỏi có sửa các mục trong đó không | `ai-instructions/generate.md` Mode C bước 1b · `ai-instructions/migrate-components.md` |
+ 
+ **Đừng lẫn "tách phiên" với "kết thúc phiên":** tách phiên là việc *chưa* xong, ghi bàn giao vào `_memory/session-handoff.md` rồi phiên sau làm tiếp ngay. Kết thúc phiên là việc *đã* xong, đóng sổ vào tài liệu của feature.
+ 
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-15 01:40:54.679701417 +0000
++++ b/CHANGELOG.md	2026-10-15 02:17:04.328636866 +0000
+@@ -8,6 +8,15 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — hộp nhắc "trang kit cũ chưa nâng" ghi câu để DÁN VÀO AI (Builder 2026-10-15: *„Ghi rõ dùm tôi lại chạy lệnh trên AI để người dùng kit biết nên paste câu trên vào AI. Gợi ý thêm là họ có thể yêu cầu AI chạy update hết các feature theo kit này thay vì chỉ từng feature“*)
++
++- Hộp vàng góc phải dưới: *"Khoảng cách và component sẽ lệch Core cho tới khi nâng cấp. Muốn nâng cấp tất cả feature một lần thay vì
++  từng feature: dán "Nâng cấp toàn bộ prototype theo kit mới" (AI chạy node ai-instructions/tools/migrate-prototype.mjs prototypes/ cho cả
++  thư mục)."* Câu lệnh cho từng feature đã bỏ khỏi hộp (Builder: *„Bỏ câu "Dán câu sau vào AI đang mở thư mục kit … _migrate-report.md"“*).
++- AGENTS → Session Commands thêm câu **"nâng cấp toàn bộ prototype theo kit mới"** (AI chạy công cụ cho `prototypes/`, đọc
++  `_migrate-report.md`, tóm tắt cho Builder); `generate.md` Mode C 1b và README bước 2 ghi cùng câu đó.
++- Bản vá: `reviews/ds-mirror/NOTICE-AI-2026-10-15.patch`.
++
+ ### Added — đưa kit cho người khác áp vào prototype của họ: một lệnh + một báo cáo (Builder 2026-10-15: *„Tôi không muốn chỉ giải quyết trên file này, tôi muốn giờ làm sao để tôi đưa bộ kit này cho người khác thì họ cũng vẫn dùng được mà không gặp vấn đề“*)
+ 
+ - **Một lệnh cho cả thư mục**: `node ai-instructions/tools/migrate-prototype.mjs prototypes/` nay quét **đệ quy** mọi trang (bỏ
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/README.md b/README.md
+--- a/README.md	2026-10-15 01:40:54.680703900 +0000
++++ b/README.md	2026-10-15 02:17:04.320140242 +0000
+@@ -262,7 +262,12 @@
+             _memory/lessons.md   _memory/known-gaps.md
+ ```
+ 
+-**Bước 2 — chạy công cụ nâng một lần cho cả thư mục** (cần Node.js, không cần cài thêm gì):
++**Bước 2 — chạy công cụ nâng một lần cho cả thư mục.** Cách dễ nhất: mở thư mục kit bằng AI (Claude, Codex…) và dán:
++
++> Nâng cấp toàn bộ prototype theo kit mới
++
++AI sẽ chạy công cụ cho **mọi feature** trong `prototypes/` rồi tóm tắt báo cáo (hộp vàng ở góc phải dưới trang chưa nâng cấp cũng
++gợi ý câu này). Chỉ muốn một feature: nhờ AI chạy cho `prototypes/<vai>/<feature>/`. Tự chạy trong terminal (cần Node.js, không cần cài thêm gì):
+ 
+ ```
+ node ai-instructions/tools/migrate-prototype.mjs prototypes/ --dry    # xem trước, chưa ghi
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/ai-instructions/generate.md b/ai-instructions/generate.md
+--- a/ai-instructions/generate.md	2026-10-14 18:11:34.837510669 +0000
++++ b/ai-instructions/generate.md	2026-10-15 02:17:04.321313392 +0000
+@@ -139,6 +139,8 @@
+    Trang đã có dấu `kit-migrated` bản mới nhất (v5) thì công cụ bỏ qua — chạy lại không sao; trang mang dấu cũ hơn được nâng tiếp các bước mới.
+    Dòng `! N id của bản gốc không còn …` (trang nâng bằng bản công cụ trước 2026-10-15) → trang chưa sửa tay thì chạy lại với `--redo`
+    (nâng lại từ `_pre-migrate/`). Trang kit cũ chưa nâng tự hiện hộp cảnh báo góc phải dưới — thấy hộp đó là phải chạy công cụ.
++   Hộp gợi ý Builder dán vào AI câu *"Nâng cấp toàn bộ prototype theo kit mới"* — gặp câu
++   đó thì chạy công cụ cho `prototypes/` (mọi feature), đọc `prototypes/_migrate-report.md`, tóm tắt cho Builder (AGENTS mục Session Commands).
+    Trang MỚI dựng **không** nạp `legacy-reset.css`. Riêng `--inform` (chỉ đổi khối thông báo tự dựng → `<sd-inform>`) chạy được cả trên trang mới.
+    Công cụ còn đổi MỌI markup tự dựng sang component Core (nút, badge, ô nhập, select, checkbox, radio, switch, bảng, modal, drawer,
+    tab, card, header…) + tên cũ của kit → tên Core; `--components` chỉ làm phần này (an toàn cả trên trang mới). Bảng đổi và cách
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-15 01:10:15.871643136 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-15 02:17:04.315979296 +0000
+@@ -23950,18 +23950,21 @@
+       var old = document.querySelector('link[href*="fonts.googleapis.com/css2"][href*="family=Roboto"]') ||
+                 document.querySelector('[slot="header-right"],[slot="header-left"]');
+       if (!old) return;
+-      var msg = 'Trang này dựng bằng kit cũ (trước 13/10/2026) và chưa được nâng — khoảng cách, component sẽ lệch Core. ' +
+-                'Chạy: node ai-instructions/tools/migrate-prototype.mjs <thư mục feature>/';
+-      if (window.console && console.warn) console.warn('[prototype-kit] ' + msg);
++      /* Gợi ý câu DÁN VÀO AI (Claude / Codex… đang mở thư mục kit) — người dùng kit thường không tự chạy lệnh; nâng cả thư mục
++         một lần thay vì từng feature (Builder 2026-10-15). */
++      var msg = 'Khoảng cách và component sẽ lệch Core cho tới khi nâng cấp. ' +
++                'Muốn nâng cấp tất cả feature một lần thay vì từng feature: dán "Nâng cấp toàn bộ prototype theo kit mới" ' +
++                '(AI chạy node ai-instructions/tools/migrate-prototype.mjs prototypes/ cho cả thư mục).';
++      if (window.console && console.warn) console.warn('[prototype-kit] Trang dựng bằng kit cũ, chưa nâng cấp. ' + msg);
+       try { if (sessionStorage.getItem('sd-legacy-notice-closed') === location.pathname) return; } catch (e) { /* bỏ qua */ }
+       var box = document.createElement('div');
+       box.setAttribute('data-sd-legacy-notice', '');
+       box.className = 'mat-elevation-z4 rounded-8';
+-      box.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:2000;max-width:420px';
++      box.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:2000;max-width:480px';
+       var inf = document.createElement('sd-inform');
+       inf.setAttribute('color', 'warning');
+       inf.setAttribute('closable', '');
+-      inf.setAttribute('title', 'Trang dựng bằng kit cũ — chưa nâng');
++      inf.setAttribute('title', 'Trang dựng bằng kit cũ — chưa nâng cấp');
+       inf.setAttribute('description', msg);
+       inf.addEventListener('sd-closed', function () {
+         box.remove();

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sd-datetime — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="sd-datetime"
+         data-subtitle="Gõ tay dd/MM/yyyy HH:mm hoặc chọn trên lịch + bộ đếm giờ, kiểm min/max, xoá nhanh"
+         data-page-tabs="Preview,Hướng dẫn BA/PO,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <!-- ── Theo Core UI Catalog #c-datetime — rà soát 2026-10-12 ── -->
+        <sd-section title="Trạng thái" subtitle="ô nhập rỗng · có giá trị (nút xoá hiện khi rê chuột) · disabled">
+          <div class="d-flex flex-wrap gap-16">
+            <div style="width:280px"><sd-datetime label="Thời điểm chốt số liệu"></sd-datetime></div>
+            <div style="width:280px"><sd-datetime label="Thời điểm chốt số liệu" value="2026/10/15 14:30:00"></sd-datetime></div>
+            <div style="width:280px"><sd-datetime label="Thời điểm trình duyệt" disabled value="2026/10/07 09:15:00"></sd-datetime></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Lỗi bắt buộc" subtitle="required + touched → core.form.datetime.required">
+          <div class="d-flex flex-wrap gap-16">
+            <div style="width:280px"><sd-datetime class="dt-cat-touch" label="Hạn phê duyệt" required></sd-datetime></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Popup đang mở" subtitle="sd-datetime-picker: lịch + sd-time-spinner (HH:MM) + footer; ▲▼ đổi giờ/phút, Xác nhận ghi vào ô">
+          <div class="dt-cat-open-wrap" style="min-height:540px">
+            <div style="width:320px"><sd-datetime id="dtCatOpen" label="Thời điểm chốt số liệu" value="2026/10/15 14:30:00"></sd-datetime></div>
+          </div>
+        </sd-section>
+
+        <sd-section title="Chế độ xem" subtitle="viewed: dd/MM/yyyy HH:mm">
+          <sd-datetime label="Thời điểm chốt số liệu" viewed value="2026/10/15 14:30:00"></sd-datetime>
+        </sd-section>
+
+        <!-- Normal -->
+        <sd-section title="Normal">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-datetime label="Thời gian tạo" placeholder="dd/MM/yyyy HH:mm"></sd-datetime>
+            <sd-datetime label="Cập nhật lúc" value="2026/04/13 14:30"></sd-datetime>
+            <sd-datetime label="Hoàn thành" value="2026/04/12 09:15" viewed></sd-datetime>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            Bấm icon lịch-đồng-hồ (bên phải ô) → popup <b>một panel dọc</b>: lịch ở trên, kẻ ngang,
+            rồi bộ đếm giờ <code>HH : MM</code> có nút ▲▼ (cộng/trừ 1, quay vòng; gõ thẳng vào ô
+            rồi Enter cũng được, quá biên thì tự kẹp lại). Chọn xong bấm <b>Xác nhận</b> mới ghi
+            vào ô — <b>Bỏ qua</b> đóng không lưu, <b>Bây giờ</b> lấy thời điểm hiện tại.
+            Cũng có thể gõ thẳng
+            <code>dd/MM/yyyy HH:mm</code> rồi rời khỏi ô — gõ sai định dạng sẽ báo "Sai định dạng".
+          </p>
+        </sd-section>
+
+        <!-- Required -->
+        <sd-section title="Required">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-datetime label="Thời gian bắt đầu" required></sd-datetime>
+            <sd-datetime label="Bắt đầu (đã có giá trị)" value="2026/09/22 08:00" required></sd-datetime>
+            <sd-datetime label="Bắt đầu — ẩn lỗi inline" required hideInlineError></sd-datetime>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            Bỏ trống rồi blur ra field bên cạnh để thấy lỗi "Vui lòng nhập thông tin".
+            Ô thứ ba dùng <code>hideInlineError</code> — lỗi hiện qua icon đỏ + tooltip.
+          </p>
+        </sd-section>
+
+        <!-- Min / Max -->
+        <sd-section title="Giới hạn ngày — min / max">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-datetime label="Không được chọn quá khứ" min="TODAY"></sd-datetime>
+            <sd-datetime label="Trong tháng này" min="2026/09/01 00:00" max="2026/09/30 23:59" value="2026/09/22 10:00"></sd-datetime>
+            <sd-datetime label="Ngoài khoảng — báo lỗi" min="2026/09/01" max="2026/09/30" value="2026/10/05 12:00"></sd-datetime>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            <code>min</code>/<code>max</code> nhận canonical <code>yyyy/MM/dd</code> (kèm giờ tuỳ chọn) hoặc literal <code>"TODAY"</code>;
+            ngày ngoài khoảng bị khoá trên lịch.
+          </p>
+        </sd-section>
+
+        <!-- showSeconds -->
+        <sd-section title="showSeconds">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-datetime label="Hiện giây" value="2026/09/22 14:30:45" showSeconds></sd-datetime>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            <code>showSeconds</code> thêm cột giây: hiển thị <code>dd/MM/yyyy HH:mm:ss</code>, model lưu tới giây.
+          </p>
+        </sd-section>
+
+        <!-- Sizes & disabled -->
+        <sd-section title="Kích thước &amp; Disabled">
+          <div class="grid grid-cols-3 gap-24">
+            <sd-datetime label="Size sm" size="sm" value="2026/09/22 08:00"></sd-datetime>
+            <sd-datetime label="Size md (mặc định)" value="2026/09/22 08:00"></sd-datetime>
+          </div>
+          <div class="grid grid-cols-3 gap-24 mt-24">
+            <sd-datetime label="Disabled — trống" disabled></sd-datetime>
+            <sd-datetime label="Disabled — có giá trị" value="2026/01/01 08:00" disabled></sd-datetime>
+            <sd-datetime label="Viewed" value="2026/04/14 16:45" viewed></sd-datetime>
+          </div>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <!-- ── Tab: Hướng dẫn BA / PO ───────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn BA / PO">
+          <div class="ds-guide">
+
+            <div class="ds-guide-do-dont">
+              <div class="ds-guide-do">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">check_circle</span>
+                  Dùng khi
+                </div>
+                <ul class="ds-guide-list mb-0 pl-0">
+                  <li>Cần cả ngày và giờ (thời điểm tạo lịch hẹn, thời hạn nộp hồ sơ có giờ cụ thể)</li>
+                  <li>Log event cần timestamp chính xác</li>
+                </ul>
+              </div>
+              <div class="ds-guide-dont">
+                <div class="ds-guide-box-header">
+                  <span class="material-icons-outlined mi-16">cancel</span>
+                  Không dùng khi
+                </div>
+                <ul class="ds-guide-list mb-0 pl-0">
+                  <li>Chỉ cần ngày, không cần giờ (dùng sd-date)</li>
+                  <li>Hiển thị datetime không tương tác (dùng text thuần)</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cách mô tả trong PRD / giao cho AI</p>
+              <div class="ds-guide-prd">
+                <p>"Trường Thời gian bắt đầu (bắt buộc) và Thời gian kết thúc khi tạo ca làm việc."</p>
+              </div>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: BA/PO -->
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="2" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Cú pháp</p>
+              <div class="ds-guide-code-wrap">
+                <div class="ds-guide-code-bar">
+                  <span class="ds-guide-code-lang">HTML</span>
+                  <sd-button class="ds-guide-copy-btn" type="link" color="secondary" size="sm" title="Copy" prefixIcon="content_copy"></sd-button>
+                </div>
+                <pre class="ds-guide-code">&lt;sd-datetime label="Thời gian bắt đầu" required&gt;&lt;/sd-datetime&gt;</pre>
+              </div>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Attributes</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>label</td><td>string</td><td>-</td><td>Floating label</td></tr>
+                  <tr><td>placeholder</td><td>string</td><td>= label / dd/MM/yyyy HH:mm</td><td>Placeholder khi trống</td></tr>
+                  <tr><td>value</td><td>canonical <code>yyyy/MM/dd HH:mm[:ss]</code></td><td>-</td><td>Model — hiển thị lại <code>dd/MM/yyyy HH:mm[:ss]</code>. Bí danh: <code>model</code></td></tr>
+                  <tr><td>min (bí danh cũ: minDate)</td><td><code>yyyy/MM/dd[ HH:mm]</code> hoặc <code>"TODAY"</code></td><td>-</td><td>Ngày nhỏ nhất; ngày ngoài khoảng bị khoá trên lịch</td></tr>
+                  <tr><td>max (bí danh cũ: maxDate)</td><td><code>yyyy/MM/dd[ HH:mm]</code> hoặc <code>"TODAY"</code></td><td>-</td><td>Ngày lớn nhất</td></tr>
+                  <tr><td>required</td><td>boolean</td><td>false</td><td>Hiện dấu * + báo lỗi khi trống lúc blur</td></tr>
+                  <tr><td>disabled</td><td>boolean</td><td>false</td><td>Vô hiệu hoá input + nút mở picker</td></tr>
+                  <tr><td>viewed</td><td>boolean</td><td>false</td><td>Chế độ xem — text tĩnh, không tương tác. <code>viewed="false"</code> là không xem</td></tr>
+                  <tr><td>size</td><td><code>sm</code>, <code>md</code></td><td>md</td><td>Chiều cao field <span class="fs-12 text-black400">(catalog chỉ có hai cỡ; <code>lg</code> / <code>xs</code> cũ vẫn nhận nhưng hiển thị như <code>md</code>)</span></td></tr>
+                  <tr><td>showSeconds</td><td>boolean</td><td>false</td><td>Thêm cột giây; hiển thị & lưu tới <code>ss</code></td></tr>
+                  <tr><td>clearable · helperText</td><td>—</td><td>—</td><td><b>Không có trong catalog — đã gỡ 2026-10-12.</b> Nút × luôn có ở ô có giá trị (hiện khi rê chuột/focus, ẩn khi disabled). Khai trên markup cũ thì bị bỏ qua</td></tr>
+                  <tr><td>inlineError</td><td>string</td><td>-</td><td>Lỗi từ nghiệp vụ truyền vào — hiện ngay</td></tr>
+                  <tr><td>hideInlineError</td><td>boolean</td><td>false</td><td>Ẩn dòng lỗi chữ, thay bằng icon đỏ + tooltip</td></tr>
+                  <tr><td>autoId</td><td>string</td><td>-</td><td>Sinh <code>data-autoId="forms-datetime-{autoId}"</code></td></tr>
+                  <tr><td>name</td><td>string</td><td>-</td><td>Tên field (tương thích form)</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Events</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Event</th><th>Detail</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>sd-change</td><td>{ value: string \| null }</td><td>Khi model thật sự đổi (Xác nhận trong popup, blur đã parse được, hoặc xoá) — canonical <code>yyyy/MM/dd HH:mm:ss</code></td></tr>
+                  <tr><td>sd-focus</td><td>-</td><td>Khi input được focus</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Methods</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Method</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>open()</td><td>Mở picker bằng code (bỏ qua nếu disabled)</td></tr>
+                  <tr><td>close()</td><td>Đóng picker</td></tr>
+                  <tr><td>focus() / blur()</td><td>Focus / bỏ focus input</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Lệch có chủ ý so với @sdcorejs/angular</p>
+              <ul class="ds-guide-list mb-0 pl-0">
+                <li>Nhãn nút "Hủy" trong popup (i18n <code>core.common.cancel</code>) đổi thành <b>"Bỏ qua"</b> — AGENTS.md Rule 16 cấm nhãn "Hủy". Cụm nút theo Rule 17: Xác nhận <code>type="fill"</code>, Bây giờ/Bỏ qua <code>type="link"</code>.</li>
+                <li><code>helperText</code> hiện thành dòng chữ dưới field; <code>hideInlineError</code> dùng <code>data-sd-tooltip</code> chung của kit thay <code>matTooltip</code>.</li>
+                <li>Không mirror <code>appearance</code>, <code>floatLabel</code>, <code>form</code>, <code>transform</code>, <code>hyperlink</code>, <code>inlineError</code>, <code>viewed="inline"</code> — chi tiết Angular Material/Reactive Forms.</li>
+                <li>Message min/max hiện theo <b>ngày</b> (<code>toLocaleDateString('vi-VN')</code>) đúng thư viện thật, dù so sánh ở mức thời điểm đầy đủ.</li>
+              </ul>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+<script>
+  /* Mẫu catalog #c-datetime: ô lỗi ở trạng thái touched, ô popup mở sẵn */
+  document.querySelectorAll('.dt-cat-touch').forEach(function (el) { el._touched = true; el._render(); });
+  var dtOpen = document.getElementById('dtCatOpen'); if (dtOpen) dtOpen.open();
+</script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      // Show first panel on load
+      showPanel(0);
+    }
+
+    // patterns:loaded already fired before this inline script runs,
+    // so call directly — DOM is ready at this point.
+    initPreviewTabs();
+  })();
+</script>
+
+</body>
+</html>

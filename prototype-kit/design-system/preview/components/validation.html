@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Validation & hideInlineError — Preview</title>
+
+
+  <link rel="stylesheet" href="../../core/styles/tokens.css">
+  <link rel="stylesheet" href="../../core/styles/layout.css">
+  <link rel="stylesheet" href="../../core/styles/components.css">
+  <link rel="stylesheet" href="../../core/styles/utilities.css">
+  <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+  <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-area">
+
+    <div data-pattern="page-header" data-variant="browse"
+         data-title="Form Validation & hideInlineError"
+         data-subtitle="Cách sd-input/sd-select hiện lỗi validation mặc định, và cách dùng hideInlineError khi ô nhập nằm trong cell table"
+         data-page-tabs="Preview,Hướng dẫn Dev"></div>
+
+    <div class="content-zone">
+
+      <!-- ── Tab: Preview ──────────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="0">
+
+        <!-- 1. Validation cơ bản -->
+        <sd-section title="1) Validation cơ bản (inline error)">
+          <div class="grid grid-cols-3 gap-24" id="val-section-1">
+            <sd-input
+              label="Mã nhân viên (required + pattern)"
+              placeholder="VD: EMP001"
+              required
+              pattern="[A-Z0-9]{4,10}"
+              patternErrorMessage="Chỉ gồm chữ IN HOA và số (4-10 ký tự)">
+            </sd-input>
+
+            <sd-input
+              label="Tên nhân viên (required)"
+              placeholder="Nhập họ tên"
+              required>
+            </sd-input>
+
+            <sd-select
+              label="Phòng ban (required)"
+              placeholder="Chọn phòng ban..."
+              items='[{"id":"hr","name":"Nhân sự"},{"id":"it","name":"Công nghệ"},{"id":"sales","name":"Kinh doanh"}]'
+              required>
+            </sd-select>
+          </div>
+          <p class="fs-12 text-black400 mt-12 mb-0">
+            <code>sd-input</code> hiện lỗi ngay khi ĐANG GÕ sai (không cần blur trước) — control coi là
+            <code>dirty</code> từ ký tự đầu tiên. <code>sd-select</code> chỉ hiện lỗi SAU khi đã mở rồi đóng
+            dropdown (mirror <code>touched</code>) — bấm nút "Validate" bên dưới để giả lập
+            <code>form.markAllAsTouched()</code> của Angular, hiện lỗi trên toàn bộ field cùng lúc mà
+            không cần thao tác từng ô.
+          </p>
+          <div class="d-flex gap-8 mt-16">
+            <sd-button title="Validate" color="primary" onclick="sdValidationTouchAll('#val-section-1')"></sd-button>
+            <sd-button title="Reset" type="outline" color="secondary" onclick="sdValidationResetAll('#val-section-1')"></sd-button>
+          </div>
+        </sd-section>
+
+        <!-- 2. So sánh trong cell table -->
+        <sd-section title="2) So sánh khi nằm trong cell table">
+          <p class="fs-12 text-black400 mb-12">
+            Với form trong cell table, lỗi inline dễ làm tăng chiều cao hàng và vỡ layout. Dùng
+            <code>hideInlineError</code> sẽ chuyển lỗi về icon + tooltip, giữ chiều cao cell ổn định.
+            Khuyến nghị dùng <code>size="sm"</code> cho field trong table để giữ chiều cao dòng gọn.
+          </p>
+
+          <div class="grid grid-cols-2 gap-24">
+            <div>
+              <p class="T14M mb-8">A. Inline error mặc định</p>
+              <table class="ds-guide-table" id="val-table-inline">
+                <thead><tr><th>Mã NV</th><th>Phòng ban</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <sd-input size="sm" required placeholder="EMP001"
+                        pattern="[A-Z0-9]{4,10}" patternErrorMessage="Sai định dạng mã"></sd-input>
+                    </td>
+                    <td>
+                      <sd-select size="sm" required placeholder="Chọn..."
+                        items='[{"id":"hr","name":"Nhân sự"},{"id":"it","name":"Công nghệ"},{"id":"sales","name":"Kinh doanh"}]'></sd-select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="d-flex gap-8 mt-12">
+                <sd-button title="Validate" size="sm" color="primary" onclick="sdValidationTouchAll('#val-table-inline')"></sd-button>
+                <sd-button title="Reset" size="sm" type="outline" color="secondary" onclick="sdValidationResetAll('#val-table-inline')"></sd-button>
+              </div>
+            </div>
+
+            <div>
+              <p class="T14M mb-8">B. Dùng hideInlineError</p>
+              <table class="ds-guide-table" id="val-table-hide">
+                <thead><tr><th>Mã NV</th><th>Phòng ban</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <sd-input size="sm" required hideInlineError placeholder="EMP001"
+                        pattern="[A-Z0-9]{4,10}" patternErrorMessage="Sai định dạng mã"></sd-input>
+                    </td>
+                    <td>
+                      <sd-select size="sm" required hideInlineError placeholder="Chọn..."
+                        items='[{"id":"hr","name":"Nhân sự"},{"id":"it","name":"Công nghệ"},{"id":"sales","name":"Kinh doanh"}]'></sd-select>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="d-flex gap-8 mt-12">
+                <sd-button title="Validate" size="sm" color="primary" onclick="sdValidationTouchAll('#val-table-hide')"></sd-button>
+                <sd-button title="Reset" size="sm" type="outline" color="secondary" onclick="sdValidationResetAll('#val-table-hide')"></sd-button>
+              </div>
+            </div>
+          </div>
+        </sd-section>
+
+        <!-- 3. SdPatternType có sẵn -->
+        <sd-section title="3) Dùng ValidationPatternType có sẵn">
+          <p class="fs-12 text-black400 mb-12">
+            Truyền thẳng tên loại vào <code>pattern</code> — tự tra regex + message tiếng Việt từ bảng
+            <code>@sdcorejs/utils</code> có sẵn, không cần khai thêm <code>patternErrorMessage</code>.
+          </p>
+
+          <div class="grid grid-cols-3 gap-24" id="val-section-3">
+            <div>
+              <sd-badge type="round" title="EMAIL" color="secondary" size="sm" class="mb-8"></sd-badge>
+              <sd-input label="Email" placeholder="vd: user@example.com" required pattern="EMAIL"></sd-input>
+            </div>
+            <div>
+              <sd-badge type="round" title="PHONE" color="secondary" size="sm" class="mb-8"></sd-badge>
+              <sd-input label="Số điện thoại" placeholder="vd: 0901234567" required pattern="PHONE"></sd-input>
+            </div>
+            <div>
+              <sd-badge type="round" title="PHONE_VN (legacy → VN_PHONE)" color="secondary" size="sm" class="mb-8"></sd-badge>
+              <sd-input label="Số điện thoại VN" placeholder="vd: 0912345678" required pattern="PHONE_VN"></sd-input>
+            </div>
+            <div>
+              <sd-badge type="round" title="IDVN_OR_PASSPORT (legacy → VN_ID_OR_PASSPORT)" color="secondary" size="sm" class="mb-8"></sd-badge>
+              <sd-input label="CCCD / Hộ chiếu" placeholder="vd: 034201012345" required pattern="IDVN_OR_PASSPORT"></sd-input>
+            </div>
+            <div>
+              <sd-badge type="round" title="TIME" color="secondary" size="sm" class="mb-8"></sd-badge>
+              <sd-input label="Giờ (HH:mm)" placeholder="vd: 08:30" required pattern="TIME"></sd-input>
+            </div>
+          </div>
+
+          <div class="d-flex gap-8 mt-16">
+            <sd-button title="Validate" color="primary" onclick="sdValidationTouchAll('#val-section-3')"></sd-button>
+            <sd-button title="Reset" type="outline" color="secondary" onclick="sdValidationResetAll('#val-section-3')"></sd-button>
+          </div>
+        </sd-section>
+
+        <!-- Mã nguồn mẫu -->
+        <sd-section title="Mã nguồn mẫu">
+          <pre class="ds-guide-code">&lt;!-- 1. Validation cơ bản với regex tùy chỉnh --&gt;
+&lt;sd-input
+  label="Mã nhân viên"
+  required
+  pattern="[A-Z0-9]{4,10}"
+  patternErrorMessage="Chỉ gồm chữ IN HOA và số (4-10 ký tự)"&gt;
+&lt;/sd-input&gt;
+
+&lt;!-- 2. Dùng ValidationPatternType — tự lookup regex + errorMessage --&gt;
+&lt;sd-input label="Email" required pattern="EMAIL"&gt;&lt;/sd-input&gt;
+&lt;sd-input label="SĐT VN" required pattern="PHONE_VN"&gt;&lt;/sd-input&gt;
+
+&lt;!-- 3. Trong cell table: dùng hideInlineError --&gt;
+&lt;sd-input required hideInlineError size="sm"&gt;&lt;/sd-input&gt;</pre>
+        </sd-section>
+
+      </div><!-- /tab-panel: Preview -->
+
+      <script>
+        /* Harness demo-only: giả lập Angular FormGroup.markAllAsTouched()/reset() —
+           KHÔNG phải public API thật của sd-input/sd-select (thư viện thật điều
+           khiển touched qua FormGroup, không có method touch() public trên từng
+           component). Chạm thẳng vào field nội bộ (_touched/_dirty/_render) chỉ
+           để phục vụ nút Validate/Reset trên trang demo này. */
+        function sdValidationTouchAll(scopeSelector) {
+          document.querySelectorAll(scopeSelector + ' sd-input, ' + scopeSelector + ' sd-select')
+            .forEach(function (el) {
+              el._touched = true;
+              if (typeof el._render === 'function') el._render();
+            });
+        }
+        function sdValidationResetAll(scopeSelector) {
+          document.querySelectorAll(scopeSelector + ' sd-input, ' + scopeSelector + ' sd-select')
+            .forEach(function (el) {
+              el._touched = false;
+              el._dirty = false;
+              el.setAttribute('value', '');
+            });
+        }
+      </script>
+
+      <!-- ── Tab: Hướng dẫn Dev ────────────────────────────── -->
+      <div class="tab-panel" data-tab-panel="1" style="display:none">
+        <sd-section title="Hướng dẫn Dev">
+          <div class="ds-guide">
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">sd-input — Attribute validation</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>required</td><td>boolean</td><td>Bắt buộc nhập — lỗi "Vui lòng nhập thông tin"</td></tr>
+                  <tr><td>minlength</td><td>number</td><td>Ràng buộc validator (viền đỏ khi ngắn hơn) — <b>KHÔNG hiện message riêng</b> (lệch có chủ ý, đúng thư viện thật)</td></tr>
+                  <tr><td>maxlength</td><td>number</td><td>Lỗi "Số ký tự tối đa: {max}" khi vượt quá</td></tr>
+                  <tr><td>pattern</td><td>regex string, hoặc tên loại có sẵn (EMAIL, PHONE, VN_PHONE, VN_ID, PASSPORT, VN_ID_OR_PASSPORT, TIME, URL, DOMAIN, IPV4, IPV6, IMAGE_URL, SLUG, NUMBER, INTEGER, DECIMAL, POSITIVE_NUMBER, UUID, CODE_16, CODE_32, HEX_COLOR, BASE64 — cộng 3 tên cũ back-compat: PHONE_VN, IDVN, IDVN_OR_PASSPORT)</td><td>Tên loại tự tra regex + message tiếng Việt có sẵn</td></tr>
+                  <tr><td>patternErrorMessage</td><td>string</td><td>Message tùy chỉnh — luôn thắng message tự tra từ pattern</td></tr>
+                  <tr><td>hideInlineError</td><td>boolean</td><td>Ẩn text lỗi, chuyển thành icon + tooltip (dùng trong cell table)</td></tr>
+                </tbody>
+              </table>
+              <p class="fs-12 text-black400 mt-8 mb-0">
+                Lỗi hiện khi field <b>đang gõ (dirty) HOẶC đã rời khỏi (touched)</b> — khác nhóm
+                sd-chip/sd-date (chỉ touched). Gõ sai định dạng là thấy lỗi ngay, không cần blur.
+              </p>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">sd-select — Attribute validation</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Attribute</th><th>Giá trị</th><th>Mô tả</th></tr></thead>
+                <tbody>
+                  <tr><td>required</td><td>boolean</td><td>Bắt buộc chọn — lỗi "Vui lòng nhập thông tin"</td></tr>
+                  <tr><td>hideInlineError</td><td>boolean</td><td>Ẩn text lỗi, chuyển thành icon + tooltip</td></tr>
+                </tbody>
+              </table>
+              <p class="fs-12 text-black400 mt-8 mb-0">
+                Lỗi chỉ hiện SAU KHI đã mở rồi đóng dropdown (mirror <code>touched</code>) — thư viện
+                thật không có khái niệm "dirty" cho control kiểu chọn.
+              </p>
+            </div>
+
+            <div class="ds-guide-col ds-guide-col--full">
+              <p class="ds-guide-label">Lệch có chủ ý so với thư viện thật (đã rà soát 2026-09-23)</p>
+              <table class="ds-guide-table">
+                <thead><tr><th>Điểm</th><th>Thư viện thật</th><th>Kit</th></tr></thead>
+                <tbody>
+                  <tr><td>sd-input minlength</td><td>Validator có thật nhưng KHÔNG i18n message nào được đọc trong <code>errorMessage()</code></td><td>Mirror y hệt: viền đỏ, không có text lỗi</td></tr>
+                  <tr><td>sd-input scope</td><td>Còn có mask, clearable, hyperlink, appearance, floatLabel, type, viewed="inline", validator (async custom), inlineError, blurOnEnter, readonly</td><td>Ngoài phạm vi đợt Validation & hideInlineError này — chưa mirror</td></tr>
+                  <tr><td>sd-select scope</td><td>errorMessage còn nhánh customValidator, inlineError</td><td>Ngoài phạm vi — chưa mirror (không phải lỗi gõ sai định dạng của user)</td></tr>
+                  <tr><td>sd-select autoId/name</td><td>Có input autoId/name, xuất data-autoId</td><td>Chưa có (gap có từ trước, không thuộc đợt validation này)</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </sd-section>
+      </div><!-- /tab-panel: Dev -->
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="../../sd-components/sd-components.js"></script>
+<script src="../../patterns/page-header.js"></script>
+<script src="../../patterns/sidebar.js"></script>
+<script src="../../core/js/pattern-loader.js"></script>
+<script src="../../core/js/shell.js"></script>
+<script src="../shared-nav.js"></script>
+
+<script>
+  // Wire the page's own page-tab-zone to tab panels
+  (function () {
+    function initPreviewTabs() {
+      var pageHeader = document.querySelector('.main-area > .page-header');
+      if (!pageHeader) return;
+      var tabZone = pageHeader.querySelector('.page-tab-zone');
+      if (!tabZone) return;
+      var tabs = tabZone.querySelectorAll('.tab');
+      var panels = document.querySelectorAll('.tab-panel[data-tab-panel]');
+
+      function showPanel(index) {
+        panels.forEach(function (p) {
+          p.style.display = parseInt(p.getAttribute('data-tab-panel'), 10) === index ? '' : 'none';
+        });
+        tabs.forEach(function (t, i) {
+          t.classList.toggle('active', i === index);
+        });
+      }
+
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener('click', function () { showPanel(i); });
+      });
+
+      showPanel(0);
+    }
+
+    initPreviewTabs();
+  })();
+</script>
+
+</body>
+</html>

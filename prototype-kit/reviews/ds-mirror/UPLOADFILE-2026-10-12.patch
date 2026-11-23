@@ -1,0 +1,816 @@
+--- a/design-system/sd-components/sd-components.js
++++ b/design-system/sd-components/sd-components.js
+@@ -7632,13 +7632,21 @@
+      phiên) giống trang demo của portal, nên chọn file là hiện
+      ngay mà không cần cấu hình gì.
+ 
+-     Khác biệt có chủ ý so với Angular (ghi rõ để không ai tưởng
+-     là thiếu sót):
+-     - `preview()` mở sd-modal + sd-preview-image của kit thay cho
+-       PreviewComponent riêng của thư viện - cùng vai trò gallery.
+-     - resize ảnh theo `scaleToPixel` KHÔNG dựng lại (prototype
+-       không cần nén ảnh); thuộc tính vẫn nhận và vẫn báo cho
+-       maxWidth/maxHeight.
++     Rà soát theo Core UI Catalog `#c-upload-file` (2026-10-12):
++     - Nhãn dựng bằng `<sd-label>` (label · * · icon gợi ý helperText ·
++       mô tả) đúng markup catalog; `helperText` là icon info_outline
++       trong nhãn, KHÔNG còn dòng chữ dưới ô.
++     - API đúng danh sách catalog: label description helperText type
++       extensions maxSize max maxOfImage previewWidth previewHeight
++       align form name required disabled model key args upload details
++       download scaleToPixel (filesChanged) (loaded) upload() preview().
++       Đã gỡ phần kit tự thêm: autoId, maxWidth, maxHeight,
++       imageValidator, getFiles() (Rule 18).
++     - `preview()` dựng đúng PreviewComponent của catalog: sd-modal
++       "Xem ảnh" 60vw, cột thumbnail bên trái, ảnh/tài liệu ở giữa,
++       nút ‹ › và "Tải file" cho tài liệu.
++     - resize ảnh theo `scaleToPixel` KHÔNG dựng lại (catalog ghi
++       "resize ảnh … không chạy"); thuộc tính vẫn nhận.
+      ══════════════════════════════════════════════════════════ */
+   var SD_UPLOAD_TEXT = {
+     upload: 'Tải file',
+@@ -7669,6 +7677,13 @@
+     });
+   }
+ 
++  /* Dung lượng tài liệu: catalog ghi "2.457,63KB", "184,52KB" — 2 số lẻ,
++     dấu phẩy thập phân, dấu chấm ngăn nghìn (nguyên văn hàm `fmt` của
++     catalog). */
++  function sdUploadFormatKb(n) {
++    return Number(n).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
++  }
++
+   /* Thư viện coi tiff KHÔNG phải ảnh preview được (xem #preview()
+      trong upload-file.component.ts) - giữ nguyên quy ước đó. */
+   var SD_UPLOAD_IMAGE_EXT = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg', 'avif'];
+@@ -7679,8 +7694,7 @@
+     static get observedAttributes() {
+       return ['label', 'description', 'helpertext', 'type', 'extensions', 'maxsize',
+               'max', 'maxofimage', 'previewwidth', 'previewheight', 'align',
+-              'required', 'disabled', 'name', 'key', 'autoid',
+-              'maxwidth', 'maxheight', 'scaletopixel', 'args'];
++              'required', 'disabled', 'name', 'key', 'scaletopixel', 'args'];
+     }
+ 
+     constructor() {
+@@ -7695,7 +7709,6 @@
+       this._upload = null;        // input `upload`  (files) => Promise<string[]>
+       this._details = null;       // input `details` (keys)  => Promise<detail[]>
+       this._download = null;      // input `download`(key)   => Promise<void>
+-      this._imageValidator = null;
+     }
+ 
+     connectedCallback() { this._sync(); }
+@@ -7718,8 +7731,6 @@
+     get helperText()    { return this._attr('helperText') || ''; }
+     get type()          { return this._attr('type') || 'file'; }
+     get maxSize()       { return this._num('maxSize', undefined); }
+-    get maxWidth()      { return this._num('maxWidth', undefined); }
+-    get maxHeight()     { return this._num('maxHeight', undefined); }
+     get scaleToPixel()  { return this._num('scaleToPixel', undefined); }
+     get max()           { return this._num('max', 10); }
+     get maxOfImage()    { return this._num('maxOfImage', 3); }
+@@ -7728,10 +7739,6 @@
+     get align()         { return this._attr('align') === 'center' ? 'center' : 'left'; }
+     get required()      { return this.hasAttribute('required'); }
+     get disabled()      { return this.hasAttribute('disabled'); }
+-    get autoId() {
+-      var raw = this._attr('autoId');
+-      return raw ? 'components-upload-file-' + raw : '';
+-    }
+     get extensions() {
+       var raw = this._attr('extensions');
+       if (!raw) return [];
+@@ -7766,7 +7773,6 @@
+       if (!raw) return undefined;
+       try { return JSON.parse(raw); } catch (e) { return raw; }
+     }
+-    set imageValidator(fn) { this._imageValidator = typeof fn === 'function' ? fn : null; }
+ 
+     /* generatedDescription: description thắng; không có thì ghép từ
+        extensions + maxSize đúng 3 nhánh của thư viện. */
+@@ -7848,16 +7854,19 @@
+       var disabled = this.disabled;
+       var html = '';
+ 
+-      /* Label: thư viện dùng <sd-label>; kit chưa có thẻ đó nên dùng
+-         đúng class label chuẩn của kit (.sd-label-top / .sd-required). */
++      /* Nhãn — catalog: `<sd-label>` (span.T14M · icon info_outline khi có
++         helperText · span.text-error.mb-2.T14M "*" · div.text-black400.T12R
++         mô tả). sd-label của kit tự dựng đúng markup đó; KHÔNG render khi
++         label rỗng (đúng sd-label). */
+       if (this.label) {
+-        html += '<label class="sd-label-top">' + esc(this.label) +
+-                (this.required ? '<span class="sd-required">*</span>' : '') + '</label>';
++        var desc = this.generatedDescription;
++        html += '<sd-label label="' + escAttr(this.label) + '"' +
++                (this.required ? ' required' : '') +
++                (this.helperText ? ' helperText="' + escAttr(this.helperText) + '"' : '') +
++                (desc ? ' description="' + escAttr(desc) + '"' : '') + '></sd-label>';
+       }
+-      var desc = this.generatedDescription;
+-      if (desc) html += '<div class="sd-upload-desc T12R">' + esc(desc) + '</div>';
+ 
+-      html += '<div class="d-flex ' +
++      html += '<div class="cdk-drop-list d-flex ' +
+               (this.align === 'center' ? 'justify-content-center' : 'justify-content-start') +
+               '" data-row="images">';
+ 
+@@ -7865,10 +7874,7 @@
+         html += '<div class="d-flex justify-content-center align-items-center cursor-pointer c-area-upload"' +
+                 ' role="button" tabindex="0" aria-label="' + escAttr(sdUploadT('upload')) + '"' +
+                 ' style="width:' + pw + ';height:' + ph + ';"' +
+-                (this.autoId ? ' data-autoId="' + escAttr(this.autoId) + '"' : '') +
+-                ' data-disabled="' + (disabled ? 'true' : 'false') + '"' +
+-                ' data-empty="' + (this._previewFiles.length ? 'false' : 'true') + '"' +
+-                ' data-count="' + this._previewFiles.length + '">' +
++                ' data-disabled="' + (disabled ? 'true' : 'false') + '">' +
+                 '<span class="material-icons-outlined c-upload">file_upload</span>' +
+                 '</div>';
+       }
+@@ -7883,23 +7889,22 @@
+                 '<div class="c-img-container' + (disabled ? ' c-disabled' : '') +
+                 (hasOverlay ? ' has-overlay' : '') + '">';
+         if (image.isImgError) {
+-          html += '<img class="sd-image-image-error" alt="Ảnh lỗi" style="max-width:100%;max-height:' + ph + ';">';
++          html += '<img class="sd-image-image-error" alt="Image Error" style="max-width:100%;max-height:' + ph + ';">';
+         } else if (image.src) {
+           html += '<img class="c-img" src="' + escAttr(image.src) + '" alt="Preview" style="max-height:' + ph + ';">';
+         } else {
+-          html += '<div class="c-uploading" role="status" aria-live="polite" aria-label="Đang tải">' +
+-                  '<span class="c-spinner"></span></div>';
++          /* catalog: <mat-spinner> 18px là con trực tiếp của c-img-container */
++          html += '<span class="c-spinner" role="progressbar" aria-label="Đang tải"></span>';
+         }
+         if (hasOverlay) {
+-          html += '<button type="button" class="c-overlay-count" aria-label="' + escAttr(sdUploadT('previewTitle')) + '">' +
+-                  '<span class="c-overlay-text">+' + (images.length - maxOfImage) + '</span></button>';
++          html += '<div class="c-overlay-count" role="button" tabindex="0" aria-label="' + escAttr(sdUploadT('previewTitle')) + '">' +
++                  '<div class="c-overlay-text">+' + (images.length - maxOfImage) + '</div></div>';
+         }
+         html += '<div class="c-action">' +
+                 '<button type="button" class="c-zoom" aria-label="' + escAttr(sdUploadT('previewTitle')) + '">' +
+                 '<span class="material-icons-outlined">zoom_in</span></button></div>';
+         if (!disabled) {
+-          html += '<button type="button" class="c-btn-remove" aria-label="' + escAttr(sdUploadT('remove')) + '"' +
+-                  (self.autoId ? ' data-autoId="' + escAttr(self.autoId + '-remove-' + idx) + '"' : '') + '>' +
++          html += '<button type="button" class="c-btn-remove" aria-label="' + escAttr(sdUploadT('remove')) + '">' +
+                   '<span class="material-icons-outlined">close</span></button>';
+         }
+         html += '</div></div></div>';
+@@ -7914,13 +7919,12 @@
+                 '<img class="c-document-image' + iconClass + '" alt="Preview" style="max-height:' + ph + ';">' +
+                 '<a href="javascript:;" class="c-file-name T14M">' + esc(document_.fileName || 'file') + '</a>';
+         if (document_.fileSize) {
+-          html += '<span class="T12R text-secondary"> - </span>' +
+-                  '<span class="T12R text-secondary flex-shrink-0">' +
+-                  Math.round(document_.fileSize) + 'KB</span>';
++          html += '<span class="T12R text-black400"> - </span>' +
++                  '<span class="T12R text-black400 flex-shrink-0">' +
++                  sdUploadFormatKb(document_.fileSize) + 'KB</span>';
+         }
+         if (!disabled) {
+-          html += '<button type="button" class="c-close" aria-label="' + escAttr(sdUploadT('remove')) + '"' +
+-                  (self.autoId ? ' data-autoId="' + escAttr(self.autoId + '-remove-' + docIdx) + '"' : '') + '>' +
++          html += '<button type="button" class="c-close" aria-label="' + escAttr(sdUploadT('remove')) + '">' +
+                   '<span class="material-icons-outlined">close</span></button>';
+         }
+         html += '</div>';
+@@ -7931,15 +7935,27 @@
+                 esc(sdUploadT('pleaseUpload')) + '</div>';
+       }
+ 
+-      if (this.helperText) html += '<div class="sd-helper-text">' + esc(this.helperText) + '</div>';
+-
+       this.innerHTML = '<div class="d-flex flex-column" style="gap:4px;">' + html + '</div>';
+       this._bind();
+     }
+ 
++    /* Ảnh không tải được → ô ảnh lỗi (catalog: `c-area-error` + img
++       `.sd-image-image-error`). */
++    _bindImgError() {
++      var self = this;
++      this.querySelectorAll('.c-area img.c-img').forEach(function (img) {
++        img.addEventListener('error', function () {
++          var area = img.closest('.c-area');
++          var image = self._imageAt(Number(area.getAttribute('data-image-index')));
++          if (image && !image.isImgError) { image.isImgError = true; self._render(); }
++        });
++      });
++    }
++
+     /* ── Sự kiện ── */
+     _bind() {
+       var self = this;
++      this._bindImgError();
+       var zone = this.querySelector('.c-area-upload');
+       if (zone) {
+         zone.addEventListener('click', function () { self.onUpload(); });
+@@ -7985,10 +8001,14 @@
+         });
+       });
+       this.querySelectorAll('.c-zoom, .c-overlay-count').forEach(function (btn) {
+-        btn.addEventListener('click', function (e) {
++        function open(e) {
+           e.stopPropagation();
+           var area = btn.closest('.c-area');
+-          self.preview(Number(area.getAttribute('data-image-index')));
++          self.preview(self._imageAt(Number(area.getAttribute('data-image-index'))));
++        }
++        btn.addEventListener('click', open);
++        btn.addEventListener('keydown', function (e) {
++          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(e); }
+         });
+       });
+       this.querySelectorAll('.c-file-name').forEach(function (link) {
+@@ -8119,24 +8139,87 @@
+       this._emitChange();
+     }
+ 
+-    /* Mở gallery: kit dựng bằng sd-modal + sd-preview-image thay cho
+-       PreviewComponent riêng của thư viện. */
+-    preview(index) {
+-      var images = this._previewFiles.filter(function (f) { return f.isPreviewImage && f.src; });
+-      if (!images.length) return;
++    /* Mở PreviewComponent — markup catalog `#c-upload-file` "Xem trước":
++         sd-modal "Xem ảnh" (60vw) › div.p-16 › div.image-gallery (gap 8px)
++           ├ div.thumbnail-container › button.thumbnail-wrapper › img.thumbnail-img
++           │   (ảnh: ảnh thật; tài liệu: img.file.<đuôi>; đang chọn: viền 2px #2962ff)
++           └ div.main-image-container
++               ảnh: img.main-image
++               tài liệu: img.main-document.file.<đuôi> + div.T14M tên + sd-button "Tải file"
++               sd-button.next-icon (arrow_forward_ios) · sd-button.back-icon (arrow_back_ios_new)
++         chân modal: div.d-flex.align-items-center.p-8 › div.ml-auto (rỗng)
++       Danh sách gồm MỌI tệp (catalog: 2 ảnh + pdf + xlsx), ảnh trước tài liệu
++       sau như trên ô. `file` là tệp cần mở sẵn (mặc định tệp đầu). */
++    preview(file) {
++      var self = this;
++      var images = this._previewFiles.filter(function (f) { return f.isPreviewImage; });
++      var documents = this._previewFiles.filter(function (f) { return !f.isPreviewImage; });
++      var files = images.concat(documents);
++      if (!files.length) return;
++      var active = typeof file === 'number' ? file : Math.max(0, files.indexOf(file));
++      if (active >= files.length) active = 0;
++
++      function docClass(f) {
++        var ext = f.extension || '';
++        return 'file' + (SD_UPLOAD_DOC_ICON_EXT.indexOf(ext) >= 0 ? ' ' + ext : '');
++      }
+       var modal = document.createElement('sd-modal');
+-      modal.setAttribute('width', '720px');
++      modal.setAttribute('width', '60vw');
+       modal.setAttribute('title', sdUploadT('previewTitle'));
+-      var viewer = document.createElement('sd-preview-image');
+-      viewer.setAttribute('theme', 'dark');
+-      viewer.setAttribute('thumbnailPosition', 'bottom');
+-      viewer.setAttribute('showToolbar', '');
+-      viewer.setAttribute('zoomable', '');
+-      viewer.setAttribute('downloadable', '');
+-      modal.appendChild(viewer);
++      var thumbs = files.map(function (f, i) {
++        return '<button type="button" class="thumbnail-wrapper" data-i="' + i + '"' +
++               ' aria-label="' + escAttr(f.fileName || 'file') + '">' +
++               (f.isPreviewImage && f.src && !f.isImgError
++                 ? '<img alt="thumbnail" class="thumbnail-img" src="' + escAttr(f.src) + '">'
++                 : '<img alt="thumbnail" class="thumbnail-img ' + docClass(f) + '">') +
++               '</button>';
++      }).join('');
++      var body = document.createElement('div');
++      body.className = 'p-16 sd-upload-preview';
++      body.innerHTML = '<div class="image-gallery">' +
++        '<div class="thumbnail-container">' + thumbs + '</div>' +
++        '<div class="main-image-container" data-main>' +
++          '<sd-button class="next-icon" type="light" color="secondary" size="sm" prefixIcon="arrow_forward_ios" data-step="1"></sd-button>' +
++          '<sd-button class="back-icon" type="light" color="secondary" size="sm" prefixIcon="arrow_back_ios_new" data-step="-1"></sd-button>' +
++        '</div></div>';
++      var foot = document.createElement('div');
++      foot.setAttribute('sdFooterRight', '');
++      modal.appendChild(body);
++      modal.appendChild(foot);
++
++      function render() {
++        body.querySelectorAll('.thumbnail-wrapper').forEach(function (t, i) {
++          t.classList.toggle('c-active', i === active);
++          t.setAttribute('aria-current', i === active ? 'true' : 'false');
++        });
++        var main = body.querySelector('[data-main]');
++        Array.prototype.slice.call(main.children).forEach(function (c) {
++          if (!c.matches('.next-icon, .back-icon')) c.remove();
++        });
++        var f = files[active];
++        var html;
++        if (f.isPreviewImage && f.src && !f.isImgError) {
++          html = '<img class="main-image" alt="Main display image" src="' + escAttr(f.src) + '">';
++        } else {
++          html = '<img class="main-document ' + docClass(f) + '" alt="Main display image">' +
++                 '<div class="T14M">' + esc(f.fileName || '') + '</div>' +
++                 '<sd-button type="fill" color="primary" size="sm" title="' + escAttr(sdUploadT('upload')) + '" data-download></sd-button>';
++        }
++        main.insertAdjacentHTML('afterbegin', html);
++        var dl = main.querySelector('[data-download]');
++        if (dl) dl.addEventListener('click', function () { self.onDownload(f); });
++      }
++      body.querySelectorAll('.thumbnail-wrapper').forEach(function (t) {
++        t.addEventListener('click', function () { active = Number(t.getAttribute('data-i')); render(); });
++      });
++      body.querySelectorAll('[data-step]').forEach(function (b) {
++        b.addEventListener('click', function () {
++          active = (active + Number(b.getAttribute('data-step')) + files.length) % files.length;
++          render();
++        });
++      });
+       document.body.appendChild(modal);
+-      viewer.items = images.map(function (f) { return { url: f.src, name: f.fileName || '' }; });
+-      if (index > 0 && index < images.length) viewer.activeIndex = index;
++      render();
+       modal.open();
+       modal.addEventListener('sd-closed', function () { if (modal.isConnected) modal.remove(); });
+     }
+@@ -8158,9 +8241,6 @@
+         detail: { model: this._model.slice() }, bubbles: true
+       }));
+     }
+-
+-    /* API công khai của thư viện */
+-    getFiles() { return Promise.resolve(this._previewFiles.map(function (f) { return f.file; }).filter(Boolean)); }
+   }
+   customElements.define('sd-upload-file', SdUploadFile);
+ 
+--- a/design-system/core/styles/sd-tokens.css
++++ b/design-system/core/styles/sd-tokens.css
+@@ -6828,11 +6828,19 @@
+   --sd-uf-muted-bg: var(--sd-black100);
+ }
+ 
++/* Reboot của catalog `#c-upload-file img{vertical-align:middle;border-style:none}`
++   — thiếu nó ảnh đứng trên baseline, ô ảnh dọc cao thêm 6px và ảnh ngang lệch
++   lên 3px so với catalog. */
++sd-upload-file img,
++.sd-upload-preview img { vertical-align: middle; border-style: none; }
++
+ /* --- Drop zone --- */
++/* Catalog khai `display:table` cho ô này nhưng markup mang `.d-flex` (!important)
++   nên kết quả thật là flex canh giữa icon. Kit bỏ `display:table` để `.d-flex
++   .justify-content-center .align-items-center` trong markup có hiệu lực. */
+ sd-upload-file .c-area-upload {
+   border: 1px dashed var(--sd-primary);
+   border-radius: 8px;
+-  display: table;
+   position: relative;
+   text-align: center;
+   margin: 3px;
+@@ -6845,8 +6853,6 @@
+   font-size: 18px;
+   cursor: pointer;
+   color: var(--sd-primary);
+-  vertical-align: middle;
+-  display: table-cell;
+ }
+ 
+ /* --- Ô ảnh đã chọn --- */
+@@ -6866,7 +6872,10 @@
+ sd-upload-file .c-area.c-area-error { background-color: var(--sd-secondary-light); }
+ sd-upload-file .c-area.c-loading { background-color: var(--sd-secondary-light); }
+ sd-upload-file .c-area .c-preview { vertical-align: middle; display: table-cell; }
+-sd-upload-file .c-area .c-preview .c-img-container { width: 100%; display: table; position: relative; }
++/* catalog: KHÔNG có position:relative — nút xoá (top/right -8px) và lớp c-action
++   bám theo `.c-area`, không theo khung ảnh. Bản trước kit đặt relative ở đây nên
++   nút xoá lệch xuống theo ảnh (ảnh dọc 50px → lệch 6px). */
++sd-upload-file .c-area .c-preview .c-img-container { width: 100%; display: table; }
+ sd-upload-file .c-area .c-preview .c-img-container .c-img {
+   max-width: 100%;
+   max-height: calc(100% - 5px);
+@@ -6875,7 +6884,6 @@
+   display: none;
+   position: absolute;
+   top: 0;
+-  left: 0;
+   width: 100%;
+   height: 100%;
+   align-items: center;
+@@ -6890,7 +6898,6 @@
+ 
+ /* Overlay "+N" khi disabled và còn ảnh vượt maxOfImage */
+ sd-upload-file .c-area .c-preview .c-img-container .c-overlay-count {
+-  border: 0;
+   display: flex;
+   top: 50%;
+   left: 50%;
+@@ -6957,22 +6964,19 @@
+ }
+ sd-upload-file .c-zoom .material-icons-outlined { font-size: 18px; }
+ 
+-/* Spinner lúc đang đọc file */
+-sd-upload-file .c-uploading {
+-  display: table-cell;
+-  vertical-align: middle;
+-  text-align: center;
+-}
+-sd-upload-file .c-uploading .c-spinner {
++/* Spinner lúc đang tải — catalog: <mat-spinner> 18px (nét 2px, màu primary,
++   không vệt nền) là khối con trực tiếp của c-img-container, nằm sát mép trái
++   ô ảnh và giữa theo chiều dọc. Kit dựng bằng CSS giống `sd-button .c-spinner`. */
++sd-upload-file .c-img-container > .c-spinner {
++  display: block;
++  box-sizing: border-box;
+   width: 18px;
+   height: 18px;
+-  border: 2px solid var(--sd-black200);
+-  border-top-color: var(--sd-primary);
++  border: 2px solid var(--sd-primary);
++  border-right-color: transparent;
+   border-radius: 50%;
+-  display: inline-block;
+-  animation: sd-upload-spin 0.9s linear infinite;
++  animation: sd-spin 0.8s linear infinite;
+ }
+-@keyframes sd-upload-spin { to { transform: rotate(360deg); } }
+ 
+ /* Ảnh lỗi */
+ sd-upload-file .sd-image-image-error {
+@@ -6984,13 +6988,6 @@
+      không có src sẽ hiện biểu tượng ảnh hỏng mặc định của trình duyệt. */
+   content:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 192 192' fill='none'%3E%3Ccircle cx='96' cy='98' r='64' fill='%23F4F4F5'/%3E%3Cellipse cx='96' cy='160' rx='50' ry='4.5' fill='%231C1B1F' fill-opacity='0.05'/%3E%3Crect x='40' y='50' width='112' height='92' rx='8' fill='%23FFFFFF' stroke='%2352525B' stroke-width='2'/%3E%3Crect x='46' y='56' width='100' height='80' rx='5' fill='%23F4F4F5' stroke='%2352525B' stroke-width='1.2' stroke-opacity='0.35'/%3E%3Ccircle cx='120' cy='78' r='6' fill='%23D4D4D8' stroke='%2352525B' stroke-width='2'/%3E%3Cpath d='M46 124 L80 86 L106 116 L118 104 L146 124 L146 136 H46 Z' fill='%23E4E4E7' stroke='%2352525B' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M46 136 L70 110 L90 126 L114 108 L146 136 Z' fill='%23D4D4D8' stroke='%2352525B' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M58 70 L76 88 L66 100 L86 116 L78 128' stroke='%2352525B' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' stroke-dasharray='6 5'/%3E%3Cg transform='translate(146 134)'%3E%3Ccircle r='14' fill='%23FFFFFF' stroke='%2352525B' stroke-width='2'/%3E%3Cpath d='M-5 -5 L5 5 M5 -5 L-5 5' stroke='%2352525B' stroke-width='2.6' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+ }
+-sd-upload-file .c-img-eror {
+-  height: 18px;
+-  width: 18px;
+-  font-size: 18px;
+-  cursor: pointer;
+-  color: var(--sd-uf-text-secondary);
+-}
+ 
+ /* --- Hàng tài liệu (file không phải ảnh) --- */
+ /* Thư viện có 2 lớp rule chồng nhau (rule gốc + rule :host ghi đè). Kết quả
+@@ -7025,7 +7022,8 @@
+   overflow: hidden;
+   white-space: nowrap;
+   text-overflow: ellipsis;
+-  color: var(--sd-primary);
++  /* catalog `#c-upload-file a{color:#007bff}` — màu link của reboot, giống sd-view */
++  color: #007bff;
+   text-decoration: none;
+ }
+ sd-upload-file .c-document-container .c-file-name:hover { text-decoration: underline; }
+@@ -7050,14 +7048,6 @@
+ sd-upload-file .c-document-container .c-close:hover { background-color: var(--sd-black200); }
+ 
+ /* --- Drag & drop sắp xếp lại --- */
+-sd-upload-file .c-drag-placeholder {
+-  border-radius: 4px;
+-  background: var(--sd-primary-light);
+-  border: 2px dashed var(--sd-primary);
+-  transition: transform 0.25s cubic-bezier(0, 0, 0.2, 1);
+-  flex-shrink: 0;
+-  margin: 3px;
+-}
+ sd-upload-file .c-dragging { opacity: 0.4; }
+ 
+ /* --- Focus ring: thư viện dùng outline 2px primary, offset 2px --- */
+@@ -7069,38 +7059,49 @@
+ }
+ sd-upload-file button:focus { outline: none; }
+ 
+-/* --- Vùng cảm ứng rộng hơn trên mobile (giống thư viện) --- */
+-@media (max-width: 600px) {
+-  sd-upload-file .c-document-container .c-close,
+-  sd-upload-file .c-zoom { width: 44px; height: 44px; }
+-  sd-upload-file .c-area .c-preview .c-btn-remove { width: 44px; height: 44px; top: -8px; right: -8px; }
+-}
++/* (Đã gỡ 2026-10-12 theo catalog: khối mobile phóng nút lên 44px, `.sd-upload-desc`,
++   `.text-secondary` riêng, `.c-uploading`, `.c-drag-placeholder`, `.c-img-eror` —
++   catalog không có; mô tả nay nằm trong sd-label, dung lượng dùng .text-black400.) */
+ @media (prefers-reduced-motion: reduce) {
+-  sd-upload-file .c-drag-placeholder { transition: none; }
+-  sd-upload-file .c-uploading .c-spinner { animation: none; }
++  sd-upload-file .c-img-container > .c-spinner { animation: none; }
+ }
+ 
+-sd-upload-file .sd-upload-desc {
+-  color: var(--sd-uf-text-secondary);
+-  margin-top: -2px;
+-}
+-/* Thư viện map .text-secondary sang --sd-text-secondary (xám nhạt), còn kit map
+-   sang --sd-secondary (neutral-800, khá đậm). Giữ nguyên tên class cho khớp
+-   markup Angular nhưng chỉnh màu trong phạm vi component cho đúng Core UI. */
+-sd-upload-file .text-secondary { color: var(--sd-uf-text-secondary); }
+-
+ /* Icon theo đuôi file — ĐỔI SANG BỘ CỦA CATALOG (#c-upload-file, 2026-10-11).
+    Catalog chỉ định nghĩa BỐN icon: mặc định, pdf, xls/xlsx, doc/docx — nét phẳng
+    nền be, nhãn chữ trên dải màu. Bộ cũ của kit (lấy từ @sdcorejs/angular 22.2.12)
+    có thêm png/jpg/ppt/csv/zip… nhưng vẽ theo phong cách khác hẳn (nền trắng, dải
+    gradient). Giữ lẫn hai bộ thì mỗi hàng tài liệu một kiểu, nên bỏ hẳn các đuôi
+    catalog không có — chúng rơi về icon mặc định, đúng như catalog làm. */
+-sd-upload-file .c-document-container .c-document-image { content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M80 0h272l80 80v432H80z' fill='%23e3e4d8'/%3E%3Cpath d='M352 0v80h80z' fill='%23d0cebd'/%3E%3Cg stroke='%23a09893' stroke-width='22' stroke-linecap='round'%3E%3Cpath d='M134 170h50M214 170h100M346 170h30M134 214h24M188 214h90M310 214h66M134 258h56M134 302h40'/%3E%3C/g%3E%3Ccircle cx='262' cy='316' r='76' fill='%23fff'/%3E%3Cpath d='M228 292h68M262 292v62M246 354h32' stroke='%23212f3f' stroke-width='20' stroke-linecap='round'/%3E%3Cpath d='M318 372l58 58' stroke='%23525d82' stroke-width='20' stroke-linecap='round'/%3E%3C/svg%3E"); }
+-sd-upload-file .c-document-container .c-document-image.pdf { content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M80 0h272l80 80v432H80z' fill='%23e3e4d8'/%3E%3Cpath d='M352 0v80h80z' fill='%23d0cebd'/%3E%3Cpath d='M244 96c-22 4-14 60 18 120s70 104 104 98c22-4 10-26-20-28-60-4-150 28-176 70-12 20 6 30 22 14 30-30 52-120 64-180 10-50 8-98-12-94z' fill='none' stroke='%23b53438' stroke-width='20' stroke-linejoin='round'/%3E%3Cpath d='M80 352h352v160H80z' fill='%23b53438'/%3E%3Ctext x='256' y='476' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='124' font-weight='700' letter-spacing='14' fill='%23fff'%3EPDF%3C/text%3E%3C/svg%3E"); }
++sd-upload-file .c-document-container .c-document-image,
++.sd-upload-preview .file { content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M80 0h272l80 80v432H80z' fill='%23e3e4d8'/%3E%3Cpath d='M352 0v80h80z' fill='%23d0cebd'/%3E%3Cg stroke='%23a09893' stroke-width='22' stroke-linecap='round'%3E%3Cpath d='M134 170h50M214 170h100M346 170h30M134 214h24M188 214h90M310 214h66M134 258h56M134 302h40'/%3E%3C/g%3E%3Ccircle cx='262' cy='316' r='76' fill='%23fff'/%3E%3Cpath d='M228 292h68M262 292v62M246 354h32' stroke='%23212f3f' stroke-width='20' stroke-linecap='round'/%3E%3Cpath d='M318 372l58 58' stroke='%23525d82' stroke-width='20' stroke-linecap='round'/%3E%3C/svg%3E"); }
++sd-upload-file .c-document-container .c-document-image.pdf,
++.sd-upload-preview .file.pdf { content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M80 0h272l80 80v432H80z' fill='%23e3e4d8'/%3E%3Cpath d='M352 0v80h80z' fill='%23d0cebd'/%3E%3Cpath d='M244 96c-22 4-14 60 18 120s70 104 104 98c22-4 10-26-20-28-60-4-150 28-176 70-12 20 6 30 22 14 30-30 52-120 64-180 10-50 8-98-12-94z' fill='none' stroke='%23b53438' stroke-width='20' stroke-linejoin='round'/%3E%3Cpath d='M80 352h352v160H80z' fill='%23b53438'/%3E%3Ctext x='256' y='476' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='124' font-weight='700' letter-spacing='14' fill='%23fff'%3EPDF%3C/text%3E%3C/svg%3E"); }
+ sd-upload-file .c-document-container .c-document-image.xls,
+-sd-upload-file .c-document-container .c-document-image.xlsx { content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M80 0h272l80 80v432H80z' fill='%23e3e4d8'/%3E%3Cpath d='M352 0v80h80z' fill='%23d0cebd'/%3E%3Cg fill='none' stroke='%23a09893' stroke-width='22'%3E%3Crect x='132' y='124' width='248' height='168' rx='10'/%3E%3Cpath d='M204 124v168M132 166h248M132 208h248M132 250h248'/%3E%3C/g%3E%3Cpath d='M80 352h352v160H80z' fill='%2382c288'/%3E%3Ctext x='256' y='476' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='124' font-weight='700' letter-spacing='14' fill='%23fff'%3EXLS%3C/text%3E%3C/svg%3E"); }
++sd-upload-file .c-document-container .c-document-image.xlsx,
++.sd-upload-preview .file.xls,
++.sd-upload-preview .file.xlsx { content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M80 0h272l80 80v432H80z' fill='%23e3e4d8'/%3E%3Cpath d='M352 0v80h80z' fill='%23d0cebd'/%3E%3Cg fill='none' stroke='%23a09893' stroke-width='22'%3E%3Crect x='132' y='124' width='248' height='168' rx='10'/%3E%3Cpath d='M204 124v168M132 166h248M132 208h248M132 250h248'/%3E%3C/g%3E%3Cpath d='M80 352h352v160H80z' fill='%2382c288'/%3E%3Ctext x='256' y='476' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='124' font-weight='700' letter-spacing='14' fill='%23fff'%3EXLS%3C/text%3E%3C/svg%3E"); }
+ sd-upload-file .c-document-container .c-document-image.doc,
+-sd-upload-file .c-document-container .c-document-image.docx { content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M80 0h272l80 80v432H80z' fill='%23e3e4d8'/%3E%3Cpath d='M352 0v80h80z' fill='%23d0cebd'/%3E%3Crect x='158' y='132' width='196' height='168' fill='%232c81e4'/%3E%3Cpath d='M196 170l26 96 34-74 34 74 26-96' fill='none' stroke='%23fff' stroke-width='22' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M80 352h352v160H80z' fill='%232c81e4'/%3E%3Ctext x='256' y='476' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='124' font-weight='700' letter-spacing='14' fill='%23fff'%3EDOC%3C/text%3E%3C/svg%3E"); }
++sd-upload-file .c-document-container .c-document-image.docx,
++.sd-upload-preview .file.doc,
++.sd-upload-preview .file.docx { content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M80 0h272l80 80v432H80z' fill='%23e3e4d8'/%3E%3Cpath d='M352 0v80h80z' fill='%23d0cebd'/%3E%3Crect x='158' y='132' width='196' height='168' fill='%232c81e4'/%3E%3Cpath d='M196 170l26 96 34-74 34 74 26-96' fill='none' stroke='%23fff' stroke-width='22' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M80 352h352v160H80z' fill='%232c81e4'/%3E%3Ctext x='256' y='476' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='124' font-weight='700' letter-spacing='14' fill='%23fff'%3EDOC%3C/text%3E%3C/svg%3E"); }
++
++/* PreviewComponent (`preview()`) — nguyên văn CSS catalog `#c-upload-file`
++   (.image-gallery …), phạm vi `.sd-upload-preview` vì modal gắn ở <body>.
++   Catalog đặt chiều cao 60vh (demo cố định 360px — đây lấy 60vh của bản gốc). */
++.sd-upload-preview { overflow: hidden; height: 100%; }
++.sd-upload-preview .image-gallery { display: flex; gap: 8px; width: 100%; max-height: 60vh; min-height: 60vh; }
++.sd-upload-preview .image-gallery .main-image-container { flex: 1; position: relative; background-color: var(--sd-black100); display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 8px; }
++.sd-upload-preview .image-gallery .main-image-container .next-icon { position: absolute; top: 45%; right: 8px; cursor: pointer; color: rgba(0, 0, 0, .54); z-index: 9999; }
++.sd-upload-preview .image-gallery .main-image-container .back-icon { position: absolute; top: 45%; left: 8px; cursor: pointer; color: rgba(0, 0, 0, .54); z-index: 9999; }
++.sd-upload-preview .image-gallery .thumbnail-container { width: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; box-sizing: border-box; }
++.sd-upload-preview .image-gallery .thumbnail-wrapper { position: relative; width: 100px; aspect-ratio: 1; flex: 0 0 auto; overflow: hidden; padding: 0; border: none; background: transparent; cursor: pointer; }
++/* catalog tô thumbnail đang chọn bằng inline style `border: 2px solid rgb(41, 98, 255)` */
++.sd-upload-preview .image-gallery .thumbnail-wrapper.c-active { border: 2px solid #2962ff; }
++.sd-upload-preview .image-gallery .thumbnail-wrapper .thumbnail-img { object-fit: cover; width: 100%; height: 100%; display: block; }
++.sd-upload-preview .image-gallery .main-image { object-fit: contain; width: 100%; height: 100%; display: block; }
++.sd-upload-preview .image-gallery .main-document { object-fit: contain; height: 64px; width: 64px; display: block; }
++.sd-upload-preview .file { padding: 5px; }
++.sd-upload-preview .image-gallery .file { padding: 4px; }
+ 
+ /* --- Build stamp — xem lý do trong design-system/patterns/sidebar.js --- */
+ .ds-build-stamp {
+--- a/design-system/preview/components/upload-file.html
++++ b/design-system/preview/components/upload-file.html
+@@ -17,6 +17,13 @@
+   <link rel="stylesheet" href="../../core/styles/utilities.css">
+   <link rel="stylesheet" href="../../core/styles/page-patterns.css">
+   <link rel="stylesheet" href="../../core/styles/sd-tokens.css">
++  <style>
++    /* Khung demo của catalog #c-upload-file (.uf-box / .uf-row) và lớp mô phỏng
++       :hover (.uf-hover) — CHỈ của trang preview, không thuộc component. */
++    .uf-box { width: min(440px, 100%); background: #fff; border: 1px solid var(--sd-black200); border-radius: 8px; padding: 16px; line-height: 1.5; }
++    .uf-row { display: flex; flex-wrap: wrap; gap: 16px; width: 100%; align-items: flex-start; }
++    sd-upload-file .c-area.uf-hover { background-color: rgba(0, 0, 0, .4); }
++  </style>
+ </head>
+ <body>
+ 
+@@ -36,6 +43,38 @@
+       <!-- ── Tab: Preview ──────────────────────────────────── -->
+       <div class="tab-panel" data-tab-panel="0">
+ 
++        <!-- ── Theo Core UI Catalog #c-upload-file — rà soát 2026-10-12 ── -->
++        <sd-section title="Rỗng — có label, mô tả, bắt buộc" subtitle="bên phải: đã touched mà chưa có file">
++          <div class="uf-row">
++            <div class="uf-box"><sd-upload-file label="Hồ sơ đính kèm" extensions="pdf,xlsx,docx" maxSize="10"
++                            name="attachments" required args='{"documentType":"LOAN_DOCUMENT"}'></sd-upload-file></div>
++            <div class="uf-box"><sd-upload-file id="uf-cat-touched" label="Biên bản họp HĐQT" extensions="pdf" required></sd-upload-file></div>
++          </div>
++          <p class="text-sm text-secondary mt-3">
++            description tự sinh: "Định dạng: {exts} và tối đa: {maxSize}MB"; lỗi required hiện sau khi touched.
++          </p>
++        </sd-section>
++
++        <sd-section title="Danh sách tài liệu" subtitle="bấm ô tải lên để thêm file thật từ máy; bấm × để xoá (có hộp thoại xác nhận)">
++          <div class="uf-box"><sd-upload-file id="uf-cat-docs" label="Hồ sơ khoản vay" type="document"
++                          extensions="pdf,xlsx,docx" maxSize="10" required></sd-upload-file></div>
++        </sd-section>
++
++        <sd-section title="Ảnh (type=&quot;image&quot;)" subtitle="đã tải · rê chuột (nút phóng to) · đang tải · lỗi ảnh">
++          <div class="uf-box"><sd-upload-file id="uf-cat-images" label="Ảnh chứng từ giải ngân" helperText="Ảnh rõ nét, đủ 4 góc"
++                          type="image" extensions="jpg,png" maxSize="5" scaleToPixel="1600" max="5"></sd-upload-file></div>
++        </sd-section>
++
++        <sd-section title="Chỉ xem (disabled)" subtitle="maxOfImage = 3, còn 2 ảnh phủ &quot;+2&quot; — ẩn ô tải lên và nút xoá">
++          <div class="uf-box"><sd-upload-file id="uf-cat-disabled" label="Hồ sơ tài sản đảm bảo" maxOfImage="3" disabled></sd-upload-file></div>
++        </sd-section>
++
++        <sd-section title="Xem trước (PreviewComponent)" subtitle="bấm nút phóng to trên ảnh, ô &quot;+N&quot;, hoặc gọi preview() — thumbnail bên trái, nút ‹ ›, &quot;Tải file&quot; cho tài liệu">
++          <div class="uf-box"><sd-upload-file id="uf-cat-preview" label="Hồ sơ giải ngân"></sd-upload-file></div>
++          <div class="mt-3"><sd-button id="uf-open-preview" type="outline" color="secondary" size="sm" title="Mở preview()"></sd-button></div>
++        </sd-section>
++
++        <!-- ── Các ví dụ bổ sung của kit ── -->
+         <!-- Theo type -->
+         <sd-section title="Theo type — image / document / file">
+           <div class="grid grid-cols-3 gap-6">
+@@ -80,7 +119,7 @@
+                               maxSize="5" max="3" required></sd-upload-file>
+             </div>
+             <div>
+-              <p class="text-sm text-secondary mb-3">helperText — dòng gợi ý dưới control</p>
++              <p class="text-sm text-secondary mb-3">helperText — icon info_outline cạnh nhãn, rê chuột xem gợi ý</p>
+               <sd-upload-file label="Ảnh chân dung" type="image"
+                               extensions="jpg,png" maxSize="2"
+                               helperText="Ảnh nền trắng, thấy rõ mặt, chụp trong 6 tháng gần nhất"></sd-upload-file>
+@@ -244,7 +283,7 @@
+                 <tbody>
+                   <tr><td>label</td><td>string</td><td>-</td><td>Nhãn trường</td></tr>
+                   <tr><td>description</td><td>string</td><td>tự sinh</td><td>Mô tả phụ. Bỏ trống thì ghép từ <code>extensions</code> + <code>maxSize</code></td></tr>
+-                  <tr><td>helperText</td><td>string</td><td>-</td><td>Dòng gợi ý dưới control</td></tr>
++                  <tr><td>helperText</td><td>string</td><td>-</td><td>Icon <code>info_outline</code> cạnh nhãn (trong <code>sd-label</code>), rê chuột hiện gợi ý</td></tr>
+                   <tr><td>type</td><td><code>image</code>, <code>document</code>, <code>file</code></td><td><code>file</code></td><td>Nhóm file cho phép</td></tr>
+                   <tr><td>extensions</td><td>string[]</td><td><code>[]</code></td><td>Danh sách đuôi file hợp lệ. Prototype nhận chuỗi ngăn bằng dấu phẩy</td></tr>
+                   <tr><td>maxSize</td><td>number (MB)</td><td>-</td><td>Dung lượng tối đa mỗi file</td></tr>
+@@ -255,17 +294,14 @@
+                   <tr><td>align</td><td><code>left</code>, <code>center</code></td><td><code>left</code></td><td>Canh hàng thumbnail</td></tr>
+                   <tr><td>required</td><td>boolean</td><td><code>false</code></td><td>Dấu * và validator required</td></tr>
+                   <tr><td>disabled</td><td>boolean</td><td><code>false</code></td><td>Khoá click, kéo thả và chọn file</td></tr>
+-                  <tr><td>maxWidth</td><td>number (px)</td><td>-</td><td>Chặn ảnh rộng quá — chỉ với <code>type="image"</code></td></tr>
+-                  <tr><td>maxHeight</td><td>number (px)</td><td>-</td><td>Chặn ảnh cao quá — chỉ với <code>type="image"</code></td></tr>
+                   <tr><td>scaleToPixel</td><td>number</td><td>-</td><td>Tự thu nhỏ ảnh về số pixel này. <b>Prototype không dựng lại</b></td></tr>
+-                  <tr><td>imageValidator</td><td>(img) =&gt; string</td><td>-</td><td>Hàm kiểm tra ảnh tuỳ ý, trả message lỗi</td></tr>
+                   <tr><td>upload</td><td>(files) =&gt; Promise&lt;string[]&gt;</td><td>adapter cục bộ</td><td>Đẩy file lên, trả mảng id/key</td></tr>
+                   <tr><td>details</td><td>(keys) =&gt; Promise&lt;Detail[]&gt;</td><td>adapter cục bộ</td><td>Lấy metadata để render danh sách file</td></tr>
+                   <tr><td>download</td><td>(key) =&gt; Promise&lt;void&gt;</td><td>-</td><td>Tải file qua API thay vì mở thẳng URL</td></tr>
+                   <tr><td>key</td><td>string</td><td>-</td><td>Chọn đúng provider khi app có nhiều cấu hình upload</td></tr>
++                  <tr><td>args</td><td>object</td><td>-</td><td>Tham số phụ truyền kèm vào <code>upload</code> / <code>details</code> / <code>download</code>. Prototype nhận cả attribute JSON</td></tr>
+                   <tr><td>name</td><td>string</td><td>uuid</td><td>Tên control trong FormGroup</td></tr>
+                   <tr><td>form</td><td>FormGroup / NgForm</td><td>-</td><td>Form cha để đăng ký control (chỉ Angular)</td></tr>
+-                  <tr><td>autoId</td><td>string</td><td>-</td><td>Sinh <code>data-autoId</code> cho E2E</td></tr>
+                   <tr><td>model</td><td>(string | number)[]</td><td><code>[]</code></td><td>Two-way — <b>mảng id/key</b>, không phải File</td></tr>
+                 </tbody>
+               </table>
+@@ -289,8 +325,7 @@
+                 <thead><tr><th>Method</th><th>Mô tả</th></tr></thead>
+                 <tbody>
+                   <tr><td><code>upload()</code></td><td>Đẩy file chưa upload lên và gán <code>model</code>. <b>Bắt buộc gọi trước khi submit</b></td></tr>
+-                  <tr><td><code>getFiles()</code></td><td>Lấy danh sách File chưa upload</td></tr>
+-                  <tr><td><code>preview()</code></td><td>Mở gallery xem ảnh</td></tr>
++                  <tr><td><code>preview()</code></td><td>Mở PreviewComponent: modal "Xem ảnh", thumbnail mọi tệp bên trái, nút ‹ ›, "Tải file" cho tài liệu</td></tr>
+                 </tbody>
+               </table>
+             </div>
+@@ -298,9 +333,9 @@
+             <div class="ds-guide-col ds-guide-col--full">
+               <p class="ds-guide-label">Khác biệt có chủ ý giữa mirror và thư viện</p>
+               <ul class="ds-guide-list">
+-                <li>Gallery xem ảnh dựng bằng <code>sd-modal</code> + <code>sd-preview-image</code> của kit, thay cho <code>PreviewComponent</code> riêng của thư viện — cùng vai trò.</li>
+-                <li><code>scaleToPixel</code> (nén ảnh phía client) không dựng lại; thuộc tính vẫn nhận để markup không lệch.</li>
+-                <li>Nhãn dùng class <code>.sd-label-top</code> của kit vì kit chưa có thẻ <code>sd-label</code>.</li>
++                <li><code>scaleToPixel</code> (nén ảnh phía client) không dựng lại — catalog cũng ghi "resize ảnh … không chạy"; thuộc tính vẫn nhận để markup không lệch.</li>
++                <li>Icon theo AGENTS Rule 4 dùng bộ outlined (catalog: <code>material-icons</code> cho close / info_outline) — nét giống hệt.</li>
++                <li>Đã gỡ 2026-10-12 (catalog không có): <code>autoId</code>, <code>maxWidth</code>, <code>maxHeight</code>, <code>imageValidator</code>, <code>getFiles()</code>. Markup cũ vẫn chạy, thuộc tính bị bỏ qua.</li>
+               </ul>
+             </div>
+ 
+@@ -405,8 +440,58 @@
+     seed('uf-disabled', disabledStore);
+ 
+     // required: chạm vào rồi bỏ trống để hiện message lỗi
+-    var required = document.getElementById('uf-required');
+-    if (required) { required._touched = true; required._render(); }
++    ['uf-required', 'uf-cat-touched'].forEach(function (id) {
++      var el = document.getElementById(id);
++      if (el) { el._touched = true; el._render(); }
++    });
++
++    /* ── Dữ liệu các mục theo catalog #c-upload-file ──
++       Ảnh minh hoạ = đúng hình SVG của catalog (.uf-i-receipt / -building / -id). */
++    var IMG = {"uf-i-receipt": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 160'%3E%3Crect width='120' height='160' fill='%23fdfcf7'/%3E%3Crect x='12' y='12' width='60' height='8' fill='%231f3b73'/%3E%3Cg fill='%23c9c9c9'%3E%3Crect x='12' y='30' width='96' height='4'/%3E%3Crect x='12' y='40' width='80' height='4'/%3E%3Crect x='12' y='50' width='90' height='4'/%3E%3Crect x='12' y='68' width='96' height='22' fill='%23e9eef7'/%3E%3Crect x='12' y='98' width='70' height='4'/%3E%3Crect x='12' y='108' width='84' height='4'/%3E%3C/g%3E%3Ccircle cx='88' cy='132' r='16' fill='none' stroke='%23d93025' stroke-width='3'/%3E%3Cpath d='M78 132h20' stroke='%23d93025' stroke-width='3'/%3E%3C/svg%3E", "uf-i-building": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 120'%3E%3Crect width='160' height='120' fill='%23cfe3f5'/%3E%3Crect x='18' y='38' width='40' height='82' fill='%238a98a8'/%3E%3Crect x='62' y='18' width='46' height='102' fill='%236d7d8f'/%3E%3Crect x='112' y='54' width='34' height='66' fill='%23a3b0bd'/%3E%3Cg fill='%23e8eef5'%3E%3Crect x='70' y='28' width='8' height='8'/%3E%3Crect x='84' y='28' width='8' height='8'/%3E%3Crect x='70' y='44' width='8' height='8'/%3E%3Crect x='84' y='44' width='8' height='8'/%3E%3Crect x='70' y='60' width='8' height='8'/%3E%3Crect x='84' y='60' width='8' height='8'/%3E%3Crect x='26' y='48' width='8' height='8'/%3E%3Crect x='40' y='48' width='8' height='8'/%3E%3Crect x='26' y='64' width='8' height='8'/%3E%3Crect x='40' y='64' width='8' height='8'/%3E%3C/g%3E%3Crect y='112' width='160' height='8' fill='%237c8b5a'/%3E%3C/svg%3E", "uf-i-id": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 100'%3E%3Crect width='160' height='100' rx='8' fill='%23e7f0e8'/%3E%3Crect x='10' y='22' width='40' height='52' rx='3' fill='%23b9c7bb'/%3E%3Ccircle cx='30' cy='40' r='10' fill='%238e9f91'/%3E%3Cpath d='M14 72c4-14 28-14 32 0z' fill='%238e9f91'/%3E%3Crect x='10' y='8' width='140' height='8' fill='%23c0392b'/%3E%3Cg fill='%239aa59c'%3E%3Crect x='60' y='26' width='84' height='5'/%3E%3Crect x='60' y='38' width='70' height='5'/%3E%3Crect x='60' y='50' width='80' height='5'/%3E%3Crect x='60' y='62' width='56' height='5'/%3E%3C/g%3E%3C/svg%3E"};
++    function kb(n) { return n / 1024; }   // details trả size theo MB, giống thư viện
++    seed('uf-cat-docs', {
++      'cd-1': { idOrKey: 'cd-1', cdn: '#', name: 'Hop_dong_tin_dung_VCB.pdf', extension: 'pdf', size: kb(2457.63) },
++      'cd-2': { idOrKey: 'cd-2', cdn: '#', name: 'KH_Funding_Q4-2026.xlsx', extension: 'xlsx', size: kb(184.52) },
++      'cd-3': { idOrKey: 'cd-3', cdn: '#', name: 'To_trinh_phe_duyet_han_muc_BIDV_2026.docx', extension: 'docx' }
++    });
++    var imgs = document.getElementById('uf-cat-images');
++    seed('uf-cat-images', {
++      'ci-1': { idOrKey: 'ci-1', cdn: IMG['uf-i-receipt'], name: 'Phieu_chuyen_tien.png', extension: 'png' },
++      'ci-2': { idOrKey: 'ci-2', cdn: IMG['uf-i-building'], name: 'Nha_xuong.jpg', extension: 'jpg' },
++      'ci-3': { idOrKey: 'ci-3', name: 'Dang_tai.jpg', extension: 'jpg' },                       // chưa có cdn → đang tải
++      'ci-4': { idOrKey: 'ci-4', cdn: 'data:image/png;base64,AAAA', name: 'Anh_loi.png', extension: 'png' } // ảnh hỏng → lỗi ảnh
++    });
++    /* Mô phỏng trạng thái rê chuột ở ô ảnh thứ hai như catalog (c-selected + nền :hover). */
++    if (imgs && window.MutationObserver) {
++      var markHover = function () {
++        var a = imgs.querySelectorAll('.c-area.c-view')[1];
++        if (a && !a.classList.contains('uf-hover')) {
++          a.classList.add('uf-hover');
++          a.querySelector('.c-img-container').classList.add('c-selected');
++        }
++      };
++      new MutationObserver(markHover).observe(imgs, { childList: true });
++      markHover();
++    }
++    seed('uf-cat-disabled', {
++      'cx-1': { idOrKey: 'cx-1', cdn: IMG['uf-i-building'], name: 'Nha_xuong_1.jpg', extension: 'jpg' },
++      'cx-2': { idOrKey: 'cx-2', cdn: IMG['uf-i-id'], name: 'CCCD.jpg', extension: 'jpg' },
++      'cx-3': { idOrKey: 'cx-3', cdn: IMG['uf-i-receipt'], name: 'Phieu_thu.jpg', extension: 'jpg' },
++      'cx-4': { idOrKey: 'cx-4', cdn: IMG['uf-i-id'], name: 'CCCD_mat_sau.jpg', extension: 'jpg' },
++      'cx-5': { idOrKey: 'cx-5', cdn: IMG['uf-i-building'], name: 'Nha_xuong_2.jpg', extension: 'jpg' },
++      'cx-6': { idOrKey: 'cx-6', cdn: '#', name: 'Hop_dong_the_chap_QSDD_CT-01234.pdf', extension: 'pdf' },
++      'cx-7': { idOrKey: 'cx-7', cdn: '#', name: 'Bang_dinh_gia_TSDB_2026.xlsx', extension: 'xlsx' }
++    });
++    seed('uf-cat-preview', {
++      'cp-1': { idOrKey: 'cp-1', cdn: IMG['uf-i-building'], name: 'Nha_xuong_KCN_Bac_Thang_Long.jpg', extension: 'jpg' },
++      'cp-2': { idOrKey: 'cp-2', cdn: IMG['uf-i-receipt'], name: 'Phieu_chuyen_tien.png', extension: 'png' },
++      'cp-3': { idOrKey: 'cp-3', cdn: '#', name: 'Hop_dong_tin_dung_VCB.pdf', extension: 'pdf', size: kb(2457.63) },
++      'cp-4': { idOrKey: 'cp-4', cdn: '#', name: 'KH_Funding_Q4-2026.xlsx', extension: 'xlsx', size: kb(184.52) }
++    });
++    var openBtn = document.getElementById('uf-open-preview');
++    if (openBtn) openBtn.addEventListener('click', function () {
++      document.getElementById('uf-cat-preview').preview();
++    });
+   })();
+ </script>
+ 
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -8,6 +8,29 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `#c-upload-file`: `sd-upload-file` khớp catalog — nhãn sd-label, ô ảnh, hàng tài liệu, modal „Xem ảnh“
++
++Builder: *„Tiếp tục phần Upload File“*. Đo 5 ô mẫu của catalog (rỗng · bắt buộc đã touched ·
++3 tài liệu · 4 ảnh đã tải / rê chuột / đang tải / lỗi · disabled `maxOfImage=3` „+2“) và modal
++PreviewComponent. Sau khi sửa, mọi mốc trùng toạ độ: nhãn, dấu *, mô tả, icon gợi ý, ô tải
++lên + icon, từng ô ảnh, nút xoá, nút phóng to, spinner, ảnh lỗi, overlay „+2“, từng hàng tài
++liệu (icon, tên, dung lượng, nút ×), dòng lỗi; trong modal: cột thumbnail, viền thumbnail đang
++chọn, icon tài liệu 64px, tên, nút „Tải file“, nút ‹ ›.
++
++| | Catalog | Kit trước | Kit nay |
++|---|---|---|---|
++| Nhãn | `<sd-label>`: T14M · * đỏ · icon `info_outline` khi có `helperText` · mô tả T12R xám | `label.sd-label-top` + `div.sd-upload-desc`; `helperText` là dòng chữ dưới ô | khớp (dựng bằng `sd-label` của kit) |
++| Ô ảnh | `img{vertical-align:middle}`; nút xoá bám `.c-area` | ảnh trên baseline (ô ảnh dọc cao thêm 6px, ảnh ngang lệch 3px); nút xoá bám khung ảnh | khớp |
++| Đang tải | `mat-spinner` 18px sát trái, giữa dọc | vòng 20px có vệt xám, giữa ô | khớp |
++| Ảnh lỗi | `c-area-error` + ảnh thay thế | không bao giờ hiện (thiếu bắt `error`) | khớp |
++| Hàng tài liệu | tên `#007bff`; „- 2.457,63KB“ xám `text-black400` | tên màu primary; `2458KB` làm tròn | khớp |
++| `preview()` | modal „Xem ảnh“ 60vw: thumbnail MỌI tệp bên trái, ảnh/tài liệu giữa, ‹ ›, „Tải file“ | `sd-preview-image` nền tối, thumbnail dưới, chỉ ảnh | khớp |
++
++Gỡ theo Rule 18 (catalog không có): `autoId`, `maxWidth`, `maxHeight`, `imageValidator`,
++`getFiles()`, khối CSS mobile phóng nút lên 44px và các class chết. Preview `upload-file.html`:
++thêm 5 mục đúng catalog ở đầu (ảnh minh hoạ là hình SVG của catalog); `sd-form.md` cập nhật
++bảng thuộc tính. 97 trang, 0 lỗi JS.
++
+ ### Verified — `#c-view`: `sd-view` đã khớp catalog, không phải sửa
+ 
+ Builder: *„Tiếp tục phần View“*. Đo 14 mẫu của catalog (label + display ×6 · hyperlink ×3 ·
+--- a/_memory/known-gaps.md
++++ b/_memory/known-gaps.md
+@@ -110,6 +110,23 @@
+ | Icon `cleaning_services` / `settings` / `expand_less` | `material-icons` (filled) | `material-icons-outlined` | Rule 4 của `AGENTS.md`. Cùng vị trí, cùng cỡ; riêng `settings` nhìn rỗng ruột hơn |
+ | Icon nút đầu trong header ("xoá bộ lọc") | `cleaning_services` (cây chổi) | **`restart_alt`** (mũi tên vòng), `aria-label="Đặt lại bộ lọc"` | **QUYẾT ĐỊNH CỦA BUILDER 2026-10-12** — *"đổi icon trên external filter thành icon reset"*. Lệch catalog CÓ CHỦ Ý, đừng sửa ngược. Cỡ 16px, vị trí, màu, kiểu nút giữ đúng catalog |
+ 
++## `sd-upload-file` — rà soát `#c-upload-file` 2026-10-12
++
++| Chỗ | Catalog | Kit | Vì sao |
++|---|---|---|---|
++| Nút xoá / phóng to / ô „+N“ | `mat-icon` (nút xoá là `mat-icon-button`); ô „+N“ là `div` | `button` / `div[role=button][tabindex=0]` bọc icon | Rule 9 — bấm được bằng bàn phím; số đo trùng catalog |
++| Ô tải lên | `aria-hidden="true"`, không nhận focus | `role="button" tabindex="0"` + `aria-label` | Rule 9 (đã có từ trước) |
++| Icon close · info_outline | `material-icons` (đặc) | `material-icons-outlined` | Rule 4 — hai glyph này giống hệt nhau ở hai bộ |
++| Spinner đang tải | `mat-spinner` SVG, vòng cung co giãn | vòng CSS 18px viền 2px primary, hở một góc (giống `sd-button .c-spinner`) | Kit không có MDC; khung, vị trí, màu, nét trùng |
++| Modal „Xem ảnh“ | `cdk-overlay`, demo cố định gallery 360px | `sd-modal` 60vw, gallery 60vh như bản gốc | Catalog ghi „chiều cao gốc 60vh được cố định 360px“ |
++| Ảnh lỗi / đang tải trong modal | catalog không minh hoạ | hiện như tài liệu (icon file + tên + „Tải file“) | Catalog im lặng — chọn đường hiển thị sẵn có, không vẽ thêm |
++| `scaleToPixel` · kéo-thả · `upload()` / `details` thật | catalog ghi „không chạy“ | nhận thuộc tính, không nén ảnh; adapter cục bộ | Giữ như trước |
++| Màu chữ tên tệp trong modal | `#212529` của khung demo | `#212121` | Lệch màu thân trang đã ghi |
++| `name` · `form` | có | `name` nhận; `form` không có tác dụng | Ngoại lệ 1 / Reactive Forms (đã ghi) |
++
++Đã gỡ (Rule 18, catalog không có): `autoId`, `maxWidth`, `maxHeight`, `imageValidator`, `getFiles()`;
++CSS `.sd-upload-desc`, `.text-secondary` riêng, khối mobile 44px, `.c-uploading`, `.c-drag-placeholder`, `.c-img-eror`.
++
+ ## `sd-view` — rà soát `#c-view` 2026-10-12 (khớp, không sửa)
+ 
+ | Chỗ | Catalog | Kit | Vì sao |
+--- a/design-system/components/sd-form.md
++++ b/design-system/components/sd-form.md
+@@ -466,7 +466,7 @@
+ |-----------|--------|---------|-------|
+ | `label` | string | - | Nhãn trường |
+ | `description` | string | tự sinh | Mô tả phụ. Bỏ trống thì ghép từ `extensions` + `maxSize` |
+-| `helperText` | string | - | Dòng gợi ý dưới control |
++| `helperText` | string | - | Icon `info_outline` cạnh nhãn (trong `sd-label`), rê chuột hiện gợi ý — đúng catalog `#c-upload-file` |
+ | `type` | `image`, `document`, `file` | `file` | Nhóm file cho phép |
+ | `extensions` | string[] | `[]` | Đuôi file hợp lệ. Prototype nhận chuỗi ngăn bằng dấu phẩy: `extensions="pdf,docx"` |
+ | `maxSize` | number (MB) | - | Dung lượng tối đa mỗi file |
+@@ -477,12 +477,9 @@
+ | `align` | `left`, `center` | `left` | Canh hàng thumbnail |
+ | `required` | boolean | `false` | Dấu `*` và validator required |
+ | `disabled` | boolean | `false` | Khoá click, kéo thả, chọn file |
+-| `maxWidth` | number (px) | - | Chặn ảnh rộng quá - chỉ với `type="image"` |
+-| `maxHeight` | number (px) | - | Chặn ảnh cao quá - chỉ với `type="image"` |
+ | `scaleToPixel` | number | - | Tự thu nhỏ ảnh. **Mirror không dựng lại**, thuộc tính vẫn nhận |
+ | `key` | string | - | Chọn đúng provider khi app có nhiều cấu hình upload |
+ | `name` | string | uuid | Tên control trong FormGroup |
+-| `autoId` | string | - | Sinh `data-autoId` cho E2E |
+ 
+ **Property (đặt bằng JS, không phải attribute):**
+ 
+@@ -492,14 +489,15 @@
+ | `upload` | `(files) => Promise<string[]>` | Đẩy file lên, trả mảng id/key. Không set thì dùng adapter cục bộ trong phiên |
+ | `details` | `(keys) => Promise<Detail[]>` | Lấy metadata để render danh sách file |
+ | `download` | `(key) => Promise<void>` | Tải file qua API thay vì mở thẳng URL |
+-| `imageValidator` | `(img) => string` | Kiểm tra ảnh tuỳ ý, trả message lỗi |
+ | `args` | bất kỳ | Tham số phụ app muốn kèm theo mọi lần gọi API. Truyền làm **tham số thứ hai**: `upload(files, args)`, `details(keys, args)`, `download(key, args)`. Nhận cả attribute dạng JSON (`args='{"folder":"hd"}'`) lẫn property gán từ JS - gán property thì đè attribute |
+ 
+ `Detail` = `{ idOrKey, cdn, name?, extension?, size? }` - `size` tính bằng **MB**.
+ 
+ **Event:** `sd-change` (`{ model }`), `loaded` (`{ files }`), `filesChanged` (`{ files }`). Bên Angular tương ứng `(modelChange)` / `(loaded)` / `(filesChanged)`.
+ 
+-**Method:** `upload()`, `getFiles()`, `preview()`.
++**Method:** `upload()`, `preview()` (mở modal "Xem ảnh": thumbnail mọi tệp bên trái, nút ‹ ›, "Tải file" cho tài liệu).
++
++> Rà soát theo Core UI Catalog `#c-upload-file` 2026-10-12: đã gỡ `maxWidth`, `maxHeight`, `imageValidator`, `autoId`, `getFiles()` — catalog không có. Markup cũ vẫn chạy, thuộc tính bị bỏ qua.
+ 
+ ```html
+ <sd-upload-file label="Ảnh sản phẩm" type="image"

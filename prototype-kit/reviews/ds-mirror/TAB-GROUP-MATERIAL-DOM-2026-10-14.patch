@@ -1,0 +1,1463 @@
+# TAB-GROUP-MATERIAL-DOM 2026-10-14 — sd-tab-group dựng đúng DOM Material của catalog #c-tab (mat-tab-group / mat-tab-header / mdc-tab / mat-tab-body) + CSS chép nguyên tab.css của catalog
+# Quyết định Builder: 'Tab group trong kit giống Core về hình, nhưng chưa giống cấu trúc HTML bên trong -> fix phần này cho giống Core'
+# 9 file: sd-components.js (SdTabGroup), sd-tokens.css, pattern-loader.js, layout.css, sd-layout.md, preview tab-group, CHANGELOG, known-gaps, lessons
+# Áp: cd prototype-kit-CATALOG-1012m && patch -p1 < reviews/ds-mirror/TAB-GROUP-MATERIAL-DOM-2026-10-14.patch
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/CHANGELOG.md b/CHANGELOG.md
+--- a/CHANGELOG.md	2026-10-14 07:31:19.507876779 +0000
++++ b/CHANGELOG.md	2026-10-14 07:55:03.598236483 +0000
+@@ -8,6 +8,23 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `sd-tab-group` dựng đúng DOM Material của catalog `#c-tab` (Builder 2026-10-14: *„fix phần này cho giống Core“*)
++
++- Trước: hình khớp catalog nhưng cấu trúc tự dựng (`.sd-tab-header > .sd-tab-track > button.sd-tab__button` + một
++  `div.sd-tab-indicator` đo vị trí bằng JS). Nay: `mat-tab-group.mat-mdc-tab-group.sd-tab-group.mat-primary > mat-tab-header
++  (2 nút phân trang + .mat-mdc-tab-label-container > .mat-mdc-tab-list > .mat-mdc-tab-labels > div.mdc-tab.mat-mdc-tab[role=tab]
++  có .mdc-tab-indicator riêng) + .mat-mdc-tab-body-wrapper > mat-tab-body[role=tabpanel]`. Đối chiếu 5 mục của catalog: **HTML
++  thanh tab trùng từng ký tự** (bỏ id), lớp / thuộc tính thân tab trùng, computed style trùng (chỉ khác bề ngang khung và chiều
++  cao nội dung demo).
++- CSS: chép nguyên `css/components/tab.css` của catalog (121 rule), đổi scope giữ tương quan độ ưu tiên — thay cả khối CSS tự
++  dựng cũ trong `sd-tokens.css`.
++- Hành vi giữ nguyên: `sd-tab-change` / `sd-tab-close` (cancelable), `selectedIndex`, phân trang khi tràn (nay là
++  `mat-mdc-tab-header-pagination-controls-enabled`), `headerPosition` / `alignTabs` / `dynamicHeight` / `stretchTabs` bằng lớp
++  Material; thêm phím ← → Home End Enter Space. Ảnh chụp 96 trang trước / sau: khác ≤ 17 điểm ảnh (khử răng cưa).
++- Kéo theo: cầu tab trang (`pattern-loader.js`) và CSS `.tab` (`layout.css`) đổi sang `.mat-mdc-tab`; kịch bản kiểm thử dùng
++  `.mat-mdc-tab-labels > .mat-mdc-tab` / `.mdc-tab--active`. Docs: `sd-layout.md`, `preview/components/tab-group.html`.
++  Bản vá: `reviews/ds-mirror/TAB-GROUP-MATERIAL-DOM-2026-10-14.patch`.
++
+ ### Added — bảng dịch HTML → Angular và `_dev-spec.md` cho mỗi feature (Builder 2026-10-14: *„tiếp tục mục (5) Bảng dịch cú pháp và (4) _dev-spec.md“*)
+ 
+ - **`ai-instructions/html-to-angular.md`** — quy tắc dịch prototype → Angular `@sd-angular/core` 19.0.10: thuộc tính /
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/known-gaps.md b/_memory/known-gaps.md
+--- a/_memory/known-gaps.md	2026-10-14 07:31:19.508861243 +0000
++++ b/_memory/known-gaps.md	2026-10-14 07:55:03.590236483 +0000
+@@ -21,6 +21,7 @@
+ | 2026-10-11 | Ô nhập — viền khi hover / focus / lỗi | Catalog ghim màu viền ô nhập ở **mọi trạng thái** bằng `!important` (`.mat-mdc-notch-piece.mdc-notched-outline__leading{border-color:var(--sd-black200)!important}`), nên hover không đổi màu, focus chỉ **dày lên 2px** chứ không chuyển nâu, và **ô lỗi vẫn giữ viền xám** — chỉ `hideInlineError` mới cho viền đỏ. Kit đã làm theo. **Builder nên xem lại:** bản cũ của kit (hover xám đậm, focus nâu + quầng, lỗi viền đỏ) dễ thấy hơn nhiều khi điền form dài | Đã mirror đúng catalog theo yêu cầu "mọi thứ giống catalog". Từ 2026-10-13 mọi `sd-*` dùng DOM Material: luật nằm ở các khối `catalog #c-…` (`.mat-mdc-notch-piece… {border-color:var(--sd-black200)!important}`) trong `sd-tokens.css` — muốn trả lại thì sửa ở đó. Ba rule `.sd-form-field:hover` / `:focus-within` / `.sd-error` nay chỉ còn áp cho markup viết tay |
+ | 2026-10-11 | **[ĐÃ THAY THẾ 2026-10-14 — xem mục "sd-stepper — theo @sdcorejs/angular 22.3.1"]** `sd-stepper` — nhãn bước đang làm | Catalog **có** rule tô nhãn bước đang làm màu brand + 600, nhưng rule `.mat-step-label-active` đứng trước lại nhiều class hơn nên luôn thắng → nhãn bước đang làm KHÔNG khác các bước khác. Kit chép lại đúng tương quan điểm đó. **Builder nên xem lại:** bước đang làm giờ chỉ phân biệt bằng vòng tròn (số, nền đặc), nhãn thì giống hệt bước khác | Đây là hành vi THẬT của catalog (nhiều khả năng là lỗi thứ tự rule của thư viện). Muốn trả lại: nâng điểm rule `sd-stepper .sd-stepper__label--selected` |
+ | 2026-10-14 | Kit có, `.d.ts` 19.0.10 không có (phát hiện khi sinh `html-to-angular-api.md`) | `sd-select showSelectAll` / `hideReadError` · `sd-input-number clearable` · `sd-radio helperText` · `sd-date-range inlineError` · `autoId` trên `sd-label` / `sd-view` / `sd-history` / `sd-import-excel` / `sd-form-builder` / `sd-document-builder` / `sd-header-footer-builder` · `sd-table addable` / `filterRequired` / cột number `option.precision`. Ngược lại `.d.ts` CÓ mà kit đã gỡ theo bảng API catalog: `sd-tab-group disableRipple` / `autoId`; `sd-side-drawer` 19.0.10 chỉ có `[sdFooter]` (không `sdFooterLeft/Right`) | Rule 18 đo theo **bảng API catalog**, còn `.d.ts` là mã thật — hai nguồn lệch nhau. Chờ Builder chọn nguồn khi rà Rule 18. Bảng dịch đã ghi "Kit-only — bỏ khi dịch" |
++| 2026-10-14 | `sd-tab-group` — sau khi đổi sang DOM Material | Còn khác catalog: (1) thẻ `<sd-tab>` vẫn nằm trong `.mat-mdc-tab-body-content` (display: contents) — HTML không có ng-template, JS trang tìm / gỡ `sd-tab`; (2) thân tab chưa chọn ẩn hẳn nội dung (Angular lazy — thân rỗng; bản chụp tĩnh của catalog có nội dung nhưng `visibility:hidden`); (3) không có ripple / hiệu ứng trượt gạch chân; (4) kit thêm viền `:focus-visible` (Rule 9). Catalog vẽ `pills` / `segmented` vẫn có lớp `mat-mdc-tab-group-stretch-tabs` dù mẫu khai `[stretchTabs]="false"` — kit theo mã thư viện (`[mat-stretch-tabs]="stretchTabs()"` → false thì gỡ lớp); hình không đổi vì theme ép `flex-grow:0` | (1)(2) bắt buộc để JS các trang chạy; (3) catalog tĩnh cũng không có |
+ | 2026-10-14 | ~~`page-header` — tab trang~~ **ĐÃ SỬA 2026-10-14** (nay `sd-tab-group`, cầu tương thích `phBindPageTabs` giữ lớp móc `.tab`) | ~~`data-page-tabs` vẫn là `.page-tab-zone .tabs button.tab` của kit, không phải `sd-tab-group` như portal (chỉ dời xuống dưới khung header) | Bản đóng băng `tra-cuu-cam-nang.html` (không được sửa), `tra-cuu-cam-nang-v2.html` và ~45 trang preview gắn JS thẳng vào DOM này — đổi sang `sd-tab-group` là phải viết lại JS các trang đó~~ |
+ | 2026-10-14 | ~~`page-header` — `data-site-tabs`~~ **ĐÃ GỠ 2026-10-14** (Builder: *„không hiện trong kit và các prototype“*) | Tab kiểu trình duyệt — Core / portal-template không có. Chỉ trang demo `preview/patterns/page-header.html` dùng | — |
+ | 2026-10-14 | ~~Nền trang~~ **ĐÃ SỬA 2026-10-14** (Builder: *„đổi theo core“*) | `.main-area` nay `#f9f9f9` như `sd-page`. Body vẫn `--surface-page` #EBECED nhưng bị `.main-area` che hết | — |
+@@ -1459,6 +1460,6 @@
+ 
+ | Chỗ | Catalog | Kit | Vì sao giữ |
+ |---|---|---|---|
+-| Cơ chế vẽ gạch chân | `.mdc-tab-indicator__content--underline` trong suốt, màu nằm ở `border-top: 2px solid` | Một `div.sd-tab-indicator` cao 2px tô nền đặc | Khác tầng hạ tầng (kit không có MDC). **Kết quả đo giống nhau**: dày 2px, màu primary, rộng đúng bằng tab đang chọn. Cùng loại lệch đã ghi cho `sd-select`/`sd-datetime` |
++| ~~Cơ chế vẽ gạch chân~~ **ĐÃ SỬA 2026-10-14** (DOM Material — mỗi tab có `.mdc-tab-indicator` như catalog) | `.mdc-tab-indicator__content--underline` trong suốt, màu nằm ở `border-top: 2px solid` | Một `div.sd-tab-indicator` cao 2px tô nền đặc | Khác tầng hạ tầng (kit không có MDC). **Kết quả đo giống nhau**: dày 2px, màu primary, rộng đúng bằng tab đang chọn. Cùng loại lệch đã ghi cho `sd-select`/`sd-datetime` |
+ | `--sd-tab-disabled-opacity` | — | khai `.5` nhưng rule thật dùng `.4` | Biến **chết** của chính kit, không ai đọc. Giữ để markup cũ không vỡ; số thật `.4` khớp catalog |
+ | ~~`autoId` trên `sd-tab-group`~~ **ĐÃ GỠ 2026-10-12** | Không có trong bảng API `#c-tab`, markup không có `data-autoid` | Gỡ theo nguyên tắc gỡ `autoId` từng component trong lượt rà soát của nó | — |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/_memory/lessons.md b/_memory/lessons.md
+--- a/_memory/lessons.md	2026-10-14 06:25:08.082078381 +0000
++++ b/_memory/lessons.md	2026-10-14 07:55:03.602422559 +0000
+@@ -13,6 +13,15 @@
+ - Nhắc Worker rằng `AGENTS.md` ở root là nguồn quy ước, nhưng nó **không chứa bối cảnh phần việc đang giao** — cái đó chỉ nằm trong brief.
+ - **Cấm đọc, ghi, xoá `_memory/session-handoff.md`.** File đó thuộc về phiên đang đối thoại với Builder; Worker ghi vào là mất bàn giao. Ràng buộc này cố ý không nằm trong skill `orchestration` vì skill đó phải dùng được ở repo khác — nên brief của kit này phải tự mang theo.
+ 
++## Bẫy khi đổi component sang DOM Material (sd-tab-group 2026-10-14)
++
++- **Giữ thẻ con mà JS trang đang dùng** (`sd-tab`): trang tìm `group.querySelectorAll('sd-tab')`, gỡ `sd-tab`, đặt `data-*` lên
++  nó. Dời nó vào chỗ Angular đặt nội dung (`.mat-mdc-tab-body-content`) với `display: contents` → hộp vẫn như catalog.
++- **MutationObserver tự kích chính nó**: dời node của mình cũng sinh mutation (bất đồng bộ — cờ `_building` không chặn được).
++  Gọi `observer.takeRecords()` ngay sau thao tác DOM của mình, và chỉ phản ứng khi node đổi là đúng loại cần theo dõi.
++- **Bản chụp tĩnh của catalog ≠ mã thư viện ở vài chỗ** (vd lớp stretch vẫn còn khi mẫu khai `[stretchTabs]="false"`). Đọc
++  template trong `fesm2022` để biết hành vi thật, ghi lệch vào known-gaps.
++
+ ## Bẫy khi đổi DOM của pattern dùng chung (page-header 2026-10-14)
+ 
+ - **Giữ lớp móc cũ.** Prototype và trang preview tìm theo `.page-header-actions`, `.page-header-content`, `.page-title`,
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/components/sd-layout.md b/design-system/components/sd-layout.md
+--- a/design-system/components/sd-layout.md	2026-10-13 20:23:30.562760584 +0000
++++ b/design-system/components/sd-layout.md	2026-10-14 07:49:53.179388111 +0000
+@@ -250,12 +250,21 @@
+ | `sd-tab-change` | `{ index: number }` | User chuyển tab - bên Angular là `(selectedIndexChange)` |
+ | `sd-tab-close` | `{ index: number, label: string }` - cancelable | User bấm X đóng tab - bên Angular là `(close)` |
+ 
++**DOM (2026-10-14 — giống hệt catalog `#c-tab`):** `sd-tab-group > mat-tab-group.mat-mdc-tab-group.sd-tab-group.mat-primary >
++mat-tab-header.mat-mdc-tab-header (+ 2 nút phân trang) > .mat-mdc-tab-label-container > .mat-mdc-tab-list > .mat-mdc-tab-labels >
++div.mdc-tab.mat-mdc-tab[role=tab]` (đang chọn: `.mdc-tab--active.mdc-tab-indicator--active`; gạch chân là `.mdc-tab-indicator` của
++từng tab) và `.mat-mdc-tab-body-wrapper > mat-tab-body[role=tabpanel] > .mat-mdc-tab-body-content > sd-tab`. Thẻ `sd-tab` còn nằm
++trong thân tab (display: contents) — chỗ khác catalog duy nhất. Tìm nhãn tab bằng `.mat-mdc-tab-labels > .mat-mdc-tab`
++(không còn `.sd-tab__button` / `.sd-tab--active` / `.sd-tab-indicator`). `stretchTabs` / `headerPosition="below"` /
++`dynamicHeight` / `alignTabs` là lớp / thuộc tính Material trên `mat-tab-group` (`mat-mdc-tab-group-stretch-tabs`,
++`-inverted-header`, `-dynamic-height`, `mat-align-tabs`). Chữ tab đang chọn ở `line` luôn `#AE7129`
++(`--mat-tab-active-label-text-color` của theme) — `color` chỉ đổi gạch chân + badge.
++
+ **CSS custom properties trên host** - prototype ghi đè được như bên Angular:
+ 
+ | Property | Mặc định |
+ |----------|----------|
+ | `--sd-tab-indicator-color` | `var(--sd-primary)` |
+-| `--sd-tab-active-label-text-color` | `var(--sd-primary)` — **chữ** tab đang chọn ở `line`. Tách riêng để `color` không kéo theo (xem ghi chú `color`) |
+ | `--sd-tab-label-active-color` | `var(--sd-primary)` — nền viên `pills`, chữ ô `segmented`; **`color` đổi biến này** |
+ | `--sd-tab-label-color` | `var(--sd-text-primary, #1a1a1a)` |
+ | `--sd-tab-badge-bg` | `var(--sd-primary-light)` |
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/js/pattern-loader.js b/design-system/core/js/pattern-loader.js
+--- a/design-system/core/js/pattern-loader.js	2026-10-14 06:37:33.651656690 +0000
++++ b/design-system/core/js/pattern-loader.js	2026-10-14 07:42:39.332011659 +0000
+@@ -92,7 +92,7 @@
+   /**
+    * Cầu tương thích cho tab trang (2026-10-14). JS cũ của trang (preview, tra-cuu-cam-nang*.html) làm việc với
+    * `.page-tab-zone .tab`: gắn click, đặt id / hidden, bật tắt `.active`. Ở đây:
+-   *   · gắn lớp `tab` lên từng `button.sd-tab__button` (CSS `.tab` toàn cục đã loại nút này ra — layout.css);
++   *   · gắn lớp `tab` lên từng nhãn `div.mat-mdc-tab` (CSS `.tab` toàn cục đã loại nhãn này ra — layout.css);
+    *   · sd-tab-group đổi tab (bấm) → `.active` theo đúng nút đang chọn;
+    *   · JS trang bật `.active` cho một nút → sd-tab-group chọn theo (selectedIndex), để hình khớp trạng thái;
+    *   · JS trang đặt `hidden` cho nút → đo lại gạch chân.
+@@ -100,7 +100,7 @@
+   function phBindPageTabs(root) {
+     var group = root.querySelector('.page-tab-zone sd-tab-group');
+     if (!group) return;
+-    function buttons() { return Array.prototype.slice.call(group.querySelectorAll('.sd-tab__button')); }
++    function buttons() { return Array.prototype.slice.call(group.querySelectorAll('.mat-mdc-tab-labels > .mat-mdc-tab')); }
+     function selected() {
+       var v = parseInt(group.getAttribute('selectedIndex') || '0', 10);
+       return isNaN(v) ? 0 : v;
+@@ -122,7 +122,7 @@
+       muts.forEach(function (m) {
+         if (m.type === 'childList') { rebuilt = true; return; }
+         var t = m.target;
+-        if (!t.classList || !t.classList.contains('sd-tab__button')) return;
++        if (!t.classList || !t.classList.contains('mat-mdc-tab')) return;
+         if (m.attributeName === 'hidden') { reposition = true; return; }
+         if (m.attributeName === 'class' && t.classList.contains('active')) {
+           var idx = buttons().indexOf(t);
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/layout.css b/design-system/core/styles/layout.css
+--- a/design-system/core/styles/layout.css	2026-10-14 06:37:33.652700026 +0000
++++ b/design-system/core/styles/layout.css	2026-10-14 07:42:39.330176356 +0000
+@@ -758,7 +758,7 @@
+    bỏ border-top cũ (2026-10-14) */
+ 
+ /* JS trang (bản đóng băng) đặt `hidden` lên nút tab — nút sd-tab-group có display:inline-flex nên phải ép */
+-.page-tab-zone .sd-tab__button[hidden] {
++.page-tab-zone .mat-mdc-tab[hidden] {
+   display: none !important;
+ }
+ 
+@@ -949,9 +949,9 @@
+   gap: 0;
+ }
+ 
+-/* `:not(:where(.sd-tab__button))` (2026-10-14): tab trang nay là sd-tab-group, nút của nó mang lớp móc `.tab`
++/* `:not(:where(.mat-mdc-tab))` (2026-10-14): tab trang nay là sd-tab-group, nhãn tab (div.mat-mdc-tab) mang lớp móc `.tab`
+    cho JS cũ — loại ra để CSS tab tự dựng không đè lên. :where() giữ nguyên độ ưu tiên 0,1,0. */
+-.tab:not(:where(.sd-tab__button)) {
++.tab:not(:where(.mat-mdc-tab)) {
+   padding: var(--space-2-5) var(--space-4);
+   line-height: normal;                   /* reboot cho nút `font: inherit` (1.5) — tab giữ cao 38px */
+   font-size: var(--text-md);
+@@ -973,11 +973,11 @@
+    Truoc day .tab dung --text-primary (den) con sd-tab dung --sd-primary (nau), nen
+    cung mot design system lai ra hai kieu tab khac nhau. Token duoi day chinh la thu
+    ma --sd-tab-label-active-color tro toi, va cung la mau gach chan .tab.active san co. */
+-.tab:not(:where(.sd-tab__button)):hover {
++.tab:not(:where(.mat-mdc-tab)):hover {
+   color: var(--color-primary-500);
+ }
+ 
+-.tab.active:not(:where(.sd-tab__button)) {
++.tab.active:not(:where(.mat-mdc-tab)) {
+   color: var(--color-primary-500);
+   font-weight: var(--font-medium);
+   border-bottom-color: var(--color-primary-500);
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/core/styles/sd-tokens.css b/design-system/core/styles/sd-tokens.css
+--- a/design-system/core/styles/sd-tokens.css	2026-10-14 02:15:07.920373927 +0000
++++ b/design-system/core/styles/sd-tokens.css	2026-10-14 07:42:27.870191560 +0000
+@@ -3451,348 +3451,142 @@
+   color: #fafafa;
+ }
+ 
+-/* --- sd-tab-group styles ---
+-   Rà soát 2026-10-11 theo Core UI Catalog (@sd-angular/core 19.0.10). Số đo
+-   lấy từ chính cột catalog, khác bản dựng theo npm 22.2.12 ở:
+-     header cao 36px (không 48) và KHÔNG có đường kẻ dưới
+-       (`--mat-tab-divider-height:0; --mat-tab-divider-color:transparent`)
+-     nhãn 14px/400, chưa chọn rgba(0,0,0,.54), đang chọn #ae7129 — KHÔNG đậm thêm
+-     hover KHÔNG đổi màu (`--mat-tab-inactive-hover-label-text-color` = .54)
+-     icon 18px (không 16), khoảng cách icon↔chữ 4px (không 8)
+-     badge cao 18px, min-width 18, padding 0 6px, bo 10px, cách chữ 2px
+-     nút đóng 16px, mờ .6 → rõ + đỏ khi hover (không đổi nền) */
+-sd-tab-group {
+-  /* 4 CSS custom property mà thư viện thật phơi ra trên thẻ host -
+-     prototype ghi đè được y như bên Angular. */
+-  /* Rà soát 2026-10-12. Catalog khai bốn biến này là
+-       `var(--sd-color-primary, #1565c0)` / `var(--sd-color-primary-light, #e8f0ff)`
+-     mà `--sd-color-primary` / `--sd-color-primary-light` KHÔNG hề được khai ở
+-     đâu trong catalog ⇒ fallback literal là giá trị của RULE NÀY.
+-     NHƯNG: mọi thẻ `<sd-tab-group>` trong catalog đều mang **style inline**
+-       style="--sd-tab-indicator-color: var(--sd-primary); …-badge-bg: var(--sd-primary-light); …"
+-     do input `color` của component ghi ra lúc chạy. Style inline thắng, nên
+-     MÀU HIỆN RA của catalog vẫn là NÂU `--sd-primary` — và `SdTabGroup` của
+-     kit cũng ghi inline đúng bốn biến đó (xem `sd-components.js`), tức là
+-     kết quả hiển thị đã khớp catalog từ trước.
+-     Giá trị ở rule này chỉ là **mặc định khi không có style inline**; kit
+-     trước đây để `var(--sd-primary)`, nay trả về đúng literal của catalog.
+-     Đây là ca "khai mà không ăn" thứ SÁU — ghi lại để lần sau không ai thấy
+-     #1565c0 ở đây rồi tưởng kit tô tab màu xanh. */
+-  --sd-tab-indicator-color: #1565c0;
+-  --sd-tab-label-active-color: #1565c0;
+-  --sd-tab-badge-bg: #e8f0ff;
+-  --sd-tab-badge-color: #1565c0;
+-  --sd-tab-badge-radius: 10px;
+-  --sd-tab-badge-padding: 0 6px;
+-  --sd-tab-badge-min-width: 18px;
+-  --sd-tab-label-color: var(--sd-text-primary, #1a1a1a);
+-  --sd-tab-close-color: var(--sd-text-secondary, #6b6b6b);
+-  /* Catalog: `var(--sd-color-error, #d32f2f)` — portal KHÔNG khai `--sd-color-error`
+-     (cùng bẫy với `--sd-color-primary` của sd-splitter) nên giá trị thật rơi về
+-     **#d32f2f**, không phải `--sd-error` (#f82c13) của theme. Đo trên trang
+-     catalog dựng lại: rgb(211,47,47) (2026-10-11). */
+-  --sd-tab-close-hover-color: #d32f2f;
+-  --sd-tab-disabled-opacity: .5;   /* catalog khai biến này nhưng KHÔNG rule nào dùng */
+-  /* Mirror `--mat-tab-active-label-text-color: #ae7129` của portal — màu chữ
+-     tab đang chọn ở biến thể `line`. CỐ Ý tách khỏi `--sd-tab-label-active-color`
+-     (cái đó đi theo input `color`), vì catalog ghi rõ `color` không đổi màu chữ. */
+-  --sd-tab-active-label-text-color: var(--sd-primary);
+-  display: block;
+-}
+-sd-tab { display: block; }
+-sd-tab-group .sd-tab-panels { display: block; }
+-sd-tab-group .sd-tab-panel-hidden { display: none; }
+-sd-tab-group .sd-tab-header {
+-  position: relative;
+-  display: flex;
+-  align-items: center;
+-  /* catalog: `.mat-mdc-tab-label-container{justify-content:flex-start !important}` */
+-  justify-content: flex-start;
+-  height: 36px;            /* catalog: .mat-mdc-tab-header{--mat-tab-container-height:36px} */
+-  max-width: 100%;
+-  background-color: #fff;  /* catalog: override :root của portal */
+-  border-bottom: 0;        /* catalog: --mat-tab-divider-height:0 */
+-}
+-sd-tab-group .sd-tab__button {
+-  position: relative;
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  height: 100%;
+-  min-width: auto;
+-  flex-grow: 0;
+-  padding: 0 24px;
+-  background: transparent;
+-  border: 0;
+-  border-radius: 0;
+-  font-family: var(--sd-font-family);
+-  font-size: 14px;
+-  /* 500, không phải 400. Catalog: `.mat-mdc-tab{font-weight:var(--mat-tab-label-text-weight,
+-     var(--mat-sys-title-small-weight))}`; `--mat-tab-label-text-weight` KHÔNG được
+-     khai, còn `--mat-sys-title-small-weight: 500` thì khai toàn cục trên `html`
+-     (token M3). Cỡ chữ cũng từ đó: `--mat-sys-title-small-size: .875rem` = 14px.
+-     Sửa 2026-10-12 — cùng loại với trọng số nút `sd-button`. */
+-  font-weight: 500;
+-  /* `--mat-sys-title-small-tracking` = .006rem (đo 0.096px) — áp cho cả nhãn và
+-     badge. Thiếu nó mỗi tab hẹp hơn catalog ~1–2px, dồn lại tab thứ 4 lệch 4px. */
+-  letter-spacing: .006rem;
+-  line-height: 1;
+-  color: rgba(0, 0, 0, .54);
+-  cursor: pointer;
+-  white-space: nowrap;
+-  transition: 150ms color linear;
+-}
+-/* catalog: hover/focus GIỮ NGUYÊN màu nhãn của tab chưa chọn */
+-sd-tab-group .sd-tab__button:hover,
+-sd-tab-group .sd-tab__button:focus {
+-  color: rgba(0, 0, 0, .54);
+-}
+-/* Màu chữ tab ĐANG CHỌN ở biến thể `line` KHÔNG đi theo input `color`.
+-   Catalog ghi thẳng ở nhãn biến thể: *"color="success" — chỉ đổi màu gạch chân
+-   và badge; chữ tab active vẫn theo token Material (#AE7129)"*. Lý do: chữ đó
+-   lấy từ `--mat-tab-active-label-text-color: #ae7129`, còn `color` chỉ ghi bộ
+-   `--sd-tab-*`. Kit trước đây dùng `--sd-tab-label-active-color` nên
+-   `color="success"` làm chữ xanh lá — lệch. Sửa 2026-10-12.
+-   `--sd-tab-label-active-color` VẪN dùng cho pills (nền viên) và segmented
+-   (chữ active) vì hai rule đó của catalog có tham chiếu tới nó. */
+-sd-tab-group .sd-tab__button.sd-tab--active,
+-sd-tab-group .sd-tab__button.sd-tab--active:hover,
+-sd-tab-group .sd-tab__button.sd-tab--active:focus {
+-  color: var(--sd-tab-active-label-text-color);
+-}
+-sd-tab-group .sd-tab__button:disabled {
+-  opacity: .4;
+-  cursor: not-allowed;
+-  pointer-events: none;
+-}
+-/* Bọc icon + chữ + badge, đúng tên và khoảng cách của catalog */
+-sd-tab-group .sd-tab__label { display: inline-flex; align-items: center; gap: 4px; }
+-sd-tab-group .sd-tab__text  { white-space: nowrap; }
+-sd-tab-group .sd-tab__icon  { font-size: 18px; width: 18px; height: 18px; line-height: 18px; }
+-sd-tab-group .sd-tab__badge {
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  min-width: var(--sd-tab-badge-min-width);
+-  height: 18px;
+-  padding: var(--sd-tab-badge-padding);
+-  border-radius: var(--sd-tab-badge-radius);
+-  background: var(--sd-tab-badge-bg);
+-  color: var(--sd-tab-badge-color);
+-  font-size: 11px;
+-  font-weight: 500;
+-  line-height: 1;
+-  margin-left: 2px;
+-}
+-sd-tab-group .sd-tab__close {
+-  font-size: 16px;
+-  width: 16px;
+-  height: 16px;
+-  line-height: 16px;
+-  color: var(--sd-tab-close-color);
+-  cursor: pointer;
+-  opacity: .6;
+-  margin-left: 4px;
+-  transition: opacity .12s ease, color .12s ease;
+-}
+-sd-tab-group .sd-tab__close:hover {
+-  opacity: 1;
+-  color: var(--sd-tab-close-hover-color);
+-}
+-/* --- sd-tab-group: 5 input bổ sung theo Core, rà soát 2026-10-10 ---
+-   alignTabs (start/center/end) · color (6 màu) · headerPosition (above/below)
+-   · dynamicHeight · disableRipple (kit không vẽ ripple nên nhận mà không có
+-   hiệu ứng, giữ cho API khớp). */
+-sd-tab-group.sd-tab-group--align-center .sd-tab-track { justify-content: center; }
+-sd-tab-group.sd-tab-group--align-end .sd-tab-track { justify-content: flex-end; }
+-
+-/* headerPosition="below": thanh tab xuống dưới phần nội dung */
+-sd-tab-group.sd-tab-group--header-below .sd-tab-group { display: flex; flex-direction: column; }
+-sd-tab-group.sd-tab-group--header-below .sd-tab-header { order: 2; border-bottom: 0; border-top: 1px solid var(--sd-black200); }
+-sd-tab-group.sd-tab-group--header-below .sd-tab-panels { order: 1; }
+-sd-tab-group.sd-tab-group--header-below .sd-tab-indicator { bottom: auto; top: 0; }
+-
+-/* dynamicHeight: khung nội dung co theo tab đang mở thay vì giữ chiều cao lớn nhất */
+-sd-tab-group.sd-tab-group--dynamic-height .sd-tab-panels { height: auto; overflow: visible; }
+-
+-/* Indicator - line variant: dày 2px, màu token của host */
+-sd-tab-group .sd-tab-indicator {
+-  position: absolute;
+-  bottom: 0;
+-  height: 2px;
+-  background: var(--sd-tab-indicator-color);
+-  transition: left var(--sd-tab-animation-duration, 300ms) ease,
+-              width var(--sd-tab-animation-duration, 300ms) ease;
+-}
+-
+-/* Nhiều tab tràn hàng (Portal: /pattern/tab-group/many) - mirror pagination
+-   của MatTabHeader thật (SdTabGroup thật bọc mat-tab-group): viewport cắt
+-   overflow, track cuộn bằng transform, 2 nút mũi tên chỉ hiện khi tràn.
+-   .sd-tab-scroll cần min-width:0 vì là flex item của .sd-tab-header - nếu
+-   không flex item mặc định min-width:auto sẽ tự phình theo nội dung track
+-   thay vì cắt, làm overflow không bao giờ xảy ra. */
+-sd-tab-group .sd-tab-scroll {
+-  position: relative;
+-  flex: 1 1 auto;
+-  min-width: 0;
+-  height: 100%;
+-  overflow: hidden;
+-}
+-sd-tab-group .sd-tab-track {
+-  position: relative;
+-  display: flex;
+-  align-items: center;
+-  height: 100%;
+-  width: max-content;
+-  transition: transform 0.2s ease;
+-}
+-sd-tab-group .sd-tab-pagination {
+-  display: none;
+-  align-items: center;
+-  justify-content: center;
+-  flex-shrink: 0;
+-  width: 32px;
+-  height: 100%;
+-  padding: 0;
+-  border: none;
+-  background: transparent;
+-  color: var(--sd-black400);
+-  cursor: pointer;
+-  appearance: none;
+-  -webkit-appearance: none;
+-  -moz-appearance: none;
+-  outline: none;
+-  box-shadow: none;
+-}
+-sd-tab-group .sd-tab-header--scrollable .sd-tab-pagination {
+-  display: flex;
+-}
+-sd-tab-group .sd-tab-pagination:hover {
+-  color: var(--sd-black500);
+-  background: var(--sd-black100);
+-}
+-sd-tab-group .sd-tab-pagination:disabled {
+-  opacity: .35;
+-  cursor: default;
+-  pointer-events: none;
+-  background: transparent;
+-}
+-sd-tab-group .sd-tab-pagination .material-icons-outlined ,
+-sd-tab-group .sd-tab-pagination .mat-icon {
+-  font-size: 20px;
+-}
+-
+-/* Pills - nhóm độc lập. Catalog: viên thuốc ĐANG CHỌN tô ĐẶC màu chủ đạo và
+-   chữ trắng (bản trước tô nền nhạt + chữ nâu); chưa chọn thì chữ #1a1a1a/500
+-   và hover mới tô nền nhạt. */
+-sd-tab-group.sd-tab-group--pills .sd-tab-header {
+-  min-height: 36px;
+-  height: auto;
+-  border-bottom: 0;
+-}
+-sd-tab-group.sd-tab-group--pills .sd-tab-track {
+-  gap: 4px;
+-  padding: 2px 0;
+-}
+-sd-tab-group.sd-tab-group--pills .sd-tab__button {
+-  height: 32px;
+-  padding: 0 14px;
+-  border-radius: 999px;
+-  background: transparent;
+-  color: var(--sd-tab-label-color);
+-  font-weight: 500;
+-  transition: background-color .12s ease, color .12s ease;
+-}
+-sd-tab-group.sd-tab-group--pills .sd-tab__button:hover:not(:disabled) {
+-  background: var(--sd-tab-badge-bg);
+-  color: var(--sd-tab-label-color);
+-}
+-sd-tab-group.sd-tab-group--pills .sd-tab__button.sd-tab--active,
+-sd-tab-group.sd-tab-group--pills .sd-tab__button.sd-tab--active:hover,
+-sd-tab-group.sd-tab-group--pills .sd-tab__button.sd-tab--active:focus {
+-  background: var(--sd-tab-label-active-color);
+-  color: #fff;
+-}
+-/* Rê chuột lên viên ĐANG CHỌN: trong CSS thật của catalog, luật hover
+-   (`.mat-mdc-tab:hover:not(.mat-mdc-tab-disabled)` — 4 lớp) THẮNG luật active
+-   (`.mat-mdc-tab.mdc-tab--active` — 3 lớp), nên nền viên chuyển sang màu nhạt
+-   --sd-tab-badge-bg, chữ vẫn trắng, cộng lớp phủ đen 12%. Đo trên catalog
+-   2026-10-12: nền rgb(245,238,230), chữ #fff. Kit chép đúng kết quả đó. */
+-sd-tab-group.sd-tab-group--pills .sd-tab__button.sd-tab--active:hover:not(:disabled) {
+-  background: var(--sd-tab-badge-bg);
+-  box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, .12);
+-}
+-sd-tab-group.sd-tab-group--pills .sd-tab__label .sd-tab__icon { color: inherit; }
+-sd-tab-group.sd-tab-group--pills .sd-tab__button.sd-tab--active .sd-tab__badge {
+-  background: rgba(255, 255, 255, .25);
+-  color: inherit;
+-}
+-sd-tab-group.sd-tab-group--pills .sd-tab-indicator { display: none; }
+-
+-/* Segmented - ít lựa chọn ngang hàng */
+-/* catalog khai `inline-flex`, nhưng header là con của `mat-tab-group` (flex dọc)
+-   nên bị blockify thành flex, giãn hết bề ngang (đo 1026px) — kit ghi thẳng kết quả. */
+-sd-tab-group.sd-tab-group--segmented .sd-tab-header {
+-  display: flex;
+-  min-height: 34px;
+-  height: auto;
+-  padding: 3px;
+-  gap: 0;
+-  border: 0;                       /* catalog không vẽ viền, chỉ nền */
+-  border-radius: 8px;
+-  /* NỀN TRẮNG, không phải #f0f3f7. CSS của component khai `background:#f0f3f7`
+-     nhưng portal đè `.mat-mdc-tab-header{background-color:#ffffff !important}`
+-     và **!important thắng** — chính catalog ghi ở nhãn biến thể:
+-     *"variant=segmented — nền header bị portal ép về trắng"*.
+-     Giữ `border-radius`/`padding` vì hai cái đó không bị đè.
+-     Đây là ca "khai mà không ăn"; đừng đổi lại #f0f3f7 cho "đẹp hơn". */
+-  background: #fff;
+-}
+-sd-tab-group.sd-tab-group--segmented .sd-tab__button {
+-  height: 28px;
+-  padding: 0 14px;
+-  border-radius: 6px;
+-  background: transparent;
+-  color: var(--sd-tab-label-color);
+-  font-size: 13px;
+-  font-weight: 500;
+-  transition: background-color .12s ease, box-shadow .12s ease;
+-}
+-sd-tab-group.sd-tab-group--segmented .sd-tab__button:hover:not(:disabled):not(.sd-tab--active) {
+-  background: rgba(0, 0, 0, .04);
+-}
+-sd-tab-group.sd-tab-group--segmented .sd-tab__button.sd-tab--active {
+-  background: #fff;
+-  color: var(--sd-tab-label-active-color);
+-  font-weight: 600;
+-  box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+-}
+-sd-tab-group.sd-tab-group--segmented .sd-tab__button.sd-tab--active:hover:not(:disabled) {
+-  background: #fff;
+-  box-shadow: 0 1px 4px rgba(0, 0, 0, .12);
+-}
+-sd-tab-group.sd-tab-group--segmented .sd-tab-indicator { display: none; }
+-
+-/* stretchTabs - tab chia đều bề ngang. Track cần width:100% (thay vì
+-   max-content mặc định) để "chia đều theo BỀ NGANG VIEWPORT" có nghĩa -
+-   max-content sẽ co track về đúng khít nội dung, khiến flex:1 không còn gì
+-   để giãn ra. */
+-/* `stretchTabs` là INPUT CHẾT ở portal — rà soát 2026-10-12.
+-   Catalog có đủ: input `[stretchTabs]` mặc định true, và mọi `<mat-tab-group>`
+-   trong mục `#c-tab` đều mang class `mat-mdc-tab-group-stretch-tabs`, kéo theo
+-   rule của Material:
+-       .mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs>.mat-mdc-tab-header .mat-mdc-tab{flex-grow:1}
+-   NHƯNG portal đè lại bằng **!important**:
+-       .mat-mdc-tab{flex-grow:0 !important; min-width:auto !important}
+-       .mat-mdc-tab-label-container{justify-content:flex-start !important}
+-   ⇒ tab của catalog **rộng theo nội dung và dồn về TRÁI**, không bao giờ dàn đều.
+-   Đo trên harness: 164 · 140 · 197 · 150 px — không phải 4×225.
+-   Kit trước đây cho `flex: 1 1 0` nên 4 tab bằng nhau, chiếm hết bề ngang.
+-   Giữ class `--stretch` vì catalog cũng phát class tương đương, nhưng để nó
+-   KHÔNG làm gì — đúng kết quả thật. Đây là ca "khai mà không ăn". */
+-sd-tab-group.sd-tab-group--stretch .sd-tab-track {
+-  width: 100%;
+-}
++/* --- sd-tab-group — catalog #c-tab (DOM Material) — 2026-10-14 ---
++   Builder: „fix phần này cho giống Core“. Thay toàn bộ CSS tự dựng cũ (.sd-tab-header / .sd-tab-track /
++   .sd-tab__button / .sd-tab-indicator / .sd-tab-pagination …). Các rule dưới đây CHÉP NGUYÊN `css/components/tab.css`
++   của catalog (bỏ khung .demo-*), đổi scope `#c-tab X` → `sd-tab-group X`; rule vốn bắt đầu bằng
++   `#c-tab sd-tab-group…` → `sd-tab-group:is(sd-tab-group)…` để giữ đúng tương quan độ ưu tiên giữa các rule
++   (mọi rule cùng mất 1 id; rule có sẵn `sd-tab-group` vẫn hơn các rule khác đúng 1 phần tử như ở catalog).
++   `#c-tab { --mat-tab-* }` → khai trên host. Token `--mat-sys-*` mà rule đọc khai ngay dưới (giá trị
++   `material-tokens.css` của catalog — kit không khai toàn cục trên `html`). */
++sd-tab-group{--mat-sys-title-small-font:Roboto;--mat-sys-title-small-line-height:1.25rem;--mat-sys-title-small-size:0.875rem;--mat-sys-title-small-tracking:0.006rem;--mat-sys-title-small-weight:500;--mat-sys-on-surface:#1a1b1f;--mat-sys-on-surface-variant:#44474e;--mat-sys-primary:#005cbb;--mat-sys-surface-variant:#e0e2ec}
++sd-tab-group:is(sd-tab-group){display:block;--sd-tab-label-color: var(--sd-text-primary, #1a1a1a);--sd-tab-label-active-color: var(--sd-color-primary, #1565c0);--sd-tab-indicator-color: var(--sd-color-primary, #1565c0);--sd-tab-disabled-opacity: .5;--sd-tab-badge-bg: var(--sd-color-primary-light, #e8f0ff);--sd-tab-badge-color: var(--sd-color-primary, #1565c0);--sd-tab-badge-radius: 10px;--sd-tab-badge-padding: 0 6px;--sd-tab-badge-min-width: 18px;--sd-tab-close-color: var(--sd-text-secondary, #6b6b6b);--sd-tab-close-hover-color: var(--sd-color-error, #d32f2f)}
++sd-tab-group .sd-tab__label{display:inline-flex;align-items:center;gap:4px}
++sd-tab-group .sd-tab__icon{font-size:18px;width:18px;height:18px;line-height:18px}
++sd-tab-group .sd-tab__text{white-space:nowrap}
++sd-tab-group .sd-tab__badge{display:inline-flex;align-items:center;justify-content:center;min-width:var(--sd-tab-badge-min-width);height:18px;padding:var(--sd-tab-badge-padding);font-size:11px;font-weight:500;line-height:1;color:var(--sd-tab-badge-color);background:var(--sd-tab-badge-bg);border-radius:var(--sd-tab-badge-radius);margin-left:2px}
++sd-tab-group .sd-tab__close{font-size:16px;width:16px;height:16px;line-height:16px;color:var(--sd-tab-close-color);cursor:pointer;opacity:.6;margin-left:4px;transition:opacity .12s ease,color .12s ease}
++sd-tab-group .sd-tab__close:hover{opacity:1;color:var(--sd-tab-close-hover-color)}
++sd-tab-group:is(sd-tab-group) .mat-mdc-tab .mdc-tab-indicator__content--underline{border-color:var(--sd-tab-indicator-color)}
++sd-tab-group:is(sd-tab-group) .mat-mdc-tab.mdc-tab--active .mdc-tab__ripple:before,sd-tab-group:is(sd-tab-group) .mat-mdc-tab.mdc-tab--active:before{background-color:transparent!important;opacity:0!important}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab .mdc-tab-indicator{display:none}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab-label-container,sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab-header{border-bottom:none!important}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab-header{min-height:36px}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab-labels{gap:4px;padding:2px 0}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab{min-width:0;height:32px;padding:0 14px;border-radius:999px;flex-grow:0!important;flex-basis:auto!important;background:transparent;transition:background-color .12s ease,color .12s ease}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab:hover:not(.mat-mdc-tab-disabled){background:var(--sd-tab-badge-bg)}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab .mdc-tab__text-label{color:var(--sd-tab-label-color);font-weight:500}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab .mdc-tab__content{height:100%}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab.mdc-tab--active{background:var(--sd-tab-label-active-color)}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label{color:#fff}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab.mdc-tab--active:hover:not(.mat-mdc-tab-disabled){box-shadow:inset 0 0 0 9999px #0000001f}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .sd-tab__label .sd-tab__icon{color:inherit}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .sd-tab__label .sd-tab__badge{background:#ffffff40;color:inherit}
++sd-tab-group:is(sd-tab-group).sd-tab-group--pills .mat-mdc-tab:not(.mdc-tab--active) .sd-tab__label .sd-tab__badge{background:var(--sd-tab-badge-bg);color:var(--sd-tab-badge-color)}
++sd-tab-group:is(sd-tab-group).sd-tab-group--segmented .mat-mdc-tab .mdc-tab-indicator{display:none}
++sd-tab-group:is(sd-tab-group).sd-tab-group--segmented .mat-mdc-tab-label-container,sd-tab-group:is(sd-tab-group).sd-tab-group--segmented .mat-mdc-tab-header{border-bottom:none!important}
++sd-tab-group:is(sd-tab-group).sd-tab-group--segmented .mat-mdc-tab-header{display:inline-flex;min-height:34px;background:#f0f3f7;border-radius:8px;padding:3px}
++sd-tab-group:is(sd-tab-group).sd-tab-group--segmented .mat-mdc-tab-labels{gap:0}
++sd-tab-group:is(sd-tab-group).sd-tab-group--segmented .mat-mdc-tab{min-width:0;height:28px;padding:0 14px;border-radius:6px;flex-grow:0!important;flex-basis:auto!important;background:transparent;transition:background-color .12s ease,box-shadow .12s ease}
++sd-tab-group:is(sd-tab-group).sd-tab-group--segmented .mat-mdc-tab:hover:not(.mat-mdc-tab-disabled):not(.mdc-tab--active){background:#0000000a}
++sd-tab-group:is(sd-tab-group).sd-tab-group--segmented .mat-mdc-tab .mdc-tab__text-label{color:var(--sd-tab-label-color);font-weight:500;font-size:13px}
++sd-tab-group:is(sd-tab-group).sd-tab-group--segmented .mat-mdc-tab.mdc-tab--active{background:#fff;box-shadow:0 1px 3px #00000014}
++sd-tab-group:is(sd-tab-group).sd-tab-group--segmented .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label{color:var(--sd-tab-label-active-color);font-weight:600}
++sd-tab-group:is(sd-tab-group).sd-tab-group--segmented .mat-mdc-tab.mdc-tab--active:hover:not(.mat-mdc-tab-disabled){background:#fff;box-shadow:0 1px 4px #0000001f}
++sd-tab-group .mdc-tab{min-width:90px;padding:0 24px;display:flex;flex:1 0 auto;justify-content:center;box-sizing:border-box;border:none;outline:none;text-align:center;white-space:nowrap;cursor:pointer;z-index:1;touch-action:manipulation}
++sd-tab-group .mdc-tab__content{display:flex;align-items:center;justify-content:center;height:inherit;pointer-events:none}
++sd-tab-group .mdc-tab__text-label{transition:150ms color linear;display:inline-block;line-height:1;z-index:2}
++sd-tab-group .mdc-tab--active .mdc-tab__text-label{transition-delay:100ms}
++sd-tab-group ._mat-animation-noopable .mdc-tab__text-label{transition:none}
++sd-tab-group .mdc-tab-indicator{display:flex;position:absolute;top:0;left:0;justify-content:center;width:100%;height:100%;pointer-events:none;z-index:1}
++sd-tab-group .mdc-tab-indicator__content{transition:var(--mat-tab-animation-duration, 250ms) transform cubic-bezier(0.4, 0, 0.2, 1);transform-origin:left;opacity:0}
++sd-tab-group .mdc-tab-indicator__content--underline{align-self:flex-end;box-sizing:border-box;width:100%;border-top-style:solid}
++sd-tab-group .mdc-tab-indicator--active .mdc-tab-indicator__content{opacity:1}
++sd-tab-group ._mat-animation-noopable .mdc-tab-indicator__content,sd-tab-group .mdc-tab-indicator--no-transition .mdc-tab-indicator__content{transition:none}
++sd-tab-group .mat-mdc-tab-ripple.mat-mdc-tab-ripple{position:absolute;top:0;left:0;bottom:0;right:0;pointer-events:none}
++sd-tab-group .mat-mdc-tab{-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-decoration:none;background:none;height:var(--mat-tab-container-height, 48px);font-family:var(--mat-tab-label-text-font, var(--mat-sys-title-small-font));font-size:var(--mat-tab-label-text-size, var(--mat-sys-title-small-size));letter-spacing:var(--mat-tab-label-text-tracking, var(--mat-sys-title-small-tracking));line-height:var(--mat-tab-label-text-line-height, var(--mat-sys-title-small-line-height));font-weight:var(--mat-tab-label-text-weight, var(--mat-sys-title-small-weight))}
++sd-tab-group .mat-mdc-tab.mdc-tab{flex-grow:0}
++sd-tab-group .mat-mdc-tab .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-active-indicator-color, var(--mat-sys-primary));border-top-width:var(--mat-tab-active-indicator-height, 2px);border-radius:var(--mat-tab-active-indicator-shape, 0)}
++sd-tab-group .mat-mdc-tab:hover .mdc-tab__text-label{color:var(--mat-tab-inactive-hover-label-text-color, var(--mat-sys-on-surface))}
++sd-tab-group .mat-mdc-tab:focus .mdc-tab__text-label{color:var(--mat-tab-inactive-focus-label-text-color, var(--mat-sys-on-surface))}
++sd-tab-group .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label{color:var(--mat-tab-active-label-text-color, var(--mat-sys-on-surface))}
++sd-tab-group .mat-mdc-tab.mdc-tab--active .mdc-tab__ripple::before,sd-tab-group .mat-mdc-tab.mdc-tab--active .mat-ripple-element{background-color:var(--mat-tab-active-ripple-color, var(--mat-sys-on-surface))}
++sd-tab-group .mat-mdc-tab.mdc-tab--active:hover .mdc-tab__text-label{color:var(--mat-tab-active-hover-label-text-color, var(--mat-sys-on-surface))}
++sd-tab-group .mat-mdc-tab.mdc-tab--active:hover .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-active-hover-indicator-color, var(--mat-sys-primary))}
++sd-tab-group .mat-mdc-tab.mdc-tab--active:focus .mdc-tab__text-label{color:var(--mat-tab-active-focus-label-text-color, var(--mat-sys-on-surface))}
++sd-tab-group .mat-mdc-tab.mdc-tab--active:focus .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-active-focus-indicator-color, var(--mat-sys-primary))}
++sd-tab-group .mat-mdc-tab.mat-mdc-tab-disabled{opacity:.4;pointer-events:none}
++sd-tab-group .mat-mdc-tab.mat-mdc-tab-disabled .mdc-tab__content{pointer-events:none}
++sd-tab-group .mat-mdc-tab.mat-mdc-tab-disabled .mdc-tab__ripple::before,sd-tab-group .mat-mdc-tab.mat-mdc-tab-disabled .mat-ripple-element{background-color:var(--mat-tab-disabled-ripple-color, var(--mat-sys-on-surface-variant))}
++sd-tab-group .mat-mdc-tab .mdc-tab__ripple::before{content:"";display:block;position:absolute;top:0;left:0;right:0;bottom:0;opacity:0;pointer-events:none;background-color:var(--mat-tab-inactive-ripple-color, var(--mat-sys-on-surface))}
++sd-tab-group .mat-mdc-tab .mdc-tab__text-label{color:var(--mat-tab-inactive-label-text-color, var(--mat-sys-on-surface));display:inline-flex;align-items:center}
++sd-tab-group .mat-mdc-tab .mdc-tab__content{position:relative;pointer-events:auto}
++sd-tab-group .mat-mdc-tab:hover .mdc-tab__ripple::before{opacity:.04}
++sd-tab-group .mat-mdc-tab.cdk-program-focused .mdc-tab__ripple::before,sd-tab-group .mat-mdc-tab.cdk-keyboard-focused .mdc-tab__ripple::before{opacity:.12}
++sd-tab-group .mat-mdc-tab .mat-ripple-element{opacity:.12;background-color:var(--mat-tab-inactive-ripple-color, var(--mat-sys-on-surface))}
++sd-tab-group .mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs>.mat-mdc-tab-header .mat-mdc-tab{flex-grow:1}
++sd-tab-group .mat-mdc-tab-group{display:flex;flex-direction:column;max-width:100%}
++sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header,sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination{background-color:var(--mat-tab-background-color)}
++sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background.mat-primary>.mat-mdc-tab-header .mat-mdc-tab .mdc-tab__text-label{color:var(--mat-tab-foreground-color)}
++sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background.mat-primary>.mat-mdc-tab-header .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-foreground-color)}
++sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background:not(.mat-primary)>.mat-mdc-tab-header .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label{color:var(--mat-tab-foreground-color)}
++sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background:not(.mat-primary)>.mat-mdc-tab-header .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab-indicator__content--underline{border-color:var(--mat-tab-foreground-color)}
++sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mat-mdc-tab-header-pagination-chevron,sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mat-focus-indicator::before,sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-tab-header-pagination-chevron,sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-focus-indicator::before{border-color:var(--mat-tab-foreground-color)}
++sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mat-ripple-element,sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mdc-tab__ripple::before,sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-ripple-element,sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mdc-tab__ripple::before{background-color:var(--mat-tab-foreground-color)}
++sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header .mat-mdc-tab-header-pagination-chevron,sd-tab-group .mat-mdc-tab-group.mat-tabs-with-background>.mat-mdc-tab-header-pagination .mat-mdc-tab-header-pagination-chevron{color:var(--mat-tab-foreground-color)}
++sd-tab-group .mat-mdc-tab-group.mat-mdc-tab-group-inverted-header{flex-direction:column-reverse}
++sd-tab-group .mat-mdc-tab-group.mat-mdc-tab-group-inverted-header .mdc-tab-indicator__content--underline{align-self:flex-start}
++sd-tab-group .mat-mdc-tab-body-wrapper{position:relative;overflow:hidden;display:flex;transition:height 500ms cubic-bezier(0.35, 0, 0.25, 1)}
++sd-tab-group .mat-mdc-tab-body-wrapper._mat-animation-noopable{transition:none !important;animation:none !important}
++sd-tab-group .mat-mdc-tab-header{display:flex;overflow:hidden;position:relative;flex-shrink:0}
++sd-tab-group .mdc-tab-indicator .mdc-tab-indicator__content{transition-duration:var(--mat-tab-animation-duration, 250ms)}
++sd-tab-group .mat-mdc-tab-header-pagination{-webkit-user-select:none;user-select:none;position:relative;display:none;justify-content:center;align-items:center;min-width:32px;cursor:pointer;z-index:2;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:none;box-sizing:content-box;outline:0}
++sd-tab-group .mat-mdc-tab-header-pagination::-moz-focus-inner{border:0}
++sd-tab-group .mat-mdc-tab-header-pagination .mat-ripple-element{opacity:.12;background-color:var(--mat-tab-inactive-ripple-color, var(--mat-sys-on-surface))}
++sd-tab-group .mat-mdc-tab-header-pagination-controls-enabled .mat-mdc-tab-header-pagination{display:flex}
++sd-tab-group .mat-mdc-tab-header-pagination-before,sd-tab-group .mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-after{padding-left:4px}
++sd-tab-group .mat-mdc-tab-header-pagination-before .mat-mdc-tab-header-pagination-chevron,sd-tab-group .mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-after .mat-mdc-tab-header-pagination-chevron{transform:rotate(-135deg)}
++sd-tab-group .mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-before,sd-tab-group .mat-mdc-tab-header-pagination-after{padding-right:4px}
++sd-tab-group .mat-mdc-tab-header-rtl .mat-mdc-tab-header-pagination-before .mat-mdc-tab-header-pagination-chevron,sd-tab-group .mat-mdc-tab-header-pagination-after .mat-mdc-tab-header-pagination-chevron{transform:rotate(45deg)}
++sd-tab-group .mat-mdc-tab-header-pagination-chevron{border-style:solid;border-width:2px 2px 0 0;height:8px;width:8px;border-color:var(--mat-tab-pagination-icon-color, var(--mat-sys-on-surface))}
++sd-tab-group .mat-mdc-tab-header-pagination-disabled{box-shadow:none;cursor:default;pointer-events:none}
++sd-tab-group .mat-mdc-tab-header-pagination-disabled .mat-mdc-tab-header-pagination-chevron{opacity:.4}
++sd-tab-group .mat-mdc-tab-list{flex-grow:1;position:relative;transition:transform 500ms cubic-bezier(0.35, 0, 0.25, 1)}
++sd-tab-group ._mat-animation-noopable .mat-mdc-tab-list{transition:none}
++sd-tab-group .mat-mdc-tab-label-container{display:flex;flex-grow:1;overflow:hidden;z-index:1;border-bottom-style:solid;border-bottom-width:var(--mat-tab-divider-height, 1px);border-bottom-color:var(--mat-tab-divider-color, var(--mat-sys-surface-variant))}
++sd-tab-group .mat-mdc-tab-group-inverted-header .mat-mdc-tab-label-container{border-bottom:none;border-top-style:solid;border-top-width:var(--mat-tab-divider-height, 1px);border-top-color:var(--mat-tab-divider-color, var(--mat-sys-surface-variant))}
++sd-tab-group .mat-mdc-tab-labels{display:flex;flex:1 0 auto}
++sd-tab-group [mat-align-tabs=center]>.mat-mdc-tab-header .mat-mdc-tab-labels{justify-content:center}
++sd-tab-group [mat-align-tabs=end]>.mat-mdc-tab-header .mat-mdc-tab-labels{justify-content:flex-end}
++sd-tab-group .cdk-drop-list .mat-mdc-tab-labels,sd-tab-group .mat-mdc-tab-labels.cdk-drop-list{min-height:var(--mat-tab-container-height, 48px)}
++sd-tab-group .mat-mdc-tab::before{margin:5px}
++sd-tab-group .mat-mdc-tab-body{top:0;left:0;right:0;bottom:0;position:absolute;display:block;overflow:hidden;outline:0;flex-basis:100%}
++sd-tab-group .mat-mdc-tab-body.mat-mdc-tab-body-active{position:relative;overflow-x:hidden;overflow-y:auto;z-index:1;flex-grow:1}
++sd-tab-group .mat-mdc-tab-group.mat-mdc-tab-group-dynamic-height .mat-mdc-tab-body.mat-mdc-tab-body-active{overflow-y:hidden}
++sd-tab-group .mat-mdc-tab-body-content{height:100%;overflow:auto;transform:none;visibility:hidden}
++sd-tab-group .mat-tab-body-animating>.mat-mdc-tab-body-content,sd-tab-group .mat-mdc-tab-body-active>.mat-mdc-tab-body-content{visibility:visible}
++sd-tab-group .mat-tab-body-animating>.mat-mdc-tab-body-content{min-height:1px}
++sd-tab-group .mat-mdc-tab-group-dynamic-height .mat-mdc-tab-body-content{overflow:hidden}
++sd-tab-group .mat-tab-body-content-can-animate{transition:transform var(--mat-tab-animation-duration) 1ms cubic-bezier(0.35, 0, 0.25, 1)}
++sd-tab-group .mat-mdc-tab-body-wrapper._mat-animation-noopable .mat-tab-body-content-can-animate{transition:none}
++sd-tab-group .mat-tab-body-content-left{transform:translate3d(-100%, 0, 0)}
++sd-tab-group .mat-tab-body-content-right{transform:translate3d(100%, 0, 0)}
++sd-tab-group{--mat-tab-container-height:48px;--mat-tab-divider-color:transparent;--mat-tab-divider-height:0;--mat-tab-active-indicator-height:2px;--mat-tab-active-indicator-shape:0}
++sd-tab-group .mat-mdc-tab-group{--mat-tab-disabled-ripple-color:rgba(0,0,0,.54);--mat-tab-pagination-icon-color:rgba(0,0,0,.87);--mat-tab-inactive-label-text-color:rgba(0,0,0,.54);--mat-tab-active-label-text-color:#ae7129;--mat-tab-active-ripple-color:#ae7129;--mat-tab-inactive-ripple-color:#ae7129;--mat-tab-inactive-focus-label-text-color:rgba(0,0,0,.54);--mat-tab-inactive-hover-label-text-color:rgba(0,0,0,.54);--mat-tab-active-focus-label-text-color:#ae7129;--mat-tab-active-hover-label-text-color:#ae7129;--mat-tab-active-focus-indicator-color:#ae7129;--mat-tab-active-hover-indicator-color:#ae7129;--mat-tab-active-indicator-color:#ae7129}
++sd-tab-group .mat-mdc-tab-header{--mat-tab-container-height:36px}
++sd-tab-group .mat-focus-indicator{position:relative}
++sd-tab-group .mat-focus-indicator::before{display:none}
++sd-tab-group .mat-ripple{overflow:hidden;position:relative}
++sd-tab-group mat-icon{color:var(--mat-icon-color, inherit)}
++sd-tab-group .mat-mdc-tab-header{background-color:#ffffff !important}
++sd-tab-group .mat-mdc-tab-label-container{justify-content:flex-start !important}
++sd-tab-group .mat-mdc-tab{flex-grow:0 !important;min-width:auto !important}
++/* Riêng kit: thẻ <sd-tab> nằm trong .mat-mdc-tab-body-content (HTML không có ng-template; JS trang tìm / gỡ sd-tab).
++   display:contents → hộp của nội dung đúng như catalog. Thân chưa chọn: ẩn hẳn nội dung (Angular lazy — thân rỗng). */
++sd-tab-group sd-tab{display:contents}
++sd-tab-group mat-tab-body:not(.mat-mdc-tab-body-active)>.mat-mdc-tab-body-content>sd-tab{display:none}
++/* Viền focus bàn phím (Rule 9) — catalog có .mat-focus-indicator::before{display:none}, không có viền nào */
++sd-tab-group .mat-mdc-tab:focus-visible{outline:2px solid var(--sd-primary);outline-offset:-2px}
+ 
+ /* --- sd-section styles --- */
+ /* Catalog: `sd-section{width:100%;display:block}` — KHÔNG có margin. Khoảng 16px
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/preview/components/tab-group.html b/design-system/preview/components/tab-group.html
+--- a/design-system/preview/components/tab-group.html	2026-10-13 17:29:12.680489548 +0000
++++ b/design-system/preview/components/tab-group.html	2026-10-14 07:49:53.179819745 +0000
+@@ -142,8 +142,9 @@
+             theme <code>portal-fins</code> đè <code>.mat-mdc-tab{flex-grow:0!important;min-width:auto!important}</code>
+             lên trên rule của Material — nên <strong>bật hay tắt thì tab vẫn rộng theo nội dung</strong>.
+             Đo trên catalog: 4 tab ra 164/140/197/150px, không phải 4&nbsp;×&nbsp;225px.
+-            Kit mirror đúng chỗ đó: class <code>sd-tab-group--stretch</code> vẫn gắn nhưng
+-            không còn rule <code>flex:1 1 0</code> nào đi kèm (sửa 2026-10-12).
++            Kit mirror đúng chỗ đó: lớp Material <code>mat-mdc-tab-group-stretch-tabs</code> gắn trên
++            <code>mat-tab-group</code> khi bật (tắt thì gỡ, như <code>[mat-stretch-tabs]</code> của thư viện) nhưng theme vẫn ép
++            rộng theo nội dung (DOM Material từ 2026-10-14).
+             Đây là một ca <em>"khai mà không ăn"</em> — xem <code>_memory/known-gaps.md</code>.
+           </p>
+           <p class="fs-12 text-black400 mb-12">Không khai <code>stretchTabs</code></p>
+@@ -216,8 +217,8 @@
+             <code>line</code>.</strong> Catalog ghi thẳng ở nhãn biến thể: <em>"color=&quot;success&quot;
+             chỉ đổi màu gạch chân và badge; chữ tab active vẫn theo token Material
+             (#AE7129)"</em>. Khung bên dưới dùng <code>color="success"</code> — gạch chân và badge
+-            xanh lá, chữ vẫn nâu. Kit sửa theo 2026-10-12 (biến riêng
+-            <code>--sd-tab-active-label-text-color</code>). Với <code>pills</code> và
++            xanh lá, chữ vẫn nâu (chữ đọc <code>--mat-tab-active-label-text-color</code> của theme, không đọc biến
++            của <code>color</code> — DOM + CSS catalog từ 2026-10-14). Với <code>pills</code> và
+             <code>segmented</code> thì <code>color</code> vẫn đổi nền viên / chữ ô.
+           </p>
+           <div class="mb-16">
+@@ -363,7 +364,6 @@
+                 <thead><tr><th>Property</th><th>Mặc định</th></tr></thead>
+                 <tbody>
+                   <tr><td>--sd-tab-indicator-color</td><td>var(--sd-primary)</td></tr>
+-                  <tr><td>--sd-tab-active-label-text-color</td><td>var(--sd-primary)</td></tr>
+                   <tr><td>--sd-tab-label-active-color</td><td>var(--sd-primary)</td></tr>
+                   <tr><td>--sd-tab-badge-bg</td><td>var(--sd-primary-light)</td></tr>
+                   <tr><td>--sd-tab-badge-color</td><td>var(--sd-primary)</td></tr>
+diff -ruN '--exclude=vendor' '--exclude=reviews' a/design-system/sd-components/sd-components.js b/design-system/sd-components/sd-components.js
+--- a/design-system/sd-components/sd-components.js	2026-10-14 02:15:07.922428272 +0000
++++ b/design-system/sd-components/sd-components.js	2026-10-14 07:49:53.174218031 +0000
+@@ -5603,26 +5603,14 @@
+      Portal: /pattern/tab-group/* - line, pills, segmented.
+      sd-tab-group bọc nhiều sd-tab; group dựng thanh tab và
+      ẩn/hiện thân tab theo index đang chọn. Nội dung tab giữ
+-     NGUYÊN node DOM (chỉ di chuyển vào .sd-tab-panels, không
++     NGUYÊN node DOM (thẻ sd-tab được dời vào mat-tab-body, không
+      chép innerHTML) để event listener trang gắn bên trong vẫn sống.
+      Events: sd-tab-change { index } ↔ (selectedIndexChange)
+              sd-tab-close { index, label } cancelable ↔ (close)
+      Chặn đóng tab: gọi `preventDefault()` trên `sd-tab-close` (sự kiện
+      cancelable). Input `beforeClose` của gói npm ĐÃ BỎ 2026-10-12 — catalog
+      không có, xem chú thích trong SdTab.
+-
+-     Rà soát 2026-09-23 (Portal: /pattern/tab-group/many - "Nhiều nhóm nội
+-     dung"): SdTabGroup thật bọc `mat-tab-group` của Angular Material, và
+-     MatTabHeader có sẵn cơ chế PAGINATION - khi tổng bề rộng các tab vượt
+-     quá bề rộng khung nhìn, tự hiện 2 nút mũi tên trái/phải để cuộn thanh
+-     tab, và tự cuộn tab đang chọn vào tầm nhìn khi chọn một tab đang bị che
+-     khuất. Bản cũ hoàn toàn KHÔNG có cơ chế này - 10 tab trong demo "many"
+-     sẽ tràn ra ngoài khung mà không có cách nào bấm tới các tab sau. Đây
+-     không phải input/output riêng của SdTabGroup (không có attribute mới
+-     nào cần thêm) mà là HÀNH VI BẮT BUỘC đi kèm bất kỳ số lượng tab nào -
+-     nên mirror bằng DOM/CSS mới (.sd-tab-scroll cắt overflow, .sd-tab-track
+-     cuộn bằng transform, .sd-tab-pagination hiện có điều kiện) chứ không
+-     phải thêm attribute.
++     DOM / phân trang theo MatTabGroup: xem chú thích đầu class SdTabGroup (2026-10-14).
+      ══════════════════════════════════════════════════════════ */
+   class SdTab extends HTMLElement {
+     static get observedAttributes() {
+@@ -5648,102 +5636,94 @@
+   }
+   customElements.define('sd-tab', SdTab);
+ 
++  /* ══════════════════════════════════════════════════════════
++     sd-tab-group — DOM Material như catalog `#c-tab` (2026-10-14, Builder: *„fix phần này cho giống Core“*).
++     Trước đó kit tự dựng `.sd-tab-header > .sd-tab-track > button.sd-tab__button` + một `div.sd-tab-indicator`
++     (hình đã khớp, cấu trúc thì không). Nay in đúng cây của catalog:
++       sd-tab-group[.sd-tab-group--pills|--segmented][style=4 biến màu]
++         > mat-tab-group.mat-mdc-tab-group.sd-tab-group.mat-primary[.mat-mdc-tab-group-stretch-tabs]
++               [.mat-mdc-tab-group-inverted-header][.mat-mdc-tab-group-dynamic-height][mat-align-tabs]
++           > mat-tab-header.mat-mdc-tab-header[.mat-mdc-tab-header-pagination-controls-enabled]
++               > div.mat-mdc-tab-header-pagination-before > div.mat-mdc-tab-header-pagination-chevron
++               > div.mat-mdc-tab-label-container > div.mat-mdc-tab-list[role=tablist] > div.mat-mdc-tab-labels
++                   > div.mdc-tab.mat-mdc-tab.mat-focus-indicator[role=tab][.mdc-tab--active.mdc-tab-indicator--active]
++                       > span.mdc-tab__ripple + div.mat-mdc-tab-ripple + span.mdc-tab__content > span.mdc-tab__text-label
++                         > span.sd-tab__label > [mat-icon.sd-tab__icon] span.sd-tab__text [span.sd-tab__badge] [mat-icon.sd-tab__close]
++                       + span.mdc-tab-indicator > span.mdc-tab-indicator__content--underline
++               > div.mat-mdc-tab-header-pagination-after
++           > div.mat-mdc-tab-body-wrapper > mat-tab-body[role=tabpanel] > div.mat-mdc-tab-body-content > sd-tab
++     Khác catalog DUY NHẤT: thẻ `<sd-tab>` vẫn nằm trong `.mat-mdc-tab-body-content` (display:contents) — HTML không
++     có ng-template, và JS các trang tìm / gỡ `sd-tab` trong nhóm. Thân tab chưa chọn: sd-tab display:none
++     (Angular lazy — thân chưa chọn rỗng). CSS: khối "sd-tab-group — catalog #c-tab" trong sd-tokens.css.
++     Sự kiện giữ nguyên: `sd-tab-change` ({index}), `sd-tab-close` (cancelable).
++     ══════════════════════════════════════════════════════════ */
++  var SD_TAB_GROUP_SEQ = 0;
+   class SdTabGroup extends HTMLElement {
+     static get observedAttributes() {
+-      /* `disableRipple` ĐÃ BỎ 2026-10-12: bảng API catalog `#c-tab` không có
+-         input này (đến từ gói npm 22.2.12 — mốc chuẩn CŨ), kit không vẽ ripple,
+-         và class `sd-tab-group--no-ripple` nó gắn ra **không có một rule CSS
+-         nào**. Nhận rồi chẳng làm gì. Rule 18 — cùng lượt với `sd-stepper`. */
++      /* `disableRipple` / `autoId`: bảng API catalog `#c-tab` không có (Rule 18, 2026-10-12) — kit không nhận. */
+       return ['variant', 'selectedindex', 'selectedIndex', 'stretchtabs', 'stretchTabs',
+               'animationduration', 'animationDuration',
+               'aligntabs', 'alignTabs', 'color',
+               'dynamicheight', 'dynamicHeight', 'headerposition', 'headerPosition'];
+-      /* `autoId` ĐÃ GỠ 2026-10-12 (Rule 18): bảng API `#c-tab` không có, markup
+-         mục đó không có `data-autoid` nào. */
+     }
+     constructor() {
+       super();
+       this._internalSelect = false;
+       this._scrollOffset = 0;
++      this._building = false;
+     }
+     connectedCallback() {
+       var self = this;
++      this._render();
+       if (!this._observer) {
+-        this._observer = new MutationObserver(function () {
+-          self._rebuildHeader();
+-        });
+-        this._observer.observe(this, { childList: true, subtree: true });
++        this._observer = new MutationObserver(function (muts) { self._onMutations(muts); });
+       }
+-      this._render();
+-      this._syncSelection();
+-      requestAnimationFrame(function () {
+-        self._positionIndicator();
+-        self._updateScrollState();
+-        self._scrollSelectedIntoView();
+-      });
++      this._observer.observe(this, { childList: true, subtree: true });
+       if (!this._resizeBound) {
+-        this._resizeBound = function () {
+-          self._positionIndicator();
+-          self._updateScrollState();
+-        };
++        this._resizeBound = function () { self._updateScrollState(); };
+         window.addEventListener('resize', this._resizeBound);
+       }
+-      // ResizeObserver bắt cả trường hợp khung đổi bề rộng KHÔNG do resize
+-      // cửa sổ (sidebar thu gọn, splitter kéo...) - window resize không đủ,
+-      // vì overflow phụ thuộc bề rộng khung chứa chứ không phải viewport.
+       if (!this._resizeObserver && typeof ResizeObserver !== 'undefined') {
+-        this._resizeObserver = new ResizeObserver(function () {
+-          self._positionIndicator();
+-          self._updateScrollState();
+-        });
++        this._resizeObserver = new ResizeObserver(function () { self._updateScrollState(); });
+         this._resizeObserver.observe(this);
+-        /* Theo dõi cả thanh tab: nhãn đổi bề ngang khi webfont (Roboto) tải xong
+-           sau lần dựng đầu → gạch chân phải đo lại, nếu không nó rộng/lệch theo
+-           font dự phòng (đo được lệch 7px trên tab thứ hai, 2026-10-12). */
+-        if (this._track) this._resizeObserver.observe(this._track);
++        if (this._labels) this._resizeObserver.observe(this._labels);
+       }
+       if (document.fonts && document.fonts.ready && !this._fontsHooked) {
+         this._fontsHooked = true;
+-        document.fonts.ready.then(function () { self._positionIndicator(); self._updateScrollState(); });
+-        if (document.fonts.addEventListener) {
+-          document.fonts.addEventListener('loadingdone', function () { if (self.isConnected) { self._positionIndicator(); self._updateScrollState(); } });
+-        }
++        document.fonts.ready.then(function () { if (self.isConnected) self._updateScrollState(); });
+       }
++      requestAnimationFrame(function () { self._updateScrollState(); self._scrollSelectedIntoView(); });
+     }
+     disconnectedCallback() {
+-      if (this._observer) {
+-        this._observer.disconnect();
+-        this._observer = null;
+-      }
+-      if (this._resizeBound) {
+-        window.removeEventListener('resize', this._resizeBound);
+-        this._resizeBound = null;
+-      }
+-      if (this._resizeObserver) {
+-        this._resizeObserver.disconnect();
+-        this._resizeObserver = null;
+-      }
++      if (this._observer) this._observer.disconnect();
++      if (this._resizeBound) { window.removeEventListener('resize', this._resizeBound); this._resizeBound = null; }
++      if (this._resizeObserver) { this._resizeObserver.disconnect(); this._resizeObserver = null; }
+     }
+     attributeChangedCallback(name) {
+-      if (!this.isConnected) return;
++      if (!this.isConnected || !this._mtg) return;
+       if (name === 'selectedindex') {
+         if (this._internalSelect) { this._internalSelect = false; return; }
+         this._syncSelection();
+-        this._positionIndicator();
+         this._scrollSelectedIntoView();
+         return;
+       }
+       this._applyAppearance();
+       this._syncSelection();
+-      this._positionIndicator();
+       this._updateScrollState();
+-      this._scrollSelectedIntoView();
+     }
+ 
++    _attr(a, b) { return this.getAttribute(a) || (b ? this.getAttribute(b) : null) || ''; }
++    _bool(a, b) {
++      var v = this.getAttribute(a);
++      if (v === null && b) v = this.getAttribute(b);
++      return v !== null && String(v) !== 'false';
++    }
++
++    /* sd-tab theo thứ tự: trong các thân tab đã dựng, rồi sd-tab mới gắn thẳng vào host */
+     _getTabs() {
+-      return this._panels ? Array.prototype.filter.call(this._panels.children, function (n) {
+-        return n.tagName === 'SD-TAB';
+-      }) : [];
++      if (!this._wrapper) return [];
++      var self = this;
++      return Array.prototype.slice.call(this._wrapper.querySelectorAll(':scope > mat-tab-body > .mat-mdc-tab-body-content > sd-tab'));
+     }
+ 
+     _getSelectedIndex() {
+@@ -5757,362 +5737,314 @@
+ 
+     _render() {
+       var self = this;
+-      if (!this._wrapper) {
+-        this._panels = document.createElement('div');
+-        this._panels.className = 'sd-tab-panels';
+-        Array.from(this.childNodes).forEach(function (n) {
+-          if (n.nodeType === 1 && n.tagName === 'SD-TAB') {
+-            self._panels.appendChild(n);
+-          }
+-        });
+-        this._wrapper = document.createElement('div');
+-        this._wrapper.className = 'sd-tab-group';
+-
+-        this._header = document.createElement('div');
+-        this._header.className = 'sd-tab-header';
+-        this._header.setAttribute('role', 'tablist');
+-
+-        this._prevBtn = document.createElement('button');
+-        this._prevBtn.type = 'button';
+-        this._prevBtn.className = 'sd-tab-pagination sd-tab-pagination--before';
+-        this._prevBtn.setAttribute('aria-label', 'Cuộn tab sang trái');
+-        this._prevBtn.innerHTML = sdMatIconHtml('chevron_left');
+-        this._prevBtn.addEventListener('click', function () { self._scrollStep(-1); });
+-
+-        this._nextBtn = document.createElement('button');
+-        this._nextBtn.type = 'button';
+-        this._nextBtn.className = 'sd-tab-pagination sd-tab-pagination--after';
+-        this._nextBtn.setAttribute('aria-label', 'Cuộn tab sang phải');
+-        this._nextBtn.innerHTML = sdMatIconHtml('chevron_right');
+-        this._nextBtn.addEventListener('click', function () { self._scrollStep(1); });
+-
+-        this._scrollViewport = document.createElement('div');
+-        this._scrollViewport.className = 'sd-tab-scroll';
+-
+-        this._track = document.createElement('div');
+-        this._track.className = 'sd-tab-track';
+-        this._scrollViewport.appendChild(this._track);
+-
+-        this._header.appendChild(this._prevBtn);
+-        this._header.appendChild(this._scrollViewport);
+-        this._header.appendChild(this._nextBtn);
+-
+-        this._wrapper.appendChild(this._header);
+-        this._wrapper.appendChild(this._panels);
+-
+-        this._indicator = document.createElement('div');
+-        this._indicator.className = 'sd-tab-indicator';
+-        this._track.appendChild(this._indicator);
+-
++      if (this._mtg && this._mtg.parentNode === this) { this._rebuildHeader(); return; }
++      // Lần đầu (hoặc trang đã gán innerHTML đè lên): gom sd-tab con trực tiếp + sd-tab trong cây cũ (bản cloneNode)
++      var pending = Array.prototype.filter.call(this.querySelectorAll('sd-tab'), function (t) {
++        return t.closest('sd-tab-group') === self;
++      });
++      if (!this._uid) this._uid = ++SD_TAB_GROUP_SEQ;
++      this._building = true;
++      try {
++        var mtg = document.createElement('mat-tab-group');
++        var header = document.createElement('mat-tab-header');
++        header.className = 'mat-mdc-tab-header';
++        var mkPag = function (side) {
++          var d = document.createElement('div');
++          d.setAttribute('aria-hidden', 'true');
++          d.className = 'mat-mdc-tab-header-pagination mat-mdc-tab-header-pagination-' + side + ' mat-ripple mat-mdc-tab-header-pagination-disabled';
++          var c = document.createElement('div'); c.className = 'mat-mdc-tab-header-pagination-chevron';
++          d.appendChild(c);
++          d.addEventListener('click', function () { self._scrollStep(side === 'before' ? -1 : 1); });
++          return d;
++        };
++        this._prevBtn = mkPag('before');
++        this._nextBtn = mkPag('after');
++        var container = document.createElement('div'); container.className = 'mat-mdc-tab-label-container';
++        var list = document.createElement('div'); list.setAttribute('role', 'tablist'); list.className = 'mat-mdc-tab-list';
++        list.style.transform = 'translateX(0px)';
++        var labels = document.createElement('div'); labels.className = 'mat-mdc-tab-labels';
++        list.appendChild(labels); container.appendChild(list);
++        header.appendChild(this._prevBtn); header.appendChild(container); header.appendChild(this._nextBtn);
++        var wrapper = document.createElement('div'); wrapper.className = 'mat-mdc-tab-body-wrapper';
++        mtg.appendChild(header); mtg.appendChild(wrapper);
++        this._mtg = mtg; this._header = header; this._container = container; this._list = list;
++        this._labels = labels; this._wrapper = wrapper;
++        labels.addEventListener('click', function (e) { self._onLabelClick(e); });
++        labels.addEventListener('keydown', function (e) { self._onKeydown(e); });
+         this.innerHTML = '';
+-        this.appendChild(this._wrapper);
++        pending.forEach(function (t) { self._wrapper.appendChild(self._makeBody(t)); });
++        this.appendChild(mtg);
++      } finally {
++        this._building = false;
+       }
+       this._applyAppearance();
+       this._rebuildHeader();
+     }
+ 
+-    _attr(a, b) { return this.getAttribute(a) || (b ? this.getAttribute(b) : null) || ''; }
+-    _bool(a, b) {
+-      var v = this.getAttribute(a);
+-      if (v === null && b) v = this.getAttribute(b);
+-      return v !== null && String(v) !== 'false';
++    _makeBody(tab) {
++      var body = document.createElement('mat-tab-body');
++      body.setAttribute('role', 'tabpanel');
++      body.className = 'mat-mdc-tab-body';
++      var content = document.createElement('div');
++      content.className = 'mat-mdc-tab-body-content';
++      body.appendChild(content);
++      content.appendChild(tab);
++      return body;
++    }
++
++    _onMutations(muts) {
++      if (this._building) return;
++      var self = this, relevant = false;
++      for (var i = 0; i < muts.length && !relevant; i++) {
++        var m = muts[i];
++        if (m.target === this) { relevant = true; break; }
++        var lists = [m.addedNodes, m.removedNodes];
++        for (var k = 0; k < 2 && !relevant; k++) {
++          for (var j = 0; j < lists[k].length; j++) {
++            if (lists[k][j].nodeName === 'SD-TAB' && (k === 1 || lists[k][j].closest('sd-tab-group') === self)) { relevant = true; break; }
++          }
++        }
++      }
++      if (relevant) this._render();
+     }
+ 
+     _applyAppearance() {
+-      if (!this._wrapper) return;
++      if (!this._mtg) return;
+       var variant = this.getAttribute('variant') || 'line';
+-      /* Mặc định THẬT (tab-group.component.ts): stretchTabs = input(true),
+-         animationDuration = input('500ms'). Bản trước đoán false/300ms vì mọi
+-         demo Portal đều truyền tường minh — đọc source map mới thấy (2026-10-10). */
++      /* Mặc định THẬT (tab-group.component.ts): stretchTabs = input(true), animationDuration = input('500ms'). */
+       var stretch = sdFlagDefaultTrue(this, ['stretchTabs', 'stretchtabs']);
+       var duration = this.getAttribute('animationDuration') || this.getAttribute('animationduration') || '500ms';
+-
+-      /* 4 input bổ sung theo bảng API catalog `#c-tab`, rà soát 2026-10-10,
+-         sửa lại 2026-10-12.
+-         alignTabs 'start'|'center'|'end' (mặc định start) · color 6 màu
+-         (mặc định primary) · headerPosition 'above'|'below' (mặc định above) ·
+-         dynamicHeight.
+-         `color` CHỈ đổi gạch chân + badge. Chữ tab đang chọn ở biến thể `line`
+-         VẪN là #AE7129: catalog ghi rõ "color=success chỉ đổi màu gạch chân và
+-         badge; chữ tab active vẫn theo token Material". Vì vậy chữ đọc biến
+-         riêng `--sd-tab-active-label-text-color`, không đọc
+-         `--sd-tab-label-active-color` (biến này còn dùng cho nền viên pills và
+-         chữ ô segmented, nên `color` vẫn tác động ở 2 biến thể đó).
+-         `disableRipple` ĐÃ BỎ — xem chú thích ở observedAttributes. */
+       var align = (this._attr('alignTabs', 'aligntabs') || 'start').toLowerCase();
+       if (['start', 'center', 'end'].indexOf(align) < 0) align = 'start';
+       var color = this.getAttribute('color') || 'primary';
+-      var headerPos = (this._attr('headerPosition', 'headerposition') || 'above').toLowerCase();
+-      if (headerPos !== 'below') headerPos = 'above';
+-
+-      this.classList.toggle('sd-tab-group--align-center', align === 'center');
+-      this.classList.toggle('sd-tab-group--align-end', align === 'end');
+-      this.classList.toggle('sd-tab-group--header-below', headerPos === 'below');
+-      this.classList.toggle('sd-tab-group--dynamic-height', this._bool('dynamicHeight', 'dynamicheight'));
+-      /* `sd-tab-group--no-ripple` đã bỏ cùng input `disableRipple` (2026-10-12). */
+-      /* color đổi đúng bộ 4 custom property mà thẻ host đã phơi sẵn
+-         (xem khối sd-tab-group trong sd-tokens.css) — không đặt tên biến mới. */
++      var below = (this._attr('headerPosition', 'headerposition') || 'above').toLowerCase() === 'below';
++      var cls = 'mat-mdc-tab-group sd-tab-group mat-primary';
++      if (stretch) cls += ' mat-mdc-tab-group-stretch-tabs';
++      if (below) cls += ' mat-mdc-tab-group-inverted-header';
++      if (this._bool('dynamicHeight', 'dynamicheight')) cls += ' mat-mdc-tab-group-dynamic-height';
++      this._mtg.className = cls;
++      this._mtg.setAttribute('mat-align-tabs', align);
++      this._mtg.style.setProperty('--mat-tab-animation-duration', duration);
++      /* Biến thể là lớp trên CHÍNH thẻ host như catalog (`sd-tab-group.sd-tab-group--pills`) */
++      this.classList.toggle('sd-tab-group--pills', variant === 'pills');
++      this.classList.toggle('sd-tab-group--segmented', variant === 'segmented');
++      /* color: catalog khai inline trên host đúng bốn biến này (color="success" → var(--sd-success)…) */
+       this.style.setProperty('--sd-tab-indicator-color', 'var(--sd-' + color + ')');
+       this.style.setProperty('--sd-tab-label-active-color', 'var(--sd-' + color + ')');
+       this.style.setProperty('--sd-tab-badge-bg', 'var(--sd-' + color + '-light)');
+       this.style.setProperty('--sd-tab-badge-color', 'var(--sd-' + color + ')');
+-
+-      // Class bien the phai nam tren CHINH the <sd-tab-group>, khong phai tren div
+-      // boc ben trong: toan bo CSS o sd-tokens.css deu viet dang
+-      // `sd-tab-group.sd-tab-group--segmented .sd-tab-header`, tuc doi ca ten the
+-      // lan class tren cung mot phan tu. Gan vao wrapper thi selector khong bao gio
+-      // khop, va ca ba bien the pills/segmented/stretch deu ra giong het line.
+-      this.classList.toggle('sd-tab-group--pills', variant === 'pills');
+-      this.classList.toggle('sd-tab-group--segmented', variant === 'segmented');
+-      this.classList.toggle('sd-tab-group--stretch', stretch);
+-      this._wrapper.style.setProperty('--sd-tab-animation-duration', duration);
+     }
+ 
++    /* Tên giữ như bản cũ (sd-tab gọi khi đổi label/icon/badge/disabled/closable) */
+     _rebuildHeader() {
+-      if (!this._header || !this.isConnected) return;
++      if (!this._labels || this._building || !this.isConnected) return;
+       var self = this;
+-      var tabs = this._getTabs();
+-      var track = this._track;
+-      var keepIndicator = this._indicator;
+-      var observer = this._observer;
+-      // Ngắt observer quanh lúc sửa header, nếu không mutation trong header
+-      // sẽ kích hoạt lại chính _rebuildHeader thành vòng lặp vô hạn.
+-      if (observer) observer.disconnect();
++      this._building = true;
+       try {
+-        track.innerHTML = '';
+-        var frag = document.createDocumentFragment();
++        // bỏ thân tab đã mất sd-tab (trang gọi tab.remove())
++        Array.prototype.slice.call(this._wrapper.children).forEach(function (b) {
++          if (!b.querySelector(':scope > .mat-mdc-tab-body-content > sd-tab')) b.remove();
++        });
++        // sd-tab mới gắn thẳng vào host → thân mới
++        Array.prototype.slice.call(this.children).forEach(function (n) {
++          if (n.nodeName === 'SD-TAB') self._wrapper.appendChild(self._makeBody(n));
++        });
++        var tabs = this._getTabs();
++        var n = tabs.length, base = 'mat-tab-group-c' + this._uid;
++        this._labels.innerHTML = '';
+         tabs.forEach(function (tab, i) {
+           var label = tab.getAttribute('label') || ('Tab ' + (i + 1));
+           var icon = tab.getAttribute('icon') || '';
+           var badge = tab.getAttribute('badge');
+-          var disabled = tab.hasAttribute('disabled');
+-          var closable = tab.hasAttribute('closable');
+-
+-          var btn = document.createElement('button');
+-          btn.type = 'button';
+-          btn.className = 'sd-tab__button';
+-          btn.setAttribute('role', 'tab');
+-          btn.disabled = disabled;
+-
+-          // Cấu trúc theo catalog @sd-angular/core 19.0.10:
+-          //   button > span.sd-tab__label (flex, gap 4px)
+-          //              > .sd-tab__icon + span.sd-tab__text + .sd-tab__badge
+-          // Bản trước nhét icon/nhãn/badge thẳng vào button và dùng
+-          // `.sd-tab__label` cho CHÍNH chữ — ngược tên với catalog.
+-          var labelWrap = document.createElement('span');
+-          labelWrap.className = 'sd-tab__label';
+-
+-          if (icon) {
+-            labelWrap.appendChild(sdMatIconEl(icon, 'sd-tab__icon'));
+-          }
+-
+-          var labelEl = document.createElement('span');
+-          labelEl.className = 'sd-tab__text';
+-          labelEl.textContent = label;
+-          labelWrap.appendChild(labelEl);
+-
++          var disabled = tab.hasAttribute('disabled') && tab.getAttribute('disabled') !== 'false';
++          var closable = tab.hasAttribute('closable') && tab.getAttribute('closable') !== 'false';
++          var el = document.createElement('div');
++          el.setAttribute('role', 'tab');
++          el.className = 'mdc-tab mat-mdc-tab mat-focus-indicator' + (disabled ? ' mat-mdc-tab-disabled' : '');
++          el.id = base + '-label-' + i;
++          el.setAttribute('tabindex', '-1');
++          el.setAttribute('aria-posinset', String(i + 1));
++          el.setAttribute('aria-setsize', String(n));
++          el.setAttribute('aria-controls', base + '-content-' + i);
++          el.setAttribute('aria-selected', 'false');
++          el.setAttribute('aria-disabled', disabled ? 'true' : 'false');
++          var rip = document.createElement('span'); rip.className = 'mdc-tab__ripple';
++          var rip2 = document.createElement('div'); rip2.className = 'mat-mdc-tab-ripple mat-ripple';
++          var content = document.createElement('span'); content.className = 'mdc-tab__content';
++          var text = document.createElement('span'); text.className = 'mdc-tab__text-label';
++          var wrap = document.createElement('span'); wrap.className = 'sd-tab__label';
++          if (icon) wrap.appendChild(sdMatIconEl(icon, 'sd-tab__icon'));
++          var t = document.createElement('span'); t.className = 'sd-tab__text'; t.textContent = label;
++          wrap.appendChild(t);
+           if (badge !== null && badge !== '') {
+-            var badgeEl = document.createElement('span');
+-            badgeEl.className = 'sd-tab__badge';
+-            badgeEl.textContent = badge;
+-            labelWrap.appendChild(badgeEl);
++            var b = document.createElement('span'); b.className = 'sd-tab__badge'; b.textContent = badge;
++            wrap.appendChild(b);
+           }
+-
+-          var closeEl = null;
+           if (closable) {
+-            closeEl = sdMatIconEl('close', 'sd-tab__close');
+-            closeEl.removeAttribute('aria-hidden');
+-            closeEl.setAttribute('role', 'button');
+-            closeEl.setAttribute('tabindex', disabled ? '-1' : '0');
+-            closeEl.setAttribute('aria-label', 'Đóng tab');
+-            closeEl.textContent = 'close';
+-            labelWrap.appendChild(closeEl);
+-          }
+-
+-          btn.appendChild(labelWrap);
+-
+-          btn.addEventListener('click', function () {
+-            self._select(i);
+-          });
+-          if (closeEl) {
+-            closeEl.addEventListener('click', function (e) {
+-              e.stopPropagation();
+-              self._closeTab(i);
+-            });
++            /* catalog: <mat-icon role="button" aria-label="Close tab" class="sd-tab__close …"> close </mat-icon> */
++            var c = sdMatIconEl('close', 'sd-tab__close');
++            c.setAttribute('role', 'button');
++            c.removeAttribute('aria-hidden');
++            c.setAttribute('aria-label', 'Close tab');
++            var cls = c.className; c.removeAttribute('class'); c.setAttribute('class', cls);  // thứ tự thuộc tính như catalog
++            c.removeAttribute('data-mat-icon-type'); c.setAttribute('data-mat-icon-type', 'font');
++            c.textContent = ' close ';
++            wrap.appendChild(c);
+           }
+-          frag.appendChild(btn);
++          text.appendChild(wrap); content.appendChild(text);
++          var ind = document.createElement('span'); ind.className = 'mdc-tab-indicator';
++          var indc = document.createElement('span'); indc.className = 'mdc-tab-indicator__content mdc-tab-indicator__content--underline';
++          ind.appendChild(indc);
++          el.appendChild(rip); el.appendChild(rip2); el.appendChild(content); el.appendChild(ind);
++          self._labels.appendChild(el);
++        });
++        // thân tab: id + aria theo thứ tự
++        Array.prototype.slice.call(this._wrapper.children).forEach(function (body, i) {
++          body.id = base + '-content-' + i;
++          body.setAttribute('aria-labelledby', base + '-label-' + i);
+         });
+-        track.appendChild(frag);
+-        if (keepIndicator) track.appendChild(keepIndicator);
+         this._syncSelection();
+-        this._updateScrollState();
+-        this._scrollSelectedIntoView();
+       } finally {
+-        if (observer) observer.observe(this, { childList: true, subtree: true });
++        this._building = false;
++        if (this._observer) this._observer.takeRecords();   // bỏ mutation do chính hàm này gây ra
+       }
++      this._updateScrollState();
++      this._scrollSelectedIntoView();
++    }
++
++    _labelEls() { return this._labels ? Array.prototype.slice.call(this._labels.children) : []; }
++
++    _onLabelClick(e) {
++      var el = e.target.closest('.mat-mdc-tab');
++      if (!el || !this._labels.contains(el)) return;
++      var i = this._labelEls().indexOf(el);
++      if (e.target.closest('.sd-tab__close')) { e.stopPropagation(); this._closeTab(i); return; }
++      this._select(i);
++    }
++
++    _onKeydown(e) {
++      var els = this._labelEls();
++      var cur = els.indexOf(document.activeElement);
++      if (cur < 0) return;
++      var k = e.key, next = cur;
++      var step = function (d) {
++        for (var j = 1; j <= els.length; j++) {
++          var c = (cur + d * j + els.length) % els.length;
++          if (!els[c].classList.contains('mat-mdc-tab-disabled')) return c;
++        }
++        return cur;
++      };
++      if (k === 'ArrowRight') next = step(1);
++      else if (k === 'ArrowLeft') next = step(-1);
++      else if (k === 'Home') { cur = -1; next = step(1); }
++      else if (k === 'End') { cur = els.length; next = step(-1); }
++      else if (k === 'Enter' || k === ' ') { e.preventDefault(); this._select(cur); return; }
++      else return;
++      e.preventDefault();
++      els.forEach(function (x, i) { x.setAttribute('tabindex', i === next ? '0' : '-1'); });
++      els[next].focus();
+     }
+ 
+     _select(i) {
+       var tabs = this._getTabs();
+       if (i < 0 || i >= tabs.length) return;
+-      if (tabs[i].hasAttribute('disabled')) return;
++      if (tabs[i].hasAttribute('disabled') && tabs[i].getAttribute('disabled') !== 'false') return;
+       this._internalSelect = true;
+       this.setAttribute('selectedindex', String(i));
+       this._internalSelect = false;
+       this._syncSelection();
+-      this._positionIndicator();
+       this._scrollSelectedIntoView();
+       this.dispatchEvent(new CustomEvent('sd-tab-change', { detail: { index: i }, bubbles: true }));
+     }
+ 
+     _syncSelection() {
+-      var tabs = this._getTabs();
+-      if (!tabs.length) return;
+-      var selected = this._getSelectedIndex();
+-      tabs.forEach(function (tab, i) {
+-        if (i === selected) {
+-          tab.classList.remove('sd-tab-panel-hidden');
+-        } else {
+-          tab.classList.add('sd-tab-panel-hidden');
+-        }
++      if (!this._labels) return;
++      var sel = this._getSelectedIndex();
++      this._labelEls().forEach(function (el, i) {
++        var on = i === sel;
++        el.classList.toggle('mdc-tab--active', on);
++        el.classList.toggle('mdc-tab-indicator--active', on);
++        el.setAttribute('tabindex', on ? '0' : '-1');
++        el.setAttribute('aria-selected', on ? 'true' : 'false');
+       });
+-      var buttons = this._track ? this._track.querySelectorAll('.sd-tab__button') : [];
+-      Array.prototype.forEach.call(buttons, function (btn, i) {
+-        var active = i === selected;
+-        btn.classList.toggle('sd-tab--active', active);
+-        btn.setAttribute('aria-selected', active ? 'true' : 'false');
++      Array.prototype.slice.call(this._wrapper.children).forEach(function (body, i) {
++        var on = i === sel;
++        body.classList.toggle('mat-mdc-tab-body-active', on);
++        body.setAttribute('aria-hidden', on ? 'false' : 'true');
++        if (on) body.removeAttribute('inert'); else body.setAttribute('inert', '');
++        var c = body.firstElementChild;
++        if (!c) return;
++        c.classList.toggle('mat-tab-body-content-left', !on && i < sel);
++        c.classList.toggle('mat-tab-body-content-right', !on && i > sel);
++        if (on) c.style.transform = 'none'; else c.style.removeProperty('transform');
++        if (!c.getAttribute('style')) c.removeAttribute('style');
+       });
+     }
+ 
+-    _positionIndicator() {
+-      if (!this._indicator || !this._track) return;
+-      var variant = this.getAttribute('variant') || 'line';
+-      var indicator = this._indicator;
+-      if (variant === 'pills' || variant === 'segmented') {
+-        indicator.style.display = 'none';
+-        return;
+-      }
+-      var selected = this._getSelectedIndex();
+-      var buttons = this._track.querySelectorAll('.sd-tab__button');
+-      var btn = buttons[selected];
+-      if (!btn) {
+-        indicator.style.display = 'none';
+-        return;
+-      }
+-      var btnRect = btn.getBoundingClientRect();
+-      // So với TRACK (không phải header): track là phần tử mang transform
+-      // cuộn - btn và track dịch chuyển cùng lúc khi cuộn nên hiệu số vị trí
+-      // giữa chúng luôn đúng bất kể đang cuộn tới đâu.
+-      var trackRect = this._track.getBoundingClientRect();
+-      if (!btnRect.width) {
+-        indicator.style.display = 'none';
+-        return;
+-      }
+-      indicator.style.display = '';
+-      indicator.style.left = (btnRect.left - trackRect.left) + 'px';
+-      indicator.style.width = btnRect.width + 'px';
+-    }
++    /* Gạch chân nay là `.mdc-tab-indicator` của từng tab (bật bằng lớp --active) — không còn phải đo.
++       Giữ tên hàm cho mã cũ gọi tới (cầu tab trang trong pattern-loader). */
++    _positionIndicator() {}
+ 
+-    /* Đo overflow: track (bề rộng theo nội dung) so với khung nhìn
+-       .sd-tab-scroll (bị cắt bởi cha .sd-tab-header). Chỉ hiện 2 nút mũi
+-       tên khi thật sự tràn - mirror MatTabHeader pagination thật, không
+-       hiện cứng lúc nào cũng có như một số thư viện tab khác. */
++    /* Phân trang như MatTabHeader: thanh nhãn tràn khung → header mang lớp
++       `mat-mdc-tab-header-pagination-controls-enabled` (hiện 2 nút), cuộn bằng transform của `.mat-mdc-tab-list`. */
+     _updateScrollState() {
+-      if (!this._scrollViewport || !this._track || !this._header) return;
+-      var viewportWidth = this._scrollViewport.clientWidth;
+-      var trackWidth = this._track.scrollWidth;
+-      var overflow = trackWidth > viewportWidth + 1;
+-      this._header.classList.toggle('sd-tab-header--scrollable', overflow);
+-      var maxScroll = Math.max(0, trackWidth - viewportWidth);
+-      if (!overflow) {
+-        this._scrollOffset = 0;
+-      } else if (this._scrollOffset > maxScroll) {
+-        this._scrollOffset = maxScroll;
+-      }
+-      this._track.style.transform = this._scrollOffset > 0 ? 'translateX(-' + this._scrollOffset + 'px)' : '';
+-      if (this._prevBtn) this._prevBtn.disabled = this._scrollOffset <= 0;
+-      if (this._nextBtn) this._nextBtn.disabled = this._scrollOffset >= maxScroll - 0.5;
++      if (!this._container || !this._labels) return;
++      var view = this._container.clientWidth;
++      var full = this._labels.scrollWidth;
++      var enabled = full > view + 1;
++      this._header.classList.toggle('mat-mdc-tab-header-pagination-controls-enabled', enabled);
++      view = this._container.clientWidth;
++      var max = Math.max(0, full - view);
++      if (!enabled) this._scrollOffset = 0;
++      else if (this._scrollOffset > max) this._scrollOffset = max;
++      this._list.style.transform = 'translateX(' + (this._scrollOffset ? -this._scrollOffset : 0) + 'px)';
++      this._prevBtn.classList.toggle('mat-mdc-tab-header-pagination-disabled', this._scrollOffset <= 0);
++      this._nextBtn.classList.toggle('mat-mdc-tab-header-pagination-disabled', !enabled || this._scrollOffset >= max - 0.5);
+     }
+ 
+-    /* direction: -1 = cuộn trái (nút before), 1 = cuộn phải (nút after).
+-       Cuộn theo TỪNG TAB (snap tới mép tab kế tiếp đang bị che một phần
+-       hoặc toàn phần) - mirror đúng cảm giác MDC tab scroller thật, không
+-       cuộn một khoảng pixel cố định vô nghĩa với nội dung tab. */
+     _scrollStep(direction) {
+-      if (!this._track || !this._scrollViewport) return;
+-      var buttons = Array.prototype.filter.call(this._track.children, function (n) {
+-        return n.classList && n.classList.contains('sd-tab__button');
+-      });
+-      if (!buttons.length) return;
+-      var viewportWidth = this._scrollViewport.clientWidth;
+-      var trackWidth = this._track.scrollWidth;
+-      var maxScroll = Math.max(0, trackWidth - viewportWidth);
+-      var next = this._scrollOffset;
++      if (!this._container) return;
++      var els = this._labelEls();
++      if (!els.length) return;
++      var view = this._container.clientWidth, max = Math.max(0, this._labels.scrollWidth - view);
++      var next = this._scrollOffset, i;
+       if (direction > 0) {
+-        for (var i = 0; i < buttons.length; i++) {
+-          if (buttons[i].offsetLeft > this._scrollOffset + 1) { next = buttons[i].offsetLeft; break; }
+-        }
+-        if (next === this._scrollOffset) next = maxScroll;
++        for (i = 0; i < els.length; i++) { if (els[i].offsetLeft > this._scrollOffset + 1) { next = els[i].offsetLeft; break; } }
++        if (next === this._scrollOffset) next = max;
+       } else {
+-        for (var j = buttons.length - 1; j >= 0; j--) {
+-          if (buttons[j].offsetLeft < this._scrollOffset - 1) { next = buttons[j].offsetLeft; break; }
+-        }
++        for (i = els.length - 1; i >= 0; i--) { if (els[i].offsetLeft < this._scrollOffset - 1) { next = els[i].offsetLeft; break; } }
+         if (next === this._scrollOffset) next = 0;
+       }
+-      this._scrollOffset = Math.max(0, Math.min(next, maxScroll));
++      this._scrollOffset = Math.max(0, Math.min(next, max));
+       this._updateScrollState();
+     }
+ 
+-    /* Cuộn sao cho tab đang chọn nằm trọn trong khung nhìn - mirror hành vi
+-       thật khi chọn (bấm, hoặc đổi selectedIndex bằng code) một tab đang bị
+-       che khuất ở ngoài rìa. */
+     _scrollSelectedIntoView() {
+-      if (!this._scrollViewport || !this._track) return;
+-      var selected = this._getSelectedIndex();
+-      var buttons = Array.prototype.filter.call(this._track.children, function (n) {
+-        return n.classList && n.classList.contains('sd-tab__button');
+-      });
+-      var btn = buttons[selected];
+-      if (!btn) return;
+-      var viewportWidth = this._scrollViewport.clientWidth;
+-      var trackWidth = this._track.scrollWidth;
+-      var maxScroll = Math.max(0, trackWidth - viewportWidth);
+-      if (maxScroll <= 0) return;
+-      var left = btn.offsetLeft;
+-      var right = left + btn.offsetWidth;
+-      var offset = this._scrollOffset;
+-      if (left < offset) {
+-        offset = left;
+-      } else if (right > offset + viewportWidth) {
+-        offset = right - viewportWidth;
+-      }
+-      offset = Math.max(0, Math.min(offset, maxScroll));
+-      if (offset !== this._scrollOffset) {
+-        this._scrollOffset = offset;
+-        this._updateScrollState();
+-      }
++      if (!this._container) return;
++      var el = this._labelEls()[this._getSelectedIndex()];
++      if (!el) return;
++      var view = this._container.clientWidth, max = Math.max(0, this._labels.scrollWidth - view);
++      if (max <= 0) return;
++      var left = el.offsetLeft, right = left + el.offsetWidth, off = this._scrollOffset;
++      if (left < off) off = left; else if (right > off + view) off = right - view;
++      off = Math.max(0, Math.min(off, max));
++      if (off !== this._scrollOffset) { this._scrollOffset = off; this._updateScrollState(); }
+     }
+ 
+     _closeTab(i) {
+       var tabs = this._getTabs();
+       var tab = tabs[i];
+-      if (!tab || tab.hasAttribute('disabled')) return;
+-      var label = tab.getAttribute('label') || '';
+-      var ev = new CustomEvent('sd-tab-close', {
+-        detail: { index: i, label: label },
+-        bubbles: true,
+-        cancelable: true
+-      });
++      if (!tab || (tab.hasAttribute('disabled') && tab.getAttribute('disabled') !== 'false')) return;
++      var ev = new CustomEvent('sd-tab-close', { detail: { index: i, label: tab.getAttribute('label') || '' }, bubbles: true, cancelable: true });
+       if (!this.dispatchEvent(ev)) return;  // trang gọi preventDefault() để chặn đóng
+       var selected = this._getSelectedIndex();
+-      tab.remove();
+-      var remaining = this._getTabs();
++      var body = tab.closest('mat-tab-body');
++      this._building = true;
++      try { if (body) body.remove(); else tab.remove(); } finally { this._building = false; if (this._observer) this._observer.takeRecords(); }
++      var remaining = this._getTabs().length;
+       var next = selected;
+-      if (selected > i) {
+-        next = selected - 1;
+-      } else if (selected >= remaining.length) {
+-        next = Math.max(0, remaining.length - 1);
+-      }
++      if (selected > i) next = selected - 1;
++      else if (selected >= remaining) next = Math.max(0, remaining - 1);
+       this._internalSelect = true;
+       this.setAttribute('selectedindex', String(next));
+       this._internalSelect = false;

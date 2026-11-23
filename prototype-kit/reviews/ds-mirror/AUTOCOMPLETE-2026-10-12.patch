@@ -1,0 +1,161 @@
+--- a/design-system/core/styles/sd-tokens.css
++++ b/design-system/core/styles/sd-tokens.css
+@@ -7324,6 +7324,10 @@
+    — nhưng 12px đó nằm TRONG khung Material vốn không có padding phải; khung của
+    kit đã có `padding: 0 15px` nên chỉ giữ gap. */
+ sd-autocomplete .sd-field-suffix-group { display: flex; align-items: center; gap: 8px; }
++/* Rà soát #c-autocomplete 2026-10-12: cụm đuôi cách chữ 12px và icon cuối cách mép
++   phải 12px (`.mat-mdc-form-field-icon-suffix{padding:0 12px}`). Kit đệm 15 + viền 1
++   = 16 → lùi −4px. Bản trước icon cách mép 16px, ô chữ rộng hơn 8px. */
++sd-autocomplete .sd-form-field:not(.sd-sm):not(.sd-lg) > .sd-field-suffix-group { margin: 0 -4px 0 12px; }
+ 
+ /* Khung bị khoá: nền --sd-black100 (catalog đặt lên .mat-mdc-text-field-wrapper,
+    kit đặt lên .sd-form-field — cùng một lớp). Luật `.sd-form-field.sd-disabled`
+@@ -7340,15 +7344,21 @@
+   left: 0;
+   right: 0;
+   background: #fff;
+-  border: 1px solid var(--sd-black200);
+-  border-radius: var(--sd-border-radius);
+-  box-shadow: 0 4px 12px rgba(0, 0, 0, .12);
++  /* catalog `--mat-autocomplete-container-*`: KHÔNG viền, bo 4px nhưng bỏ bo hai góc
++     trên khi panel mở xuống dưới, bóng mức 8 của Material. Bản trước: viền 1px xám,
++     bo đủ 4 góc, bóng nhạt 12px (rà soát 2026-10-12). */
++  border: 0;
++  border-radius: 0 0 4px 4px;
++  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, .2), 0 8px 10px 1px rgba(0, 0, 0, .14), 0 3px 14px 2px rgba(0, 0, 0, .12);
+   z-index: 1000;
+   max-height: 256px;   /* catalog: .mat-mdc-autocomplete-panel{max-height:256px} */
+   overflow-y: auto;
+   padding: 8px 0;      /* catalog: .mat-mdc-autocomplete-panel{padding:8px 0} */
+ }
+ sd-autocomplete.sd-open .sd-dropdown-menu { display: block; }
++/* Dòng gợi ý — catalog `--mat-option-*`: chữ rgba(0,0,0,.87) giãn .006rem; rê chuột
++   nền đen 4%; dòng đang chọn nền đen 12% + chữ primary. Bản trước: #212121, không
++   giãn, hover --sd-black100, đang chọn nền --sd-primary-light (rà soát 2026-10-12). */
+ sd-autocomplete .sd-dropdown-item {
+   display: flex;
+   align-items: center;
+@@ -7358,13 +7368,14 @@
+   font-size: 14px;
+   font-weight: 400;
+   line-height: 20px;
+-  color: var(--sd-black500);
++  letter-spacing: .006rem;
++  color: rgba(0, 0, 0, .87);
+   cursor: pointer;
+   transition: background .1s ease;
+ }
+-sd-autocomplete .sd-dropdown-item:hover { background: var(--sd-black100); }
++sd-autocomplete .sd-dropdown-item:hover { background: color-mix(in srgb, rgba(0, 0, 0, .87) 4%, transparent); }
+ sd-autocomplete .sd-dropdown-item.sd-selected {
+-  background: var(--sd-primary-light);
++  background: color-mix(in srgb, rgba(0, 0, 0, .87) 12%, transparent);
+   color: var(--sd-primary);
+ }
+ /* disabledField: catalog `.mdc-list-item--disabled{cursor:default;pointer-events:none}`
+--- a/design-system/preview/components/autocomplete.html
++++ b/design-system/preview/components/autocomplete.html
+@@ -35,24 +35,30 @@
+         <sd-section title="Rỗng và đã chọn">
+           <p class="text-sm text-secondary mb-2">Giá trị đã chọn hiện bằng <b>placeholder màu đen</b>, nhãn luôn nổi; nút xoá thay chỗ icon kính lúp.</p>
+           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:980px;">
+-            <sd-autocomplete label="Ngân hàng cho vay" items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete>
+-            <sd-autocomplete label="Ngân hàng cho vay" value="VCB" items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete>
++            <sd-autocomplete label="Ngân hàng cho vay" items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete>
++            <sd-autocomplete label="Ngân hàng cho vay" value="VCB" items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete>
++          </div>
++        </sd-section>
++
++        <sd-section title="Panel gợi ý đang mở" subtitle="đang gõ &quot;Viet&quot;; disabledField khoá một dòng — mẫu catalog #c-autocomplete">
++          <div style="min-height:230px">
++            <div style="width:420px"><sd-autocomplete id="acCatOpen" label="Ngân hàng cho vay" items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete></div>
+           </div>
+         </sd-section>
+ 
+         <sd-section title="Bắt buộc + lỗi, disabled">
+-          <p class="text-sm text-secondary mb-2"><code>disabledField</code> khoá dòng Vietbank trong panel.</p>
++          <p class="text-sm text-secondary mb-2"><code>disabledField</code> khoá dòng VietABank trong panel (đúng mẫu catalog).</p>
+           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:980px;">
+-            <sd-autocomplete label="Ngân hàng nhận" required items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete>
+-            <sd-autocomplete label="Ngân hàng nhận" disabled value="CTG" items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete>
++            <sd-autocomplete label="Ngân hàng nhận" required items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete>
++            <sd-autocomplete label="Ngân hàng nhận" disabled value="CTG" items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete>
+           </div>
+         </sd-section>
+ 
+         <sd-section title="Chế độ xem: viewed và viewed='inline'">
+           <p class="text-sm text-secondary mb-2">Inline: <code>sd-view</code> là “mặt”, bấm để mở panel; nút xoá hiện khi rê chuột.</p>
+           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:980px;">
+-            <sd-autocomplete label="Ngân hàng cho vay" viewed="true" value="VCB" items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete>
+-            <sd-autocomplete label="Ngân hàng cho vay" viewed="inline" value="VCB" items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete>
++            <sd-autocomplete label="Ngân hàng cho vay" viewed="true" value="VCB" items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete>
++            <sd-autocomplete label="Ngân hàng cho vay" viewed="inline" value="VCB" items="[{&quot;code&quot;:&quot;VCB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)&quot;},{&quot;code&quot;:&quot;CTG&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Công thương Việt Nam (VietinBank)&quot;},{&quot;code&quot;:&quot;VBB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Nam Thương Tín (Vietbank)&quot;},{&quot;code&quot;:&quot;VAB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Việt Á (VietABank)&quot;,&quot;suspended&quot;:true},{&quot;code&quot;:&quot;ACB&quot;,&quot;name&quot;:&quot;Ngân hàng TMCP Á Châu (ACB)&quot;}]" valueField="code" displayField="name" disabledField="suspended"></sd-autocomplete>
+           </div>
+         </sd-section>
+ 
+@@ -77,6 +83,17 @@
+ <script src="../../core/js/shell.js"></script>
+ <script src="../shared-nav.js"></script>
+ <script>
++  /* Mẫu catalog: panel mở sẵn với chuỗi đang gõ "Viet" */
++  (function () {
++    var ac = document.getElementById('acCatOpen'); if (!ac) return;
++    var inp = ac.querySelector('input'); if (!inp) return;
++    inp.value = 'Viet';
++    inp.dispatchEvent(new Event('input', { bubbles: true }));
++  })();
++  /* Mẫu catalog: ô bắt buộc ở trạng thái touched (hiện lỗi) */
++  document.querySelectorAll('sd-autocomplete[required]').forEach(function (el) { el._touched = true; el._render(); });
++</script>
++<script>
+   (function () {
+     var BANKS = [
+       { code: 'VCB', name: 'Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)' },
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -8,6 +8,24 @@
+ 
+ > Đợt mirror đang làm dở. **Mọi thay đổi của các lần update tiếp theo bồi thẳng vào entry này**, không mở version mới. Chỉ khi Builder nói "kết thúc update" mới bỏ chữ ĐANG MỞ và chốt version.
+ 
++### Changed — `#c-autocomplete`: `sd-autocomplete` khớp catalog — panel gợi ý, dòng gợi ý, cụm icon đuôi
++
++Builder: *„Tiếp tục phần Autocomplete“*. Đo 7 ô mẫu của catalog (rỗng · đã chọn · panel
++đang mở với „Viet“ · bắt buộc lỗi · disabled · viewed · viewed="inline") và 4 dòng gợi ý
++trong panel. Sau khi sửa, ô và panel trùng toạ độ từng mốc: chữ dòng gợi ý, icon kính lúp,
++nút ×, viền/bo/bóng panel. Còn lại: vùng 20px dưới khung (chờ Builder quyết), hộp `<input>`
++dùng chung của khung form (tâm chữ lệch 0.25px — đã ghi từ trước).
++
++| | Catalog | Kit trước | Kit nay |
++|---|---|---|---|
++| Panel gợi ý | không viền, bo `0 0 4px 4px` (mở xuống), bóng mức 8 của Material | viền 1px xám, bo đủ 4 góc, bóng nhạt `0 4px 12px` | khớp |
++| Dòng gợi ý | chữ rgba(0,0,0,.87) giãn .006rem; hover nền đen 4%; đang chọn nền đen 12% + chữ primary | #212121 không giãn; hover --sd-black100; đang chọn nền --sd-primary-light | khớp |
++| Cụm icon đuôi | cách chữ 12px, icon cuối cách mép phải 12px | sát chữ, cách mép 16px | khớp |
++
++Preview `autocomplete.html`: thêm mục „Panel gợi ý đang mở“ (gõ sẵn „Viet“), ô bắt buộc hiện
++lỗi sẵn như catalog; dòng bị khoá bởi `disabledField` đổi sang **VietABank** đúng dữ liệu
++mẫu của catalog (trước kit khoá Vietbank). 97 trang, 0 lỗi JS.
++
+ ### Decided — `sd-chip-calendar` disabled: giữ nút ×, theo catalog
+ 
+ Builder: *„trong Core UI catalog ghi là không rồi mà, mọi thứ tuân theo Core UI“*.
+--- a/_memory/known-gaps.md
++++ b/_memory/known-gaps.md
+@@ -110,6 +110,17 @@
+ | Icon `cleaning_services` / `settings` / `expand_less` | `material-icons` (filled) | `material-icons-outlined` | Rule 4 của `AGENTS.md`. Cùng vị trí, cùng cỡ; riêng `settings` nhìn rỗng ruột hơn |
+ | Icon nút đầu trong header ("xoá bộ lọc") | `cleaning_services` (cây chổi) | **`restart_alt`** (mũi tên vòng), `aria-label="Đặt lại bộ lọc"` | **QUYẾT ĐỊNH CỦA BUILDER 2026-10-12** — *"đổi icon trên external filter thành icon reset"*. Lệch catalog CÓ CHỦ Ý, đừng sửa ngược. Cỡ 16px, vị trí, màu, kiểu nút giữ đúng catalog |
+ 
++## `sd-autocomplete` — rà soát `#c-autocomplete` 2026-10-12
++
++| Chỗ | Catalog | Kit | Vì sao |
++|---|---|---|---|
++| `[addable]` · `(sdAdd)` | có trong API, **không có ví dụ** | không dựng | Chỉ có tên — catalog không ghi trông ra sao (cùng nguyên tắc „catalog im lặng thì không tự thêm“) |
++| `sdItemDef` · `sdViewDef` · `[form]` | có | không dựng | Template / Reactive Forms (đã ghi từ trước) |
++| Panel | nằm trong `cdk-overlay-container` ở `body` | con của host, định vị tuyệt đối | Đã ghi từ trước; toạ độ trùng |
++| Dòng bị khoá | `opacity:.38` trên chữ | `opacity:.38` trên cả dòng | Dòng không có nền → nhìn như nhau |
++| `inlineError` · `autoId` · `name` | không có trong API | có | `inlineError` / `autoId` gỡ ở lượt dọn chung; `name` ngoại lệ 1 |
++| Trạng thái loading (`mat-spinner`) | catalog ghi „không dựng“ | không có | — |
++
+ ## `sd-checkbox` — rà soát `#c-checkbox` 2026-10-12
+ 
+ | Chỗ | Catalog | Kit | Vì sao |
