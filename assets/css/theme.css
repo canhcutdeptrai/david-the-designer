@@ -29,7 +29,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(57.61% 0.2508 258.23);          /* #006bff — tương phản 4.61 trên trắng */
+  --primary: oklch(0.511 0.262 276.966);           /* indigo-600 #4f39f6 — tương phản 6.3 trên trắng */
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.97 0 0);                    /* #f5f5f5 */
   --secondary-foreground: oklch(0.205 0 0);        /* #171717 */
@@ -79,8 +79,8 @@
   --focus-ring-destructive: 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent);
 
   /* ── 2. Mở rộng của kit — màu trạng thái (Tailwind v4) ───── */
-  --primary-subtle: oklch(0.97 0.014 254.604);     /* blue-50  #eff6ff — nền chọn / hover */
-  --primary-strong: oklch(0.5 0.2508 258.23);      /* #0051ed — hover / nhấn của primary */
+  --primary-subtle: oklch(0.962 0.018 272.314);    /* indigo-50 #eef2ff — nền chọn / hover */
+  --primary-strong: oklch(0.457 0.24 277.023);     /* indigo-700 #432dd7 — hover / nhấn của primary */
 
   --info: oklch(0.546 0.245 262.881);              /* blue-600  #155dfc */
   --info-subtle: oklch(0.97 0.014 254.604);        /* blue-50 */

@@ -12,9 +12,9 @@
      catalog @sd-angular/core 19.0.10 chỉ còn là mốc API + hành vi component.
      Giá trị hex trong var(..., #hex) là dự phòng khi trang không nạp tokens.css.
      Bảng cũ (portal-fins: primary #ae7129, info #1890ff, error #f82c13…) — CHANGELOG v2.12.0, mục „THEME components.build“. --- */
-  --sd-primary:         var(--primary, #006bff);
-  --sd-primary-light:   var(--primary-subtle, #eff6ff);
-  --sd-primary-dark:    var(--primary-strong, #0051ed);
+  --sd-primary:         var(--primary, #4f39f6);
+  --sd-primary-light:   var(--primary-subtle, #eef2ff);
+  --sd-primary-dark:    var(--primary-strong, #432dd7);
 
   --sd-info:            var(--info, #155dfc);
   --sd-info-light:      var(--info-subtle, #eff6ff);
