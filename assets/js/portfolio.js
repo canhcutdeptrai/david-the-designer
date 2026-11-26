@@ -26,9 +26,39 @@
   }
 
   // Chữ do script sinh ra (header, footer, thẻ, case study)
-  function ui(key) {
-    var table = i18n.ui[lang] || {};
+  function uiIn(code, key) {
+    var table = i18n.ui[code] || {};
     return table[key] != null ? table[key] : (i18n.ui.en[key] != null ? i18n.ui.en[key] : key);
+  }
+
+  function ui(key) {
+    return uiIn(lang, key);
+  }
+
+  // Giữ chỗ cho cả hai ngôn ngữ: bản đang chọn hiện ra, bản còn lại nằm chồng lên cùng ô
+  // nhưng ẩn (visibility: hidden). Ô luôn rộng và cao bằng bản dài hơn, nên đổi ngôn ngữ
+  // không làm bố cục xê dịch. Style: .i18n-stack trong portfolio.css
+  function stack(enHtml, viHtml) {
+    var current = lang === 'vi' ? viHtml : enHtml;
+    if (enHtml === viHtml) return current;
+    return '<span class="i18n-stack"><span>' + current + '</span>' +
+      '<span class="i18n-alt" aria-hidden="true">' + (lang === 'vi' ? enHtml : viHtml) + '</span></span>';
+  }
+
+  function iconHtml(name) {
+    return '<span class="material-icons-outlined" aria-hidden="true">' + escapeHtml(name) + '</span>';
+  }
+
+  // Nhãn kèm icon: icon nằm trong từng lớp giữ chỗ, nên cụm "nhãn + icon" luôn liền nhau
+  function withIcons(html, before, after) {
+    return (before ? iconHtml(before) + ' ' : '') + html + (after ? ' ' + iconHtml(after) : '');
+  }
+
+  function uiText(key, iconAfter, iconBefore) {
+    return stack(
+      withIcons(escapeHtml(uiIn('en', key)), iconBefore, iconAfter),
+      withIcons(escapeHtml(uiIn('vi', key)), iconBefore, iconAfter)
+    );
   }
 
   // Giá trị trong portfolio-data.js: chuỗi thường hoặc { en, vi }
@@ -48,7 +78,16 @@
       .replace(/'/g, '&#039;');
   }
 
+  // Như tr() nhưng trả về HTML đã escape và có giữ chỗ cho ngôn ngữ còn lại
   function text(value) {
+    if (value && typeof value === 'object' && 'en' in value) {
+      return stack(escapeHtml(value.en), escapeHtml(value.vi != null ? value.vi : value.en));
+    }
+    return escapeHtml(value);
+  }
+
+  // Tag và chip co theo đúng nhãn đang hiện, không giữ chỗ cho ngôn ngữ còn lại
+  function plain(value) {
     return escapeHtml(tr(value));
   }
 
@@ -64,10 +103,32 @@
     return lang === 'vi' && i18n.vi[key] != null ? i18n.vi[key] : fallback;
   }
 
+  function listItems(html) {
+    var holder = document.createElement('ul');
+    holder.innerHTML = html;
+    return Array.prototype.map.call(holder.children, function (item) { return item.innerHTML; });
+  }
+
+  // Danh sách: giữ chỗ theo từng dòng <li>, vì <ul> chỉ được chứa <li>
+  function stackList(enHtml, viHtml) {
+    var en = listItems(enHtml);
+    var vi = listItems(viHtml);
+    if (en.length !== vi.length) return lang === 'vi' ? viHtml : enHtml;
+    return en.map(function (item, index) { return '<li>' + stack(item, vi[index]) + '</li>'; }).join('');
+  }
+
   function applyStaticText() {
     each('[data-i18n]', function (node) {
       if (!sourceHtml.has(node)) sourceHtml.set(node, node.innerHTML);
-      var next = translated(node.getAttribute('data-i18n'), sourceHtml.get(node));
+      var en = sourceHtml.get(node);
+      var vi = i18n.vi[node.getAttribute('data-i18n')];
+      var before = node.getAttribute('data-i18n-icon-before');
+      var after = node.getAttribute('data-i18n-icon');
+      var next;
+      if (vi == null) vi = en;
+      if (node.tagName === 'TITLE' || node.matches('.p-tag, .filter-chip')) next = lang === 'vi' ? vi : en;
+      else if (node.tagName === 'UL' || node.tagName === 'OL') next = stackList(en, vi);
+      else next = stack(withIcons(en, before, after), withIcons(vi, before, after));
       if (node.innerHTML !== next) node.innerHTML = next;
     });
     each('[data-i18n-attr]', function (node) {
@@ -111,10 +172,10 @@
     var headerHost = document.querySelector('[data-site-header]');
     var footerHost = document.querySelector('[data-site-footer]');
     var routes = [
-      { file: 'index.html', label: ui('nav.home') },
-      { file: 'work.html', label: ui('nav.work') },
-      { file: 'services.html', label: ui('nav.services') },
-      { file: 'profile.html', label: ui('nav.profile') }
+      { file: 'index.html', key: 'nav.home' },
+      { file: 'work.html', key: 'nav.work' },
+      { file: 'services.html', key: 'nav.services' },
+      { file: 'profile.html', key: 'nav.profile' }
     ];
     var current = currentPage();
     if (current === 'case-study.html') current = 'work.html';
@@ -128,16 +189,16 @@
               '<span class="site-brand-copy"><strong>' + escapeHtml(data.person.name) + '</strong><span>Product · UX · Business · AI</span></span>' +
             '</a>' +
             '<button class="site-nav-menu" type="button" aria-expanded="false" aria-controls="site-navigation" data-nav-toggle>' +
-              '<span class="material-icons-outlined" aria-hidden="true">menu</span><span class="sr-only">' + escapeHtml(ui('nav.toggle')) + '</span>' +
+              '<span class="material-icons-outlined" aria-hidden="true">menu</span><span class="sr-only">' + uiText('nav.toggle') + '</span>' +
             '</button>' +
             '<nav class="site-nav-links" id="site-navigation" aria-label="' + escapeHtml(ui('nav.main')) + '">' +
               routes.map(function (route) {
                 var active = route.file === current;
-                return '<a class="site-nav-link" href="' + pageHref(route.file) + '"' + (active ? ' aria-current="page"' : '') + '>' + escapeHtml(route.label) + '</a>';
+                return '<a class="site-nav-link" href="' + pageHref(route.file) + '"' + (active ? ' aria-current="page"' : '') + '>' + uiText(route.key) + '</a>';
               }).join('') +
             '</nav>' +
             languageSwitch() +
-            '<a class="p-button primary" href="' + pageHref('contact.html') + '"' + (current === 'contact.html' ? ' aria-current="page"' : '') + '>' + escapeHtml(ui('cta.contact')) + '</a>' +
+            '<a class="p-button primary" href="' + pageHref('contact.html') + '"' + (current === 'contact.html' ? ' aria-current="page"' : '') + '>' + uiText('cta.contact') + '</a>' +
           '</div>' +
         '</header>';
     }
@@ -147,13 +208,13 @@
         '<footer class="site-footer">' +
           '<div class="portfolio-wrap">' +
             '<div class="site-footer-grid">' +
-              '<div><p class="section-kicker">' + escapeHtml(ui('footer.kicker')) + '</p><h2>' + escapeHtml(ui('footer.title')) + '</h2><p>' + escapeHtml(ui('footer.text')) + '</p><div class="portfolio-actions"><a class="p-button primary" href="' + pageHref('contact.html') + '">' + escapeHtml(ui('cta.contact')) + ' <span class="material-icons-outlined" aria-hidden="true">arrow_forward</span></a></div></div>' +
-              '<div><p class="section-kicker">' + escapeHtml(ui('footer.explore')) + '</p><ul class="footer-list">' +
-                routes.map(function (route) { return '<li><a href="' + pageHref(route.file) + '">' + escapeHtml(route.label) + '</a></li>'; }).join('') +
+              '<div><p class="section-kicker">' + uiText('footer.kicker') + '</p><h2>' + uiText('footer.title') + '</h2><p>' + uiText('footer.text') + '</p><div class="portfolio-actions"><a class="p-button primary" href="' + pageHref('contact.html') + '">' + uiText('cta.contact', 'arrow_forward') + '</a></div></div>' +
+              '<div><p class="section-kicker">' + uiText('footer.explore') + '</p><ul class="footer-list">' +
+                routes.map(function (route) { return '<li><a href="' + pageHref(route.file) + '">' + uiText(route.key) + '</a></li>'; }).join('') +
               '</ul></div>' +
-              '<div><p class="section-kicker">' + escapeHtml(ui('footer.contact')) + '</p><ul class="footer-list"><li><a href="mailto:' + escapeHtml(data.person.email) + '">' + escapeHtml(data.person.email) + '</a></li><li>' + text(data.person.location) + '</li><li>' + text(data.person.languages) + '</li></ul></div>' +
+              '<div><p class="section-kicker">' + uiText('footer.contact') + '</p><ul class="footer-list"><li><a href="mailto:' + escapeHtml(data.person.email) + '">' + escapeHtml(data.person.email) + '</a></li><li>' + text(data.person.location) + '</li><li>' + text(data.person.languages) + '</li></ul></div>' +
             '</div>' +
-            '<div class="site-footer-bottom"><span>© ' + new Date().getFullYear() + ' ' + escapeHtml(data.person.name) + '</span><span>' + escapeHtml(ui('footer.note')) + '</span></div>' +
+            '<div class="site-footer-bottom"><span>© ' + new Date().getFullYear() + ' ' + escapeHtml(data.person.name) + '</span><span>' + uiText('footer.note') + '</span></div>' +
           '</div>' +
         '</footer>';
     }
@@ -170,18 +231,21 @@
     '</div>';
   }
 
-  function disciplineLabels(project, prefix) {
-    return project.disciplines.map(function (id) { return ui(prefix + '.' + id); }).join(' · ');
+  function disciplineLabels(project, prefix, reserve) {
+    function joined(code) {
+      return escapeHtml(project.disciplines.map(function (id) { return uiIn(code, prefix + '.' + id); }).join(' · '));
+    }
+    return reserve ? stack(joined('en'), joined('vi')) : joined(lang);
   }
 
   function projectCard(project, index, featured) {
     return '<a class="project-card project-card-index-' + (index + 1) + (featured ? ' project-card-featured' : '') + '" href="' + pageHref('case-study.html') + '?project=' + encodeURIComponent(project.slug) + '" data-project-disciplines="' + escapeHtml(project.disciplines.join(' ')) + '">' +
       '<div class="project-visual project-visual-' + escapeHtml(project.visual) + '">' + renderVisual(project) + '</div>' +
       '<div class="project-content">' +
-        '<div class="project-meta"><span class="project-type">' + text(project.timeframe) + '</span><span class="p-tag">' + escapeHtml(disciplineLabels(project, 'short')) + '</span></div>' +
+        '<div class="project-meta"><span class="project-type">' + text(project.timeframe) + '</span><span class="p-tag">' + disciplineLabels(project, 'short') + '</span></div>' +
         '<h3>' + text(project.title) + '</h3>' +
         '<p>' + text(project.summary) + '</p>' +
-        '<span class="project-link">' + escapeHtml(ui('card.view')) + ' <span class="material-icons-outlined" aria-hidden="true">arrow_forward</span></span>' +
+        '<span class="project-link">' + uiText('card.view', 'arrow_forward') + '</span>' +
       '</div>' +
     '</a>';
   }
@@ -221,7 +285,7 @@
           '<span class="material-icons-outlined" aria-hidden="true">' + escapeHtml(capability.icon) + '</span>' +
           '<h3>' + text(capability.title) + '</h3>' +
           '<p>' + text(capability.statement) + '</p>' +
-          '<div class="tag-list">' + capability.skills.slice(0, 3).map(function (skill) { return '<span class="p-tag">' + text(skill) + '</span>'; }).join('') + '</div>' +
+          '<div class="tag-list">' + capability.skills.slice(0, 3).map(function (skill) { return '<span class="p-tag">' + plain(skill) + '</span>'; }).join('') + '</div>' +
         '</article>';
       }).join('');
     });
@@ -260,7 +324,7 @@
 
   // ── Case study ───────────────────────────────────────────
   function caseHeading(number, labelKey, titleKey, lead) {
-    return '<div class="case-heading"><div><p class="section-kicker">' + number + ' · ' + escapeHtml(ui(labelKey)) + '</p><h2>' + escapeHtml(ui(titleKey)) + '</h2></div><p>' + lead + '</p></div>';
+    return '<div class="case-heading"><div><p class="section-kicker">' + number + ' · ' + uiText(labelKey) + '</p><h2>' + uiText(titleKey) + '</h2></div><p>' + lead + '</p></div>';
   }
 
   function renderCaseStudy() {
@@ -271,23 +335,23 @@
     var sections = ['challenge', 'contribution', 'deliverables', 'outcomes'];
     document.title = tr(project.title) + ui('case.titleSuffix');
     host.innerHTML =
-      '<header class="case-hero"><div class="portfolio-wrap"><p class="portfolio-eyebrow">' + escapeHtml(ui('case.eyebrow')) + ' · ' + text(project.timeframe) + '</p><h1>' + text(project.title) + '</h1><p>' + text(project.summary) + '</p>' +
+      '<header class="case-hero"><div class="portfolio-wrap"><p class="portfolio-eyebrow">' + uiText('case.eyebrow') + ' · ' + text(project.timeframe) + '</p><h1>' + text(project.title) + '</h1><p>' + text(project.summary) + '</p>' +
         '<dl class="case-facts">' +
-          '<div class="case-fact"><dt>' + escapeHtml(ui('case.role')) + '</dt><dd>' + text(project.role) + '</dd></div>' +
-          '<div class="case-fact"><dt>' + escapeHtml(ui('case.focus')) + '</dt><dd>' + escapeHtml(disciplineLabels(project, 'focus')) + '</dd></div>' +
-          '<div class="case-fact"><dt>' + escapeHtml(ui('case.timeline')) + '</dt><dd>' + text(project.timeframe) + '</dd></div>' +
-          '<div class="case-fact"><dt>' + escapeHtml(ui('case.disclosure')) + '</dt><dd>' + escapeHtml(ui('case.disclosureValue')) + '</dd></div>' +
+          '<div class="case-fact"><dt>' + uiText('case.role') + '</dt><dd>' + text(project.role) + '</dd></div>' +
+          '<div class="case-fact"><dt>' + uiText('case.focus') + '</dt><dd>' + disciplineLabels(project, 'focus', true) + '</dd></div>' +
+          '<div class="case-fact"><dt>' + uiText('case.timeline') + '</dt><dd>' + text(project.timeframe) + '</dd></div>' +
+          '<div class="case-fact"><dt>' + uiText('case.disclosure') + '</dt><dd>' + uiText('case.disclosureValue') + '</dd></div>' +
         '</dl>' +
       '</div></header>' +
       '<section class="portfolio-section"><div class="portfolio-wrap case-layout">' +
         '<nav class="case-index" aria-label="' + escapeHtml(ui('case.nav')) + '"><ol>' +
-          sections.map(function (id, index) { return '<li><a href="#' + id + '">0' + (index + 1) + ' · ' + escapeHtml(ui('case.' + id)) + '</a></li>'; }).join('') +
+          sections.map(function (id, index) { return '<li><a href="#' + id + '">0' + (index + 1) + ' · ' + uiText('case.' + id) + '</a></li>'; }).join('') +
         '</ol></nav>' +
         '<div class="case-content">' +
-          '<section class="case-block" id="challenge">' + caseHeading('01', 'case.challenge', 'case.challengeTitle', text(project.challenge)) + '<article class="content-card"><h3>' + escapeHtml(ui('case.context')) + '</h3><p>' + text(project.summary) + '</p><p><strong>' + escapeHtml(ui('case.myRole')) + '</strong> ' + text(project.role) + '</p></article></section>' +
-          '<section class="case-block" id="contribution">' + caseHeading('02', 'case.contribution', 'case.contributionTitle', escapeHtml(ui('case.contributionLead'))) + '<article class="content-card"><h3>' + escapeHtml(ui('case.responsibilities')) + '</h3>' + listMarkup(project.contributions) + '</article></section>' +
-          '<section class="case-block" id="deliverables">' + caseHeading('03', 'case.deliverables', 'case.deliverablesTitle', escapeHtml(ui('case.deliverablesLead'))) + '<div class="tag-list">' + project.deliverables.map(function (item) { return '<span class="p-tag">' + text(item) + '</span>'; }).join('') + '</div></section>' +
-          '<section class="case-block" id="outcomes">' + caseHeading('04', 'case.outcomes', 'case.outcomesTitle', escapeHtml(ui('case.outcomesLead'))) + '<article class="content-card"><h3>' + escapeHtml(ui('case.impact')) + '</h3>' + listMarkup(project.outcomes) + '</article><div class="note-box mt-16">' + text(project.disclosure) + '</div><div class="portfolio-actions"><a class="p-button primary" href="' + pageHref('work.html') + '"><span class="material-icons-outlined" aria-hidden="true">arrow_back</span> ' + escapeHtml(ui('case.back')) + '</a></div></section>' +
+          '<section class="case-block" id="challenge">' + caseHeading('01', 'case.challenge', 'case.challengeTitle', text(project.challenge)) + '<article class="content-card"><h3>' + uiText('case.context') + '</h3><p>' + text(project.summary) + '</p><p><strong>' + uiText('case.myRole') + '</strong> ' + text(project.role) + '</p></article></section>' +
+          '<section class="case-block" id="contribution">' + caseHeading('02', 'case.contribution', 'case.contributionTitle', uiText('case.contributionLead')) + '<article class="content-card"><h3>' + uiText('case.responsibilities') + '</h3>' + listMarkup(project.contributions) + '</article></section>' +
+          '<section class="case-block" id="deliverables">' + caseHeading('03', 'case.deliverables', 'case.deliverablesTitle', uiText('case.deliverablesLead')) + '<div class="tag-list">' + project.deliverables.map(function (item) { return '<span class="p-tag">' + plain(item) + '</span>'; }).join('') + '</div></section>' +
+          '<section class="case-block" id="outcomes">' + caseHeading('04', 'case.outcomes', 'case.outcomesTitle', uiText('case.outcomesLead')) + '<article class="content-card"><h3>' + uiText('case.impact') + '</h3>' + listMarkup(project.outcomes) + '</article><div class="note-box mt-16">' + text(project.disclosure) + '</div><div class="portfolio-actions"><a class="p-button primary" href="' + pageHref('work.html') + '">' + uiText('case.back', null, 'arrow_back') + '</a></div></section>' +
         '</div>' +
       '</div></section>';
   }

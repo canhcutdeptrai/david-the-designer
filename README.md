@@ -48,6 +48,10 @@ Khi sửa chữ, sửa cả hai bản:
 
 Thiếu bản tiếng Việt ở đâu thì chỗ đó hiện tiếng Anh, không lỗi.
 
+Bố cục không xê dịch khi đổi ngôn ngữ: mỗi đoạn chữ luôn giữ chỗ cho cả hai bản (bản không được chọn nằm ẩn trong cùng một ô), nên ô rộng và cao bằng bản dài hơn. Riêng tag và chip lọc thì co theo đúng nhãn đang hiện. Vì vậy hai bản dịch nên dài gần bằng nhau; bản nào dài hơn hẳn sẽ để lại khoảng trống ở ngôn ngữ kia.
+
+Nút có icon khai báo icon bằng thuộc tính thay vì viết thẻ icon bên trong: `data-i18n-icon="arrow_forward"` (icon sau nhãn) hoặc `data-i18n-icon-before="print"` (icon trước nhãn).
+
 ## Xem ở máy
 
 Mở thẳng `index.html` bằng trình duyệt, hoặc chạy một static server tại gốc repo:
