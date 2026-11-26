@@ -30,8 +30,7 @@
       { file: 'index.html', label: 'Home' },
       { file: 'work.html', label: 'Work' },
       { file: 'services.html', label: 'For clients' },
-      { file: 'profile.html', label: 'Profile' },
-      { file: 'contact.html', label: 'Contact' }
+      { file: 'profile.html', label: 'Profile' }
     ];
     var current = currentPage();
     if (current === 'case-study.html') current = 'work.html';
@@ -53,7 +52,7 @@
                 return '<a class="site-nav-link" href="' + pageHref(route.file) + '"' + (active ? ' aria-current="page"' : '') + '>' + escapeHtml(route.label) + '</a>';
               }).join('') +
             '</nav>' +
-            '<a class="p-button primary" href="mailto:' + escapeHtml(data.person.email) + '">Start a conversation</a>' +
+            '<a class="p-button primary" href="' + pageHref('contact.html') + '"' + (current === 'contact.html' ? ' aria-current="page"' : '') + '>Contact</a>' +
           '</div>' +
         '</header>';
     }
@@ -63,9 +62,9 @@
         '<footer class="site-footer">' +
           '<div class="portfolio-wrap">' +
             '<div class="site-footer-grid">' +
-              '<div><p class="section-kicker">Let\'s work together</p><h2>Complex product, workflow, or digital transformation challenge?</h2><p>I can help turn it into a clear, testable path forward.</p><div class="portfolio-actions"><a class="p-button primary" href="mailto:' + escapeHtml(data.person.email) + '">Email David <span class="material-icons-outlined" aria-hidden="true">arrow_forward</span></a></div></div>' +
+              '<div><p class="section-kicker">Let\'s work together</p><h2>Complex product, workflow, or digital transformation challenge?</h2><p>I can help turn it into a clear, testable path forward.</p><div class="portfolio-actions"><a class="p-button primary" href="' + pageHref('contact.html') + '">Contact <span class="material-icons-outlined" aria-hidden="true">arrow_forward</span></a></div></div>' +
               '<div><p class="section-kicker">Explore</p><ul class="footer-list">' +
-                routes.slice(0, 4).map(function (route) { return '<li><a href="' + pageHref(route.file) + '">' + escapeHtml(route.label) + '</a></li>'; }).join('') +
+                routes.map(function (route) { return '<li><a href="' + pageHref(route.file) + '">' + escapeHtml(route.label) + '</a></li>'; }).join('') +
               '</ul></div>' +
               '<div><p class="section-kicker">Contact</p><ul class="footer-list"><li><a href="mailto:' + escapeHtml(data.person.email) + '">' + escapeHtml(data.person.email) + '</a></li><li>' + escapeHtml(data.person.location) + '</li><li>' + escapeHtml(data.person.languages) + '</li></ul></div>' +
             '</div>' +

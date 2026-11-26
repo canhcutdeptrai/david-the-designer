@@ -1331,7 +1331,15 @@ p {
   }
 
   .site-nav > .p-button {
-    display: none;
+    order: 1;
+  }
+
+  .site-nav-menu {
+    order: 2;
+  }
+
+  .site-nav-links {
+    order: 3;
   }
 
   .site-nav-links {
