@@ -1,8 +1,0 @@
-/* KPI card — #c-kpi-card */
-#c-kpi-card .kpi-card {display:flex;align-items:center;gap:12px;padding:16px;border:1px solid var(--sd-black200);border-radius:8px;background:#fff}
-#c-kpi-card .kpi-card__icon {color:var(--sd-primary)}
-#c-kpi-card .kpi-card__body {display:flex;flex-direction:column;gap:2px}
-#c-kpi-card .kpi-card__label {color:var(--sd-black400)}
-#c-kpi-card .kpi-card__value {color:var(--sd-black500);font-size:24px;font-weight:600;line-height:1}
-#c-kpi-card .T12R {font-size:12px!important;font-weight:400;line-height:16px}
-#c-kpi-card .strip {display:flex;flex-wrap:wrap;gap:16px;font-size:14px;line-height:1.5;color:#212529}

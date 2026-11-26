@@ -1,0 +1,112 @@
+/* Font Geist + Geist Mono — tự host (vendor/geist-fonts/), không phụ thuộc Google Fonts */
+@import url('../fonts/geist/fonts.css');
+
+/* ============================================================
+   THEME — components.build  (nguồn hình ảnh của kit từ 2026-11-18)
+
+   Nguồn: github.com/vercel/components.build — app/styles/geistdocs.css
+   (token kiểu shadcn/ui "new-york", baseColor neutral) + lib/geistdocs/fonts.ts
+   (Geist / Geist Mono). Chỉ dùng chế độ sáng (Builder 2026-11-18).
+
+   ĐÂY LÀ NGUỒN DUY NHẤT CỦA MỌI GIÁ TRỊ MÀU / FONT / BO GÓC / BÓNG:
+     theme.css (file này)  →  tokens.css  (--color-*, --surface-*, --text-*…)
+                           →  sd-tokens.css (--sd-*, đọc bởi mọi component sd-*)
+   Đổi giao diện = sửa file này. Không viết hex ở chỗ khác.
+
+   Khối 1 chép NGUYÊN VĂN :root của components.build. Khối 2 là phần MỞ RỘNG
+   của kit (components.build không có): thang màu trạng thái success / warning /
+   info cho badge, alert, stepper… lấy từ bảng màu Tailwind v4 — cùng hệ màu
+   oklch mà shadcn dùng — chọn bậc đạt tương phản ≥ 4.5:1 trên nền trắng khi
+   màu đó dùng làm chữ.
+   ============================================================ */
+
+:root {
+  /* ── 1. components.build — :root nguyên văn ───────────────── */
+  --radius: 0.625rem;                              /* 10px */
+  --background: oklch(1 0 0);                      /* #ffffff */
+  --foreground: oklch(0.145 0 0);                  /* #0a0a0a */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(57.61% 0.2508 258.23);          /* #006bff — tương phản 4.61 trên trắng */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.97 0 0);                    /* #f5f5f5 */
+  --secondary-foreground: oklch(0.205 0 0);        /* #171717 */
+  --muted: oklch(0.97 0 0);                        /* #f5f5f5 */
+  --muted-foreground: oklch(0.556 0 0);            /* #737373 — tương phản 4.73 */
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);        /* #e7000b — tương phản 4.76 */
+  --border: oklch(0.922 0 0);                      /* #e5e5e5 */
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);                        /* #a1a1a1 */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);                     /* #fafafa */
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Bo góc dẫn xuất — @theme inline của components.build */
+  --radius-sm: calc(var(--radius) - 4px);          /* 6px  — chip, checkbox, tag */
+  --radius-md: calc(var(--radius) - 2px);          /* 8px  — nút, ô nhập, menu */
+  --radius-lg: var(--radius);                      /* 10px — popover, toast */
+  --radius-xl: calc(var(--radius) + 4px);          /* 14px — card, section, modal */
+  --radius-full: 9999px;
+
+  /* Font — lib/geistdocs/fonts.ts */
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Bóng — thang Tailwind v4 mà shadcn dùng (shadow-xs cho control, -sm cho card…) */
+  --shadow-2xs: 0 1px rgb(0 0 0 / 0.05);
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+  /* Vòng focus — shadcn: `focus-visible:ring-[3px] ring-ring/50 border-ring` */
+  --focus-ring: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent);
+  --focus-ring-destructive: 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent);
+
+  /* ── 2. Mở rộng của kit — màu trạng thái (Tailwind v4) ───── */
+  --primary-subtle: oklch(0.97 0.014 254.604);     /* blue-50  #eff6ff — nền chọn / hover */
+  --primary-strong: oklch(0.5 0.2508 258.23);      /* #0051ed — hover / nhấn của primary */
+
+  --info: oklch(0.546 0.245 262.881);              /* blue-600  #155dfc */
+  --info-subtle: oklch(0.97 0.014 254.604);        /* blue-50 */
+  --info-strong: oklch(0.488 0.243 264.376);       /* blue-700  #1447e6 */
+
+  --success: oklch(0.527 0.154 150.069);           /* green-700 #008236 — tương phản 4.94 */
+  --success-subtle: oklch(0.982 0.018 155.826);    /* green-50 */
+  --success-strong: oklch(0.448 0.119 151.328);    /* green-800 */
+
+  --warning: oklch(0.666 0.179 58.318);            /* amber-600 #e17100 — icon / nền đặc */
+  --warning-subtle: oklch(0.987 0.022 95.277);     /* amber-50 */
+  --warning-strong: oklch(0.555 0.163 48.998);     /* amber-700 #bb4d00 — chữ (5.05) */
+
+  --destructive-subtle: oklch(0.971 0.013 17.38);  /* red-50 */
+  --destructive-strong: oklch(0.505 0.213 27.518); /* red-700 */
+
+  /* Thang xám neutral (Tailwind v4) — dùng cho bậc mà shadcn không đặt tên */
+  --neutral-50:  oklch(0.985 0 0);   /* #fafafa */
+  --neutral-100: oklch(0.97 0 0);    /* #f5f5f5 */
+  --neutral-200: oklch(0.922 0 0);   /* #e5e5e5 */
+  --neutral-300: oklch(0.87 0 0);    /* #d4d4d4 */
+  --neutral-400: oklch(0.708 0 0);   /* #a1a1a1 */
+  --neutral-500: oklch(0.556 0 0);   /* #737373 */
+  --neutral-600: oklch(0.439 0 0);   /* #525252 */
+  --neutral-700: oklch(0.371 0 0);   /* #404040 */
+  --neutral-800: oklch(0.269 0 0);   /* #262626 */
+  --neutral-900: oklch(0.205 0 0);   /* #171717 */
+  --neutral-950: oklch(0.145 0 0);   /* #0a0a0a */
+}

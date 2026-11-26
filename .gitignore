@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+*.log
+.vercel/
+.claude/settings.local.json
+
+# Kho lưu trữ cục bộ (bộ prototype-kit cũ + CV) — không đưa lên GitHub, xem docs/ARCHIVE.md
+_archive/

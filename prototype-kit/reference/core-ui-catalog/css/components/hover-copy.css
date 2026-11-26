@@ -1,9 +1,0 @@
-/* Hover copy — #c-hover-copy */
-#c-hover-copy .text-secondary {color:var(--sd-secondary)!important}
-#c-hover-copy svg {overflow:hidden;vertical-align:middle}
-#c-hover-copy .hc-list {display:flex;flex-direction:column;width:420px;max-width:100%;background:#fff;border:1px solid var(--sd-black200);border-radius:8px}
-#c-hover-copy .hc-row {display:flex;align-items:center;min-height:40px;border-bottom:1px solid var(--sd-black200);font-size:14px;color:var(--sd-black500)}
-#c-hover-copy .hc-row:last-child {border-bottom:0}
-#c-hover-copy .hc-row > span {width:150px;flex-shrink:0;padding:0 12px;color:var(--sd-black400);font-size:12px}
-#c-hover-copy .hc-cell {flex:1;min-width:0;padding:10px 40px 10px 12px;white-space:nowrap;overflow:visible}
-#c-hover-copy .hc-hint {margin:0;font-size:12px;color:var(--sd-black400);width:100%}
