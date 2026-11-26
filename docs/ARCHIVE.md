@@ -55,17 +55,21 @@ Portfolio được dựng bên trong một bộ kit prototype cho portal doanh n
 | `design-system/vendor/geist-fonts/` | `assets/fonts/geist/` |
 | Material Icons Outlined trong `vendor/sd-fonts/` | `assets/fonts/icons/` |
 | `PORTFOLIO-CONTENT-GUIDE.md`, `PORTFOLIO-CV-SOURCE-MAP.md` | `docs/` |
-| `cv/**/*.pdf` | `docs/cv/*.md` (chỉ nội dung chữ) |
+| `cv/**/*.pdf` | `docs/CV.md` (chỉ nội dung chữ, đã gộp thành một file) |
 
 `components.css` (102 KB) bị bỏ hẳn vì không rule nào tác động lên trang. CSS mỗi trang tải giảm từ khoảng 1.2 MB xuống 78 KB. Ảnh chụp 6 trang ở hai bề rộng 1440 px và 390 px trước và sau khi dọn giống nhau từng pixel.
 
 ### 2. `cv/` — chuyển thành Markdown
 
-11 file PDF đã được chuyển thành 10 file md trong [`docs/cv/`](cv/README.md) rồi xoá khỏi repo. Bảng đối chiếu tên PDF cũ và file md nằm trong `docs/cv/README.md`.
+11 file PDF đã được chuyển thành 10 file md trong `docs/cv/` rồi xoá khỏi repo. Sau đó 10 file md được gộp thành một file duy nhất, [`docs/CV.md`](CV.md), và thư mục `docs/cv/` cũng được xoá. Bảng đối chiếu tên PDF cũ, file md cũ và mã nguồn nằm ở mục 10 của `docs/CV.md`.
 
-PDF gốc chỉ còn trong lịch sử git:
+Cả hai bộ gốc chỉ còn trong lịch sử git:
 
 ```bash
+# 10 file md riêng lẻ, trước khi gộp
+git archive 2cad4db docs/cv | tar -x -C /đường/dẫn/khác
+
+# 11 file PDF gốc
 git archive 1657c2e cv | tar -x -C /đường/dẫn/khác
 ```
 

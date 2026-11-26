@@ -24,7 +24,7 @@ Site tĩnh thuần HTML/CSS/JS: không build step, không phụ thuộc CDN. Dep
 │   │   ├── i18n.js             Bản tiếng Việt của chữ trong HTML + chữ của header/footer
 │   │   └── portfolio.js        Render header/footer, thẻ dự án, case study, đổi ngôn ngữ
 │   └── fonts/               Geist, Geist Mono, Material Icons Outlined (tự host)
-├── docs/                Tài liệu nội bộ và bộ CV (có trên git, không deploy)
+├── docs/                Tài liệu nội bộ và hồ sơ CV tổng hợp (có trên git, không deploy)
 └── _archive/            Kho lưu trữ cục bộ (không lên git, không deploy)
 ```
 
@@ -71,12 +71,12 @@ Vercel: Framework Preset `Other`, Root Directory để trống (gốc repo), kh�
 | [docs/DATA-MODEL.md](docs/DATA-MODEL.md) | Cấu trúc dữ liệu trong `portfolio-data.js` |
 | [docs/CONTENT-GUIDE.md](docs/CONTENT-GUIDE.md) | Hướng dẫn biên tập nội dung |
 | [docs/CV-SOURCE-MAP.md](docs/CV-SOURCE-MAP.md) | Nội dung CV nào đã được đưa lên portfolio và vì sao |
-| [docs/cv/](docs/cv/README.md) | Nội dung các bản CV dạng md |
+| [docs/CV.md](docs/CV.md) | Hồ sơ tổng hợp: nội dung 10 bản CV gộp thành một file, sắp theo ba vai trò UI/UX, Business Analysis, AI Solution |
 | [docs/ARCHIVE.md](docs/ARCHIVE.md) | Những phần đã gỡ khỏi repo, đang nằm ở đâu, cách khôi phục |
 
 ## Làm việc trên nhiều máy
 
-Mọi thứ cần để làm tiếp đều nằm trong repo: mã nguồn site, tài liệu và bộ CV trong `docs/`.
+Mọi thứ cần để làm tiếp đều nằm trong repo: mã nguồn site, tài liệu và hồ sơ CV tổng hợp trong `docs/`.
 
 ```bash
 git clone https://github.com/canhcutdeptrai/david-the-designer.git

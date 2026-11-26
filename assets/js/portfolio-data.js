@@ -354,24 +354,6 @@ window.PORTFOLIO_DATA = {
       }
     },
     {
-      period: '2022 — 2024',
-      title: 'UX/UI Designer · Business Analyst',
-      organization: 'VMO Holding · VINOVA',
-      summary: {
-        en: 'Delivered end-to-end web and mobile UX, workflows, requirements, prototypes, design systems, and Agile delivery documentation.',
-        vi: 'Thực hiện trọn vẹn UX web và mobile, quy trình, yêu cầu, prototype, design system và tài liệu triển khai theo Agile.'
-      }
-    },
-    {
-      period: '2020 — 2022',
-      title: 'UX/UI Designer',
-      organization: 'ProX Global · ITS Global · Antien.vn',
-      summary: {
-        en: 'Designed responsive interfaces, dashboards, landing pages, operational workflows, and reusable visual assets.',
-        vi: 'Thiết kế giao diện responsive, dashboard, landing page, quy trình vận hành và bộ tài sản hình ảnh dùng lại được.'
-      }
-    },
-    {
       period: { en: '2022 — Present', vi: '2022 — Hiện tại' },
       title: {
         en: 'Independent Product & Digital Transformation Consultant',
@@ -384,6 +366,24 @@ window.PORTFOLIO_DATA = {
       summary: {
         en: 'Consulting on workflow analysis, monitoring dashboards, digital touchpoints, solution framing, and AI-assisted delivery.',
         vi: 'Tư vấn về phân tích quy trình, dashboard giám sát, điểm chạm số, định hình giải pháp và triển khai có AI hỗ trợ.'
+      }
+    },
+    {
+      period: '2022 — 2024',
+      title: 'UX/UI Designer · Business Analyst',
+      organization: 'VINOVA · VMO Holding',
+      summary: {
+        en: 'Delivered end-to-end web and mobile UX, workflows, requirements, prototypes, design systems, and Agile delivery documentation.',
+        vi: 'Thực hiện trọn vẹn UX web và mobile, quy trình, yêu cầu, prototype, design system và tài liệu triển khai theo Agile.'
+      }
+    },
+    {
+      period: '2020 — 2022',
+      title: 'UX/UI Designer',
+      organization: 'Antien.vn · ProX Global · ITS Global',
+      summary: {
+        en: 'Designed responsive interfaces, dashboards, landing pages, operational workflows, and reusable visual assets.',
+        vi: 'Thiết kế giao diện responsive, dashboard, landing page, quy trình vận hành và bộ tài sản hình ảnh dùng lại được.'
       }
     }
   ],

@@ -38,6 +38,7 @@ Supporting evidence appears consistently across the primary UI/UX, Digital Solut
 - Role names are consolidated where CV versions use different emphases for the same period.
 - BeeTrade is dated `2024 — Present` because CV versions disagree on the exact start month.
 - Freelance/independent consulting is stated as `2022 — Present`; individual engagements may have ended earlier.
+- The career timeline follows the unified timeline in [CV.md](CV.md): current roles first (the full-time role, then the parallel consulting work), then earlier roles in reverse order. Company names within a period are listed in chronological order.
 - Phone numbers are not published on the web portfolio. Email is the only public contact channel.
 - No quantitative business or usability metric is published because the CV set does not provide a verifiable source for one.
 - Client names from local SME engagements are generalized in public project content.
