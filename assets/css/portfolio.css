@@ -138,6 +138,27 @@ p {
   text-wrap: pretty;
 }
 
+/* Tiếng Việt có dấu chồng hai tầng (Ẩ, Ễ, Ộ): tiêu đề cần dòng thoáng hơn và chữ bớt khít */
+:lang(vi) h1,
+:lang(vi) .home-hero h1 {
+  line-height: 1.16;
+  letter-spacing: -.028em;
+}
+
+:lang(vi) h2,
+:lang(vi) .case-heading h2 {
+  line-height: 1.24;
+  letter-spacing: -.02em;
+}
+
+:lang(vi) h3,
+:lang(vi) .project-content h3,
+:lang(vi) .audience-card h3,
+:lang(vi) .service-card h2 {
+  line-height: 1.36;
+  letter-spacing: -.01em;
+}
+
 .portfolio-eyebrow,
 .section-kicker {
   margin: 0 0 16px;
@@ -276,6 +297,43 @@ p {
 .site-nav > .p-button {
   min-height: 38px;
   padding: 8px 14px;
+}
+
+/* Nút chuyển ngôn ngữ EN / VI */
+.lang-switch {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--p-line);
+  border-radius: var(--radius-lg);
+  background: var(--neutral-100);
+}
+
+.lang-option {
+  min-width: 36px;
+  height: 30px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--p-meta);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: color .15s, background-color .15s, box-shadow .15s;
+}
+
+.lang-option:hover {
+  color: var(--p-ink);
+}
+
+.lang-option[aria-pressed="true"] {
+  background: var(--background);
+  color: var(--p-ink);
+  box-shadow: var(--shadow-xs);
 }
 
 .site-nav-menu {
@@ -1330,16 +1388,20 @@ p {
     display: grid;
   }
 
-  .site-nav > .p-button {
+  .lang-switch {
     order: 1;
   }
 
-  .site-nav-menu {
+  .site-nav > .p-button {
     order: 2;
   }
 
-  .site-nav-links {
+  .site-nav-menu {
     order: 3;
+  }
+
+  .site-nav-links {
+    order: 4;
   }
 
   .site-nav-links {
@@ -1441,8 +1503,12 @@ p {
     flex: 1 1 100%;
   }
 
-  .site-brand-copy span {
+  .site-brand-copy {
     display: none;
+  }
+
+  .site-nav {
+    gap: 0 8px;
   }
 
   .project-visual,

@@ -20,8 +20,9 @@ Site tĩnh thuần HTML/CSS/JS: không build step, không phụ thuộc CDN. Dep
 │   │   ├── base.css         Reset + vài utility dùng chung
 │   │   └── portfolio.css    Toàn bộ style của site
 │   ├── js/
-│   │   ├── portfolio-data.js   NỘI DUNG: hồ sơ, năng lực, dự án, kinh nghiệm
-│   │   └── portfolio.js        Render header/footer, thẻ dự án, case study
+│   │   ├── portfolio-data.js   NỘI DUNG: hồ sơ, năng lực, dự án, kinh nghiệm (song ngữ)
+│   │   ├── i18n.js             Bản tiếng Việt của chữ trong HTML + chữ của header/footer
+│   │   └── portfolio.js        Render header/footer, thẻ dự án, case study, đổi ngôn ngữ
 │   └── fonts/               Geist, Geist Mono, Material Icons Outlined (tự host)
 ├── docs/                Tài liệu nội bộ và bộ CV (có trên git, không deploy)
 └── _archive/            Kho lưu trữ cục bộ (không lên git, không deploy)
@@ -32,6 +33,20 @@ Site tĩnh thuần HTML/CSS/JS: không build step, không phụ thuộc CDN. Dep
 Hầu hết nội dung nằm trong `assets/js/portfolio-data.js`. Thêm một object vào `projects` là trang Work và Case study tự hiển thị. Mô tả từng trường: [docs/DATA-MODEL.md](docs/DATA-MODEL.md).
 
 Quy tắc viết case study và bảo vệ thông tin nhạy cảm: [docs/CONTENT-GUIDE.md](docs/CONTENT-GUIDE.md).
+
+## Hai ngôn ngữ (EN / VI)
+
+Nút EN/VI trên header đổi ngôn ngữ cho cả trang và ghi nhớ lựa chọn trong trình duyệt. Tiếng Anh là mặc định; thêm `?lang=vi` vào URL để mở thẳng bản tiếng Việt.
+
+Khi sửa chữ, sửa cả hai bản:
+
+| Chữ nằm ở | Bản tiếng Anh | Bản tiếng Việt |
+|---|---|---|
+| File HTML (tiêu đề, đoạn dẫn, thẻ dịch vụ) | Viết thẳng trong HTML, phần tử mang `data-i18n="khoá"` | Cùng khoá trong `vi` của `assets/js/i18n.js` |
+| Header, footer, nhãn thẻ dự án, khung case study | `ui.en` trong `i18n.js` | `ui.vi` trong `i18n.js` |
+| Dự án, năng lực, kinh nghiệm | `{ en: '…', vi: '…' }` trong `portfolio-data.js` | Cùng object đó |
+
+Thiếu bản tiếng Việt ở đâu thì chỗ đó hiện tiếng Anh, không lỗi.
 
 ## Xem ở máy
 

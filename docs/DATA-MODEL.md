@@ -2,7 +2,18 @@
 
 Nội dung động của site nằm trong một object duy nhất, `window.PORTFOLIO_DATA`, ở `assets/js/portfolio-data.js`. `assets/js/portfolio.js` đọc object này để render header, footer, thẻ dự án, case study, kinh nghiệm và hồ sơ.
 
-Phần chữ còn lại (tiêu đề trang, đoạn giới thiệu, thẻ dịch vụ) viết thẳng trong từng file HTML.
+Phần chữ còn lại (tiêu đề trang, đoạn giới thiệu, thẻ dịch vụ) viết thẳng trong từng file HTML; bản tiếng Việt của chúng nằm ở `assets/js/i18n.js`.
+
+## Chuỗi song ngữ
+
+Trường nào hiện ra trang đều nhận một trong hai dạng:
+
+```js
+title: 'BeeTrade AI Trading Platform'                      // dùng chung cho cả hai ngôn ngữ
+summary: { en: 'A data-heavy trading…', vi: 'Trải nghiệm giao dịch…' }   // song ngữ
+```
+
+Dùng chuỗi thường cho tên riêng, tên công ty, tên công cụ. Phần tử trong mảng (`skills[]`, `contributions[]`, `education[]`…) cũng theo quy tắc này. Thiếu `vi` thì trang hiện bản `en`.
 
 ## `person`
 
@@ -10,7 +21,7 @@ Phần chữ còn lại (tiêu đề trang, đoạn giới thiệu, thẻ dịch
 |---|---|---|
 | `name`, `initials` | Tên và chữ viết tắt cho logo | Header, footer |
 | `location`, `languages` | Nơi làm việc, ngôn ngữ | Footer |
-| `email` | Email liên hệ | Nút "Start a conversation", footer, mọi phần tử có `data-person-email` |
+| `email` | Email liên hệ | Footer, mọi phần tử có `data-person-email` |
 | `preferredName`, `title`, `summary`, `yearsProduct`, `yearsBA` | Tên gọi, chức danh, câu định vị, số năm kinh nghiệm | Chưa được `portfolio.js` đọc. Các chữ này đang viết thẳng trong HTML, sửa ở đây không đổi gì trên trang |
 
 ## `capabilities[]`
@@ -44,7 +55,7 @@ Mỗi object là một dự án. Thêm object mới thì trang Work và Case stu
 | `outcomes[]` | Kết quả định tính (mục 04) |
 | `disclosure` | Ghi chú về phần đã lược vì bảo mật |
 
-Thứ tự trong mảng là thứ tự hiển thị. Dự án đầu tiên là thẻ lớn trên trang chủ, và là dự án mặc định khi `slug` trên URL không khớp.
+Thứ tự trong mảng là thứ tự hiển thị. Dự án đầu tiên là dự án mặc định khi `slug` trên URL không khớp.
 
 ## `experience[]`
 
@@ -57,7 +68,7 @@ Thứ tự trong mảng là thứ tự hiển thị. Dự án đầu tiên là t
 
 ## Các danh sách còn lại
 
-`education[]`, `certifications[]`, `tools[]`, `activities[]` — đều là mảng chuỗi, hiện ở trang Profile.
+`education[]`, `certifications[]`, `tools[]`, `activities[]` — đều là mảng chuỗi (thường hoặc song ngữ), hiện ở trang Profile.
 
 ## Quy ước
 

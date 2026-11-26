@@ -3,50 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Selected product design, business analysis, systems UX, and AI-enabled solution work by Van The Duy.">
-  <title>Selected Work — Van The Duy</title>
+  <meta name="description" content="Selected product design, business analysis, systems UX, and AI-enabled solution work by Van The Duy." data-i18n-attr="content:work.meta.desc">
+  <title data-i18n="work.meta.title">Selected Work — Van The Duy</title>
   <link rel="stylesheet" href="assets/css/tokens.css">
   <link rel="stylesheet" href="assets/css/base.css">
   <link rel="stylesheet" href="assets/css/portfolio.css">
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to content</a>
+<a class="skip-link" href="#main-content" data-i18n="common.skip">Skip to content</a>
 <div data-site-header></div>
 <main class="site-main" id="main-content">
   <header class="portfolio-wrap page-intro">
-    <p class="portfolio-eyebrow">Selected work</p>
-    <h1>Projects where design, business, and systems thinking meet.</h1>
-    <p>Four verified project summaries consolidated from my CV set. Each contribution focuses on the decisions, workflows, and delivery artefacts I was directly involved in.</p>
+    <p class="portfolio-eyebrow" data-i18n="common.selectedWork">Selected work</p>
+    <h1 data-i18n="work.title">Projects where design, business, and systems thinking meet.</h1>
+    <p data-i18n="work.lead">Four verified project summaries consolidated from my CV set. Each contribution focuses on the decisions, workflows, and delivery artefacts I was directly involved in.</p>
   </header>
 
   <section class="portfolio-section soft" aria-labelledby="project-list-title">
     <div class="portfolio-wrap">
-      <h2 class="sr-only" id="project-list-title">Project list</h2>
-      <div class="filter-row" role="group" aria-label="Filter projects by discipline">
-        <button class="filter-chip" type="button" data-project-filter="all" aria-pressed="true">All work</button>
-        <button class="filter-chip" type="button" data-project-filter="design" aria-pressed="false">Product &amp; UX</button>
-        <button class="filter-chip" type="button" data-project-filter="analysis" aria-pressed="false">Business Analysis</button>
-        <button class="filter-chip" type="button" data-project-filter="ai" aria-pressed="false">AI-enabled</button>
-        <button class="filter-chip" type="button" data-project-filter="systems" aria-pressed="false">Systems &amp; Data</button>
+      <h2 class="sr-only" id="project-list-title" data-i18n="work.listTitle">Project list</h2>
+      <div class="filter-row" role="group" aria-label="Filter projects by discipline" data-i18n-attr="aria-label:work.filter.label">
+        <button class="filter-chip" type="button" data-project-filter="all" aria-pressed="true" data-i18n="work.filter.all">All work</button>
+        <button class="filter-chip" type="button" data-project-filter="design" aria-pressed="false" data-i18n="work.filter.design">Product &amp; UX</button>
+        <button class="filter-chip" type="button" data-project-filter="analysis" aria-pressed="false" data-i18n="work.filter.analysis">Business Analysis</button>
+        <button class="filter-chip" type="button" data-project-filter="ai" aria-pressed="false" data-i18n="work.filter.ai">AI-enabled</button>
+        <button class="filter-chip" type="button" data-project-filter="systems" aria-pressed="false" data-i18n="work.filter.systems">Systems &amp; Data</button>
       </div>
       <div class="project-grid" data-project-grid></div>
-      <div class="empty-projects" data-project-empty>No projects match this filter yet.</div>
+      <div class="empty-projects" data-project-empty data-i18n="work.empty">No projects match this filter yet.</div>
     </div>
   </section>
 
   <section class="portfolio-section" aria-labelledby="disclosure-title">
     <div class="portfolio-wrap">
-      <div class="section-topline"><div><p class="section-kicker">Responsible disclosure</p><h2 id="disclosure-title">Show the thinking. Protect the work.</h2></div><p>These summaries are based on public CV material. Confidential interfaces, client data, infrastructure details, prompts, and unsupported metrics are not published.</p></div>
+      <div class="section-topline">
+        <div><p class="section-kicker" data-i18n="work.disc.kicker">Responsible disclosure</p><h2 id="disclosure-title" data-i18n="work.disc.title">Show the thinking. Protect the work.</h2></div>
+        <p data-i18n="work.disc.lead">These summaries are based on public CV material. Confidential interfaces, client data, infrastructure details, prompts, and unsupported metrics are not published.</p>
+      </div>
       <div class="audience-grid">
-        <article class="audience-card"><span class="material-icons-outlined" aria-hidden="true">verified_user</span><h3>What is included</h3><p>My role, verified responsibilities, project context, artefact types, and qualitative outcomes supported across multiple CV versions.</p></article>
-        <article class="audience-card"><span class="material-icons-outlined" aria-hidden="true">lock</span><h3>What is omitted</h3><p>Private screens, source documents, client operational data, credentials, implementation details, and performance figures without a verifiable source.</p></article>
+        <article class="audience-card"><span class="material-icons-outlined" aria-hidden="true">verified_user</span><h3 data-i18n="work.inc.title">What is included</h3><p data-i18n="work.inc.text">My role, verified responsibilities, project context, artefact types, and qualitative outcomes supported across multiple CV versions.</p></article>
+        <article class="audience-card"><span class="material-icons-outlined" aria-hidden="true">lock</span><h3 data-i18n="work.omit.title">What is omitted</h3><p data-i18n="work.omit.text">Private screens, source documents, client operational data, credentials, implementation details, and performance figures without a verifiable source.</p></article>
       </div>
     </div>
   </section>
 </main>
 <div data-site-footer></div>
 <script src="assets/js/portfolio-data.js"></script>
+<script src="assets/js/i18n.js"></script>
 <script src="assets/js/portfolio.js"></script>
 </body>
 </html>
-
