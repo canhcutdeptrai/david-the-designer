@@ -23,7 +23,7 @@ Site tĩnh thuần HTML/CSS/JS: không build step, không phụ thuộc CDN. Dep
 │   │   ├── portfolio-data.js   NỘI DUNG: hồ sơ, năng lực, dự án, kinh nghiệm
 │   │   └── portfolio.js        Render header/footer, thẻ dự án, case study
 │   └── fonts/               Geist, Geist Mono, Material Icons Outlined (tự host)
-├── docs/                Tài liệu nội bộ (không deploy)
+├── docs/                Tài liệu nội bộ và bộ CV (có trên git, không deploy)
 └── _archive/            Kho lưu trữ cục bộ (không lên git, không deploy)
 ```
 
@@ -52,4 +52,17 @@ Vercel: Framework Preset `Other`, Root Directory để trống (gốc repo), kh�
 | [docs/DATA-MODEL.md](docs/DATA-MODEL.md) | Cấu trúc dữ liệu trong `portfolio-data.js` |
 | [docs/CONTENT-GUIDE.md](docs/CONTENT-GUIDE.md) | Hướng dẫn biên tập nội dung |
 | [docs/CV-SOURCE-MAP.md](docs/CV-SOURCE-MAP.md) | Nội dung CV nào đã được đưa lên portfolio và vì sao |
+| [docs/cv/](docs/cv/README.md) | 11 bản CV: PDF gốc và bản md |
 | [docs/ARCHIVE.md](docs/ARCHIVE.md) | Những phần đã gỡ khỏi repo, đang nằm ở đâu, cách khôi phục |
+
+## Làm việc trên nhiều máy
+
+Mọi thứ cần để làm tiếp đều nằm trong repo: mã nguồn site, tài liệu và bộ CV trong `docs/`.
+
+```bash
+git clone https://github.com/canhcutdeptrai/david-the-designer.git
+git pull        # trước khi bắt đầu làm
+git push        # sau khi commit
+```
+
+Chỉ `_archive/` là không đồng bộ; bộ kit cũ trong đó lấy lại được từ lịch sử git, cách làm ở [docs/ARCHIVE.md](docs/ARCHIVE.md).
