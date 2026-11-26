@@ -32,7 +32,7 @@ window.PORTFOLIO_DATA = {
       id: 'ai',
       number: '03',
       title: 'AI-enabled Solution Design',
-      icon: 'neurology',
+      icon: 'psychology',
       statement: 'Use AI-assisted research, prototyping, and workflow automation to accelerate responsible product delivery.',
       skills: ['AI-assisted discovery', 'Rapid prototyping', 'Prompt engineering', 'Workflow automation', 'Agentic AI concepts', 'Solution framing']
     },
@@ -40,7 +40,7 @@ window.PORTFOLIO_DATA = {
       id: 'systems',
       number: '04',
       title: 'Systems & Data UX',
-      icon: 'monitoring',
+      icon: 'insights',
       statement: 'Design dashboards, monitoring tools, design systems, and operational interfaces that stay clear under complexity.',
       skills: ['Dashboard UX', 'Data visualization', 'Design systems', 'Accessibility', 'API integration', 'SQL & data modeling']
     }
