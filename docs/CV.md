@@ -1,12 +1,12 @@
 # Van The Duy / David — Hồ sơ tổng hợp
 
-Product Designer (UI/UX) · Business Analyst · AI-enabled Solution Consultant
+Product Designer (UI/UX) · Business Analyst (Product Owner) · Solution Consultant
 
-File này gộp nội dung của 10 bản CV thành một hồ sơ duy nhất. Ba vai trò chính là **UI/UX · Product Design**, **Business Analysis** và **AI Solution**. Nội dung từ các bản CV còn lại (Visual Design, Sales & Solution, Marketing, IT Support) được giữ ở các mục **Bổ sung** để hỗ trợ ba vai trò đó.
+File này gộp nội dung của 9 bản CV thành một hồ sơ duy nhất. Ba vai trò chính là **UI/UX · Product Design**, **Business Analysis · Product Owner** và **Solution · Consulting**. Ba kỹ năng hỗ trợ là **Graphic Design**, **Sales** và **Marketing**, nằm ở các mục **Bổ sung**. Nội dung ngoài sáu mảng này (bản CV IT Support) đã được loại bỏ; xem [mục 10](#10-nguồn-và-cách-lấy-lại-bản-gốc).
 
 Cách đọc:
 
-- Mọi dòng mô tả được chép **nguyên văn** từ bản CV gốc, giữ nguyên ngôn ngữ của bản đó (7 bản tiếng Anh, 3 bản tiếng Việt). Không dòng nào được viết lại, thêm vào hay lược đi.
+- Mọi dòng mô tả được chép **nguyên văn** từ bản CV gốc, giữ nguyên ngôn ngữ của bản đó (7 bản tiếng Anh, 2 bản tiếng Việt). Không dòng nào được viết lại, thêm vào hay lược đi.
 - Dòng giống hệt nhau ở nhiều bản chỉ chép một lần, ghi đủ các bản có dòng đó.
 - Mã trong ngoặc cho biết dòng lấy từ bản nào:
 
@@ -21,7 +21,6 @@ Cách đọc:
 | `VD` | Product & Graphic Design (Visual Designer) | Anh |
 | `SL` | Sales & Solution Consultant | Việt |
 | `MK` | Marketing Strategist | Việt |
-| `IT` | IT Support Specialist | Việt |
 
 - Chỗ các bản ghi khác nhau (chức danh, ngày tháng, tên công ty) được giữ đủ mọi phiên bản. [Timeline hợp nhất](#timeline-hợp-nhất) ngay bên dưới là một mạch thời gian duy nhất chọn ra từ các phiên bản đó; lý do chọn và những điểm còn chờ xác nhận nằm ở [mục 9](#9-chỗ-các-bản-cv-không-khớp-nhau-và-cách-xử-lý).
 
@@ -52,13 +51,13 @@ Một mạch thời gian duy nhất, tính đến tháng 11/2026. Mọi mốc v�
 
 | Thời gian | Vị trí | Nơi làm việc | Vai trò chính |
 |---|---|---|---|
-| Mar 2020 – Apr 2022 | UX/UI Designer | Antien.vn → ProX Global → ITS Global | UI/UX |
-| Apr 2022 – Apr 2024 | UX/UI Designer / Business Analyst | VINOVA → VMO Holding | UI/UX · Business Analysis |
-| Apr 2024 – Present | UX/UI Designer Leader / Product Consultant / Business Analyst | EGS Software / BeeTrade Technologies | UI/UX · Business Analysis · AI Solution |
+| Mar 2020 – Apr 2022 | UX/UI Designer | Antien.vn → ProX Global → ITS Global | UI/UX · Product Design |
+| Apr 2022 – Apr 2024 | UX/UI Designer / Business Analyst | VINOVA → VMO Holding | UI/UX · Product Design, Business Analysis |
+| Apr 2024 – Present | UX/UI Designer Leader / Product Consultant / Business Analyst | EGS Software / BeeTrade Technologies | UI/UX · Product Design, Business Analysis · Product Owner, Solution · Consulting |
 
 Ba giai đoạn nối nhau tại Apr 2022 và Apr 2024, không có khoảng trống và không chồng nhau.
 
-Trong giai đoạn Apr 2024 – Present, các chức danh Product Owner / Solution Consultant (`SL`), Marketing Strategy Lead (`MK`), IT System Support (`IT`) và UI/UX Designer / Visual Designer (`VD`) là những mảng việc khác nhau của cùng một nơi làm việc và cùng mốc bắt đầu 04/2024, không phải các công việc riêng.
+Trong giai đoạn Apr 2024 – Present, các chức danh Product Owner / Solution Consultant (`SL`), Marketing Strategy Lead (`MK`) và UI/UX Designer / Visual Designer (`VD`) là những mảng việc khác nhau của cùng một nơi làm việc và cùng mốc bắt đầu 04/2024, không phải các công việc riêng.
 
 ### Công việc song song
 
@@ -89,9 +88,8 @@ Cột "Nằm trong giai đoạn" chỉ đối chiếu ngày tháng. Các bản C
 
 ### Chưa xếp được vào mạch này
 
-Hai vị trí dưới đây chỉ có ở một bản CV và trùng thời gian với công việc chính. Chúng được giữ nguyên ở [mục 3.6](#36-bổ-sung--các-vị-trí-chỉ-có-ở-bản-it-và-mk) và chờ bạn xác nhận (xem [mục 9](#9-chỗ-các-bản-cv-không-khớp-nhau-và-cách-xử-lý)):
+Vị trí dưới đây chỉ có ở bản `MK` và trùng thời gian với công việc chính. Nó được giữ nguyên ở [mục 3.6](#36-bổ-sung--các-vị-trí-chỉ-có-ở-bản-mk) và chờ bạn xác nhận (xem [mục 9](#9-chỗ-các-bản-cv-không-khớp-nhau-và-cách-xử-lý)):
 
-- IT Support Engineer — Duty Free Korea — 06/2020 – 4/2021 (`IT`)
 - Marketing Creative Executive — ProductX Company — 06/2022 – 4/2024 (`MK`)
 
 ---
@@ -100,17 +98,16 @@ Hai vị trí dưới đây chỉ có ở một bản CV và trùng thời gian 
 
 | | |
 |---|---|
-| Tên | Van The Duy / David (`UX` `BI` `VD` `BACR` `PL` `DSC`) · Van The Duy (David) (`BA26`) · Văn Thế Duy (`IT` `MK`) · Văn Thế Duy (David) (`SL`) |
+| Tên | Van The Duy / David (`UX` `BI` `VD` `BACR` `PL` `DSC`) · Van The Duy (David) (`BA26`) · Văn Thế Duy (`MK`) · Văn Thế Duy (David) (`SL`) |
 | Email | vantheduy2000@gmail.com |
 | Điện thoại | 0338520559 / Zalo: 0915902569. Bản `BI` chỉ ghi 0338520559; bản `BA26` và `SL` chỉ ghi 0915902569 |
-| Địa chỉ | Dong Da, Ha Noi (`UX` `VD` `BACR` `PL` `DSC`) · Ha Noi, Vietnam (`BI` `BA26`) · Hà Nội, Việt Nam (`SL`) · Sầm Sơn, Thanh Hoá (`IT` `MK`) |
+| Địa chỉ | Dong Da, Ha Noi (`UX` `VD` `BACR` `PL` `DSC`) · Ha Noi, Vietnam (`BI` `BA26`) · Hà Nội, Việt Nam (`SL`) · Sầm Sơn, Thanh Hoá (`MK`) |
 | Ngôn ngữ | Vietnamese / English |
 
 Dòng chức danh dưới tên, theo từng bản:
 
 - `BI`: Senior Product Designer — BI Dashboard — ESG Reporting — Design Systems
 - `BACR` `PL` `DSC`: Business Analyst | Solution Consultant
-- `IT`: IT Support Specialist
 - `MK`: Marketing Strategist | Growth Marketing | Content & Creative Lead
 - `UX` `VD` `BA26` `SL`: không có dòng chức danh
 
@@ -128,7 +125,7 @@ Dòng chức danh dưới tên, theo từng bản:
 
 > Senior Product Designer with 5+ years of experience designing Business Intelligence (BI) dashboards, ESG management platforms, enterprise systems, realtime monitoring solutions, and data-heavy applications across Web and Mobile. Specialized in dashboard UX, data visualization, design systems, and transforming complex operational and sustainability data into intuitive decision-support experiences.
 
-### Business Analysis · AI Solution
+### Business Analysis · Product Owner · Solution Consulting
 
 `BACR` `DSC` (hai bản giống hệt nhau):
 
@@ -146,11 +143,11 @@ Dòng chức danh dưới tên, theo từng bản:
 
 ### Bổ sung
 
-`SL` — Sales & Solution:
+`SL` — Sales:
 
 > Nhân sự định hướng **Sales & Solution Consultant** với hơn 5 năm kinh nghiệm trong fintech, trading platform, hạ tầng giao thông và hệ thống doanh nghiệp. Mạnh về **phân tích nhu cầu khách hàng, tư vấn giải pháp, pre-sale, proposal, stakeholder management** và kết nối giữa khách hàng với team kỹ thuật. Có nền tảng Product Owner, Business Analyst và UX/UI giúp trình bày giải pháp rõ ràng, chuyển hóa nhu cầu kinh doanh thành phạm vi triển khai khả thi.
 
-`VD` — Visual Design:
+`VD` — Graphic Design:
 
 > Visual Designer with 5+ years of experience in marketing communication, social media content, and print design for digital and offline campaigns. Skilled in creating high-impact visuals including ads, social media content, campaign assets, and print materials such as posters, brochures, and event branding.
 >
@@ -163,12 +160,6 @@ Dòng chức danh dưới tên, theo từng bản:
 > Sản xuất nội dung đa nền tảng, triển khai từ giai đoạn lập kế hoạch đến vận hành và đánh giá hiệu quả chiến dịch. Tham gia quy trình từ nghiên cứu thị trường, xây dựng chiến lược, phát triển đội ngũ, xây dựng hệ thống nội dung, quay dựng video, thiết kế hình ảnh và triển khai các chiến dịch truyền thông đa nền tảng.
 >
 > Kinh nghiệm vận hành hệ thống Social Media cá nhân về "Shop Đàn Guitar" và "Chuyển đổi số doanh nghiệp" với định hướng phát triển cộng đồng và thương hiệu dài hạn.
-
-`IT` — IT Support:
-
-> IT Support Specialist với gần 3 năm kinh nghiệm trong quản trị hệ thống CNTT doanh nghiệp, vận hành hạ tầng mạng, hỗ trợ người dùng cuối và quản lý thiết bị công nghệ thông tin. Có kinh nghiệm triển khai, cài đặt, bảo trì và xử lý sự cố đối với hệ thống máy tính, hệ thống mạng, camera giám sát, thiết bị văn phòng và các phần mềm doanh nghiệp.
->
-> Thành thạo trong việc quản lý tài sản CNTT, xây dựng chính sách sao lưu dữ liệu, quản trị tài khoản người dùng, phân quyền truy cập và phối hợp với nhà cung cấp nhằm đảm bảo hệ thống vận hành ổn định và an toàn. Định hướng phát triển chuyên sâu trong lĩnh vực IT Infrastructure, System Administration và Information Security.
 
 ---
 
@@ -189,7 +180,6 @@ Chức danh và tên công ty theo từng bản:
 | `SL` | Product Owner / Solution Consultant | EGS Software | 04/2024 – Nay |
 | `SL` | UX/UI Designer Leader / Product Consultant | BeeTrade Technologies | 11/2024 – Nay |
 | `MK` | Marketing Strategy Lead \| Growth Marketing Consultant | BeeTrade Technologies | 04/2024 – Hiện tại |
-| `IT` | IT System Support | EGS Software Solutions | 04/2024 – Hiện tại |
 
 #### UI/UX · Product Design
 
@@ -211,7 +201,7 @@ Chức danh và tên công ty theo từng bản:
 
 - Led UX/UI design for BeeTrade, establishing product workflows, dashboards, and design standards
 
-#### Business Analysis
+#### Business Analysis · Product Owner
 
 `BA26`:
 
@@ -245,7 +235,15 @@ Chức danh và tên công ty theo từng bản:
 - Worked closely with Product, Engineering and QA to ensure execution followed approved plans.
 - Supported ERP-like operational systems and optimized internal business workflows.
 
-#### AI Solution
+`SL` — Product Owner / Solution Consultant — EGS Software — 04/2024 – Nay:
+
+- Làm việc trực tiếp với khách hàng và stakeholder để thu thập, phân tích nhu cầu kinh doanh.
+- Tư vấn giải pháp hệ thống phù hợp với mục tiêu vận hành, ngân sách và năng lực triển khai.
+- Xác định phạm vi sản phẩm, roadmap, backlog và hướng triển khai trong giai đoạn pre-sale/delivery.
+- Xây dựng tài liệu BRD/PRD/SRS, workflow, user story và acceptance criteria.
+- Phối hợp với developer, QA và business team để đảm bảo giải pháp được hiểu đúng và bàn giao đúng kỳ vọng.
+
+#### Solution · Consulting
 
 `UX`:
 
@@ -255,24 +253,14 @@ Chức danh và tên công ty theo từng bản:
 
 - Applied AI-assisted tools to accelerate analysis, prototyping, documentation, and implementation
 
-#### Bổ sung — Solution consulting, pre-sale (`SL`)
-
-Product Owner / Solution Consultant — EGS Software — 04/2024 – Nay:
-
-- Làm việc trực tiếp với khách hàng và stakeholder để thu thập, phân tích nhu cầu kinh doanh.
-- Tư vấn giải pháp hệ thống phù hợp với mục tiêu vận hành, ngân sách và năng lực triển khai.
-- Xác định phạm vi sản phẩm, roadmap, backlog và hướng triển khai trong giai đoạn pre-sale/delivery.
-- Xây dựng tài liệu BRD/PRD/SRS, workflow, user story và acceptance criteria.
-- Phối hợp với developer, QA và business team để đảm bảo giải pháp được hiểu đúng và bàn giao đúng kỳ vọng.
-
-UX/UI Designer Leader / Product Consultant — BeeTrade Technologies — 11/2024 – Nay:
+`SL` — UX/UI Designer Leader / Product Consultant — BeeTrade Technologies — 11/2024 – Nay:
 
 - Định hướng trải nghiệm sản phẩm gắn với mục tiêu kinh doanh và giá trị thương mại.
 - Trình bày giải pháp, prototype, dashboard và luồng sản phẩm cho stakeholder/BOD.
 - Hỗ trợ định vị sản phẩm, làm rõ tính năng và tăng khả năng thuyết phục khách hàng.
 - Phối hợp với Product, Business và Engineering để đảm bảo sản phẩm phù hợp thị trường.
 
-#### Bổ sung — Visual & marketing design (`VD`)
+#### Bổ sung — Graphic design (`VD`)
 
 - Designed marketing visuals for product promotion campaigns including banners, landing page assets, and digital advertising materials
 - Created social media content for Facebook, Zalo, and internal communication channels
@@ -280,7 +268,7 @@ UX/UI Designer Leader / Product Consultant — BeeTrade Technologies — 11/2024
 - Produced UI-based promotional assets adapted for multi-platform distribution (web, mobile, social media)
 - Collaborated with marketing and product teams to ensure visual consistency across campaign touchpoints
 
-#### Bổ sung — Marketing strategy (`MK`)
+#### Bổ sung — Marketing (`MK`)
 
 - Xây dựng chiến lược Marketing dài hạn gắn với mục tiêu tăng trưởng và định hướng phát triển sản phẩm.
 - Hoạch định chiến lược Go-To-Market cho các sản phẩm công nghệ, fintech và giải pháp AI.
@@ -294,17 +282,6 @@ UX/UI Designer Leader / Product Consultant — BeeTrade Technologies — 11/2024
 - Theo dõi, đánh giá hiệu quả chiến dịch và tối ưu ngân sách Marketing.
 - Điều phối hoạt động giữa đội ngũ thiết kế, content, media và đối tác bên ngoài.
 - Quản lý tiến độ triển khai và đảm bảo hoàn thành KPI chiến dịch.
-
-#### Bổ sung — IT system support (`IT`)
-
-- Quản trị hệ thống máy tính cá nhân, máy trạm và thiết bị IT nội bộ.
-- Quản lý các loại tài khoản doanh nghiệp và phân quyền truy cập hệ thống.
-- Xây dựng chính sách sao lưu dữ liệu định kỳ và quy trình khôi phục dữ liệu.
-- Xây dựng bộ tài liệu hỗ trợ kỹ thuật và đào tạo phần mềm cho nhân viên các phòng ban.
-- Theo dõi, xử lý và khắc phục sự cố phần cứng, phần mềm và hệ thống mạng.
-- Làm việc với các nhà cung cấp Internet, thiết bị IT và giải pháp bảo mật.
-- Quản lý tài sản bao gồm mua sắm, chuẩn hoá quy trình bàn giao, thu hồi và kiểm kê định kỳ.
-- Cài đặt, cấu hình và bảo trì hệ thống máy in, máy chấm công, camera giám sát và thiết bị lưu trữ NAS.
 
 ### 3.2. Apr 2022 – Apr 2024 · VMO Holding & VINOVA
 
@@ -333,7 +310,7 @@ UX/UI Designer Leader / Product Consultant — BeeTrade Technologies — 11/2024
 - Built scalable Design Systems and reusable component libraries.
 - Produced UX documentation, process diagrams, design guidelines, and product specifications.
 
-#### Business Analysis
+#### Business Analysis · Product Owner
 
 `BA26`:
 
@@ -356,7 +333,7 @@ UX/UI Designer Leader / Product Consultant — BeeTrade Technologies — 11/2024
 - Produced reports, documentation and workflow analysis supporting project execution.
 - Participated in process improvement initiatives to increase delivery efficiency.
 
-#### Bổ sung — Visual & communication design (`VD`)
+#### Bổ sung — Graphic design (`VD`)
 
 - Designed communication materials for internal and external campaigns including social posts, announcements, and recruitment visuals
 - Created print-ready assets such as posters, standees, brochures, and event branding materials
@@ -402,7 +379,7 @@ UX/UI Designer Leader / Product Consultant — BeeTrade Technologies — 11/2024
 - Collaborated with multiple departments to improve usability and operational effectiveness.
 - Supported standardization of reusable design assets and business processes.
 
-#### Bổ sung — Visual design (`VD`)
+#### Bổ sung — Graphic design (`VD`)
 
 - Designed advertising banners, landing page visuals, and digital marketing creatives
 - Produced social media content for campaign promotion and brand awareness
@@ -411,7 +388,9 @@ UX/UI Designer Leader / Product Consultant — BeeTrade Technologies — 11/2024
 
 ### 3.4. 03/2020 – 04/2024 theo bản `SL` (gộp hai giai đoạn 3.2 và 3.3)
 
-Business Analyst / UX Consultant — VMO Holding, Vinova, ITS Global, ProX Global — 03/2020 – 04/2024:
+#### Business Analysis · Product Owner · Solution Consulting
+
+`SL` — Business Analyst / UX Consultant — VMO Holding, Vinova, ITS Global, ProX Global — 03/2020 – 04/2024:
 
 - Làm việc với khách hàng để xác định nhu cầu, pain point và đề xuất giải pháp phù hợp.
 - Tổ chức workshop, làm rõ yêu cầu, mô hình hóa workflow và trình bày prototype.
@@ -436,7 +415,7 @@ Business Analyst / UX Consultant — VMO Holding, Vinova, ITS Global, ProX Globa
 - Designed complex workflows, monitoring dashboards, and enterprise operational interfaces
 - Conducted workflow analysis and transformed stakeholder requirements into scalable UX solutions
 
-#### Business Analysis
+#### Business Analysis · Product Owner
 
 `BA26`:
 
@@ -444,10 +423,13 @@ Business Analyst / UX Consultant — VMO Holding, Vinova, ITS Global, ProX Globa
 - Designed dashboards and system flows based on operational needs
 - Supported documentation and delivery across infrastructure and trading platforms
 
+#### Solution · Consulting
+
 `BACR` `DSC`:
 
 - Delivered digital transformation initiatives for SMEs in Thanh Hoa across hospitality, tourism, media, and service businesses
 - Designed customer journeys, operational workflows, website structures, and digital touchpoints for local businesses
+- Applied AI-assisted development and automation concepts to improve delivery speed and operational efficiency
 
 `PL`:
 
@@ -456,39 +438,24 @@ Business Analyst / UX Consultant — VMO Holding, Vinova, ITS Global, ProX Globa
 - Designed reporting dashboards and operational workflows to improve business performance.
 - Assisted businesses in adopting digital systems and process standardization.
 
-#### AI Solution
-
 `UX`:
 
 - Used AI-assisted tools to accelerate ideation, UX exploration, automation, and prototyping
 
-`BACR` `DSC`:
-
-- Applied AI-assisted development and automation concepts to improve delivery speed and operational efficiency
-
-#### Bổ sung — Solution consulting (`SL`)
+`SL`:
 
 - Tư vấn giải pháp cho các dự án trading, hạ tầng giao thông và hệ thống doanh nghiệp.
 - Phân tích yêu cầu, xác định scope, dashboard, workflow và tài liệu triển khai.
 - Kết nối nhu cầu vận hành thực tế với giải pháp sản phẩm và team phát triển.
 
-#### Bổ sung — Visual & marketing design (`VD`)
+#### Bổ sung — Graphic design (`VD`)
 
 - Delivered marketing and communication design assets for international and enterprise clients
 - Designed campaign visuals for digital ads, event branding, and internal communication systems
 - Created print materials including event backdrop, posters, and corporate brochures
 - Adapted design systems into marketing-ready visual outputs for multi-platform usage
 
-### 3.6. Bổ sung — các vị trí chỉ có ở bản `IT` và `MK`
-
-#### IT Support Engineer — Duty Free Korea — 06/2020 – 4/2021 (`IT`)
-
-- Thi công hệ thống mạng nội bộ và cấu hình Router, Switch và Access Point cơ bản.
-- Hỗ trợ xử lý sự cố phần cứng, hệ điều hành và thiết bị ngoại vi.
-- Thực hiện bảo trì định kỳ hệ thống IT cho khách hàng doanh nghiệp.
-- Hỗ trợ triển khai hệ thống lưu trữ và sao lưu dữ liệu doanh nghiệp.
-- Tham gia khảo sát hiện trạng hệ thống, đề xuất phương án nâng cấp phù hợp với nhu cầu vận hành.
-- Phối hợp với đội triển khai trong các dự án nâng cấp hạ tầng IT và hệ thống giám sát.
+### 3.6. Bổ sung — các vị trí chỉ có ở bản `MK`
 
 #### Marketing Creative Executive — ProductX Company — 06/2022 – 4/2024 (`MK`)
 
@@ -536,7 +503,7 @@ Portfolio includes Web/Mobile Product Design, Trading Systems, Dashboard UX, Ent
 - Built scalable design systems and reusable UI components optimized for data-heavy workflows
 - Collaborated with Product and Engineering teams to improve usability, visual consistency, and realtime interaction experience
 
-#### Business Analysis
+#### Business Analysis · Product Owner
 
 `BA26`:
 
@@ -559,13 +526,13 @@ Portfolio includes Web/Mobile Product Design, Trading Systems, Dashboard UX, Ent
 - Coordinated requirement changes and monitored implementation progress.
 - Improved operational workflows through continuous analysis.
 
-#### AI Solution
+#### Solution · Consulting
 
 `UX` `VD`:
 
 - Applied AI-assisted workflows for UX exploration, rapid prototyping, and design optimization
 
-#### Bổ sung — Solution consulting (`SL`)
+`SL`:
 
 - Tư vấn và xác định yêu cầu cho hệ thống giao dịch chứng khoán/crypto tích hợp AI.
 - Làm rõ các module: order management, wallet, transaction, reporting và real-time dashboard.
@@ -585,7 +552,7 @@ Liên kết Figma (`UX` `VD`): [Western Harbour Tunnel System](https://www.figma
 - Focused on accessibility, usability, information hierarchy, and workflow optimization
 - Built design standards, system components, and interface documentation
 
-#### Business Analysis
+#### Business Analysis · Product Owner
 
 `BA26`:
 
@@ -608,7 +575,9 @@ Liên kết Figma (`UX` `VD`): [Western Harbour Tunnel System](https://www.figma
 - Built monitoring interfaces supporting real-time operational control.
 - Improved documentation and operational governance.
 
-#### Bổ sung — Solution consulting (`SL`)
+#### Solution · Consulting
+
+`SL`:
 
 - Chuyển đổi tiêu chuẩn vận hành giao thông thành yêu cầu chức năng cho hệ thống monitoring.
 - Tư vấn workflow và giao diện HMI cho phòng điều khiển thời gian thực.
@@ -617,7 +586,7 @@ Liên kết Figma (`UX` `VD`): [Western Harbour Tunnel System](https://www.figma
 
 ### 4.4. Tribe Fintech — Apr 2022 – Apr 2023
 
-#### Business Analysis
+#### Business Analysis · Product Owner
 
 `BA26`:
 
@@ -632,7 +601,9 @@ Liên kết Figma (`UX` `VD`): [Western Harbour Tunnel System](https://www.figma
 - Defined functional requirements, integration approaches, and risk considerations
 - Supported validation, stakeholder review, and documentation improvement activities
 
-#### Bổ sung — Solution consulting (`SL`)
+#### Solution · Consulting
+
+`SL`:
 
 - Phân tích yêu cầu tích hợp API bên thứ ba cho hệ thống fintech.
 - Đề xuất mô hình tích hợp, workflow kỹ thuật và tài liệu hỗ trợ development.
@@ -645,7 +616,7 @@ Liên kết Figma (`UX` `VD`): [Western Harbour Tunnel System](https://www.figma
 | `BACR` `DSC` | Thanh Hoa SME Digital Transformation Projects | 2025 – Present |
 | `PL` | Digital Transformation for SMEs | 2025 – Present |
 
-#### Business Analysis · AI Solution
+#### Solution · Consulting
 
 `BACR` `DSC`:
 
@@ -694,7 +665,7 @@ Business Intelligence Dashboard Design, ESG Reporting Dashboard, KPI Monitoring,
 
 - **Product & UX:** UX Strategy, User Flow, Wireframe, Prototype, Dashboard Design, Design System, Interaction Design
 
-### Business Analysis
+### Business Analysis · Product Owner
 
 `BA26`:
 
@@ -705,7 +676,6 @@ Business Intelligence Dashboard Design, ESG Reporting Dashboard, KPI Monitoring,
 `BACR` `DSC`:
 
 - **Business Analysis:** Requirement Analysis, BRD/FRD/SRS, Workflow Modeling, Stakeholder Management, Agile, UAT
-- **Digital Transformation:** CRM, CDP, Customer Journey Mapping, Marketing Automation, Process Optimization, SaaS Solutions
 - **Technical & Tools:** SQL, API Integration, System Workflow Design, Data Modeling, Figma, Jira, Confluence, Postman, GitHub, Cursor, Claude, ChatGPT
 
 `PL`:
@@ -715,30 +685,37 @@ Business Intelligence Dashboard Design, ESG Reporting Dashboard, KPI Monitoring,
 - **Systems:** ERP Workflow, Dashboard Reporting, Data Analysis, SQL, Excel, Process Documentation
 - **Tools:** Figma, Jira, Confluence, Excel, SQL, Postman, GitHub, ChatGPT, Claude, Cursor
 
-### AI Solution
+`SL`:
+
+- **Product & BA:** Roadmap, Backlog management, BRD/PRD/SRS, User stories, Workflow modeling, UAT
+
+### Solution · Consulting
+
+`BACR` `DSC`:
+
+- **Digital Transformation:** CRM, CDP, Customer Journey Mapping, Marketing Automation, Process Optimization, SaaS Solutions
+- **AI & Automation:** AI-assisted Development, Prompt Engineering, Workflow Automation, Agentic AI Concepts
 
 `UX`:
 
 - **AI / Automation / Agentic AI:** AI-assisted UX Research, AI Prototyping, Workflow Automation, Design Iteration, Agentic AI-supported Productivity
 
-`BACR` `DSC`:
+`SL`:
 
-- **AI & Automation:** AI-assisted Development, Prompt Engineering, Workflow Automation, Agentic AI Concepts
-
-### Bổ sung — Sales & Solution (`SL`)
-
-- **Sales & Solution:** Tư vấn giải pháp, Phân tích nhu cầu, Pre-sale, Proposal support, Stakeholder management, Workshop facilitation
-- **Product & BA:** Roadmap, Backlog management, BRD/PRD/SRS, User stories, Workflow modeling, UAT
 - **Technical Domain:** Fintech, Trading system, API integration, System workflow, Infrastructure systems, Dashboard
 - **Tools:** Jira, Confluence, Figma, Postman, Excel, Docs
 
-### Bổ sung — Visual Design (`VD`)
+### Bổ sung — Graphic Design (`VD`)
 
 - **Visual Communication:** Campaign Visual Design, Advertising Banner, Digital Marketing Creative, Brand Communication, Visual Storytelling
 - **Social Media Design:** Facebook Ads, TikTok Creative, Social Campaign Content, Internal Communication Design
 - **Print Offline Design:** Poster, Standee, Backdrop, Brochure, Flyer, POSM, Event Branding Materials
 - **Design Tools:** Adobe Photoshop, Adobe Illustrator, After Effects, Premiere Pro, CapCut, Figma
 - **Visual Skills:** Typography, Layout Composition, Color Theory, Visual Hierarchy, Brand Consistency
+
+### Bổ sung — Sales (`SL`)
+
+- **Sales & Solution:** Tư vấn giải pháp, Phân tích nhu cầu, Pre-sale, Proposal support, Stakeholder management, Workshop facilitation
 
 ### Bổ sung — Marketing (`MK`)
 
@@ -747,22 +724,15 @@ Business Intelligence Dashboard Design, ESG Reporting Dashboard, KPI Monitoring,
 - **Leadership & Management:** Team Management, Project Management, Stakeholder Management, Resource Allocation, Campaign Reporting.
 - **Tools:** CapCut, Premiere Pro, Photoshop, Illustrator, After Effects, Figma, Meta Business Suite, Google Analytics, Notion, Jira, ChatGPT và các công cụ AI hỗ trợ Marketing.
 
-### Bổ sung — IT Support (`IT`)
-
-- **Hệ thống & Hạ Tầng:** Microsoft Administration Service, Google Workspace, Active Directory, VPN và xử lý hệ thống mạng nội bộ.
-- **Hỗ trợ & Vận hành:** Hỗ trợ người dùng, xử lý sự cố phần cứng và phần mềm, quản lý máy in, quản lý tài sản.
-- **Bảo mật & Quản trị truy cập:** Quản lý tài khoản và phân quyền người dùng, bảo mật đầu cuối, quản lý phần mềm, sao lưu và khôi phục dữ liệu.
-- **Cải tiến quy trình & Phối hợp nghiệp vụ:** Phân tích quy trình, tối ưu vận hành, xây dựng tài liệu hướng dẫn (SOP), phối hợp với các phòng ban và quản lý nhà cung cấp dịch vụ IT.
-
 ---
 
 ## 6. Học vấn
 
 | Trường | Ngành | Cách ghi ở bản tiếng Việt | Có ở bản |
 |---|---|---|---|
-| FPT International Academy | Information Technology | Viện đào tạo Quốc tế - Đại học FPT — Công nghệ thông tin (`IT` `MK`) · FPT International Academy — Công nghệ thông tin (`SL`) | Cả 10 bản |
-| National Economic University | Business Administration | Đại học Kinh Tế Quốc Dân — QTKD (`MK`) · Đại học Kinh tế Quốc dân — Quản trị kinh doanh (`SL`) | Mọi bản trừ `IT` |
-| Arena Multimedia | Communication Design | Arena Multimedia — Thiết kế truyền thông đa phương tiện (`IT` `MK`) · Arena Multimedia — Thiết kế truyền thông (`SL`) | Cả 10 bản |
+| FPT International Academy | Information Technology | Viện đào tạo Quốc tế - Đại học FPT — Công nghệ thông tin (`MK`) · FPT International Academy — Công nghệ thông tin (`SL`) | Cả 9 bản |
+| National Economic University | Business Administration | Đại học Kinh Tế Quốc Dân — QTKD (`MK`) · Đại học Kinh tế Quốc dân — Quản trị kinh doanh (`SL`) | Cả 9 bản |
+| Arena Multimedia | Communication Design | Arena Multimedia — Thiết kế truyền thông đa phương tiện (`MK`) · Arena Multimedia — Thiết kế truyền thông (`SL`) | Cả 9 bản |
 
 ---
 
@@ -772,10 +742,10 @@ Bản `BI` không có mục chứng chỉ.
 
 | Chứng chỉ | Cách ghi theo từng bản |
 |---|---|
-| International Programmer — Aptech | International Programmer — Aptech (`UX` `VD` `BA26` `BACR` `PL` `DSC`) · Lập trình viên Quốc tế — Aptech (`IT` `MK`) · Aptech — Lập trình viên quốc tế (`SL`) |
+| International Programmer — Aptech | International Programmer — Aptech (`UX` `VD` `BA26` `BACR` `PL` `DSC`) · Lập trình viên Quốc tế — Aptech (`MK`) · Aptech — Lập trình viên quốc tế (`SL`) |
 | Google UX Design | Google UX Design — Coursera (`UX` `VD`) · Google UX Design (`BA26` `BACR` `PL` `DSC` `SL`) |
-| Business Analysis and Process Management | Business Analysis and Process Management — Coursera (`UX` `VD`) · Business Analysis and Process Management (`BA26` `BACR` `PL` `DSC` `SL`) · Phân tích nghiệp vụ và Quản lý quy trình doanh nghiệp (`IT` `MK`) |
-| Google Structure Design, Google Business Analyst | Chỉ có ở `IT` `MK`, ghi đúng như vậy |
+| Business Analysis and Process Management | Business Analysis and Process Management — Coursera (`UX` `VD`) · Business Analysis and Process Management (`BA26` `BACR` `PL` `DSC` `SL`) · Phân tích nghiệp vụ và Quản lý quy trình doanh nghiệp (`MK`) |
+| Google Structure Design, Google Business Analyst | Chỉ có ở `MK`, ghi đúng như vậy |
 
 ---
 
@@ -783,8 +753,8 @@ Bản `BI` không có mục chứng chỉ.
 
 Bản `BI` không có mục hoạt động.
 
-- Founder & President — VMO Music Club (`UX` `VD` `BA26` `BACR` `PL` `DSC` `SL`) · Nhà sáng lập kiêm Chủ nhiệm — CLB Âm nhạc VMO (`IT` `MK`)
-- Volunteer — PMI Vietnam Chapter (Event Committee) (`UX` `VD` `BA26` `BACR` `PL` `DSC`) · Tình nguyện viên — PMI Vietnam Chapter (Ban tổ chức sự kiện) (`IT` `MK`) · Tình nguyện viên — PMI Vietnam Chapter, Ban sự kiện (`SL`)
+- Founder & President — VMO Music Club (`UX` `VD` `BA26` `BACR` `PL` `DSC` `SL`) · Nhà sáng lập kiêm Chủ nhiệm — CLB Âm nhạc VMO (`MK`)
+- Volunteer — PMI Vietnam Chapter (Event Committee) (`UX` `VD` `BA26` `BACR` `PL` `DSC`) · Tình nguyện viên — PMI Vietnam Chapter (Ban tổ chức sự kiện) (`MK`) · Tình nguyện viên — PMI Vietnam Chapter, Ban sự kiện (`SL`)
 - Aptech Full Scholarship Recipient (`BA26`) · Học bổng toàn phần Aptech (`SL`)
 
 ---
@@ -803,14 +773,13 @@ Các bản CV được viết cho những vị trí khác nhau nên có chỗ gh
 | Mốc chuyển giữa hai giai đoạn đầu | Apr 2022 ở sáu bản · Mar 2022 ở `BA26` | Apr 2022 | Đa số, và khớp với mốc Apr 2022 của giai đoạn sau |
 | Công ty theo giai đoạn | `BA26` xếp ITS Global, ProX Global vào cả 2022 – 2024 và VINOVA vào 2020 – 2022; các bản khác tách Antien.vn, ProX Global, ITS Global (2020 – 2022) với VINOVA, VMO Holding (2022 – 2024) | Antien.vn → ProX Global → ITS Global, rồi VINOVA → VMO Holding | Năm bản tách như vậy; ba bản ghi rõ thứ tự bằng mũi tên |
 | Giai đoạn 2020 – 2024 ở bản `SL` | Gộp thành một vị trí Business Analyst / UX Consultant, 03/2020 – 04/2024 | Tách hai giai đoạn như các bản khác | Mốc đầu và cuối của `SL` trùng với hai giai đoạn cộng lại |
-| Tên công ty hiện tại | EGS Software ở bảy bản · "ESG Software" ở `BI` · "EGS Software Solutions" ở `IT` | EGS Software | Đa số |
+| Tên công ty hiện tại | EGS Software ở bảy bản · "ESG Software" ở `BI` | EGS Software | Đa số |
 | Vai trò tại BeeTrade Technologies ở bản `SL` | Tách riêng, bắt đầu 11/2024; các bản khác gộp với EGS Software từ Apr 2024 | Một giai đoạn từ Apr 2024; dự án BeeTrade từ Nov 2024 | Mốc 11/2024 của `SL` trùng với mốc bắt đầu dự án BeeTrade ở năm bản |
 | Thời điểm bắt đầu dự án BeeTrade | Apr 2024 (`UX` `VD`) · Nov 2024 (`BA26` `BACR` `PL` `DSC` `SL`) | Nov 2024 | Năm bản. Apr 2024 trùng với mốc vào EGS Software / BeeTrade Technologies |
 | Tên dự án BeeTrade | BeeTrade AI Trading Platform (`UX` `VD` `BACR` `DSC`) · BeeTrade AI Stock/Crypto Trading System (`BA26` `SL`) · BeeTrade Enterprise Platform (`PL`) | BeeTrade AI Trading Platform | Bốn bản, và là tên đang dùng trên site |
 | Thời gian freelance | Jun 2022 – Present (`UX` `VD`) · Jun 2022 – Dec 2025 (`BA26` `SL`) · Aug 2025 – Present (`BACR` `PL` `DSC`) | Jun 2022 – Present, gồm hai giai đoạn | Ba khoảng thời gian không mâu thuẫn: giai đoạn doanh nghiệp đến Dec 2025, giai đoạn SME từ Aug 2025 |
-| Số năm kinh nghiệm | 5+ năm Product/UI/UX (`UX` `BI`) và Visual Design (`VD`) · 3+ năm Business Analysis (`BA26` `BACR` `PL` `DSC`) · hơn 5 năm (`SL` `MK`) · gần 3 năm IT (`IT`) | 5+ năm Product/UI/UX, 3+ năm Business Analysis | Khớp với mốc Mar 2020 và Apr 2022; "gần 3 năm IT" khớp với mốc 04/2024 của bản `IT` |
-| Chứng chỉ Google | Google UX Design ở các bản tiếng Anh và `SL` · "Google Structure Design, Google Business Analyst" ở `IT` `MK` | Giữ cả hai cách ghi ở mục 7 | Không đủ căn cứ để coi là cùng một chứng chỉ |
-| Học vấn | Bản `IT` không ghi National Economic University | Ghi đủ ba trường | Chín bản ghi đủ |
+| Số năm kinh nghiệm | 5+ năm Product/UI/UX (`UX` `BI`) và Visual Design (`VD`) · 3+ năm Business Analysis (`BA26` `BACR` `PL` `DSC`) · hơn 5 năm (`SL` `MK`) | 5+ năm Product/UI/UX, 3+ năm Business Analysis | Khớp với mốc Mar 2020 và Apr 2022 |
+| Chứng chỉ Google | Google UX Design ở các bản tiếng Anh và `SL` · "Google Structure Design, Google Business Analyst" ở `MK` | Giữ cả hai cách ghi ở mục 7 | Không đủ căn cứ để coi là cùng một chứng chỉ |
 
 ### Cần bạn xác nhận
 
@@ -819,7 +788,6 @@ Những điểm này không thể quyết từ các bản CV. Timeline hợp nh�
 | Nội dung | Timeline đang hiểu là | Câu hỏi |
 |---|---|---|
 | "Front-end Developer" Mar 2020 – Apr 2022 (`DSC`) | Một cách đặt chức danh cho cùng công việc UX/UI Designer | Bạn có thực sự làm front-end trong giai đoạn này không? Ba dòng mô tả dưới chức danh đó đều là thiết kế |
-| IT Support Engineer — Duty Free Korea — 06/2020 – 4/2021 (`IT`) | Chưa xếp vào mạch chính; các bản `UX` `VD` ghi Duty Free Korea là khách hàng freelance từ Jun 2022 | Đây là việc làm song song với UX/UI Designer trong 2020 – 2021, hay ngày tháng ở bản `IT` cần sửa? |
 | Marketing Creative Executive — ProductX Company — 06/2022 – 4/2024 (`MK`) | Chưa xếp vào mạch chính; trùng thời gian với VINOVA → VMO Holding | ProductX Company có phải là ProX Global không, và công việc này diễn ra khi nào? |
 | "ESG Software" (`BI`) | Lỗi gõ của EGS Software | Hay là cách ghi có chủ ý cho bản CV về ESG? |
 | BeeTrade là khách hàng freelance Jun 2022 – Dec 2025 (`BA26` `SL`) | Không ghi BeeTrade trong danh sách khách hàng freelance, vì BeeTrade Technologies là nơi làm việc chính từ Apr 2024 | Trước Apr 2024 bạn có làm freelance cho BeeTrade không? |
@@ -829,7 +797,7 @@ Những điểm này không thể quyết từ các bản CV. Timeline hợp nh�
 
 ## 10. Nguồn và cách lấy lại bản gốc
 
-File này thay cho thư mục `docs/cv/` (10 file md và một file README), được gộp ngày 2026-11-26. Các file md đó vốn được chuyển từ 11 file PDF cùng ngày; repo không còn giữ PDF.
+File này thay cho thư mục `docs/cv/` (10 file md và một file README), được gộp ngày 2026-11-26. Chín bản được đưa vào đây; bản IT Support đã được loại bỏ. Các file md đó vốn được chuyển từ 11 file PDF cùng ngày; repo không còn giữ PDF.
 
 | Mã | File md cũ trong `docs/cv/` | File PDF cũ trong `cv/` | Nhóm |
 |---|---|---|---|
@@ -840,9 +808,13 @@ File này thay cho thư mục `docs/cv/` (10 file md và một file README), đ�
 | `BACR` | `ba-cr.md` | `Ít dùng/BA/David_BA_Cr.pdf` | Ít dùng |
 | `PL` | `ba-planner.md` | `Ít dùng/BA/David_BA_Planer.pdf` | Ít dùng |
 | `BI` | `uiux-esg-bi.md` | `Ít dùng/UI:UX/David_ESG_BI_CV.pdf` | Ít dùng |
-| `IT` | `it-helpdesk.md` | `Ít dùng/IT_Helpdesk___Văn_Thế_Duy.pdf` | Ít dùng |
 | `MK` | `marketing.md` | `Ít dùng/Marketing___Văn_Thế_Duy.pdf` | Ít dùng |
 | `SL` | `sales.md` | `Ít dùng/Văn Thế Duy Sale.pdf` | Ít dùng |
+
+Đã loại bỏ theo quyết định ngày 2026-11-26: hồ sơ chỉ giữ ba vai trò chính (UI/UX · Product Design, Business Analysis · Product Owner, Solution · Consulting) và ba kỹ năng hỗ trợ (Graphic Design, Sales, Marketing).
+
+- Toàn bộ bản CV IT Support Specialist (`it-helpdesk.md`, từ `Ít dùng/IT_Helpdesk___Văn_Thế_Duy.pdf`): phần tóm tắt, vị trí IT System Support tại EGS Software Solutions (04/2024 – Hiện tại), vị trí IT Support Engineer tại Duty Free Korea (06/2020 – 4/2021) và các kỹ năng IT.
+- Không dòng nào của chín bản còn lại bị bỏ. Chi tiết nào trước đây ghi nguồn chung `IT` `MK` nay chỉ ghi `MK`.
 
 Ghi chú:
 
@@ -855,7 +827,7 @@ Ghi chú:
 Lấy lại bản gốc từ lịch sử git:
 
 ```bash
-# 10 file md riêng lẻ, trước khi gộp
+# 10 file md riêng lẻ, trước khi gộp (có cả bản IT Support đã loại bỏ)
 git archive 2cad4db docs/cv | tar -x -C /đường/dẫn/khác
 
 # 11 file PDF gốc

@@ -935,6 +935,11 @@ p {
   gap: var(--p-gap);
 }
 
+/* Chỉ còn một thẻ thì thẻ chiếm trọn hàng, không để trống nửa lưới */
+.audience-grid:has(> :only-child) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .audience-card,
 .service-card {
   display: flex;

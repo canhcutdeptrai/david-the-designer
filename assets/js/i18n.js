@@ -208,12 +208,10 @@ window.PORTFOLIO_I18N = {
     'profile.tools': 'Công cụ &amp; kỹ thuật',
     'profile.community': 'Cộng đồng',
     'profile.found.kicker': 'Nền tảng bổ sung',
-    'profile.found.title': 'Kỹ năng thị giác và vận hành kỹ thuật củng cố cho công việc sản phẩm.',
+    'profile.found.title': 'Kỹ năng thị giác củng cố cho công việc sản phẩm.',
     'profile.found.lead': 'Các CV trước đây và song song bổ sung chiều sâu hữu ích mà không làm đổi định vị cốt lõi.',
     'profile.visual.title': 'Truyền thông thị giác',
     'profile.visual.text': 'Typography, bố cục, phân cấp thị giác, ấn phẩm chiến dịch, sản xuất in ấn và tính nhất quán thương hiệu đa kênh, dùng Figma và các công cụ Adobe.',
-    'profile.tech.title': 'Vận hành kỹ thuật',
-    'profile.tech.text': 'Quen thuộc thực tế với hạ tầng IT, quản lý tài khoản và phân quyền, quy trình sao lưu, mạng, phần cứng và tài liệu vận hành.',
 
     // ── For clients ─────────────────────────────────────────
     'services.meta.title': 'Dịch vụ — Van The Duy',

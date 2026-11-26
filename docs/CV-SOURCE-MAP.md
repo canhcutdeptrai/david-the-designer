@@ -20,7 +20,7 @@ Supporting evidence appears consistently across the primary UI/UX, Digital Solut
 - Product and UX skills: research, flows, wireframes, prototypes, usability testing, responsive design, dashboard UX, and design systems.
 - Business Analysis skills: requirements, BRD/FRD/SRS, workflow modeling, BPMN/UML, user stories, traceability, stakeholder management, Agile, and UAT.
 - AI-enabled work: AI-assisted research, prototyping, documentation, workflow automation, prompt engineering, and agentic AI concepts.
-- Technical fluency: API integration, SQL, data modeling, frontend handoff, IT infrastructure, and operational documentation.
+- Technical fluency: API integration, SQL, data modeling, and frontend handoff.
 - Supporting visual skills: typography, layout, visual hierarchy, Adobe tools, and cross-channel visual communication.
 
 ## Selected projects
