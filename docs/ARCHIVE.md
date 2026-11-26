@@ -7,8 +7,8 @@ Ngày 2026-11-26 repo được dọn lại để chỉ còn portfolio. File này
 | Nơi | Chứa gì | Có trên máy khác không |
 |---|---|---|
 | Lịch sử git, commit `1657c2e` | Toàn bộ repo trước khi dọn, gồm cả `prototype-kit/` | Có. `git clone` hoặc `git pull` là có đủ lịch sử |
-| `docs/` | CV (PDF + md), hướng dẫn nội dung, mô tả dữ liệu, file này | Có, nằm trong repo |
-| `_archive/` ở gốc repo | Bản sao `prototype-kit/` và `cv/` cũ để mở nhanh (~23 MB) | Không. Đã khai trong `.gitignore`, chỉ có ở máy đã dọn repo. Xoá đi cũng không mất gì vì git còn giữ |
+| `docs/` | CV (dạng md), hướng dẫn nội dung, mô tả dữ liệu, file này | Có, nằm trong repo |
+| `_archive/` ở gốc repo | Bản sao `prototype-kit/` cũ để mở nhanh (~22 MB) | Không. Đã khai trong `.gitignore`, chỉ có ở máy đã dọn repo. Xoá đi cũng không mất gì vì git còn giữ |
 
 Lấy lại bộ kit trên bất kỳ máy nào:
 
@@ -55,13 +55,19 @@ Portfolio được dựng bên trong một bộ kit prototype cho portal doanh n
 | `design-system/vendor/geist-fonts/` | `assets/fonts/geist/` |
 | Material Icons Outlined trong `vendor/sd-fonts/` | `assets/fonts/icons/` |
 | `PORTFOLIO-CONTENT-GUIDE.md`, `PORTFOLIO-CV-SOURCE-MAP.md` | `docs/` |
-| `cv/**/*.pdf` | `docs/cv/*.pdf` + `docs/cv/*.md` |
+| `cv/**/*.pdf` | `docs/cv/*.md` (chỉ nội dung chữ) |
 
 `components.css` (102 KB) bị bỏ hẳn vì không rule nào tác động lên trang. CSS mỗi trang tải giảm từ khoảng 1.2 MB xuống 78 KB. Ảnh chụp 6 trang ở hai bề rộng 1440 px và 390 px trước và sau khi dọn giống nhau từng pixel.
 
-### 2. `cv/` — chuyển sang `docs/cv/`
+### 2. `cv/` — chuyển thành Markdown
 
-11 file PDF không bị gỡ mà được chuyển vào [`docs/cv/`](cv/README.md) với tên gọn (không dấu, không khoảng trắng, không dấu `:`), kèm một bản `.md` cho mỗi CV. Bảng đối chiếu tên cũ và tên mới nằm trong `docs/cv/README.md`.
+11 file PDF đã được chuyển thành 10 file md trong [`docs/cv/`](cv/README.md) rồi xoá khỏi repo. Bảng đối chiếu tên PDF cũ và file md nằm trong `docs/cv/README.md`.
+
+PDF gốc chỉ còn trong lịch sử git:
+
+```bash
+git archive 1657c2e cv | tar -x -C /đường/dẫn/khác
+```
 
 ### 3. Rác
 

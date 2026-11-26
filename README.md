@@ -52,7 +52,7 @@ Vercel: Framework Preset `Other`, Root Directory để trống (gốc repo), kh�
 | [docs/DATA-MODEL.md](docs/DATA-MODEL.md) | Cấu trúc dữ liệu trong `portfolio-data.js` |
 | [docs/CONTENT-GUIDE.md](docs/CONTENT-GUIDE.md) | Hướng dẫn biên tập nội dung |
 | [docs/CV-SOURCE-MAP.md](docs/CV-SOURCE-MAP.md) | Nội dung CV nào đã được đưa lên portfolio và vì sao |
-| [docs/cv/](docs/cv/README.md) | 11 bản CV: PDF gốc và bản md |
+| [docs/cv/](docs/cv/README.md) | Nội dung các bản CV dạng md |
 | [docs/ARCHIVE.md](docs/ARCHIVE.md) | Những phần đã gỡ khỏi repo, đang nằm ở đâu, cách khôi phục |
 
 ## Làm việc trên nhiều máy
