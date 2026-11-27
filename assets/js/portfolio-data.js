@@ -13,77 +13,79 @@ window.PORTFOLIO_DATA = {
     yearsProduct: '5+ years',
     yearsBA: '3+ years'
   },
+  // Bốn nhóm năng lực xếp theo trình tự làm việc: yêu cầu → thiết kế → giải pháp → triển khai.
+  // `id` giữ nguyên vì dự án tham chiếu qua `disciplines` và bộ lọc ở trang Work.
   capabilities: [
     {
-      id: 'design',
+      id: 'analysis',
       number: '01',
-      title: { en: 'Product & UX Design', vi: 'Thiết kế sản phẩm & UX' },
-      icon: 'draw',
+      title: { en: 'Requirements & Product', vi: 'Yêu cầu & sản phẩm' },
+      icon: 'account_tree',
       statement: {
-        en: 'Translate complex, data-heavy workflows into usable web and mobile experiences.',
-        vi: 'Chuyển các quy trình phức tạp, nhiều dữ liệu thành trải nghiệm web và mobile dễ dùng.'
+        en: 'Use AI-assisted discovery to turn stakeholder input into PRDs, user stories, and acceptance criteria a team can review and approve.',
+        vi: 'Dùng AI hỗ trợ khám phá để biến ý kiến các bên liên quan thành PRD, user story và tiêu chí nghiệm thu mà đội có thể review và duyệt.'
       },
       skills: [
-        { en: 'UX strategy', vi: 'Chiến lược UX' },
+        { en: 'AI-assisted discovery', vi: 'Khám phá có AI hỗ trợ' },
+        { en: 'PRD & user stories', vi: 'PRD & user story' },
+        'BRD / FRD / SRS',
+        { en: 'Acceptance criteria', vi: 'Tiêu chí nghiệm thu' },
+        'BPMN & UML',
+        { en: 'Traceability', vi: 'Truy vết yêu cầu' }
+      ]
+    },
+    {
+      id: 'design',
+      number: '02',
+      title: { en: 'UX & Product Design', vi: 'Thiết kế UX & sản phẩm' },
+      icon: 'draw',
+      statement: {
+        en: 'Move from flows to tested prototypes faster by pairing design judgment with AI-assisted exploration and prototyping.',
+        vi: 'Đi từ luồng tới prototype đã kiểm thử nhanh hơn, nhờ kết hợp phán đoán thiết kế với AI hỗ trợ khám phá và dựng prototype.'
+      },
+      skills: [
         { en: 'User flows', vi: 'User flow' },
+        { en: 'AI-assisted prototyping', vi: 'Prototype có AI hỗ trợ' },
+        { en: 'Design systems', vi: 'Design system' },
         { en: 'Wireframes', vi: 'Wireframe' },
-        { en: 'Interactive prototypes', vi: 'Prototype tương tác' },
         { en: 'Usability testing', vi: 'Kiểm thử khả dụng' },
         { en: 'Responsive design', vi: 'Thiết kế responsive' }
       ]
     },
     {
-      id: 'analysis',
-      number: '02',
-      title: { en: 'Business Analysis', vi: 'Phân tích nghiệp vụ' },
-      icon: 'account_tree',
+      id: 'systems',
+      number: '03',
+      title: { en: 'Solution & Systems', vi: 'Giải pháp & hệ thống' },
+      icon: 'hub',
       statement: {
-        en: 'Turn stakeholder needs into structured requirements, workflows, and delivery-ready decisions.',
-        vi: 'Biến nhu cầu của các bên liên quan thành yêu cầu có cấu trúc, quy trình và quyết định sẵn sàng triển khai.'
+        en: 'Define the workflows, API behavior, data, and dashboards a build depends on, written so people and AI tools work from the same spec.',
+        vi: 'Xác định quy trình, hành vi API, dữ liệu và dashboard mà việc xây dựng phụ thuộc vào, viết sao cho người và công cụ AI cùng làm từ một bản đặc tả.'
       },
       skills: [
-        { en: 'Requirement analysis', vi: 'Phân tích yêu cầu' },
-        'BRD / FRD / SRS',
-        'BPMN & UML',
-        { en: 'User stories', vi: 'User story' },
-        { en: 'Traceability', vi: 'Truy vết yêu cầu' },
-        'UAT'
+        { en: 'System workflows', vi: 'Quy trình hệ thống' },
+        { en: 'API integration', vi: 'Tích hợp API' },
+        { en: 'Dashboard UX', vi: 'UX dashboard' },
+        { en: 'SQL & data modeling', vi: 'SQL & mô hình dữ liệu' },
+        { en: 'Data visualization', vi: 'Trực quan hoá dữ liệu' },
+        'Accessibility'
       ]
     },
     {
       id: 'ai',
-      number: '03',
-      title: { en: 'AI-enabled Solution Design', vi: 'Thiết kế giải pháp ứng dụng AI' },
+      number: '04',
+      title: { en: 'Delivery with AI', vi: 'Triển khai cùng AI' },
       icon: 'psychology',
       statement: {
-        en: 'Use AI-assisted research, prototyping, and workflow automation to accelerate responsible product delivery.',
-        vi: 'Dùng AI hỗ trợ nghiên cứu, dựng prototype và tự động hoá quy trình để đẩy nhanh việc đưa sản phẩm ra một cách có trách nhiệm.'
+        en: 'Carry specs into planning, UAT, and handoff, using AI tools for documentation and workflow automation with a person reviewing each step.',
+        vi: 'Đưa đặc tả vào lập kế hoạch, UAT và bàn giao, dùng công cụ AI cho tài liệu và tự động hoá quy trình, luôn có người review từng bước.'
       },
       skills: [
-        { en: 'AI-assisted discovery', vi: 'Khám phá có AI hỗ trợ' },
-        { en: 'Rapid prototyping', vi: 'Prototype nhanh' },
-        'Prompt engineering',
         { en: 'Workflow automation', vi: 'Tự động hoá quy trình' },
+        { en: 'UAT support', vi: 'Hỗ trợ UAT' },
+        'Prompt engineering',
+        { en: 'AI-assisted development', vi: 'Phát triển có AI hỗ trợ' },
         { en: 'Agentic AI concepts', vi: 'Khái niệm Agentic AI' },
-        { en: 'Solution framing', vi: 'Định hình giải pháp' }
-      ]
-    },
-    {
-      id: 'systems',
-      number: '04',
-      title: { en: 'Systems & Data UX', vi: 'UX cho hệ thống & dữ liệu' },
-      icon: 'insights',
-      statement: {
-        en: 'Design dashboards, monitoring tools, design systems, and operational interfaces that stay clear under complexity.',
-        vi: 'Thiết kế dashboard, công cụ giám sát, design system và giao diện vận hành luôn rõ ràng dù hệ thống phức tạp.'
-      },
-      skills: [
-        { en: 'Dashboard UX', vi: 'UX dashboard' },
-        { en: 'Data visualization', vi: 'Trực quan hoá dữ liệu' },
-        { en: 'Design systems', vi: 'Design system' },
-        'Accessibility',
-        { en: 'API integration', vi: 'Tích hợp API' },
-        { en: 'SQL & data modeling', vi: 'SQL & mô hình dữ liệu' }
+        { en: 'Frontend handoff', vi: 'Bàn giao cho frontend' }
       ]
     }
   ],

@@ -12,6 +12,8 @@ Public title:
 
 Supporting evidence appears consistently across the primary UI/UX, Digital Solution Consultant, and Business Analyst CVs. AI is presented as an enabled workflow/capability, not as a claim of machine-learning engineering.
 
+Since 2026-11-27 the site frames this positioning around the delivery workflow: the four capability groups follow the order requirements → design → solution → delivery, and the copy presents AI as something applied at each stage. Every AI claim on the site maps to a line in the CVs (AI-assisted research, prototyping, documentation, design iteration, workflow automation, prompt engineering, AI-assisted development, agentic AI concepts). The site does not claim AI use in testing, any productivity figure, or authorship of any company framework.
+
 ## Public claims used
 
 - 5+ years in Product/UI/UX Design.
