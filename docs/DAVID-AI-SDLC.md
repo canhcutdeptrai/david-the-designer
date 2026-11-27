@@ -13,7 +13,7 @@
 
 File này chép lại toàn bộ chữ trên 40 slide theo đúng thứ tự trình chiếu. Cách đọc:
 
-- Mỗi slide là một mục `## N. Tiêu đề`, kèm liên kết về slide gốc.
+- Mỗi slide là một mục `## N. Tiêu đề`.
 - Chữ trên slide được giữ nguyên văn, trừ dòng nhãn ở trang bìa và vài từ đã lược ở năm chỗ; bố cục (thẻ, cột, lưới) được chuyển thành tiêu đề, danh sách và bảng.
 - Hai slide là sơ đồ (29 và 30): chỉ chép được nhãn chữ trong sơ đồ, không chép được các mũi tên nối.
 - Slide 34 có công cụ bấm chọn; các kết quả ẩn sau lựa chọn đã được chép lại đầy đủ.
@@ -66,15 +66,13 @@ File này chép lại toàn bộ chữ trên 40 slide theo đúng thứ tự tr�
 
 ## 1. AI trong SDLC
 
-*[Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/cover)*
-
 Chiến lược ứng dụng AI vào toàn bộ vòng đời phát triển phần mềm.
 
 ---
 
 ## 2. Nội dung trình bày
 
-*Agenda · Số trên slide: 2 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/agenda)*
+*Agenda · Số trên slide: 2*
 
 Tổng quan & Kết quả POC
 
@@ -172,7 +170,7 @@ Phụ lục
 
 ## 3. Cấp độ áp dụng AI
 
-*Tổng quan · Cấp độ áp dụng · Số trên slide: 3 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/levels)*
+*Tổng quan · Cấp độ áp dụng · Số trên slide: 3*
 
 Khung 4 cấp độ trưởng thành — từ Shadow đến AI-Native — kết hợp góc nhìn tổ chức, quy trình và mức tự chủ AI. Giúp lãnh đạo định vị sản phẩm và chọn bước tiến phù hợp với rủi ro. Tham khảo từ SAE Levels of Autonomy và thực tiễn ngành tính đến Q2/2026.
 
@@ -236,7 +234,7 @@ Khung tham khảo từ SAE Levels of Autonomy & các báo cáo ngành.
 
 ## 4. Mục tiêu & Phạm vi POC
 
-*Tổng quan · Mục tiêu & Phạm vi POC · Số trên slide: 4 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/scope)*
+*Tổng quan · Mục tiêu & Phạm vi POC · Số trên slide: 4*
 
 POC 8 tuần (4 sprints) — chuẩn hoá việc sử dụng AI trong SDLC, biến AI thành năng lực chung có harness, không chỉ là tool cá nhân.
 
@@ -302,7 +300,7 @@ Lộ trình L1 → L2 → L3 · chưa L4
 
 ## 5. Bức tranh đo lường các dự án
 
-*Kết quả · Tổng hợp đo lường · Số trên slide: 5 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/project-metrics)*
+*Kết quả · Tổng hợp đo lường · Số trên slide: 5*
 
 6 dự án (5 Greenfield, 1 Brownfield) trải từ L2 đến L4. Cùng một bộ chỉ số: năng suất (cảm quan), throughput, sản lượng code, độ phủ test — đối chiếu với chuẩn nền trước AI.
 
@@ -355,7 +353,7 @@ Ghi chú theo dự án
 
 ## 6. Deliverables
 
-*Phần I · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/section-deliverables)*
+*Phần I*
 
 Bộ tài sản chuẩn bị sẵn cho việc triển khai AI trong SDLC — workflow, framework, guideline, hạ tầng dùng chung.
 
@@ -377,7 +375,7 @@ Bộ tài sản chuẩn bị sẵn cho việc triển khai AI trong SDLC — wor
 
 ## 7. Quy trình SDLC tích hợp AI
 
-*Deliverable · 01 · Số trên slide: 7 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/workflow)*
+*Deliverable · 01 · Số trên slide: 7*
 
 6 phase theo SDLC Standard — mỗi phase có vai trò người, AI agent, output cụ thể và gate phê duyệt. AI làm công việc chính của từng phase; người validate trước khi approve. Deployment & Maintenance chưa integrate AI workflow ở giai đoạn này.
 
@@ -523,7 +521,7 @@ Sơ đồ cross-functional flowchart đầy đủ:
 
 ## 8. Framework Spec-Driven Development
 
-*Deliverable · 02 · Số trên slide: 8 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/framework)*
+*Deliverable · 02 · Số trên slide: 8*
 
 Workflow của SDD Framework: phase tuần tự với gate người duyệt, parallel ở Design × Architecture và Plan × Test, kết thúc bằng Orbit sealed → mở orbit mới. Validate là audit read-only chạy trước Approve.
 
@@ -645,7 +643,7 @@ Sơ đồ workflow đầy đủ với DRAFT/APPROVED states, ops & change packs:
 
 ## 9. Thư viện Skills & Rules AI dùng chung
 
-*Deliverable · 03 · Số trên slide: 9 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/best-skills)*
+*Deliverable · 03 · Số trên slide: 9*
 
 Bộ artefact được collect và curate ở cấp công ty — các team plug-in vào tool của mình thay vì tự build lại. Mỗi loại có chuẩn đóng gói, review và versioning.
 
@@ -677,7 +675,7 @@ Thư viện prompt + template chuẩn
 
 ## 10. Khung Governance — 5 Nguyên tắc cốt lõi
 
-*Deliverable · 04 · Số trên slide: 10 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/governance)*
+*Deliverable · 04 · Số trên slide: 10*
 
 Trích từ Quy định Quản trị Dữ liệu triển khai AI trong PTSP. Áp dụng bắt buộc trên toàn Tập đoàn, xuyên suốt mọi giai đoạn SDLC.
 
@@ -767,7 +765,7 @@ Nguyên tắc vàng: "Khi nghi ngờ, hãy nâng cấp" — không chắc dữ l
 
 ## 11. LLM · Platform · Skills — 3 tầng
 
-*Khái niệm · Phân tầng · Số trên slide: 11 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/llm-platforms)*
+*Khái niệm · Phân tầng · Số trên slide: 11*
 
 Ví như: LLM là động cơ, Platform là chiếc xe, Skills/Rules là cách lái. Platform là orchestrator agent — nhận lệnh, tự chọn tool/agent, gọi LLM lặp đến khi xong.
 
@@ -839,7 +837,7 @@ Dùng LLM trực tiếp (chat.com, API raw) bỏ qua bộ platform = mất orche
 
 ## 12. LLM · PLATFORM · SKILLS
 
-*✱ · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/llm-architecture-blueprint)*
+*✱*
 
 ✱
 
@@ -911,7 +909,7 @@ nhận prompt, trả token · không tool, không truy cập file, không quy tr
 
 ## 13. Hạ tầng LLM Gateway
 
-*Deliverable · 05 · Số trên slide: 11 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/llm-gateway)*
+*Deliverable · 05 · Số trên slide: 11*
 
 Kiến trúc tham chiếu
 
@@ -945,7 +943,7 @@ LLM Gateway
 
 ## 14. So sánh tool AI coding
 
-*Deliverable · 06 · Số trên slide: 12 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/tool-comparison)*
+*Deliverable · 06 · Số trên slide: 12*
 
 So sánh 3 AI coding tools đang được đánh giá — dữ liệu tháng 4/2026.
 
@@ -1017,7 +1015,7 @@ Pricing không liệt kê chi tiết do đang biến động: Copilot chuyển s
 
 ## 15. Hướng dẫn sử dụng AI chung
 
-*Deliverable · 07 · Số trên slide: 13 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/guidelines)*
+*Deliverable · 07 · Số trên slide: 13*
 
 Tài liệu hướng dẫn dùng chung cho mọi vai trò: từ cài đặt môi trường, tổ chức repo theo framework, đến best practices khi làm việc cùng AI.
 
@@ -1064,7 +1062,7 @@ Claude + Codex — dùng model nào cho việc nào (05-2026) Map đầu việc 
 
 ## 16. Khung quyết định
 
-*Phần II · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/section-decision-framework)*
+*Phần II*
 
 Ba mô hình đội ngũ, ba trục phân loại sản phẩm — và ma trận quyết định để map sản phẩm vào cấp độ AI phù hợp.
 
@@ -1081,7 +1079,7 @@ Ba mô hình đội ngũ, ba trục phân loại sản phẩm — và ma trận 
 
 ## 17. Cấu trúc đội ngũ
 
-*Khung quyết định · 01 · Số trên slide: 15 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/team-structure)*
+*Khung quyết định · 01 · Số trên slide: 15*
 
 Nâng cấp độ AI = tái phân bổ vai trò trong squad. Mỗi card mô tả 1 squad; một sản phẩm thực tế có thể gồm nhiều squad — và 1 squad có thể ôm nhiều sản phẩm.
 
@@ -1222,7 +1220,7 @@ Autonomy cao = token tiêu thụ nhiều — cần forecast
 
 ## 18. Phân loại sản phẩm
 
-*Khung quyết định · 02 · Số trên slide: 16 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/project-classification)*
+*Khung quyết định · 02 · Số trên slide: 16*
 
 Ba trục để định vị sản phẩm: vòng đời, quy mô và tính chất bảo mật dữ liệu — toạ độ ba trục quyết định cấp độ AI phù hợp.
 
@@ -1298,7 +1296,7 @@ Cách dùng: mỗi sản phẩm có toạ độ Lifecycle · Size · Bảo mật
 
 ## 19. Ma trận quyết định
 
-*Khung quyết định · 03 · Số trên slide: 17 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/decision-matrix)*
+*Khung quyết định · 03 · Số trên slide: 17*
 
 Ma trận 3×3 chọn cấp độ AI dựa trên Lifecycle × Size. Hover chữ (i) để xem lý do chi tiết từng cell. Trục Bảo mật xem slide trước.
 
@@ -1416,7 +1414,7 @@ Team ôm module riêng → adopt L3; team share codebase phức tạp giữ L2. 
 
 ## 20. Phân nhóm đội ngũ theo năng lực AI
 
-*Khung quyết định · 04 · Số trên slide: 18 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/member-profiles)*
+*Khung quyết định · 04 · Số trên slide: 18*
 
 Ma trận 3 chiều: AI maturity × Domain breadth × Seniority Jr+Mid / Sr. 18 ô — 4 nhóm chiến lược cho quy hoạch đội ngũ (mỗi nhóm khác chức năng, khác cách quản lý): Scale · Tinh hoa · Chiến lược · Training pipeline.
 
@@ -1544,7 +1542,7 @@ Nguồn lực cho các sản phẩm truyền thống. Đồng thời là pipelin
 
 ## 21. Next Action
 
-*Phần III · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/section-status-outcome)*
+*Phần III*
 
 Bước tiếp theo: chỉ số nào dùng để đo tác động, đề xuất hành động và lộ trình triển khai.
 
@@ -1562,7 +1560,7 @@ Bước tiếp theo: chỉ số nào dùng để đo tác động, đề xuất 
 
 ## 22. Benefit của hai hướng chuyển đổi
 
-*Next Action · 03 · Số trên slide: 24 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/transition-benefits)*
+*Next Action · 03 · Số trên slide: 24*
 
 So sánh giá trị mỗi nhánh mang lại: L1 → L2 là bước nền tảng, ít rủi ro, lan rộng nhanh. L1 → L3 là bước transformation, ROI cao hơn nhưng yêu cầu đầu tư & senior playbook.
 
@@ -1659,7 +1657,7 @@ Cải thiện skills / framework + governance + đào tạo để nâng cao năn
 
 ## 23. Đầu tư cần thiết cho chuyển đổi
 
-*Next Action · 04 · Số trên slide: 25 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/transition-investment)*
+*Next Action · 04 · Số trên slide: 25*
 
 4 trụ cột đầu tư song song. L2 cần nền tảng tooling + training + governance + process AI-aware. L3 cộng thêm harness, senior playbook và spec-driven workflow.
 
@@ -1728,7 +1726,7 @@ Thay đổi cách làm — từ ceremony nặng sang spec → AI → review
 
 ## 24. 4 KPI cốt lõi đo AI trong SDLC
 
-*Đo lường · Số trên slide: 28 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/metrics)*
+*Đo lường · Số trên slide: 28*
 
 Đo baseline trước khi rollout AI → so sánh sau 1–3 tháng → điều chỉnh target theo quý. Mục tiêu chia theo cấp độ áp dụng AI: L2 (AI-assisted) và L3 (AI-Augmented).
 
@@ -1858,7 +1856,7 @@ Cần định nghĩa rõ thế nào là “failure” và tag được release t
 
 ## 25. Lộ trình & action
 
-*Next Action · Lộ trình · Số trên slide: 28 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/next-step-timeline)*
+*Next Action · Lộ trình · Số trên slide: 28*
 
 Lộ trình triển khai sau PoC — 5 mốc chính + 1 mốc review · tối đa 12 tuần.
 
@@ -1963,7 +1961,7 @@ Draft proposal: theme · action · output gate do AI đề xuất theo deck cont
 
 ## 26. Kết luận & Đề xuất
 
-*Kết luận · Số trên slide: 27 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/conclusion)*
+*Kết luận · Số trên slide: 27*
 
 Quyết định cần thông qua
 
@@ -1985,7 +1983,7 @@ Lộ trình · F1
 
 ## 27. Phụ lục
 
-*Phụ lục · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/section-appendix)*
+*Phụ lục*
 
 Nguồn tham khảo, cấu trúc PRISM và runbook adoption theo từng loại dự án — dành cho người xem muốn biết phải setup gì và chạy thao tác nào.
 
@@ -2010,7 +2008,7 @@ Nguồn tham khảo, cấu trúc PRISM và runbook adoption theo từng loại d
 
 ## 28. Nguồn tham khảo
 
-*Phụ lục · Số trên slide: A · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/references)*
+*Phụ lục · Số trên slide: A*
 
 Khung 4 cấp độ áp dụng AI trong SDLC (Shadow → Tool-first → Workflow-first → AI-Native) được tổng hợp dựa trên tham chiếu tiêu chuẩn SAE J3016 (gốc ngành ô tô) và các báo cáo / sản phẩm thực tiễn của Thoughtworks, Gartner, Anthropic, GitHub, Microsoft cùng các bài phân tích cộng đồng.
 
@@ -2056,7 +2054,7 @@ Lưu ý: chưa có công ty nào (GitHub, Thoughtworks, Gartner, Anthropic) publ
 
 ## 29. Workflow SDLC AI — Diagram gốc
 
-*Phụ lục · Số trên slide: B · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/workflow-source)*
+*Phụ lục · Số trên slide: B*
 
 Sơ đồ cross-functional flowchart đầy đủ. Render trực tiếp từ file XML — kéo / zoom / lightbox bằng toolbar góc dưới phải. Slide tóm tắt ở số 03.
 
@@ -2153,7 +2151,7 @@ Slide này là một sơ đồ (draw.io). Dưới đây là toàn bộ nhãn ch�
 
 ## 30. SDD Framework — Diagram gốc
 
-*Phụ lục · Số trên slide: C · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/framework-source)*
+*Phụ lục · Số trên slide: C*
 
 Sơ đồ workflow đầy đủ với DRAFT / APPROVED gates, parallel branches, orbit cycle, ops control & change packs. Render trực tiếp từ file XML. Slide tóm tắt ở số 05.
 
@@ -2223,7 +2221,7 @@ Slide này là một sơ đồ (draw.io). Dưới đây là toàn bộ nhãn ch�
 
 ## 31. PRISM — Chuyển dịch cách làm việc
 
-*Phụ lục · Số trên slide: D · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/prism-shift)*
+*Phụ lục · Số trên slide: D*
 
 Trước đây mỗi vai trò dùng một tool ngoài không kiểm soát (AI rải rác, Figma, draw.io, Confluence), nối với nhau bằng copy-paste thủ công. Nay tập trung vào VS Code — mọi đầu ra đi qua PRISM (versioned · review · approve · Living Truth). Riêng Design và test manual phần lớn vẫn nằm ngoài luồng.
 
@@ -2259,7 +2257,7 @@ Xem cách PRISM vận hành chi tiết:
 
 ## 32. PRISM — Cách vận hành thực tế
 
-*Phụ lục · Số trên slide: E · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/prism-operations)*
+*Phụ lục · Số trên slide: E*
 
 Mỗi sprint mở 1 sprint folder /docs/sprint-v{X}/ (X = số sprint). 6 phase chạy lần lượt: AI gõ lệnh chuẩn (hoặc import khi đã có tài liệu sẵn) → sinh proposal trong sprint folder → role chuyên trách review/approve. Sau khi seal sprint, proposal merge tự động sang Living Truth ở /docs/{phase}/ — AI không bao giờ ghi trực tiếp.
 
@@ -2313,7 +2311,7 @@ Xem flow gate & orbit:
 
 ## 33. PRISM — Cấu trúc thư mục project
 
-*Phụ lục · Số trên slide: F · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/prism-folder-structure)*
+*Phụ lục · Số trên slide: F*
 
 Bản rút gọn theo source sdlc-framework/prism v2.2.1: chỉ giữ các tầng cần giải thích khi demo — framework guides, QA toolkit, project docs, Living Truth, sprint working area và repo code con. Các phần điều phối/đóng gói nội bộ được lược bỏ.
 
@@ -2585,7 +2583,7 @@ frontends/
 
 ## 34. Áp dụng PRISM theo loại dự án
 
-*Phụ lục · Hướng dẫn cho đội ngũ · Số trên slide: G · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/adoption-playbook)*
+*Phụ lục · Hướng dẫn cho đội ngũ · Số trên slide: G*
 
 Công cụ tương tác xác định mô hình tổ chức phù hợp theo loại dự án, kèm các bước triển khai. Cột phải là tham chiếu: dịch chuyển cách làm việc, lựa chọn L2/L3 và kiểm soát bảo mật.
 
@@ -2782,7 +2780,7 @@ Trên trang, phần "Xác định mô hình theo dự án" là một công cụ 
 
 ## 35. Greenfield L3 · Vừa & nhỏ
 
-*Phụ lục · Adoption runbook · Số trên slide: H1 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/runbook-greenfield-small-l3)*
+*Phụ lục · Adoption runbook · Số trên slide: H1*
 
 Case đã chốt: một meta-repo chứa PRISM và các repo code bằng submodule. AI mở workspace tại meta-repo để thấy đủ context và sửa được nhiều repo con trong cùng một lượt.
 
@@ -2842,7 +2840,7 @@ git commit -m "chore: scaffold PRISM guided meta-repo"
 
 ## 36. Greenfield L3 · Lớn
 
-*Phụ lục · Adoption runbook · Số trên slide: H2 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/runbook-greenfield-large-l3)*
+*Phụ lục · Adoption runbook · Số trên slide: H2*
 
 Đang hoàn thiện: dự kiến có một big-meta repo ở ngoài để draft solution high-level, module map, integration contracts và cross-feature. Bên trong là các module/team meta-repo chạy PRISM guided riêng; chỉ module meta-repo mới include code repos.
 
@@ -2907,7 +2905,7 @@ E Runbook này dừng ở planning tích hợp, chưa đi tới Test/Implementat
 
 ## 37. Brownfield L2 · BAU / ít thay đổi
 
-*Phụ lục · Adoption runbook · Số trên slide: H3 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/runbook-brownfield-l2)*
+*Phụ lục · Adoption runbook · Số trên slide: H3*
 
 Áp dụng khi sản phẩm đã chạy PROD nhưng chủ yếu bug fix, patch, security fix hoặc exploration. Dùng PRISM freedom để AI có context/template chuẩn, nhưng người dùng có thể gõ tự nhiên, không phải nhớ lệnh `start ...` / gate L3.
 
@@ -2966,7 +2964,7 @@ D Commit tài liệu/code theo quy trình hiện hữu; không seal Living Truth
 
 ## 38. Brownfield L3 · Vừa & nhỏ
 
-*Phụ lục · Adoption runbook · Số trên slide: H4 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/runbook-brownfield-small-l3)*
+*Phụ lục · Adoption runbook · Số trên slide: H4*
 
 Case đã chốt: hợp nhất các repo liên quan vào một meta-repo, dùng discover-code để số hoá code PROD + tài liệu hiện có, đưa vào Living Truth bằng reflect sprint, rồi phát triển tiếp theo guided L3.
 
@@ -3031,7 +3029,7 @@ git commit -m "chore: scaffold brownfield PRISM guided"
 
 ## 39. Brownfield L3 · Lớn
 
-*Phụ lục · Adoption runbook · Số trên slide: H5 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/runbook-brownfield-large-l3)*
+*Phụ lục · Adoption runbook · Số trên slide: H5*
 
 Đang hoàn thiện: tránh big-bang toàn hệ thống. Dự kiến big-meta repo ở ngoài giữ current-system high-level, module map, dependency/contract và cross-feature; từng module meta-repo chạy PRISM guided/reflect riêng, chỉ module meta-repo mới include code repos.
 
@@ -3098,4 +3096,4 @@ E Cross-module change được draft/review ở big-meta, implementation vẫn n
 
 ## 40. Cảm ơn & Q&A
 
-*Thank you · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/closing)*
+*Thank you*

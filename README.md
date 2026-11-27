@@ -72,7 +72,7 @@ Vercel: Framework Preset `Other`, Root Directory để trống (gốc repo), kh�
 | [docs/CONTENT-GUIDE.md](docs/CONTENT-GUIDE.md) | Hướng dẫn biên tập nội dung |
 | [docs/CV-SOURCE-MAP.md](docs/CV-SOURCE-MAP.md) | Nội dung CV nào đã được đưa lên portfolio và vì sao |
 | [docs/CV.md](docs/CV.md) | Hồ sơ tổng hợp: nội dung 9 bản CV gộp thành một file, sắp theo ba vai trò chính (UI/UX · Product Design, Business Analysis · Product Owner, Solution · Consulting) và ba kỹ năng hỗ trợ (Graphic Design, Sales, Marketing) |
-| [docs/AI-SDLC-REPORT.md](docs/AI-SDLC-REPORT.md) | Ghi chú tham khảo: bản chép bộ 40 slide "AI trong SDLC — Chiến lược chuyển đổi" của OneMount. Không phải tác phẩm của chủ repo |
+| [docs/DAVID-AI-SDLC.md](docs/DAVID-AI-SDLC.md) | Ghi chú tham khảo: bản chép bộ 40 slide "AI trong SDLC — Chiến lược chuyển đổi" của OneMount. Không phải tác phẩm của chủ repo |
 | [docs/ARCHIVE.md](docs/ARCHIVE.md) | Những phần đã gỡ khỏi repo, đang nằm ở đâu, cách khôi phục |
 
 ## Làm việc trên nhiều máy
