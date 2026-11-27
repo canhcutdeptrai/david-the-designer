@@ -12,7 +12,7 @@
 File này chép lại toàn bộ chữ trên 40 slide theo đúng thứ tự trình chiếu. Cách đọc:
 
 - Mỗi slide là một mục `## N. Tiêu đề`, kèm liên kết về slide gốc.
-- Chữ trên slide được giữ nguyên văn, trừ dòng nhãn ở trang bìa; bố cục (thẻ, cột, lưới) được chuyển thành tiêu đề, danh sách và bảng.
+- Chữ trên slide được giữ nguyên văn, trừ dòng nhãn ở trang bìa và vài từ đã lược ở năm chỗ; bố cục (thẻ, cột, lưới) được chuyển thành tiêu đề, danh sách và bảng.
 - Hai slide là sơ đồ (29 và 30): chỉ chép được nhãn chữ trong sơ đồ, không chép được các mũi tên nối.
 - Slide 34 có công cụ bấm chọn; các kết quả ẩn sau lựa chọn đã được chép lại đầy đủ.
 - Hình minh hoạ, biểu tượng và thanh tiến độ không có chữ nên không xuất hiện ở đây.
@@ -252,7 +252,7 @@ Tại sao chuẩn hoá — rủi ro khi giữ L1
 
 Hiện trạng OneMount nằm ở L1 (Shadow) — mỗi người dùng AI riêng, tài khoản cá nhân, không có chính sách / gate / đo lường.
 
-- 01 Thất thoát dữ liệu nội bộ & bí mật kinh doanh khi prompt model public
+- 01 Thất thoát dữ liệu & bí mật kinh doanh khi prompt model public
 - 02 Tri thức phân mảnh — prompt / skill ai biết người nấy, không tái sử dụng
 - 03 Không đo được ROI — không biết AI giúp tiết kiệm bao nhiêu, ở đâu
 - 04 Khó audit & tuân thủ — chưa có quy chuẩn ghi nhận / kiểm chứng output AI
@@ -945,7 +945,7 @@ LLM Gateway
 
 *Deliverable · 06 · Số trên slide: 12 · [Slide gốc](https://ai-sdlc.onemount.dev/sdlc/report/slide/tool-comparison)*
 
-So sánh 3 AI coding tools đang được đánh giá — dữ liệu nội bộ tháng 4/2026.
+So sánh 3 AI coding tools đang được đánh giá — dữ liệu tháng 4/2026.
 
 01 Business / Enterprise
 
@@ -2039,9 +2039,9 @@ Các bài viết cộng đồng đã đề xuất khung 5 cấp tương tự
 - Swarmia Blog Five levels of AI coding agent autonomy https://www.swarmia.com/blog/five-levels-ai-agent-autonomy/
 - Tessl Blog The 5 levels of AI agent autonomy: learning from self-driving cars https://tessl.io/blog/the-5-levels-of-ai-agent-autonomy-learning-from-self-driving-cars/
 
-#### Internal source files
+#### Source files
 
-Tài liệu nội bộ — sơ đồ gốc render trực tiếp ở phụ lục
+Sơ đồ gốc render trực tiếp ở phụ lục
 
 - OneMount /docs Workflow SDLC AI — Cross-functional flowchart (drawio XML) Slide 03 tóm tắt 6 phase; phụ lục B render diagram đầy đủ qua drawio viewer /slide/workflow-source
 - OneMount /docs SDD Framework — Workflow diagram (drawio XML) Slide 05 tóm tắt orbit cycle; phụ lục C render diagram đầy đủ với DRAFT/APPROVED gates /slide/framework-source
@@ -2625,7 +2625,7 @@ Freedom là lựa chọn một chiều (không thể quay lại guided trong cù
 
 **Gate bắt buộc — bảo mật**
 
-Chỉ data-class mới giới hạn AI. Module bắt buộc On-Prem cần hạ tầng LLM Gateway nội bộ; nếu chưa có thì giới hạn ở L1 hoặc không áp dụng AI cho module đó. Mức độ trọng yếu được xử lý bằng review, không dùng để chặn AI.
+Chỉ data-class mới giới hạn AI. Module bắt buộc On-Prem cần hạ tầng LLM Gateway; nếu chưa có thì giới hạn ở L1 hoặc không áp dụng AI cho module đó. Mức độ trọng yếu được xử lý bằng review, không dùng để chặn AI.
 
 **Cơ chế PRISM · bug & hotfix**
 
