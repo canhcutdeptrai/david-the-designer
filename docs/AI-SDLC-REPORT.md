@@ -1,10 +1,12 @@
 # AI trong SDLC — Chiến lược chuyển đổi
 
+> **Ghi chú tham khảo.** Đây là bản chép lại nội dung một báo cáo của OneMount, lấy từ <https://ai-sdlc.onemount.dev/sdlc/report/slide/>. Nội dung, số liệu và phương pháp trong file thuộc về OneMount và các tác giả của báo cáo. Đây không phải tác phẩm của chủ repo này (Van The Duy / David) và không thuộc portfolio; file chỉ được lưu để đọc và tra cứu.
+
 Áp dụng AI trong vòng đời phát triển phần mềm (SDLC).
 
 | | |
 |---|---|
-| Nguồn | <https://ai-sdlc.onemount.dev/sdlc/report/slide/> |
+| Nguồn | Báo cáo của OneMount: <https://ai-sdlc.onemount.dev/sdlc/report/slide/> |
 | Dạng gốc | Bộ 40 slide trên web (mỗi slide một đường dẫn riêng) |
 | Ngày lấy nội dung | 2026-11-27 |
 | Ngôn ngữ | Tiếng Việt, giữ nguyên văn |
